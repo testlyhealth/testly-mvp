@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Testly MVP - Blood Test Picker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="header-area">
+    <h1>Testly</h1>
+    <p class="main-heading">Looking a blood test but not sure where to start?</p>
+    <p class="sub-heading">We’ll help you find the right test for you and your budget in under 30 seconds.</p>
+  </div>
+
+  <div class="container">
+
+    <!-- Full-width Category Buttons Row -->
+    <div class="full-width-row">
+      <fieldset>
+        <legend>Select by Category</legend>
+        <button type="button" id="category-general" class="toggle-button">General Health Check</button>
+        <button type="button" id="category-tired" class="toggle-button">Tired All the Time</button>
+      </fieldset>
+    </div>
+
+    <!-- Full-width Biomarker Selection Form -->
+    <div class="full-width-row">
+      <form id="biomarker-form">
+        <div class="biomarker-columns" id="biomarker-container">
+          <!-- Biomarker group checkboxes will be injected here by JS -->
+        </div>
+        <button type="submit">Find My Test</button>
+      </form>
+    </div>
+
+  </div>
+
+  <div id="results"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

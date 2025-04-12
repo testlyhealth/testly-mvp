@@ -1,0 +1,525 @@
+[
+    {
+        "provider": "Thriva",
+        "test_name": "Women's hormones blood test",
+        "price": 99,
+        "pricing information": "Additional £60 for a nurse/phlebotomist to take blood. Subscription available. Best taken on day 3 of your menstrual cycle for most accurate results.",
+        "description": "Check your hormones are in the normal range with our best-selling blood test. Helps detect imbalances that may affect mood, energy, fertility, and more. Includes thyroid function, testosterone profile, and key female hormone markers. Not intended to diagnose menopause.",
+        "doctors report": "Yes",
+        "biomarker number": 9,
+        "biomarkers": [
+          "Oestradiol",
+          "LH",
+          "FSH",
+          "Total testosterone",
+          "Free testosterone",
+          "SHBG",
+          "Free androgen index",
+          "TSH",
+          "Free T4"
+        ],
+        "blood test location": [
+          "Home",
+          "Nurse/phlebotomist to house"
+        ],
+        "Days till results returned": 2,
+        "bullet point summary": "Blank",
+        "trust pilot score": 4.4,
+        "lab accreditations": [
+          "ISO 17025",
+          "ISO 15189",
+          "ISO 13485"
+        ],
+        "link": "https://thriva.co/shop/blood-tests/womens-hormones-blood-test-insights"
+      },
+      {
+        "provider": "Thriva",
+        "test_name": "Men's health blood test",
+        "price": 113.40,
+        "pricing information": "Additional £60 for a nurse/phlebotomist to take blood. Subscription available. Includes 2 tubes, delivered in 1–2 days. Results in as little as 48 hours.",
+        "description": "Check your testosterone levels, cholesterol, liver health, and vitamin D to understand what's going on inside your body. Track long-term health markers and reduce your risk of heart disease, diabetes, and more. Includes GP-reviewed results and lifestyle advice.",
+        "doctors report": "Yes",
+        "biomarker number": 21,
+        "biomarkers": [
+          "Free testosterone",
+          "Total testosterone",
+          "SHBG",
+          "Free androgen index",
+          "Triglycerides:HDL ratio",
+          "LDL",
+          "Non-HDL",
+          "HDL",
+          "Total cholesterol",
+          "Triglycerides",
+          "Total cholesterol:HDL ratio",
+          "Gamma-GT",
+          "ALT",
+          "Albumin",
+          "ALP",
+          "Globulin",
+          "Bilirubin",
+          "Total protein",
+          "Vitamin D",
+          "HbA1c",
+          "hs-CRP"
+        ],
+        "blood test location": [
+          "Home",
+          "Nurse/phlebotomist to house"
+        ],
+        "Days till results returned": 2,
+        "bullet point summary": "Blank",
+        "trust pilot score": 4.4,
+        "lab accreditations": [
+          "ISO 17025",
+          "ISO 15189",
+          "ISO 13485"
+        ],
+        "link": "https://thriva.co/shop/blood-tests/mens-health-blood-test"
+      },
+      {
+        "provider": "Thriva",
+        "test_name": "General health blood test",
+        "price": 117,
+        "pricing information": "Additional £60 for a nurse/phlebotomist to take blood. Subscription available",
+        "description": "Check key health markers including cholesterol, vitamins, blood sugar, and iron. Includes detailed GP report.",
+        "doctors report": "Yes",
+        "biomarker number": 19,
+        "biomarkers": [
+          "Triglycerides:HDL ratio",
+          "LDL",
+          "Non-HDL",
+          "HDL",
+          "Total cholesterol",
+          "Triglycerides",
+          "Total cholesterol:HDL ratio",
+          "HbA1c",
+          "Gamma-GT",
+          "ALT",
+          "Albumin",
+          "ALP",
+          "Globulin",
+          "Bilirubin",
+          "Total protein",
+          "Vitamin D",
+          "Vitamin B12",
+          "Folate",
+          "Ferritin"
+        ],    
+        "blood test location": [
+          "Home",
+          "Nurse/phlebotomist to house"
+       ],
+       "Days till results returned": 2,
+       "bullet point summary": "Blank",
+       "trust pilot score": 4.4,
+       "lab accreditations":[
+          "ISO 17025",
+          "ISO 15189",
+          "ISO 13485"
+       ],
+       "link": "https://thriva.co/shop/blood-tests/general-health-check"
+       },      
+       {
+        "provider": "Thriva",
+        "test_name": "Complete thyroid function test",
+        "price": 122.40,
+        "pricing information": "Additional £60 for a nurse/phlebotomist to take blood. Subscription available. Includes 2 tubes, delivered in 1–2 days. Results in as little as 48 hours.",
+        "description": "Check your thyroid hormones, antibodies, and key nutrients that support thyroid health. This test can help determine if your symptoms — such as weight changes, low mood, or fatigue — are linked to thyroid dysfunction or nutritional deficiencies. Includes GP-reviewed report and lifestyle guidance.",
+        "doctors report": "Yes",
+        "biomarker number": 9,
+        "biomarkers": [
+          "Free T3",
+          "TSH",
+          "Thyroglobulin antibodies",
+          "Thyroid peroxidase antibodies",
+          "T4",
+          "Free T4",
+          "Vitamin D",
+          "Ferritin",
+          "Vitamin B12"
+        ],
+        "blood test location": [
+          "Home",
+          "Nurse/phlebotomist to house"
+        ],
+        "Days till results returned": 2,
+        "bullet point summary": "Blank",
+        "trust pilot score": 4.4,
+        "lab accreditations": [
+          "ISO 17025",
+          "ISO 15189",
+          "ISO 13485"
+        ],
+        "link": "https://thriva.co/shop/blood-tests/complete-thyroid-function-test"
+      },
+      {
+        "provider": "Thriva",
+        "test_name": "PCOS blood test",
+        "price": 135,
+        "pricing information": "Additional £60 for a nurse/phlebotomist to take blood. Subscription available. Best taken on day 3 of your cycle for most accurate results. Delivered in 1–2 days. Results in as little as 48 hours.",
+        "description": "Learn whether symptoms like irregular periods, acne, or excess body hair may be caused by PCOS. This test checks for hormonal imbalances, thyroid issues, and PCOS-related metabolic risks such as high cholesterol and insulin resistance. Includes a GP-reviewed report and tailored advice.",
+        "doctors report": "Yes",
+        "biomarker number": 17,
+        "biomarkers": [
+          "Free testosterone",
+          "Total testosterone",
+          "SHBG",
+          "Free androgen index",
+          "FSH",
+          "LH",
+          "TSH",
+          "Free T4",
+          "Triglycerides:HDL ratio",
+          "LDL",
+          "Non-HDL",
+          "HDL",
+          "Total cholesterol",
+          "Triglycerides",
+          "Total cholesterol:HDL ratio",
+          "HbA1c",
+          "Vitamin D"
+        ],
+        "blood test location": [
+          "Home",
+          "Nurse/phlebotomist to house"
+        ],
+        "Days till results returned": 2,
+        "bullet point summary": "Blank",
+        "trust pilot score": 4.4,
+        "lab accreditations": [
+          "ISO 17025",
+          "ISO 15189",
+          "ISO 13485"
+        ],
+        "link": "https://thriva.co/shop/blood-tests/pcos-blood-test"
+      },
+      {
+        "provider": "Thriva",
+        "test_name": "Fertility insights blood test",
+        "price": 185,
+        "pricing information": "Additional £60 for a nurse/phlebotomist to take blood. Subscription available. Best taken on day 3 of your cycle for most accurate results. Delivered in 1–2 days. Results in as little as 48 hours.",
+        "description": "Get personalised insights into your fertility with this comprehensive hormone panel. This test can help assess your ovarian reserve, identify hormonal imbalances, and detect conditions that could affect conception, such as thyroid dysfunction or elevated prolactin. Includes GP-reviewed report and advice.",
+        "doctors report": "Yes",
+        "biomarker number": 11,
+        "biomarkers": [
+          "LH",
+          "FSH",
+          "Oestradiol",
+          "Total testosterone",
+          "Free testosterone",
+          "SHBG",
+          "Free androgen index",
+          "TSH",
+          "Free T4",
+          "Prolactin",
+          "AMH"
+        ],
+        "blood test location": [
+          "Home",
+          "Nurse/phlebotomist to house"
+        ],
+        "Days till results returned": 2,
+        "bullet point summary": "Blank",
+        "trust pilot score": 4.4,
+        "lab accreditations": [
+          "ISO 17025",
+          "ISO 15189",
+          "ISO 13485"
+        ],
+        "link": "https://thriva.co/shop/blood-tests/fertility-insights-blood-test"
+      },
+      {
+        "provider": "Thriva",
+        "test_name": "Menopause insights blood test",
+        "price": 131,
+        "pricing information": "Additional £60 for a nurse/phlebotomist to take blood. Subscription available. Delivered in 1–2 days. Results in as little as 48 hours.",
+        "description": "Understand how menopause may be affecting your heart, bone, and metabolic health. This blood test looks at cholesterol, thyroid function, blood sugar control, and vitamin D — with GP-reviewed results and lifestyle advice to support you through menopause. This test cannot diagnose menopause.",
+        "doctors report": "Yes",
+        "biomarker number": 14,
+        "biomarkers": [
+          "Apo B:apo A ratio",
+          "Apolipoprotein B",
+          "Apolipoprotein A1",
+          "Triglycerides:HDL ratio",
+          "LDL",
+          "Non-HDL",
+          "HDL",
+          "Total cholesterol",
+          "Triglycerides",
+          "Total cholesterol:HDL ratio",
+          "TSH",
+          "Free T4",
+          "Vitamin D",
+          "HbA1c"
+        ],
+        "blood test location": [
+          "Home",
+          "Nurse/phlebotomist to house"
+        ],
+        "Days till results returned": 2,
+        "bullet point summary": "Blank",
+        "trust pilot score": 4.4,
+        "lab accreditations": [
+          "ISO 17025",
+          "ISO 15189",
+          "ISO 13485"
+        ],
+        "link": "https://thriva.co/shop/blood-tests/menopause-insights-blood-test"
+      },
+      {
+        "provider": "Thriva",
+        "test_name": "AMH blood test",
+        "price": 126,
+        "pricing information": "Additional £60 for a nurse/phlebotomist to take blood. Subscription option available (£113.40 for 3-month plan). Delivered in 1–2 days. Results in as little as 48 hours.",
+        "description": "This test checks Anti-Müllerian Hormone (AMH) levels, which reflect your ovarian reserve — the number of eggs you have left. AMH naturally declines with age and may be useful in planning for egg freezing, IVF, or family planning. Includes GP-reviewed report and recommendations.",
+        "doctors report": "Yes",
+        "biomarker number": 1,
+        "biomarkers": [
+          "AMH"
+        ],
+        "blood test location": [
+          "Home",
+          "Nurse/phlebotomist to house"
+        ],
+        "Days till results returned": 2,
+        "bullet point summary": "Blank",
+        "trust pilot score": 4.4,
+        "lab accreditations": [
+          "ISO 17025",
+          "ISO 15189",
+          "ISO 13485"
+        ],
+        "link": "https://thriva.co/shop/blood-tests/amh-blood-test"
+      },
+      {
+        "provider": "Thriva",
+        "test_name": "Cardiovascular health blood test",
+        "price": 118,
+        "pricing information": "Additional £60 for a nurse/phlebotomist to take blood. Subscription option available (£106.20 for 3-month plan). Delivered in 1–2 days. Results in as little as 48 hours.",
+        "description": "Get insights into your heart health and disease risk by assessing cholesterol, inflammation, blood sugar, liver and kidney function. This test helps you understand how diet, lifestyle, and metabolic factors impact your cardiovascular system. Includes GP-reviewed report and personalised recommendations.",
+        "doctors report": "Yes",
+        "biomarker number": 21,
+        "biomarkers": [
+          "Apo B:apo A ratio",
+          "Apolipoprotein B",
+          "Apolipoprotein A1",
+          "Triglycerides:HDL ratio",
+          "LDL",
+          "Non-HDL",
+          "HDL",
+          "Total cholesterol",
+          "Triglycerides",
+          "Total cholesterol:HDL ratio",
+          "Gamma-GT",
+          "ALT",
+          "Albumin",
+          "ALP",
+          "Globulin",
+          "Bilirubin",
+          "Total protein",
+          "eGFR",
+          "Creatinine",
+          "HbA1c",
+          "hs-CRP"
+        ],
+        "blood test location": [
+          "Home",
+          "Nurse/phlebotomist to house"
+        ],
+        "Days till results returned": 2,
+        "bullet point summary": "Blank",
+        "trust pilot score": 4.4,
+        "lab accreditations": [
+          "ISO 17025",
+          "ISO 15189",
+          "ISO 13485"
+        ],
+        "link": "https://thriva.co/shop/blood-tests/cardiovascular-health-blood-test"
+      },
+      {
+        "provider": "Thriva",
+        "test_name": "Vitamins blood test",
+        "price": 81.90,
+        "pricing information": "Additional £60 for a nurse/phlebotomist to take blood. Subscription available. Delivered in 1–2 days. Results in as little as 48 hours.",
+        "description": "Check your levels of key vitamins including D, B12, and folate to help detect or monitor deficiencies. This test can help explain symptoms like low energy, frequent illness, irritability or poor mood. Includes GP-reviewed report and personalised advice.",
+        "doctors report": "Yes",
+        "biomarker number": 3,
+        "biomarkers": [
+          "Vitamin D",
+          "Vitamin B12",
+          "Folate"
+        ],
+        "blood test location": [
+          "Home",
+          "Nurse/phlebotomist to house"
+        ],
+        "Days till results returned": 2,
+        "bullet point summary": "Blank",
+        "trust pilot score": 4.4,
+        "lab accreditations": [
+          "ISO 17025",
+          "ISO 15189",
+          "ISO 13485"
+        ],
+        "link": "https://thriva.co/shop/blood-tests/vitamins-blood-test"
+      },
+      {
+        "provider": "Thriva",
+        "test_name": "Omega-3 and 6 blood test",
+        "price": 133,
+        "pricing information": "Additional £60 for a nurse/phlebotomist to take blood. Subscription option available (£119.70 for 3-month plan). Delivered in 1–2 days. Results in up to 15 working days due to longer analysis time.",
+        "description": "Check your levels of essential omega-3 and omega-6 fatty acids to support brain, heart, and eye health. This test helps you understand your dietary balance and whether supplementation might help. Results come with a GP-reviewed report and tailored health advice.",
+        "doctors report": "Yes",
+        "biomarker number": 2,
+        "biomarkers": [
+          "Omega-3 index",
+          "Omega 6:Omega 3 ratio"
+        ],
+        "blood test location": [
+          "Home",
+          "Nurse/phlebotomist to house"
+        ],
+        "Days till results returned": 15,
+        "bullet point summary": "Blank",
+        "trust pilot score": 4.4,
+        "lab accreditations": [
+          "ISO 17025",
+          "ISO 15189",
+          "ISO 13485"
+        ],
+        "link": "https://thriva.co/shop/blood-tests/omega-3-and-6-blood-test"
+      },
+      {
+        "provider": "Thriva",
+        "test_name": "Sports performance blood test",
+        "price": 211.50,
+        "pricing information": "Additional £60 for a nurse/phlebotomist to take blood. Subscription available. Delivered in 1–2 days. Results in 15 working days due to extended analysis time.",
+        "description": "Optimise your fitness and performance with insights into hormones, vitamin levels, cholesterol, iron status, and inflammation. This test supports muscle recovery, energy levels, endurance, and heart health with GP-reviewed results and tailored fitness advice.",
+        "doctors report": "Yes",
+        "biomarker number": 21,
+        "biomarkers": [
+          "Free testosterone",
+          "Total testosterone",
+          "SHBG",
+          "Free androgen index",
+          "Omega-3 index",
+          "Omega 6:Omega 3 ratio",
+          "Total iron binding capacity",
+          "Unsaturated iron binding capacity",
+          "Ferritin",
+          "Iron",
+          "Transferrin saturation",
+          "Triglycerides:HDL ratio",
+          "LDL",
+          "Non-HDL",
+          "HDL",
+          "Total cholesterol",
+          "Triglycerides",
+          "Total cholesterol:HDL ratio",
+          "Vitamin D",
+          "Folate",
+          "HbA1c"
+        ],
+        "blood test location": [
+          "Home",
+          "Nurse/phlebotomist to house"
+        ],
+        "Days till results returned": 15,
+        "bullet point summary": "Blank",
+        "trust pilot score": 4.4,
+        "lab accreditations": [
+          "ISO 17025",
+          "ISO 15189",
+          "ISO 13485"
+        ],
+        "link": "https://thriva.co/shop/blood-tests/sports-performance-blood-test"
+      },
+      {
+        "provider": "Thriva",
+        "test_name": "PSA (prostate specific antigen) blood test",
+        "price": 65,
+        "pricing information": "Additional £60 for a nurse/phlebotomist to take blood. Delivered in 1–2 days. Results in as little as 48 hours.",
+        "description": "This test measures your PSA (prostate specific antigen) levels — a marker that can help detect prostate cancer at an early stage. While it cannot diagnose prostate cancer, it can identify when further investigation is needed. Recommended annually for men aged 50+ or 45+ with higher risk factors.",
+        "doctors report": "Yes",
+        "biomarker number": 1,
+        "biomarkers": [
+          "PSA"
+        ],
+        "blood test location": [
+          "Home",
+          "Nurse/phlebotomist to house"
+        ],
+        "Days till results returned": 2,
+        "bullet point summary": "Blank",
+        "trust pilot score": 4.4,
+        "lab accreditations": [
+          "ISO 17025",
+          "ISO 15189",
+          "ISO 13485"
+        ],
+        "link": "https://thriva.co/shop/blood-tests/psa-blood-test"
+      },
+      {
+        "provider": "Thriva",
+        "test_name": "Uric acid test",
+        "price": 45,
+        "pricing information": "Additional £60 for a nurse/phlebotomist to take blood. Subscription option available (£40.50 for 3-month plan). Delivered in 1–2 days. Results in as little as 48 hours.",
+        "description": "This test checks your uric acid levels, which may indicate risk of gout or be associated with conditions like high blood pressure, kidney disease, and metabolic syndrome. It’s useful for tracking gout symptoms and managing long-term health risks. Includes GP-reviewed report and advice.",
+        "doctors report": "Yes",
+        "biomarker number": 1,
+        "biomarkers": [
+          "Uric acid"
+        ],
+        "blood test location": [
+          "Home",
+          "Nurse/phlebotomist to house"
+        ],
+        "Days till results returned": 2,
+        "bullet point summary": "Blank",
+        "trust pilot score": 4.4,
+        "lab accreditations": [
+          "ISO 17025",
+          "ISO 15189",
+          "ISO 13485"
+        ],
+        "link": "https://thriva.co/shop/blood-tests/uric-acid-test"
+      },
+      {
+        "provider": "Thriva",
+        "test_name": "Lp(a) Cardiovascular Risk Profile",
+        "price": 108,
+        "pricing information": "Additional £60 for a nurse/phlebotomist to take blood. Delivered in 1–2 days. Results in as little as 48 hours.",
+        "description": "This advanced heart health profile includes Lipoprotein(a) — a genetic marker of cardiovascular risk — and apolipoproteins, which are stronger predictors of heart disease than standard cholesterol tests. Designed for those with a family history of early heart disease or anyone seeking a more complete cardiovascular risk picture.",
+        "doctors report": "Yes",
+        "biomarker number": 11,
+        "biomarkers": [
+          "Lipoprotein (a)",
+          "Apo B:apo A ratio",
+          "Apolipoprotein B",
+          "Apolipoprotein A1",
+          "Triglycerides:HDL ratio",
+          "LDL",
+          "Non-HDL",
+          "HDL",
+          "Total cholesterol",
+          "Triglycerides",
+          "Total cholesterol:HDL ratio"
+        ],
+        "blood test location": [
+          "Home",
+          "Nurse/phlebotomist to house"
+        ],
+        "Days till results returned": 2,
+        "bullet point summary": "Blank",
+        "trust pilot score": 4.4,
+        "lab accreditations": [
+          "ISO 17025",
+          "ISO 15189",
+          "ISO 13485"
+        ],
+        "link": "https://thriva.co/shop/blood-tests/lp-a-cardiovascular-risk-profile"
+      }
+                                    
+                                          
+]
