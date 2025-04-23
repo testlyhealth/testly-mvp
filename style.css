@@ -103,6 +103,35 @@
     white-space: nowrap;
   }
   
+  .burger-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 2rem;
+    background: var(--white);
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 0.5rem 0;
+    width: 200px;
+    z-index: 999;
+  }
+  
+  .burger-dropdown li {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  
+  .burger-dropdown li:hover {
+    background: var(--accent-light);
+  }
+  
+  .menu-label {
+    font-size: 0.9rem;
+    margin-left: 0.25rem;
+    vertical-align: middle;
+  }
+  
+
   /* --------------------------------------
      MAIN CONTENT AREA
   ---------------------------------------- */
