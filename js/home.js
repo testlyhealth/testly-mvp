@@ -1,5 +1,6 @@
 import { $ } from './dom.js';
 import { categories } from './data.js';
+import { blogPosts } from './blog-data.js';
 
 export function displayHomePage() {
   const mainContent = $('.product-grid');
@@ -12,7 +13,7 @@ export function displayHomePage() {
     </div>
   `;
 
-  // Create the category tiles with images
+  // Create the category tiles
   const categoryTiles = `
     <div class="category-tiles">
       ${Object.entries(categories).map(([id, category]) => `
@@ -29,19 +30,25 @@ export function displayHomePage() {
     </div>
   `;
 
-  // Placeholder for blog articles (to be implemented)
+  // Create the blog section
   const blogSection = `
     <div class="blog-section">
-      <h2>Latest Health Insights</h2>
+      <h2>Latest health insights</h2>
       <div class="blog-grid">
-        <div class="blog-card">
-          <h3>Understanding Your Blood Test Results</h3>
-          <p>Learn how to interpret your health markers...</p>
-        </div>
-        <div class="blog-card">
-          <h3>The Importance of Regular Health Screening</h3>
-          <p>Why preventive health checks are crucial...</p>
-        </div>
+        ${blogPosts.map(post => `
+          <article class="blog-card" data-article-id="${post.id}">
+            <div class="blog-card-header">
+              <span class="blog-category">${post.category}</span>
+              <span class="blog-read-time">${post.readTime}</span>
+            </div>
+            <h3>${post.title}</h3>
+            <p>${post.excerpt}</p>
+            <div class="blog-card-footer">
+              <span class="blog-date">${new Date(post.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+              <a href="#/blog/${post.id}" class="read-more">Read more →</a>
+            </div>
+          </article>
+        `).join('')}
       </div>
     </div>
   `;
@@ -57,6 +64,15 @@ export function displayHomePage() {
       import('./products.js').then(module => {
         module.displayCategoryProducts(categoryId);
       });
+    }
+  });
+
+  // Add click handlers to blog cards
+  $('.blog-grid').addEventListener('click', (e) => {
+    const card = e.target.closest('.blog-card');
+    if (card) {
+      const articleId = card.dataset.articleId;
+      window.location.hash = `#/blog/${articleId}`;
     }
   });
 } 

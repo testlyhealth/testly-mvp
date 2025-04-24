@@ -8,48 +8,47 @@
 <body>
   <!-- Header bar -->
   <header class="main-header">
-    <div class="logo">Testly</div>
-    <input type="text" placeholder="Search for a test..." class="search-bar" />
-    <div class="header-actions">
-      <button class="login-btn">Login</button>
-      <button class="basket-btn">Basket 🛒</button>
+    <div class="header-top">
+      <div class="logo">Testly</div>
+      <input type="text" placeholder="Search for a test..." class="search-bar" />
+      <div class="header-actions">
+        <button class="login-btn">Login</button>
+        <button class="basket-btn">Basket 🛒</button>
+      </div>
     </div>
-  </header>
 
-  <nav class="category-bar">
-    <button class="menu-button">☰ All</button>
-    <ul class="category-list">
-      <li><a href="#">General Health</a></li>
-      <li><a href="#">Weight Loss</a></li>
-      <li><a href="#">Sleep</a></li>
-      <li><a href="#">Hormones</a></li>
-      <li><a href="#">Women's Health</a></li>
-      <li><a href="#">Men's Health</a></li>
-      <li><a href="#">Heart Health</a></li>
-      <li><a href="#">Gut Health</a></li>
-      <li><a href="#">Supplements</a></li>
-    </ul>
-  </nav>
-  
-  
-    <!-- Dropdown menu -->
-    <div id="burger-dropdown" class="burger-dropdown hidden">
-      <ul>
-        <li>General Health</li>
-        <li>Weight Loss</li>
-        <li>Sleep</li>
-        <li>Hormones</li>
-        <li>Women's Health</li>
-        <li>Men's Health</li>
-        <li>Heart Health</li>
-        <li>Gut Health</li>
-        <li>Supplements</li>
+    <nav class="category-bar">
+      <div class="menu-container">
+        <button class="menu-button">☰ All</button>
+        <div id="burger-dropdown" class="burger-dropdown hidden">
+          <ul>
+            <li>General health</li>
+            <li>Weight loss</li>
+            <li>Sleep</li>
+            <li>Hormones</li>
+            <li>Women's health</li>
+            <li>Men's health</li>
+            <li>Heart health</li>
+            <li>Gut health</li>
+            <li>Supplements</li>
+            <li class="menu-divider"></li>
+            <li class="menu-blog">Health insights</li>
+          </ul>
+        </div>
+      </div>
+      <ul class="category-list">
+        <li><a href="#">General health</a></li>
+        <li><a href="#">Weight loss</a></li>
+        <li><a href="#">Sleep</a></li>
+        <li><a href="#">Hormones</a></li>
+        <li><a href="#">Women's health</a></li>
+        <li><a href="#">Men's health</a></li>
+        <li><a href="#">Heart health</a></li>
+        <li><a href="#">Gut health</a></li>
+        <li><a href="#">Supplements</a></li>
       </ul>
-    </div>
-  </nav>
-  
- 
-  
+    </nav>
+  </header>
 
   <!-- Main product area -->
   <main class="product-grid">
@@ -58,7 +57,6 @@
 
   <!-- Pop-down panels (hidden for now) -->
   <aside id="filter-panel" class="side-panel hidden">
-
     <!-- Dynamic filter content will go here -->
   </aside>
 

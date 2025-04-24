@@ -1,17 +1,37 @@
 import { setupMenuToggle } from './menu.js';
 import { displayCategoryProducts } from './products.js';
 import { displayHomePage } from './home.js';
+import { displayBlogPage } from './blog.js';
+import { displayArticle } from './article.js';
 import { $, $all } from './dom.js';
 
-document.addEventListener("DOMContentLoaded", () => {
-  setupMenuToggle();
+// Handle routing
+function handleRoute() {
+  const hash = window.location.hash;
   
-  // Display home page on load
-  displayHomePage();
+  if (hash.startsWith('#/blog/')) {
+    const articleId = hash.split('/')[2];
+    displayArticle(articleId);
+  } else if (hash === '#/blog') {
+    displayBlogPage();
+  } else {
+    displayHomePage();
+  }
+
+  // Reinitialize menu functionality after content changes
+  setupMenuToggle();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Initial route
+  handleRoute();
+  
+  // Handle route changes
+  window.addEventListener('hashchange', handleRoute);
   
   // Make logo clickable to return to home
   $('.logo').addEventListener('click', () => {
-    displayHomePage();
+    window.location.hash = '';
   });
   
   // Add click handlers to category links
@@ -20,6 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const categoryId = e.target.textContent.toLowerCase().replace(/\s+/g, '-');
       displayCategoryProducts(categoryId);
+      // Reinitialize menu after category change
+      setupMenuToggle();
     });
   });
 });
