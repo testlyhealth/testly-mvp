@@ -12,22 +12,20 @@ export function displayHomePage() {
     </div>
   `;
 
-  // Create the category tiles
+  // Create the category tiles with images
   const categoryTiles = `
     <div class="category-tiles">
       ${Object.entries(categories).map(([id, category]) => `
         <div class="category-tile" data-category="${id}">
-          <h3>${category.title}</h3>
-          <p>${category.description}</p>
+          <div class="category-image">
+            <img src="images/${id}.svg" alt="${category.title}" />
+          </div>
+          <div class="category-content">
+            <h3>${category.title}</h3>
+            <p>${category.description}</p>
+          </div>
         </div>
       `).join('')}
-    </div>
-  `;
-
-  // Add scroll hint
-  const scrollHint = `
-    <div class="scroll-hint">
-      Discover more health insights below
     </div>
   `;
 
@@ -49,14 +47,13 @@ export function displayHomePage() {
   `;
 
   // Update the main content
-  mainContent.innerHTML = welcomeSection + categoryTiles + scrollHint + blogSection;
+  mainContent.innerHTML = welcomeSection + categoryTiles + blogSection;
 
   // Add click handlers to category tiles
   $('.category-tiles').addEventListener('click', (e) => {
     const tile = e.target.closest('.category-tile');
     if (tile) {
       const categoryId = tile.dataset.category;
-      // We'll import and use the displayCategoryProducts function here
       import('./products.js').then(module => {
         module.displayCategoryProducts(categoryId);
       });

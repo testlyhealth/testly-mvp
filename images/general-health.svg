@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Medical cross with single outline -->
+  <path d="M35 20H45V35H60V45H45V60H35V45H20V35H35V20Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+</svg> 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Scale -->
+  <path d="M20 60H60" stroke="currentColor" stroke-width="2"/>
+  <path d="M40 60V40" stroke="currentColor" stroke-width="2"/>
+  <path d="M30 40H50" stroke="currentColor" stroke-width="2"/>
+  <!-- Weight indicator -->
+  <circle cx="40" cy="30" r="5" stroke="currentColor" stroke-width="2"/>
+</svg> 

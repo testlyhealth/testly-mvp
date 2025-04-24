@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Venus symbol -->
+  <circle cx="40" cy="40" r="15" stroke="currentColor" stroke-width="2"/>
+  <path d="M40 25V55" stroke="currentColor" stroke-width="2"/>
+  <path d="M25 40H55" stroke="currentColor" stroke-width="2"/>
+  <!-- Cross -->
+  <path d="M40 55L40 65" stroke="currentColor" stroke-width="2"/>
+  <path d="M35 60H45" stroke="currentColor" stroke-width="2"/>
+</svg> 

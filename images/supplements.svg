@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pill -->
+  <rect x="25" y="30" width="30" height="20" rx="10" stroke="currentColor" stroke-width="2"/>
+  <!-- Plus sign -->
+  <path d="M40 35V45" stroke="currentColor" stroke-width="2"/>
+  <path d="M35 40H45" stroke="currentColor" stroke-width="2"/>
+</svg> 

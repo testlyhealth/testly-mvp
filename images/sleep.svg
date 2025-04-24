@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Moon -->
+  <path d="M40 20C40 20 50 30 50 40C50 50 40 60 40 60C40 60 30 50 30 40C30 30 40 20 40 20Z" stroke="currentColor" stroke-width="2"/>
+  <!-- Stars -->
+  <path d="M20 30L22 35L27 35L23 38L25 43L20 40L15 43L17 38L13 35L18 35Z" stroke="currentColor" stroke-width="2"/>
+  <path d="M60 25L62 30L67 30L63 33L65 38L60 35L55 38L57 33L53 30L58 30Z" stroke="currentColor" stroke-width="2"/>
+</svg> 

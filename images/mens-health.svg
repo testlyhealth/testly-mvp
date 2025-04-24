@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Mars symbol -->
+  <circle cx="40" cy="40" r="15" stroke="currentColor" stroke-width="2"/>
+  <path d="M40 25V55" stroke="currentColor" stroke-width="2"/>
+  <path d="M25 40H55" stroke="currentColor" stroke-width="2"/>
+  <!-- Arrow -->
+  <path d="M55 25L65 15" stroke="currentColor" stroke-width="2"/>
+  <path d="M65 15L55 15" stroke="currentColor" stroke-width="2"/>
+  <path d="M65 15L65 25" stroke="currentColor" stroke-width="2"/>
+</svg> 
