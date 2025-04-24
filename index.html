@@ -17,33 +17,37 @@
   </header>
 
   <nav class="category-bar">
-    <button class="menu-button" id="burger-button">☰ <span class="menu-label">All</span></button>
-    
-    <!-- Dropdown menu -->
-    <ul class="burger-dropdown hidden" id="burger-dropdown">
-      <li>General Health</li>
-      <li>Weight Loss</li>
-      <li>Sleep</li>
-      <li>Hormones</li>
-      <li>Women's Health</li>
-      <li>Men's Health</li>
-      <li>Heart Health</li>
-      <li>Gut Health</li>
-      <li>Supplements</li>
-    </ul>
-  
+    <button class="menu-button">☰ All</button>
     <ul class="category-list">
-      <li>General Health</li>
-      <li>Weight Loss</li>
-      <li>Sleep</li>
-      <li>Hormones</li>
-      <li>Women's Health</li>
-      <li>Men's Health</li>
-      <li>Heart Health</li>
-      <li>Gut Health</li>
-      <li>Supplements</li>
+      <li><a href="#">General Health</a></li>
+      <li><a href="#">Weight Loss</a></li>
+      <li><a href="#">Sleep</a></li>
+      <li><a href="#">Hormones</a></li>
+      <li><a href="#">Women's Health</a></li>
+      <li><a href="#">Men's Health</a></li>
+      <li><a href="#">Heart Health</a></li>
+      <li><a href="#">Gut Health</a></li>
+      <li><a href="#">Supplements</a></li>
     </ul>
   </nav>
+  
+  
+    <!-- Dropdown menu -->
+    <div id="burger-dropdown" class="burger-dropdown hidden">
+      <ul>
+        <li>General Health</li>
+        <li>Weight Loss</li>
+        <li>Sleep</li>
+        <li>Hormones</li>
+        <li>Women's Health</li>
+        <li>Men's Health</li>
+        <li>Heart Health</li>
+        <li>Gut Health</li>
+        <li>Supplements</li>
+      </ul>
+    </div>
+  </nav>
+  
  
   
 
@@ -54,6 +58,7 @@
 
   <!-- Pop-down panels (hidden for now) -->
   <aside id="filter-panel" class="side-panel hidden">
+
     <!-- Dynamic filter content will go here -->
   </aside>
 
@@ -61,6 +66,6 @@
     <!-- Dynamic basket content will go here -->
   </aside>
 
-  <script src="script.js"></script>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>

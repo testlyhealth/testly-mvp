@@ -1,3 +1,9 @@
+body {
+    background: pink;
+  }
+  
+
+
 :root {
     --white: #fff;
     --bg: #f9f9f9;
@@ -60,10 +66,10 @@
     cursor: pointer;
   }
   
-  /* --------------------------------------
-     CATEGORY NAV BAR
-  ---------------------------------------- */
-  .category-bar {
+/* --------------------------------------
+   CATEGORY NAV BAR
+---------------------------------------- */
+.category-bar {
     background: var(--white);
     border-bottom: 1px solid var(--border);
     padding: 0.5rem 2rem;
@@ -81,20 +87,40 @@
     gap: 0.4rem;
     background: none;
     border: none;
-    font-size: 0.9rem; /* smaller text */
+    font-size: 0.9rem;
     cursor: pointer;
     padding: 0;
     margin-right: 1rem;
   }
   
-  .category-buttons {
+  .category-list {
+    list-style: none;
     display: flex;
     flex-wrap: nowrap;
-    overflow-x: hidden;
     gap: 1rem;
+    margin: 0;
+    padding: 0;
   }
   
-  .category-buttons button {
+  .category-list li {
+    white-space: nowrap;
+  }
+  
+  .category-list a {
+    text-decoration: none;
+    color: var(--text);
+    font-size: 0.95rem;
+    padding: 0.3rem 0.6rem;
+    display: block;
+  }
+  
+  .category-list a:hover {
+    color: var(--accent);
+  }
+  
+  
+
+  .category-list button {
     background: none;
     border: none;
     font-size: 0.95rem;
@@ -103,26 +129,32 @@
     white-space: nowrap;
   }
   
+  /* Dropdown for burger menu */
   .burger-dropdown {
     position: absolute;
     top: 100%;
-    left: 2rem;
+    left: 0;
     background: var(--white);
     border: 1px solid var(--border);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    padding: 0.5rem 0;
-    width: 200px;
-    z-index: 999;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    padding: 0.5rem 1rem;
+    z-index: 1001;
+  }
+  
+  .burger-dropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
   }
   
   .burger-dropdown li {
-    padding: 0.5rem 1rem;
-    cursor: pointer;
+    padding: 0.4rem 0;
     white-space: nowrap;
+    cursor: pointer;
   }
   
   .burger-dropdown li:hover {
-    background: var(--accent-light);
+    background-color: var(--accent-light);
   }
   
   .menu-label {
@@ -130,6 +162,7 @@
     margin-left: 0.25rem;
     vertical-align: middle;
   }
+  
   
 
   /* --------------------------------------
