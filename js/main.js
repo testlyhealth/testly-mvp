@@ -5,6 +5,7 @@ import { displayBlogPage } from './blog.js';
 import { displayArticle } from './article.js';
 import { $, $all } from './dom.js';
 import { initLoginModal } from './login-modal.js';
+import { WelcomeOverlay } from './components/welcome-overlay.js';
 
 // Handle routing
 function handleRoute() {
@@ -49,4 +50,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize login modal
   initLoginModal();
+
+  // Initialize welcome overlay
+  const welcomeOverlay = new WelcomeOverlay();
+  welcomeOverlay.init();
 });
