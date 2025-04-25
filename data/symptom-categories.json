@@ -1,0 +1,52 @@
+[
+    {
+      "label": "Cardiovascular health",
+      "id": "cardiovascular health",
+      "biomarkers": [
+        "Total cholesterol",
+        "LDL",
+        "HDL",
+        "Non-HDL",
+        "Triglycerides",
+        "Total cholesterol:HDL ratio"
+      ],
+      "advanced-biomarkers": [
+        "Apolipoprotein A1",
+        "Apolipoprotein B",
+        "Apo B:apo A ratio",
+        "Lipoprotein (a)",
+        "Triglycerides:HDL ratio"
+      ]
+    },
+    {
+      "label": "General Health Check",
+      "id": "general",
+      "biomarkers": [
+        "Iron",
+        "Vitamin B12",
+        "Vitamin D",
+        "eGFR",
+        "Creatinine",
+        "Urea",
+        "ALT",
+        "ALP",
+        "Bilirubin",
+        "GGT",
+        "Total cholesterol",
+        "LDL",
+        "HDL",
+        "Triglycerides"
+      ]
+    },
+    {
+      "label": "Tired All the Time",
+      "id": "tired",
+      "biomarkers": [
+        "Iron",
+        "Vitamin B12",
+        "Folate",
+        "Vitamin D"
+      ]
+    }
+  ]
+  

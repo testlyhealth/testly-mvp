@@ -1,0 +1,221 @@
+[
+    {
+      "group": "Autoimmunity",
+      "id": "autoimmunity",
+      "biomarkers": [
+        "Thyroglobulin antibodies",
+        "Thyroid peroxidase antibodies"
+      ]
+    },
+    {
+      "group": "Bone health",
+      "id": "bone",
+      "biomarkers": [
+        "Calcium",
+        "Corrected calcium"
+      ]
+    },
+    {
+      "group": "Cholesterol",
+      "id": "cholesterol",
+      "biomarkers": [
+        "Total cholesterol",
+        "LDL",
+        "HDL",
+        "Non-HDL",
+        "Triglycerides",
+        "Total cholesterol:HDL ratio"
+      ],
+      "advanced-biomarkers": [
+        "Apolipoprotein A1",
+        "Apolipoprotein B",
+        "Apo B:apo A ratio",
+        "Lipoprotein (a)",
+        "Triglycerides:HDL ratio"
+      ]
+    },
+    {
+      "group": "Clotting status",
+      "id": "clotting",
+      "biomarkers": [
+        "Platelet count",
+        "Mean platelet volume"
+      ]
+    },
+    {
+      "group": "Diabetes",
+      "id": "diabetes",
+      "biomarkers": [
+        "HbA1c"
+      ]
+    },
+    {
+      "group": "Full blood count",
+      "id": "fbc",
+      "biomarkers": [
+        "Haemoglobin",
+        "Haematocrit",
+        "Red cell count",
+        "MCV",
+        "MCH",
+        "MCHC",
+        "RDW",
+        "White cell count",
+        "Neutrophils",
+        "Lymphocytes",
+        "Monocytes",
+        "Eosinophils",
+        "Platelet count",
+        "Mean platelet volume"
+      ]
+    },
+    {
+      "group": "Gout risk",
+      "id": "gout",
+      "biomarkers": [
+        "Uric acid"
+      ]
+    },
+    {
+      "group": "Hormones",
+      "id": "hormones",
+      "biomarkers": [
+        "Total testosterone",
+        "Free testosterone",
+        "Free androgen index",
+        "Oestradiol",
+        "LH",
+        "FSH",
+        "SHBG"
+      ],
+      "advanced-biomarkers": [
+        "DHEA sulphate",
+        "Cortisol",
+        "Prolactin"
+      ]
+    },
+    {
+      "group": "Inflammation",
+      "id": "inflammation",
+      "biomarkers": [
+        "hs-CRP"
+      ]
+    },
+    {
+      "group": "Iron status",
+      "id": "iron",
+      "biomarkers": [
+        "Ferritin"
+      ],
+      "advanced-biomarkers": [
+        "Iron",
+        "Total iron binding capacity",
+        "Transferrin saturation",
+        "Unsaturated iron binding capacity"
+      ]
+    },
+    {
+      "group": "Kidney Function",
+      "id": "kidney",
+      "biomarkers": [
+        "eGFR",
+        "Creatinine",
+        "Urea"
+      ]
+    },
+    {
+      "group": "Liver Function",
+      "id": "liver",
+      "biomarkers": [
+        "ALT",
+        "ALP",
+        "Bilirubin",
+        "Gamma-GT",
+        "Albumin",
+        "Globulin",
+        "Total protein"
+      ]
+    },
+    {
+      "group": "Other",
+      "id": "other",
+      "biomarkers": [
+        "Creatinine kinase",
+        "Omega 6:Omega 3 ratio",
+        "Sodium"
+      ]
+    },
+    {
+      "group": "Proteins",
+      "id": "proteins",
+      "biomarkers": [
+        "Total protein",
+        "Albumin",
+        "Globulin"
+      ]
+    },
+    {
+      "group": "Red blood cells",
+      "id": "rbc",
+      "biomarkers": [
+        "Haemoglobin",
+        "Haematocrit",
+        "Red cell count",
+        "MCV",
+        "MCH",
+        "MCHC",
+        "RDW"
+      ]
+    },
+    {
+      "group": "Thyroid hormones",
+      "id": "thyroid",
+      "biomarkers": [
+        "TSH",
+        "T3",
+        "T4",
+        "Free T3",
+        "Free T4"
+      ]
+    },
+    {
+      "group": "Vitamins and Minerals",
+      "id": "vitamins",
+      "biomarkers": [
+        "Vitamin B12",
+        "Folate",
+        "Vitamin D",
+        "Magnesium"
+      ],
+      "advanced-biomarkers": [
+        "Vitamin A",
+        "Vitamin E"
+      ]
+    },
+    {
+      "group": "White blood cells",
+      "id": "wbc",
+      "biomarkers": [
+        "White cell count",
+        "Neutrophils",
+        "Lymphocytes",
+        "Monocytes",
+        "Eosinophils"
+      ]
+    },
+    {
+      "group": "Fertility",
+      "id": "fertility",
+      "biomarkers": [
+        "AMH"
+      ]
+    },
+    {
+      "group": "Men's health",
+      "id": "men",
+      "biomarkers":[
+        "PSA"
+      ]
+    }
+  ]
+  

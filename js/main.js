@@ -14,6 +14,9 @@ function handleRoute() {
     displayArticle(articleId);
   } else if (hash === '#/blog') {
     displayBlogPage();
+  } else if (hash.startsWith('#/category/')) {
+    const categoryId = hash.split('/')[2];
+    displayCategoryProducts(categoryId);
   } else {
     displayHomePage();
   }
@@ -39,9 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       const categoryId = e.target.textContent.toLowerCase().replace(/\s+/g, '-');
-      displayCategoryProducts(categoryId);
-      // Reinitialize menu after category change
-      setupMenuToggle();
+      window.location.hash = `#/category/${categoryId}`;
     });
   });
 });

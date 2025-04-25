@@ -82,6 +82,9 @@ export function setupMenuToggle() {
         const categoryId = this.textContent.toLowerCase().replace(/\s+/g, '-');
         console.log('Navigating to category:', categoryId);
         
+        // Update the URL hash to reflect the category
+        window.location.hash = `#/category/${categoryId}`;
+        
         import('./products.js').then(module => {
           module.displayCategoryProducts(categoryId);
         });
