@@ -15,25 +15,29 @@ export function displayHomePage() {
         <button class="cta-button">Explore Tests</button>
       </div>
       <div class="hero-image">
-        <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Yoga and wellness lifestyle" />
+        <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Bright wellness and yoga lifestyle" />
       </div>
     </section>
   `;
 
   // Create the category tiles
   const categoryTiles = `
-    <div class="category-tiles">
-      ${Object.entries(categories).map(([id, category]) => `
-        <div class="category-tile" data-category="${id}">
-          <div class="category-image">
-            <i class="fas ${getCategoryIcon(id)}"></i>
+    <div class="categories-section">
+      <h2>Health Categories</h2>
+      <p>Explore our range of health tests and find the right one for you</p>
+      <div class="category-tiles">
+        ${Object.entries(categories).map(([id, category]) => `
+          <div class="category-tile" data-category="${id}">
+            <div class="category-image">
+              <i class="fas ${getCategoryIcon(id)}"></i>
+            </div>
+            <div class="category-content">
+              <h3>${category.title}</h3>
+              <p>${category.description}</p>
+            </div>
           </div>
-          <div class="category-content">
-            <h3>${category.title}</h3>
-            <p>${category.description}</p>
-          </div>
-        </div>
-      `).join('')}
+        `).join('')}
+      </div>
     </div>
   `;
 
