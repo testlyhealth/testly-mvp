@@ -5,12 +5,19 @@ import { blogPosts } from './blog-data.js';
 export function displayHomePage() {
   const mainContent = $('.product-grid');
   
-  // Create the welcome section
-  const welcomeSection = `
-    <div class="welcome-section">
-      <h1>Welcome to Testly</h1>
-      <p>Your one-stop shop for health testing and wellness solutions</p>
-    </div>
+  // Create the hero section
+  const heroSection = `
+    <section class="hero-section">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1>Take Control of Your Health</h1>
+        <p>Discover personalized health insights with our comprehensive range of at-home tests</p>
+        <button class="cta-button">Explore Tests</button>
+      </div>
+      <div class="hero-image">
+        <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Yoga and wellness lifestyle" />
+      </div>
+    </section>
   `;
 
   // Create the category tiles
@@ -19,7 +26,7 @@ export function displayHomePage() {
       ${Object.entries(categories).map(([id, category]) => `
         <div class="category-tile" data-category="${id}">
           <div class="category-image">
-            <img src="images/${id}.svg" alt="${category.title}" />
+            <i class="fas ${getCategoryIcon(id)}"></i>
           </div>
           <div class="category-content">
             <h3>${category.title}</h3>
@@ -28,6 +35,32 @@ export function displayHomePage() {
         </div>
       `).join('')}
     </div>
+  `;
+
+  // Create the trust indicators section
+  const trustIndicators = `
+    <section class="trust-indicators">
+      <div class="trust-item">
+        <i class="fas fa-truck"></i>
+        <h3>Free Delivery</h3>
+        <p>On all test kits</p>
+      </div>
+      <div class="trust-item">
+        <i class="fas fa-certificate"></i>
+        <h3>Certified Labs</h3>
+        <p>UKAS accredited</p>
+      </div>
+      <div class="trust-item">
+        <i class="fas fa-clock"></i>
+        <h3>Quick Results</h3>
+        <p>Within 48 hours</p>
+      </div>
+      <div class="trust-item">
+        <i class="fas fa-shield-alt"></i>
+        <h3>Secure & Private</h3>
+        <p>Data protection</p>
+      </div>
+    </section>
   `;
 
   // Create the blog section
@@ -54,7 +87,7 @@ export function displayHomePage() {
   `;
 
   // Update the main content
-  mainContent.innerHTML = welcomeSection + categoryTiles + blogSection;
+  mainContent.innerHTML = heroSection + categoryTiles + trustIndicators + blogSection;
 
   // Add click handlers to category tiles
   $('.category-tiles').addEventListener('click', (e) => {
@@ -75,4 +108,19 @@ export function displayHomePage() {
       window.location.hash = `#/blog/${articleId}`;
     }
   });
+}
+
+function getCategoryIcon(categoryId) {
+  const icons = {
+    'general-health': 'fa-heartbeat',
+    'weight-loss': 'fa-weight',
+    'sleep': 'fa-moon',
+    'hormones': 'fa-flask',
+    'womens-health': 'fa-venus',
+    'mens-health': 'fa-mars',
+    'heart-health': 'fa-heart',
+    'gut-health': 'fa-microscope',
+    'supplements': 'fa-pills'
+  };
+  return icons[categoryId] || 'fa-heartbeat';
 } 
