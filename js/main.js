@@ -4,6 +4,7 @@ import { displayHomePage } from './home.js';
 import { displayBlogPage } from './blog.js';
 import { displayArticle } from './article.js';
 import { $, $all } from './dom.js';
+import { initLoginModal } from './login-modal.js';
 
 // Handle routing
 function handleRoute() {
@@ -45,4 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.hash = `#/category/${categoryId}`;
     });
   });
+
+  // Initialize login modal
+  initLoginModal();
 });
