@@ -6,15 +6,22 @@ body {
 
 :root {
     --white: #fff;
-    --bg: #faf9f7;
-    --accent: #4a7b7d;
-    --accent-hover: #5a8b8d;
-    --text: #2c2c2c;
-    --text-light: #666;
-    --border: #e5e0d9;
+    --bg: #f8f9fa;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --accent-secondary: #0ea5e9;
+    --accent-secondary-hover: #0284c7;
+    --text: #1e293b;
+    --text-light: #64748b;
+    --border: #e2e8f0;
     --card-bg: #fff;
     --card-shadow: rgba(0, 0, 0, 0.05);
-  }
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --gradient-start: #2563eb;
+    --gradient-end: #4f46e5;
+}
   
   /* GLOBAL RESET */
   * {
@@ -42,6 +49,7 @@ body {
     left: 0;
     width: 100%;
     z-index: 1000;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
   
   .header-top {
@@ -53,11 +61,12 @@ body {
   }
   
   .logo {
-    font-weight: bold;
-    font-size: 1.4rem;
+    font-weight: 700;
+    font-size: 1.5rem;
     cursor: pointer;
     transition: color 0.2s;
     flex-shrink: 0;
+    color: var(--accent);
   }
   
   .logo:hover {
@@ -69,8 +78,14 @@ body {
     min-width: 200px;
     padding: 0.5rem 1rem;
     font-size: 1rem;
-    border: 1px solid var(--border);
+    border: 2px solid var(--border);
     border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+  
+  .search-bar:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
   }
   
   .header-actions {
@@ -86,12 +101,14 @@ body {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
     white-space: nowrap;
+    font-weight: 500;
   }
   
   .header-actions button:hover {
     background: var(--accent-hover);
+    transform: translateY(-1px);
   }
   
   @media (max-width: 768px) {
@@ -230,7 +247,8 @@ body {
     font-size: 0.85rem;
     padding: 0.2rem 0.4rem;
     display: block;
-    transition: color 0.2s;
+    transition: all 0.2s ease;
+    font-weight: 500;
   }
   
   .category-list a:hover {
@@ -417,12 +435,12 @@ body {
   }
   
   .category-tile {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
+    background: var(--white);
+    border: 2px solid #1e40af;
     border-radius: 6px;
     padding: 1rem;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: all 0.2s ease;
     height: 100%;
     display: flex;
     align-items: center;
@@ -430,23 +448,15 @@ body {
   }
   
   .category-tile:hover {
+    border-color: var(--accent-secondary);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px var(--card-shadow);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.1);
   }
   
-  .category-image {
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .category-image i {
+  .category-tile .category-image i {
     font-size: 1.5rem;
-    color: var(--text);
-    filter: invert(30%) sepia(20%) saturate(1000%) hue-rotate(160deg) brightness(90%) contrast(90%);
+    color: #1e293b;
+    filter: none;
   }
   
   .category-content {
@@ -455,12 +465,13 @@ body {
   }
   
   .category-tile h3 {
-    color: var(--text);
+    color: var(--accent);
     margin-bottom: 0.3rem;
     font-size: 1rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-weight: 600;
   }
   
   .category-tile p {
@@ -665,6 +676,7 @@ body {
   /* Blood Test Cards */
   .blood-test-card {
     background-color: #ffffff;
+    border: 2px solid var(--accent);
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
@@ -677,7 +689,8 @@ body {
   
   .blood-test-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    border-color: var(--accent-hover);
   }
   
   .test-rank {
@@ -728,6 +741,47 @@ body {
     color: #666;
     line-height: 1.4;
     font-weight: normal;
+  }
+  
+  .test-price {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  
+  .toggle-biomarkers, .toggle-details {
+    background: none;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+  }
+  
+  .toggle-biomarkers:hover, .toggle-details:hover {
+    background: var(--accent);
+    color: white;
+  }
+  
+  .add-to-basket {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    margin-top: 1rem;
+  }
+  
+  .add-to-basket:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
   }
   
   /* Biomarkers Section */
@@ -1283,6 +1337,8 @@ body {
     margin-bottom: 3rem;
     min-height: 600px;
     overflow: hidden;
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    color: white;
   }
 
   .hero-overlay {
@@ -1302,17 +1358,18 @@ body {
     max-width: 500px;
     text-align: left;
     padding: 2rem;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     margin-left: 2rem;
   }
 
   .hero-content h1 {
     font-size: 3rem;
-    color: #2c3e50;
+    color: var(--accent);
     margin-bottom: 1rem;
     line-height: 1.2;
+    font-weight: 700;
   }
 
   .hero-content p {
@@ -1339,18 +1396,21 @@ body {
   }
 
   .cta-button {
-    background-color: var(--accent);
+    background: var(--accent);
     color: white;
     padding: 1rem 2rem;
     border: none;
     border-radius: 5px;
     font-size: 1.1rem;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.2s ease;
+    font-weight: 500;
   }
 
   .cta-button:hover {
-    background-color: var(--accent-hover);
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
   }
 
   @media (max-width: 768px) {
@@ -1418,8 +1478,8 @@ body {
 
   .category-image i {
     font-size: 1.5rem;
-    color: var(--text);
-    filter: invert(30%) sepia(20%) saturate(1000%) hue-rotate(160deg) brightness(90%) contrast(90%);
+    color: #1e293b;
+    filter: none;
   }
 
   .category-content {
@@ -1428,12 +1488,13 @@ body {
   }
 
   .category-card h3 {
-    color: var(--text);
+    color: var(--accent);
     margin-bottom: 0.3rem;
     font-size: 1rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-weight: 600;
   }
 
   .category-card p {
@@ -1453,8 +1514,10 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
     padding: 1.5rem 2rem;
-    background-color: #f8f9fa;
+    background-color: var(--white);
     margin: 2rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
   }
 
   .trust-item {
@@ -1464,18 +1527,19 @@ body {
 
   .trust-item i {
     font-size: 1.8rem;
-    color: #007bff;
+    color: var(--accent-secondary);
     margin-bottom: 0.5rem;
   }
 
   .trust-item h3 {
-    color: #2c3e50;
+    color: var(--text);
     margin: 0.3rem 0;
     font-size: 1rem;
+    font-weight: 600;
   }
 
   .trust-item p {
-    color: #6c757d;
+    color: var(--text-light);
     margin: 0;
     font-size: 0.8rem;
   }
@@ -1560,19 +1624,10 @@ body {
     box-shadow: 0 4px 8px var(--card-shadow);
   }
 
-  .category-image {
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .category-image i {
+  .category-tile .category-image i {
     font-size: 1.5rem;
-    color: var(--text);
-    filter: invert(30%) sepia(20%) saturate(1000%) hue-rotate(160deg) brightness(90%) contrast(90%);
+    color: #1e293b;
+    filter: none;
   }
 
   .category-content {
@@ -1581,12 +1636,13 @@ body {
   }
 
   .category-tile h3 {
-    color: var(--text);
+    color: var(--accent);
     margin-bottom: 0.3rem;
     font-size: 1rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-weight: 600;
   }
 
   .category-tile p {
@@ -2033,6 +2089,7 @@ body {
   /* Blood Test Cards */
   .blood-test-card {
     background-color: #ffffff;
+    border: 2px solid var(--accent);
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
@@ -2045,7 +2102,8 @@ body {
 
   .blood-test-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    border-color: var(--accent-hover);
   }
 
   .test-rank {
@@ -2096,6 +2154,47 @@ body {
     color: #666;
     line-height: 1.4;
     font-weight: normal;
+  }
+
+  .test-price {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .toggle-biomarkers, .toggle-details {
+    background: none;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+  }
+
+  .toggle-biomarkers:hover, .toggle-details:hover {
+    background: var(--accent);
+    color: white;
+  }
+
+  .add-to-basket {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    margin-top: 1rem;
+  }
+
+  .add-to-basket:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
   }
 
   /* Responsive Design */
