@@ -817,26 +817,79 @@ body {
   }
   
   /* Price and Biomarker Range */
-  .price-range, .biomarker-range {
+  .price-range {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
   }
   
-  .price-range input[type="range"],
-  .biomarker-range input[type="range"] {
+  .range-slider {
+    position: relative;
     width: 100%;
+    height: 20px;
     margin: 0.4rem 0;
   }
   
-  .price-inputs, .biomarker-inputs {
+  .range-slider input[type="range"] {
+    position: absolute;
+    width: 100%;
+    height: 5px;
+    background: none;
+    pointer-events: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+  
+  .range-slider input[type="range"]::-webkit-slider-thumb {
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    margin-top: -5px;
+    pointer-events: auto;
+    -webkit-appearance: none;
+  }
+  
+  .range-slider input[type="range"]::-moz-range-thumb {
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    pointer-events: auto;
+    border: none;
+  }
+  
+  .range-slider input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 5px;
+    background: #ddd;
+    border-radius: 3px;
+  }
+  
+  .range-slider input[type="range"]::-moz-range-track {
+    width: 100%;
+    height: 5px;
+    background: #ddd;
+    border-radius: 3px;
+  }
+  
+  .range-slider input[type="range"]:nth-child(1) {
+    z-index: 1;
+  }
+  
+  .range-slider input[type="range"]:nth-child(2) {
+    z-index: 2;
+  }
+  
+  .price-inputs {
     display: flex;
     align-items: center;
     gap: 0.4rem;
   }
   
-  .price-inputs input,
-  .biomarker-inputs input {
+  .price-inputs input {
     width: 70px;
     padding: 0.3rem;
     border: 1px solid var(--border);
@@ -845,18 +898,27 @@ body {
   }
   
   /* Checkbox Filters */
-  .location-filters, .provider-filters {
+  .location-filters, .provider-filters, .trustpilot-filters {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
   }
   
-  .location-filters label, .provider-filters label {
+  .location-filters label, .provider-filters label, .trustpilot-filters label {
     display: flex;
     align-items: center;
     gap: 0.4rem;
     cursor: pointer;
     font-size: 0.9rem;
+  }
+  
+  .trustpilot-filters label {
+    color: var(--text);
+    transition: color 0.2s;
+  }
+  
+  .trustpilot-filters label:hover {
+    color: var(--accent);
   }
   
   /* Results Time Select */

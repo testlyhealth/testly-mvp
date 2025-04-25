@@ -48,7 +48,7 @@ async function getGroupedBiomarkers(biomarkers) {
 // Function to create a blood test card
 async function createBloodTestCard(test) {
   // Get the provider logo filename
-  const providerLogo = test.provider.toLowerCase().replace(/\s+/g, '-') + '.png';
+  const providerLogo = test.provider.toLowerCase() + '.png';
   
   // Get grouped biomarkers
   const groupedBiomarkers = await getGroupedBiomarkers(test.biomarkers);
@@ -200,7 +200,7 @@ export async function displayCategoryProducts(categoryId) {
       `;
 
       // Create the filter panel
-      const filterPanel = createFilterPanel();
+      const filterPanel = createFilterPanel(tests);
 
       // Create the tests grid container
       const testsGridContainer = `

@@ -1,13 +1,18 @@
 import { $, $all } from './dom.js';
 
-export function createFilterPanel() {
+export function createFilterPanel(tests) {
+  // Get unique providers from the tests
+  const providers = [...new Set(tests.map(test => test.provider))].sort();
+
   return `
     <div class="filter-panel">
       <div class="filter-section">
         <h3>Price Range</h3>
         <div class="price-range">
-          <input type="range" id="price-min" min="0" max="500" value="0" step="10">
-          <input type="range" id="price-max" min="0" max="500" value="500" step="10">
+          <div class="range-slider">
+            <input type="range" id="price-min" min="0" max="500" value="0" step="10">
+            <input type="range" id="price-max" min="0" max="500" value="500" step="10">
+          </div>
           <div class="price-inputs">
             <input type="number" id="price-min-input" value="0" min="0" max="500">
             <span>to</span>
@@ -17,15 +22,20 @@ export function createFilterPanel() {
       </div>
 
       <div class="filter-section">
-        <h3>Number of Biomarkers</h3>
-        <div class="biomarker-range">
-          <input type="range" id="biomarker-min" min="0" max="100" value="0" step="1">
-          <input type="range" id="biomarker-max" min="0" max="100" value="100" step="1">
-          <div class="biomarker-inputs">
-            <input type="number" id="biomarker-min-input" value="0" min="0" max="100">
-            <span>to</span>
-            <input type="number" id="biomarker-max-input" value="100" min="0" max="100">
-          </div>
+        <h3>Trustpilot Score</h3>
+        <div class="trustpilot-filters">
+          <label>
+            <input type="checkbox" value="4.5-5" checked> 4.5 - 5.0
+          </label>
+          <label>
+            <input type="checkbox" value="4-4.5" checked> 4.0 - 4.5
+          </label>
+          <label>
+            <input type="checkbox" value="3-4" checked> 3.0 - 4.0
+          </label>
+          <label>
+            <input type="checkbox" value="0-3" checked> Below 3.0
+          </label>
         </div>
       </div>
 
@@ -59,15 +69,11 @@ export function createFilterPanel() {
       <div class="filter-section">
         <h3>Provider</h3>
         <div class="provider-filters">
-          <label>
-            <input type="checkbox" value="Medichecks" checked> Medichecks
-          </label>
-          <label>
-            <input type="checkbox" value="Thriva" checked> Thriva
-          </label>
-          <label>
-            <input type="checkbox" value="LetsGetChecked" checked> LetsGetChecked
-          </label>
+          ${providers.map(provider => `
+            <label>
+              <input type="checkbox" value="${provider}" checked> ${provider}
+            </label>
+          `).join('')}
         </div>
       </div>
 
@@ -105,31 +111,6 @@ export function setupFilterPanel(tests, onFilterChange) {
     updatePriceRange();
   });
 
-  // Biomarker range handlers
-  const biomarkerMin = $('#biomarker-min');
-  const biomarkerMax = $('#biomarker-max');
-  const biomarkerMinInput = $('#biomarker-min-input');
-  const biomarkerMaxInput = $('#biomarker-max-input');
-
-  function updateBiomarkerRange() {
-    const min = Math.min(parseInt(biomarkerMin.value), parseInt(biomarkerMax.value));
-    const max = Math.max(parseInt(biomarkerMin.value), parseInt(biomarkerMax.value));
-    biomarkerMinInput.value = min;
-    biomarkerMaxInput.value = max;
-    applyFilters();
-  }
-
-  biomarkerMin.addEventListener('input', updateBiomarkerRange);
-  biomarkerMax.addEventListener('input', updateBiomarkerRange);
-  biomarkerMinInput.addEventListener('change', () => {
-    biomarkerMin.value = biomarkerMinInput.value;
-    updateBiomarkerRange();
-  });
-  biomarkerMaxInput.addEventListener('change', () => {
-    biomarkerMax.value = biomarkerMaxInput.value;
-    updateBiomarkerRange();
-  });
-
   // Location filters
   const locationCheckboxes = $all('.location-filters input[type="checkbox"]');
   locationCheckboxes.forEach(checkbox => {
@@ -139,6 +120,12 @@ export function setupFilterPanel(tests, onFilterChange) {
   // Results time filter
   const resultsTimeSelect = $('#results-time');
   resultsTimeSelect.addEventListener('change', applyFilters);
+
+  // Trustpilot score filters
+  const trustpilotCheckboxes = $all('.trustpilot-filters input[type="checkbox"]');
+  trustpilotCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', applyFilters);
+  });
 
   // Provider filters
   const providerCheckboxes = $all('.provider-filters input[type="checkbox"]');
@@ -155,14 +142,9 @@ export function setupFilterPanel(tests, onFilterChange) {
     priceMinInput.value = 0;
     priceMaxInput.value = 500;
 
-    // Reset biomarker range
-    biomarkerMin.value = 0;
-    biomarkerMax.value = 100;
-    biomarkerMinInput.value = 0;
-    biomarkerMaxInput.value = 100;
-
     // Reset checkboxes
     locationCheckboxes.forEach(checkbox => checkbox.checked = true);
+    trustpilotCheckboxes.forEach(checkbox => checkbox.checked = true);
     providerCheckboxes.forEach(checkbox => checkbox.checked = true);
 
     // Reset results time
@@ -177,14 +159,13 @@ export function setupFilterPanel(tests, onFilterChange) {
         min: parseInt(priceMinInput.value),
         max: parseInt(priceMaxInput.value)
       },
-      biomarkerRange: {
-        min: parseInt(biomarkerMinInput.value),
-        max: parseInt(biomarkerMaxInput.value)
-      },
       locations: Array.from(locationCheckboxes)
         .filter(cb => cb.checked)
         .map(cb => cb.value),
       resultsTime: resultsTimeSelect.value,
+      trustpilotScore: Array.from(trustpilotCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value),
       providers: Array.from(providerCheckboxes)
         .filter(cb => cb.checked)
         .map(cb => cb.value)
@@ -193,12 +174,6 @@ export function setupFilterPanel(tests, onFilterChange) {
     const filteredTests = tests.filter(test => {
       // Price filter
       if (test.price < filters.priceRange.min || test.price > filters.priceRange.max) {
-        return false;
-      }
-
-      // Biomarker count filter
-      if (test.biomarker_number < filters.biomarkerRange.min || 
-          test.biomarker_number > filters.biomarkerRange.max) {
         return false;
       }
 
@@ -216,6 +191,16 @@ export function setupFilterPanel(tests, onFilterChange) {
         if (filters.resultsTime === '1-3' && (days < 1 || days > 3)) return false;
         if (filters.resultsTime === '4-7' && (days < 4 || days > 7)) return false;
         if (filters.resultsTime === '8+' && days < 8) return false;
+      }
+
+      // Trustpilot score filter
+      const hasMatchingTrustpilotScore = filters.trustpilotScore.some(score => {
+        const [min, max] = score.split('-').map(Number);
+        const testScore = parseFloat(test["trust pilot score"]);
+        return testScore >= min && testScore <= max;
+      });
+      if (!hasMatchingTrustpilotScore) {
+        return false;
       }
 
       // Provider filter
