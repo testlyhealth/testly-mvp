@@ -898,27 +898,59 @@ body {
   }
   
   /* Checkbox Filters */
-  .location-filters, .provider-filters, .trustpilot-filters, .price-filters {
+  .location-filters, .provider-filters, .trustpilot-filters, .price-filters, .results-time-filters {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: 0.4rem;
   }
   
-  .location-filters label, .provider-filters label, .trustpilot-filters label, .price-filters label {
+  .location-filters label, .provider-filters label, .trustpilot-filters label, .price-filters label, .results-time-filters label {
     display: flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.4rem;
     cursor: pointer;
     font-size: 0.85rem;
-  }
-  
-  .trustpilot-filters label, .price-filters label {
     color: var(--text);
     transition: color 0.2s;
   }
   
-  .trustpilot-filters label:hover, .price-filters label:hover {
-    color: var(--accent);
+  /* Custom checkbox styling */
+  input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    background: white;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+  }
+  
+  input[type="checkbox"]:checked {
+    background: white;
+    border-color: #666;
+  }
+  
+  input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+    width: 2px;
+    height: 6px;
+    border: solid #666;
+    border-width: 0 2px 2px 0;
+  }
+  
+  input[type="checkbox"]:hover {
+    border-color: #666;
+  }
+  
+  .location-filters label:hover, .provider-filters label:hover, .trustpilot-filters label:hover, .price-filters label:hover, .results-time-filters label:hover {
+    color: #666;
   }
   
   /* Results Time Select */
@@ -1137,16 +1169,24 @@ body {
   
   .toggle-biomarkers {
     background: none;
-    border: none;
+    border: 1px solid var(--accent);
     color: var(--accent);
     cursor: pointer;
-    padding: 0.2rem 0.5rem;
-    font-size: 0.9rem;
-    transition: color 0.2s;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    border-radius: 4px;
+    white-space: nowrap;
   }
   
   .toggle-biomarkers:hover {
-    color: var(--accent-hover);
+    background: var(--accent);
+    color: white;
+  }
+  
+  .toggle-biomarkers[aria-expanded="true"] {
+    background: var(--accent);
+    color: white;
   }
   
   .toggle-icon {
@@ -1194,57 +1234,137 @@ body {
     color: var(--accent);
   }
   
-  /* Biomarker Groups */
-  .biomarker-group {
-    margin-bottom: 1rem;
+  /* Biomarker Filter */
+  .biomarker-filter-section {
+    margin-top: 1rem;
   }
   
-  .biomarker-group:last-child {
-    margin-bottom: 0;
-  }
-  
-  .group-header {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text);
-    margin: 0 0 0.5rem 0;
-    padding-bottom: 0.3rem;
-    border-bottom: 1px solid var(--border);
-  }
-  
-  .biomarkers-list {
-    margin-top: 0.5rem;
-    padding: 0.5rem;
-    background: var(--bg);
+  .toggle-biomarker-filter {
+    width: 100%;
+    padding: 0.6rem;
+    background: none;
+    border: 1px solid var(--accent);
+    color: var(--accent);
     border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  
+  .toggle-biomarker-filter:hover {
+    background: var(--accent);
+    color: white;
+  }
+  
+  .toggle-biomarker-filter[aria-expanded="true"] {
+    background: var(--accent);
+    color: white;
+  }
+  
+  .biomarker-filter-content {
+    margin-top: 0.8rem;
     transition: all 0.3s ease;
   }
   
-  .biomarkers-list.hidden {
+  .biomarker-filter-content.hidden {
     display: none;
   }
   
-  .biomarkers-list ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  .biomarker-groups {
+    display: flex;
+    flex-direction: column;
     gap: 0.5rem;
   }
   
-  .biomarkers-list li {
-    font-size: 0.9rem;
-    color: var(--text);
-    padding-left: 1rem;
+  .biomarker-group {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
     position: relative;
   }
   
-  .biomarkers-list li:before {
-    content: "•";
+  .toggle-biomarker-group {
+    width: 100%;
+    padding: 0.5rem;
+    padding-right: 120px; /* Increased padding to make more room for the button */
+    background: var(--bg);
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s;
+    position: relative;
+    white-space: normal; /* Allow text to wrap */
+    line-height: 1.2; /* Tighter line height for wrapped text */
+  }
+  
+  .toggle-biomarker-group:hover {
+    background: var(--border);
+  }
+  
+  .select-all-biomarkers {
     position: absolute;
-    left: 0;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%); /* Center vertically */
+    padding: 0.2rem 0.5rem;
+    background: none;
+    border: 1px solid var(--accent);
     color: var(--accent);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+    z-index: 2;
+    display: block;
+    white-space: nowrap; /* Prevent button text from wrapping */
+  }
+  
+  .select-all-biomarkers:hover {
+    background: var(--accent);
+    color: white;
+  }
+  
+  .biomarker-group-content {
+    padding: 0.5rem;
+    background: var(--white);
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  
+  .biomarker-checkboxes {
+    padding-left: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  
+  .biomarker-checkboxes label {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--text);
+    transition: color 0.2s;
+    word-break: break-word;
+  }
+  
+  .biomarker-checkboxes label:hover {
+    color: var(--accent);
+  }
+  
+  .toggle-icon {
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+  }
+  
+  .toggle-biomarker-group[aria-expanded="true"] .toggle-icon {
+    transform: rotate(180deg);
   }
   
   /* Details Section */
@@ -1331,5 +1451,240 @@ body {
   
   .provider-link:hover {
     text-decoration: underline;
+  }
+  
+  /* Basket Styles */
+  .basket-count {
+    background: var(--accent);
+    color: white;
+    padding: 0.1rem 0.4rem;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    margin-left: 0.3rem;
+  }
+
+  #basket-panel {
+    width: 350px;
+    background: var(--white);
+    border-left: 1px solid var(--border);
+    box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 112px); /* Subtract header height */
+    position: fixed;
+    top: 112px;
+    right: 0;
+    z-index: 1000;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+  }
+
+  #basket-panel:not(.hidden) {
+    transform: translateX(0);
+  }
+
+  #basket-panel.hidden {
+    transform: translateX(100%);
+  }
+
+  .basket-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .basket-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--text);
+  }
+
+  .close-basket {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .close-basket:hover {
+    color: var(--text);
+  }
+
+  .basket-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    min-height: 0; /* Important for flex child scrolling */
+  }
+
+  .basket-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .basket-item:last-child {
+    border-bottom: none;
+  }
+
+  .item-details h4 {
+    margin: 0 0 0.3rem 0;
+    font-size: 0.9rem;
+    color: var(--text);
+  }
+
+  .item-details p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-light);
+  }
+
+  .item-price {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .item-quantity {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .quantity-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    line-height: 1;
+    transition: all 0.2s;
+  }
+
+  .quantity-btn:hover {
+    background: var(--bg);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .remove-item {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 0.3rem;
+    font-size: 1.2rem;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+
+  .remove-item:hover {
+    color: var(--text);
+  }
+
+  .basket-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+    background: var(--white);
+    flex-shrink: 0;
+    margin-top: auto;
+  }
+
+  .basket-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .checkout-btn {
+    width: 100%;
+    padding: 0.8rem;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+  }
+
+  .checkout-btn:hover {
+    background: var(--accent-hover);
+  }
+
+  .basket-empty {
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-light);
+  }
+  
+  .results-time-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  
+  .results-time-filters label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--text);
+    transition: color 0.2s;
+  }
+  
+  .results-time-filters label:hover {
+    color: var(--accent);
+  }
+  
+  .biomarker-filters {
+    margin-bottom: 0.5rem;
+  }
+
+  .biomarker-filters label {
+    font-weight: normal;
+    font-size: 0.85rem;
+    color: var(--text);
+  }
+
+  .biomarker-checkboxes {
+    padding-left: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  
+  .price-filters, .trustpilot-filters, .location-filters, .results-time-filters, .provider-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .price-filters label:not(:first-child),
+  .trustpilot-filters label:not(:first-child),
+  .location-filters label:not(:first-child),
+  .results-time-filters label:not(:first-child),
+  .provider-filters label:not(:first-child) {
+    padding-left: 0.75rem;
   }
   

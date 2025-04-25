@@ -1,6 +1,7 @@
 import { $, $all } from './dom.js';
 import { categories } from './data.js';
 import { createFilterPanel, setupFilterPanel } from './filter-panel.js';
+import { basket } from './basket.js';
 
 // Function to create a product card
 function createProductCard(product) {
@@ -134,8 +135,10 @@ async function updateTestsGrid(tests) {
     $all('.add-to-basket').forEach(button => {
       button.addEventListener('click', (e) => {
         const testId = e.target.dataset.testId;
-        // We'll implement basket functionality later
-        console.log('Added to basket:', testId);
+        const test = tests.find(t => t.test_name === testId);
+        if (test) {
+          basket.addItem(test);
+        }
       });
     });
 
