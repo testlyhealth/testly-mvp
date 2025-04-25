@@ -7,19 +7,15 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-// Get auth instance from window
-const auth = window.firebaseAuth;
+let auth = null;
+let googleProvider = null;
 
-// Google provider
-const googleProvider = new GoogleAuthProvider();
-
-// Function to initialize auth state observer
-function initializeAuth() {
-  if (!auth) {
-    console.error('Firebase Auth not initialized');
-    return;
-  }
-
+// Initialize auth when Firebase is ready
+window.addEventListener('firebaseReady', () => {
+  auth = window.firebaseAuth;
+  googleProvider = new GoogleAuthProvider();
+  
+  // Initialize auth state observer
   onAuthStateChanged(auth, (user) => {
     if (user) {
       // User is signed in
@@ -29,14 +25,11 @@ function initializeAuth() {
       updateUIForSignedOutUser();
     }
   });
-}
-
-// Initialize auth when the script loads
-initializeAuth();
+});
 
 // Function to handle Google sign in
 export async function signInWithGoogle() {
-  if (!auth) {
+  if (!auth || !googleProvider) {
     throw new Error('Firebase Auth not initialized');
   }
   try {

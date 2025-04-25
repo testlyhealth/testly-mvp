@@ -73,11 +73,14 @@ export function initLoginModal() {
   // Handle Google login
   googleLoginBtn.addEventListener('click', async () => {
     try {
-      await signInWithGoogle();
+      console.log('Attempting Google sign in...');
+      const user = await signInWithGoogle();
+      console.log('Google sign in successful:', user);
       modal.classList.add('hidden');
     } catch (error) {
       console.error('Google login failed:', error);
       // Show error message to user
+      alert('Google sign in failed: ' + error.message);
     }
   });
   
@@ -86,13 +89,19 @@ export function initLoginModal() {
     e.preventDefault();
     const email = emailLoginForm.querySelector('#email').value;
     const password = emailLoginForm.querySelector('#password').value;
+    const isSignUp = emailLoginForm.classList.contains('signup-mode');
     
     try {
-      await signInWithEmail(email, password);
+      console.log(`Attempting ${isSignUp ? 'sign up' : 'sign in'} with email...`);
+      const user = isSignUp 
+        ? await signUpWithEmail(email, password)
+        : await signInWithEmail(email, password);
+      console.log(`${isSignUp ? 'Sign up' : 'Sign in'} successful:`, user);
       modal.classList.add('hidden');
     } catch (error) {
-      console.error('Email login failed:', error);
+      console.error(`${isSignUp ? 'Sign up' : 'Sign in'} failed:`, error);
       // Show error message to user
+      alert(`${isSignUp ? 'Sign up' : 'Sign in'} failed: ` + error.message);
     }
   });
   
