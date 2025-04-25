@@ -6,79 +6,81 @@ export class WelcomeOverlay {
         this.overlay = null;
         this.closeButton = null;
         this.skipButton = null;
-        this.options = null;
     }
 
     init() {
-        // Create overlay if it doesn't exist in localStorage
-        if (!localStorage.getItem('welcomeOverlayShown')) {
-            this.createOverlay();
-            this.setupEventListeners();
-        }
+        this.createOverlay();
+        this.setupEventListeners();
     }
 
     createOverlay() {
+        // Remove any existing overlays first
+        const existingOverlays = document.querySelectorAll('.welcome-overlay');
+        existingOverlays.forEach(overlay => overlay.remove());
+
         const overlay = document.createElement('div');
         overlay.className = 'welcome-overlay';
         overlay.innerHTML = `
             <div class="welcome-content">
                 <button class="close-button">&times;</button>
+                <h1>Testly</h1>
+                <p class="welcome-subtitle"><strong>Compare</strong>, <strong>book</strong> and <strong>track</strong> personalised medical tests and treatments,<br>all in <u>one</u> place</p>
+                <div class="welcome-buttons">
+                    <button class="welcome-button guide-me">
+                        <span class="button-text">I'm not sure what I'm looking for, guide me</span>
+                        <i class="fas fa-compass"></i>
+                    </button>
+                    <button class="welcome-button take-me">
+                        <span class="button-text">I already know what I want, take me to it</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button class="welcome-button doctor">
+                        <span class="button-text">I want to get advice from a doctor</span>
+                        <i class="fas fa-user-md"></i>
+                    </button>
+                    <button class="welcome-button questionnaire">
+                        <span class="button-text">I want to take the health improvement questionnaire</span>
+                        <i class="fas fa-clipboard-list"></i>
+                    </button>
+                </div>
                 <button class="skip-button">SKIP >></button>
-                <div class="welcome-header">
-                    <h1>Testly</h1>
-                    <h2>Take control of your health with ease.</h2>
-                    <p>Compare, book and track tests and treatments, all in one place.</p>
-                </div>
-                <div class="welcome-options">
-                    <div class="welcome-option blood-tests" data-category="blood-tests">
-                        <h3>Take me to blood tests</h3>
-                    </div>
-                    <div class="welcome-option comparisons" data-category="comparisons">
-                        <h3>I'm weighing up my options, take me to comparisons</h3>
-                    </div>
-                    <div class="welcome-option doctor" data-category="doctor">
-                        <h3>I'd like to talk to a doctor</h3>
-                    </div>
-                    <div class="welcome-option questionnaire" data-category="questionnaire">
-                        <h3>I'm not sure what I want... take me to the health improvement questionnaire</h3>
-                    </div>
-                </div>
             </div>
         `;
         document.body.appendChild(overlay);
         this.overlay = overlay;
         this.closeButton = overlay.querySelector('.close-button');
         this.skipButton = overlay.querySelector('.skip-button');
-        this.options = overlay.querySelectorAll('.welcome-option');
     }
 
     setupEventListeners() {
         // Close button click
         this.closeButton.addEventListener('click', () => this.closeOverlay());
-
+        
         // Skip button click
         this.skipButton.addEventListener('click', () => this.closeOverlay());
 
-        // Option clicks
-        this.options.forEach(option => {
-            option.addEventListener('click', (e) => {
-                const category = e.currentTarget.dataset.category;
-                this.handleOptionClick(category);
+        // Welcome button clicks
+        const buttons = this.overlay.querySelectorAll('.welcome-button');
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                // For now, just close the overlay
+                this.closeOverlay();
             });
         });
     }
 
-    handleOptionClick(category) {
-        // Navigate to the selected category
-        window.location.href = `#${category}`;
-        this.closeOverlay();
+    closeOverlay() {
+        if (this.overlay) {
+            this.overlay.classList.add('fade-out');
+            setTimeout(() => {
+                this.overlay.remove();
+                this.overlay = null;
+            }, 300);
+        }
     }
 
-    closeOverlay() {
-        this.overlay.classList.add('fade-out');
-        setTimeout(() => {
-            this.overlay.remove();
-            localStorage.setItem('welcomeOverlayShown', 'true');
-        }, 300);
+    showOverlay() {
+        this.createOverlay();
+        this.setupEventListeners();
     }
 } 

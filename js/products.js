@@ -47,7 +47,7 @@ async function getGroupedBiomarkers(biomarkers) {
 }
 
 // Function to create a blood test card
-async function createBloodTestCard(test) {
+async function createBloodTestCard(test, rank) {
   // Get the provider logo filename
   const providerLogo = test.provider.toLowerCase() + '.png';
   
@@ -56,6 +56,7 @@ async function createBloodTestCard(test) {
   
   return `
     <div class="product-card blood-test-card" data-test-id="${test.test_name}">
+      <div class="test-rank">${rank}</div>
       <div class="test-header">
         <div class="provider-info">
           <img src="/images/logos/${providerLogo}" alt="${test.provider} logo" class="provider-logo">
@@ -128,7 +129,11 @@ async function createBloodTestCard(test) {
 async function updateTestsGrid(tests) {
   const testsGrid = $('#tests-grid');
   if (testsGrid) {
-    const cards = await Promise.all(tests.map(test => createBloodTestCard(test)));
+    // Sort tests by price
+    const sortedTests = [...tests].sort((a, b) => a.price - b.price);
+    
+    // Create cards with ranking
+    const cards = await Promise.all(sortedTests.map((test, index) => createBloodTestCard(test, index + 1)));
     testsGrid.innerHTML = cards.join('');
     
     // Add event listeners to the "Add to Basket" buttons

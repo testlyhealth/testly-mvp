@@ -1,4 +1,8 @@
 import { $, $all } from './dom.js';
+import { WelcomeOverlay } from './components/welcome-overlay.js';
+
+// Create a single instance of WelcomeOverlay
+const welcomeOverlay = new WelcomeOverlay();
 
 export function setupMenuToggle() {
   console.log('Setting up menu toggle...');
@@ -77,6 +81,9 @@ export function setupMenuToggle() {
       if (this.classList.contains('menu-blog')) {
         // Handle blog navigation
         window.location.hash = '#/blog';
+      } else if (this.classList.contains('guide-me')) {
+        // Handle Guide me button
+        welcomeOverlay.showOverlay();
       } else {
         // Handle category navigation
         const categoryId = this.textContent.toLowerCase().replace(/\s+/g, '-');

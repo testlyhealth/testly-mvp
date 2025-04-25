@@ -6,6 +6,7 @@ import { displayArticle } from './article.js';
 import { $, $all } from './dom.js';
 import { initLoginModal } from './login-modal.js';
 import { WelcomeOverlay } from './components/welcome-overlay.js';
+import { initUserDropdown } from './user-dropdown.js';
 
 // Handle routing
 function handleRoute() {
@@ -54,4 +55,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize welcome overlay
   const welcomeOverlay = new WelcomeOverlay();
   welcomeOverlay.init();
+
+  // Initialize user dropdown
+  initUserDropdown();
+
+  // Add click handler for Guide me button
+  $('.guide-me').addEventListener('click', () => {
+    welcomeOverlay.showOverlay();
+  });
 });

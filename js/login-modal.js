@@ -53,9 +53,11 @@ export function initLoginModal() {
   const emailLoginForm = modal.querySelector('.email-login-form');
   const toggleSignupLink = modal.querySelector('.toggle-signup');
   
-  // Show modal when login button is clicked
-  loginBtn.addEventListener('click', () => {
-    modal.classList.remove('hidden');
+  // Show modal when login button is clicked (only if not signed in)
+  loginBtn.addEventListener('click', (e) => {
+    if (!loginBtn.classList.contains('signed-in')) {
+      modal.classList.remove('hidden');
+    }
   });
   
   // Close modal
