@@ -16,22 +16,13 @@
       ]
     },
     {
-      "group": "Cholesterol",
-      "id": "cholesterol",
+      "group": "Cardiovascular Health",
+      "id": "cardiovascular",
       "biomarkers": [
         "Total cholesterol",
-        "LDL",
-        "HDL",
-        "Non-HDL",
-        "Triglycerides",
-        "Total cholesterol:HDL ratio"
-      ],
-      "advanced-biomarkers": [
-        "Apolipoprotein A1",
-        "Apolipoprotein B",
-        "Apo B:apo A ratio",
-        "Lipoprotein (a)",
-        "Triglycerides:HDL ratio"
+        "HDL cholesterol",
+        "LDL cholesterol",
+        "Triglycerides"
       ]
     },
     {
@@ -128,6 +119,7 @@
       "id": "liver",
       "biomarkers": [
         "ALT",
+        "AST",
         "ALP",
         "Bilirubin",
         "Gamma-GT",
@@ -179,13 +171,14 @@
       ]
     },
     {
-      "group": "Vitamins and Minerals",
+      "group": "Vitamins & Minerals",
       "id": "vitamins",
       "biomarkers": [
+        "Vitamin D",
         "Vitamin B12",
         "Folate",
-        "Vitamin D",
-        "Magnesium"
+        "Iron",
+        "Ferritin"
       ],
       "advanced-biomarkers": [
         "Vitamin A",

@@ -4,7 +4,7 @@
     "test_name": "Health and lifestyle blood test",
     "price": 89,
     "pricing information": "Additional £35 for having blood taken at a clinic and £59 to have a nurse/phlebotamist come to your house to take the blood. Interest free payments are available.",
-    "description": "Do you want to know whether you are at risk of common lifestyle-related conditions? Perhaps you’re already taking steps to improve your diet or exercise levels and want to monitor the impact on your health. Finding out where you stand on health issues like high cholesterol, liver health, and vitamin deficiencies gives you the opportunity to take action and make positive changes.",
+    "description": "Do you want to know whether you are at risk of common lifestyle-related conditions? Perhaps you're already taking steps to improve your diet or exercise levels and want to monitor the impact on your health. Finding out where you stand on health issues like high cholesterol, liver health, and vitamin deficiencies gives you the opportunity to take action and make positive changes.",
     "doctors report": "Yes",
     "biomarker number": 19,
     "biomarkers": [
@@ -130,7 +130,7 @@
    "test_name": "Ultimate performance bloo test",
    "price": 199,
    "pricing information":"Additional £35 for having blood taken at a clinic and £59 to have a nurse/phlebotamist come to your house to take the blood. Interest free payments are available.",
-   "description": "Are you looking to transform your body through diet and exercise and track your progress along the way? Our Ultimate Blood Test is designed for those who want to take their health and fitness to the next level — whether you're an athlete, biohacker, or simply someone who's serious about optimising their health. With this test, you can gain deep insights into your body’s performance and make informed decisions to fine-tune your diet and fitness routine, all while monitoring your progress.",
+   "description": "Are you looking to transform your body through diet and exercise and track your progress along the way? Our Ultimate Blood Test is designed for those who want to take their health and fitness to the next level — whether you're an athlete, biohacker, or simply someone who's serious about optimising their health. With this test, you can gain deep insights into your body's performance and make informed decisions to fine-tune your diet and fitness routine, all while monitoring your progress.",
    "doctors report": "Yes",
    "biomarker number": 59,
    "biomarkers": [
@@ -477,7 +477,7 @@
     "test_name": "Advanced health check (blood test)",
     "price": 179,
     "pricing information": "An additional £20 may apply. Fasting required — do not eat or drink except water for 8 hours before the test.",
-    "description": "A general health check gives you a clear picture of what’s going on inside and how to support your body. Check everything from your cholesterol levels to your liver health and vitamin D levels. Thriva doctors always explain the next steps to help you maintain or improve your results. And you can access your health data anytime, anywhere, just as you should be able to.",
+    "description": "A general health check gives you a clear picture of what's going on inside and how to support your body. Check everything from your cholesterol levels to your liver health and vitamin D levels. Thriva doctors always explain the next steps to help you maintain or improve your results. And you can access your health data anytime, anywhere, just as you should be able to.",
     "doctors report": "Yes",
     "biomarker number": 9,
     "biomarkers": [
@@ -1042,6 +1042,76 @@
     "trust pilot score": 4.6,
     "lab accreditations": [],
     "link": "https://www.numan.com/lps/gbr/blood-test/complete-health-check"
+  },
+  {
+    "test_name": "General Health Check",
+    "provider": "Medichecks",
+    "description": "Comprehensive health check including cholesterol, liver function, and more",
+    "price": 89.99,
+    "biomarker number": 10,
+    "biomarkers": [
+      "Total cholesterol",
+      "HDL cholesterol",
+      "LDL cholesterol",
+      "Triglycerides",
+      "ALT",
+      "AST",
+      "ALP",
+      "Bilirubin",
+      "Creatinine",
+      "eGFR"
+    ],
+    "blood test location": [
+      "Home",
+      "Clinic"
+    ],
+    "Days till results returned": 2,
+    "pricing information": "Includes all test materials and return postage",
+    "doctors report": "Yes",
+    "lab accreditations": [
+      "UKAS",
+      "ISO 15189"
+    ],
+    "trust pilot score": 4.8,
+    "link": "https://www.medichecks.com"
+  },
+  {
+    "test_name": "Full Health Check",
+    "provider": "Thriva",
+    "description": "Complete health assessment with detailed analysis",
+    "price": 129.99,
+    "biomarker number": 15,
+    "biomarkers": [
+      "Total cholesterol",
+      "HDL cholesterol",
+      "LDL cholesterol",
+      "Triglycerides",
+      "ALT",
+      "AST",
+      "ALP",
+      "Bilirubin",
+      "Creatinine",
+      "eGFR",
+      "Vitamin D",
+      "Vitamin B12",
+      "Folate",
+      "Iron",
+      "Ferritin"
+    ],
+    "blood test location": [
+      "Home",
+      "Clinic",
+      "Nurse/phlebotomist to house"
+    ],
+    "Days till results returned": 3,
+    "pricing information": "Includes all test materials, return postage, and doctor's consultation",
+    "doctors report": "Yes",
+    "lab accreditations": [
+      "UKAS",
+      "ISO 15189",
+      "ISO 9001"
+    ],
+    "trust pilot score": 4.9,
+    "link": "https://www.thriva.co"
   }
-                          
 ]
