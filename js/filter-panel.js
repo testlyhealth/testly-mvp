@@ -8,16 +8,22 @@ export function createFilterPanel(tests) {
     <div class="filter-panel">
       <div class="filter-section">
         <h3>Price Range</h3>
-        <div class="price-range">
-          <div class="range-slider">
-            <input type="range" id="price-min" min="0" max="500" value="0" step="10">
-            <input type="range" id="price-max" min="0" max="500" value="500" step="10">
-          </div>
-          <div class="price-inputs">
-            <input type="number" id="price-min-input" value="0" min="0" max="500">
-            <span>to</span>
-            <input type="number" id="price-max-input" value="500" min="0" max="500">
-          </div>
+        <div class="price-filters">
+          <label>
+            <input type="checkbox" value="0-50" checked> Under £50
+          </label>
+          <label>
+            <input type="checkbox" value="50-100" checked> £50 - £100
+          </label>
+          <label>
+            <input type="checkbox" value="100-200" checked> £100 - £200
+          </label>
+          <label>
+            <input type="checkbox" value="200-300" checked> £200 - £300
+          </label>
+          <label>
+            <input type="checkbox" value="300-500" checked> £300 - £500
+          </label>
         </div>
       </div>
 
@@ -87,28 +93,9 @@ export function setupFilterPanel(tests, onFilterChange) {
   if (!filterPanel) return;
 
   // Price range handlers
-  const priceMin = $('#price-min');
-  const priceMax = $('#price-max');
-  const priceMinInput = $('#price-min-input');
-  const priceMaxInput = $('#price-max-input');
-
-  function updatePriceRange() {
-    const min = Math.min(parseInt(priceMin.value), parseInt(priceMax.value));
-    const max = Math.max(parseInt(priceMin.value), parseInt(priceMax.value));
-    priceMinInput.value = min;
-    priceMaxInput.value = max;
-    applyFilters();
-  }
-
-  priceMin.addEventListener('input', updatePriceRange);
-  priceMax.addEventListener('input', updatePriceRange);
-  priceMinInput.addEventListener('change', () => {
-    priceMin.value = priceMinInput.value;
-    updatePriceRange();
-  });
-  priceMaxInput.addEventListener('change', () => {
-    priceMax.value = priceMaxInput.value;
-    updatePriceRange();
+  const priceCheckboxes = $all('.price-filters input[type="checkbox"]');
+  priceCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', applyFilters);
   });
 
   // Location filters
@@ -137,10 +124,7 @@ export function setupFilterPanel(tests, onFilterChange) {
   const resetButton = $('#reset-filters');
   resetButton.addEventListener('click', () => {
     // Reset price range
-    priceMin.value = 0;
-    priceMax.value = 500;
-    priceMinInput.value = 0;
-    priceMaxInput.value = 500;
+    priceCheckboxes.forEach(checkbox => checkbox.checked = true);
 
     // Reset checkboxes
     locationCheckboxes.forEach(checkbox => checkbox.checked = true);
@@ -155,10 +139,9 @@ export function setupFilterPanel(tests, onFilterChange) {
 
   function applyFilters() {
     const filters = {
-      priceRange: {
-        min: parseInt(priceMinInput.value),
-        max: parseInt(priceMaxInput.value)
-      },
+      priceRanges: Array.from(priceCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value),
       locations: Array.from(locationCheckboxes)
         .filter(cb => cb.checked)
         .map(cb => cb.value),
@@ -173,7 +156,11 @@ export function setupFilterPanel(tests, onFilterChange) {
 
     const filteredTests = tests.filter(test => {
       // Price filter
-      if (test.price < filters.priceRange.min || test.price > filters.priceRange.max) {
+      const hasMatchingPriceRange = filters.priceRanges.some(range => {
+        const [min, max] = range.split('-').map(Number);
+        return test.price >= min && test.price <= max;
+      });
+      if (!hasMatchingPriceRange) {
         return false;
       }
 

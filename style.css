@@ -783,7 +783,7 @@ body {
     border-left: 1px solid var(--border);
     min-height: calc(100vh - 112px);
     padding: 2rem;
-    margin-left: 250px;
+    margin-left: 220px;
     flex: 1;
   }
   
@@ -792,11 +792,11 @@ body {
     background: var(--white);
     border: 1px solid var(--border);
     border-radius: 0;
-    padding: 1.2rem;
+    padding: 1rem;
     position: fixed;
     left: 0;
     top: 112px;
-    width: 250px;
+    width: 220px;
     height: calc(100vh - 112px);
     overflow-y: auto;
     z-index: 100;
@@ -807,13 +807,13 @@ body {
   }
   
   .filter-section {
-    margin-bottom: 1.2rem;
+    margin-bottom: 1rem;
   }
   
   .filter-section h3 {
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: var(--text);
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.6rem;
   }
   
   /* Price and Biomarker Range */
@@ -898,43 +898,43 @@ body {
   }
   
   /* Checkbox Filters */
-  .location-filters, .provider-filters, .trustpilot-filters {
+  .location-filters, .provider-filters, .trustpilot-filters, .price-filters {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.3rem;
   }
   
-  .location-filters label, .provider-filters label, .trustpilot-filters label {
+  .location-filters label, .provider-filters label, .trustpilot-filters label, .price-filters label {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.3rem;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
   }
   
-  .trustpilot-filters label {
+  .trustpilot-filters label, .price-filters label {
     color: var(--text);
     transition: color 0.2s;
   }
   
-  .trustpilot-filters label:hover {
+  .trustpilot-filters label:hover, .price-filters label:hover {
     color: var(--accent);
   }
   
   /* Results Time Select */
   .results-time select {
     width: 100%;
-    padding: 0.4rem;
+    padding: 0.3rem;
     border: 1px solid var(--border);
     border-radius: 4px;
     background-color: var(--white);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
   }
   
   /* Reset Filters Button */
   .reset-filters {
     width: 100%;
-    padding: 0.7rem;
+    padding: 0.6rem;
     background: var(--accent);
     color: white;
     border: none;
@@ -942,7 +942,7 @@ body {
     cursor: pointer;
     transition: background-color 0.2s;
     margin-top: 1rem;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
   }
   
   .reset-filters:hover {
@@ -998,9 +998,52 @@ body {
       position: static;
       width: 100%;
       height: auto;
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
       border-radius: 8px;
       border: 1px solid var(--border);
+      padding: 0.8rem;
+    }
+
+    .filter-section {
+      display: inline-block;
+      vertical-align: top;
+      margin-right: 1.5rem;
+      margin-bottom: 0.8rem;
+      min-width: 200px;
+    }
+
+    .filter-section:last-child {
+      margin-right: 0;
+    }
+
+    .filter-section h3 {
+      margin-bottom: 0.4rem;
+    }
+
+    .location-filters, .provider-filters, .trustpilot-filters, .price-filters {
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .reset-filters {
+      margin-top: 0.5rem;
+    }
+
+    /* Products Grid */
+    .products-grid {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .filter-section {
+      display: block;
+      width: 100%;
+      margin-right: 0;
+    }
+
+    .location-filters, .provider-filters, .trustpilot-filters, .price-filters {
+      max-height: none;
     }
   }
   
