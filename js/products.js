@@ -49,7 +49,7 @@ async function getGroupedBiomarkers(biomarkers) {
 // Function to create a blood test card
 async function createBloodTestCard(test, rank) {
   // Get the provider logo filename
-  const providerLogo = test.provider.toLowerCase() + '.png';
+  const providerLogo = test.provider.toLowerCase().replace(/\s+/g, '-') + '.png';
   
   // Get grouped biomarkers
   const groupedBiomarkers = await getGroupedBiomarkers(test.biomarkers);
@@ -59,7 +59,7 @@ async function createBloodTestCard(test, rank) {
       <div class="test-rank">${rank}</div>
       <div class="test-header">
         <div class="provider-info">
-          <img src="/images/logos/${providerLogo}" alt="${test.provider} logo" class="provider-logo">
+          <img src="images/logos/${providerLogo}" alt="${test.provider} logo" class="provider-logo">
           <span class="provider-name">${test.provider}</span>
         </div>
         <h3 class="test-name">${test.test_name}</h3>
