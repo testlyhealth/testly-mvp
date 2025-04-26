@@ -29,15 +29,10 @@ export function setupMenuToggle() {
   // Test if hidden class is working
   console.log('Initial dropdown state:', dropdown.classList.contains('hidden'));
 
-  // Flag to track if we're handling a menu button click
-  let isMenuButtonClick = false;
-
   menuButton.onclick = function(e) {
     console.log('Menu button clicked');
     e.preventDefault();
     e.stopPropagation();
-    
-    isMenuButtonClick = true;
     
     const wasHidden = dropdown.classList.contains('hidden');
     dropdown.classList.toggle('hidden');
@@ -45,23 +40,17 @@ export function setupMenuToggle() {
       wasHidden,
       isNowHidden: dropdown.classList.contains('hidden')
     });
-
-    // Reset the flag after a short delay
-    setTimeout(() => {
-      isMenuButtonClick = false;
-    }, 100);
   };
 
   document.onclick = function(e) {
     console.log('Document clicked:', {
       target: e.target,
       isMenuButton: menuButton.contains(e.target),
-      isDropdown: dropdown.contains(e.target),
-      isMenuButtonClick
+      isDropdown: dropdown.contains(e.target)
     });
     
-    // Only close if it's not a menu button click
-    if (!isMenuButtonClick && !menuButton.contains(e.target) && !dropdown.contains(e.target)) {
+    // Only close if the click is outside both the menu button and the dropdown
+    if (!menuButton.contains(e.target) && !dropdown.contains(e.target)) {
       console.log('Clicking outside, hiding dropdown');
       dropdown.classList.add('hidden');
     }
@@ -109,6 +98,7 @@ export function setupMenuToggle() {
 
   // Check for overflow and update indicators
   function checkOverflow() {
+    if (!categoryList || !categoryBar) return;
     const hasOverflow = categoryList.scrollWidth > categoryList.clientWidth;
     const isScrolledLeft = categoryList.scrollLeft > 0;
     const isScrolledRight = categoryList.scrollLeft < (categoryList.scrollWidth - categoryList.clientWidth - 1);
@@ -118,9 +108,9 @@ export function setupMenuToggle() {
   }
 
   // Check on load and resize
-  window.addEventListener('load', checkOverflow);
-  window.addEventListener('resize', checkOverflow);
-  
-  // Check on scroll
-  categoryList.addEventListener('scroll', checkOverflow);
+  if (categoryList && categoryBar) {
+    window.addEventListener('load', checkOverflow);
+    window.addEventListener('resize', checkOverflow);
+    categoryList.addEventListener('scroll', checkOverflow);
+  }
 }

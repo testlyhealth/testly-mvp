@@ -1,4 +1,5 @@
 import { $ } from './dom.js';
+import { $all } from './dom.js';
 import { categories } from './data.js';
 import { blogPosts } from './blog-data.js';
 

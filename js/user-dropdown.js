@@ -9,6 +9,10 @@ export function initUserDropdown() {
     dropdown.className = 'user-dropdown hidden';
     dropdown.innerHTML = `
         <div class="dropdown-content">
+            <a href="#" class="dropdown-item basket-link">
+                <i class="fas fa-shopping-basket"></i>
+                Basket
+            </a>
             <a href="#" class="dropdown-item account-settings">
                 <i class="fas fa-cog"></i>
                 Account Settings
@@ -42,6 +46,18 @@ export function initUserDropdown() {
             console.error('Logout failed:', error);
             alert('Logout failed: ' + error.message);
         }
+    });
+    
+    // Handle basket link
+    const basketLink = dropdown.querySelector('.basket-link');
+    basketLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const basketPanel = document.getElementById('basket-panel');
+        if (basketPanel) {
+            basketPanel.classList.toggle('hidden');
+        }
+        dropdown.classList.add('hidden');
     });
     
     // Close dropdown when clicking outside

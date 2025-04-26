@@ -10,6 +10,13 @@
   <!-- Header bar -->
   <header class="main-header">
     <div class="header-content">
+      <button class="burger-menu" aria-label="Open menu">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
       <div class="logo">Testly</div>
       <nav class="main-nav">
         <a href="#/category/general-health">General Health</a>
@@ -17,20 +24,16 @@
         <a href="#/category/mens-health">Men's Health</a>
         <a href="#/category/womens-health">Women's Health</a>
         <a href="#/category/supplements">Supplements</a>
-        <button class="menu-button">All</button>
+        <div class="menu-dropdown-wrapper">
+          <button class="menu-button">All</button>
+          <div id="burger-dropdown" class="burger-dropdown hidden"></div>
+        </div>
       </nav>
       <div class="header-actions">
         <button class="login-btn">
           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="8" r="4"/>
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          </svg>
-        </button>
-        <button class="icon-button basket-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-            <line x1="3" y1="6" x2="21" y2="6"/>
-            <path d="M16 10a4 4 0 0 1-8 0"/>
           </svg>
         </button>
       </div>

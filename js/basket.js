@@ -16,15 +16,15 @@ class Basket {
   setupBasketPanel() {
     const basketBtn = $('.basket-btn');
     const basketPanel = $('#basket-panel');
-
-    basketBtn.addEventListener('click', () => {
-      basketPanel.classList.toggle('hidden');
-      this.updateBasketPanel();
-    });
-
+    if (basketBtn) {
+      basketBtn.addEventListener('click', () => {
+        basketPanel.classList.toggle('hidden');
+        this.updateBasketPanel();
+      });
+    }
     // Close basket when clicking outside
     document.addEventListener('click', (e) => {
-      if (!basketPanel.contains(e.target) && !basketBtn.contains(e.target)) {
+      if (!basketPanel.contains(e.target) && !(basketBtn && basketBtn.contains(e.target))) {
         basketPanel.classList.add('hidden');
       }
     });
@@ -74,11 +74,20 @@ class Basket {
   updateBasketCount() {
     const basketBtn = $('.basket-btn');
     const itemCount = this.items.reduce((count, item) => count + item.quantity, 0);
-    
-    if (itemCount > 0) {
-      basketBtn.innerHTML = `Basket 🛒 <span class="basket-count">${itemCount}</span>`;
-    } else {
-      basketBtn.innerHTML = 'Basket 🛒';
+    if (basketBtn) {
+      // Keep the SVG icon and add a count badge if needed
+      if (itemCount > 0) {
+        const countBadge = document.createElement('span');
+        countBadge.className = 'basket-count';
+        countBadge.textContent = itemCount;
+        basketBtn.appendChild(countBadge);
+      } else {
+        // Remove any existing count badge
+        const existingBadge = basketBtn.querySelector('.basket-count');
+        if (existingBadge) {
+          existingBadge.remove();
+        }
+      }
     }
   }
 

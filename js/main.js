@@ -28,6 +28,42 @@ function handleRoute() {
   setupMenuToggle();
 }
 
+// Define categories for the All dropdown
+const categories = [
+  { name: 'General Health', id: 'general-health' },
+  { name: 'Weight Loss', id: 'weight-loss' },
+  { name: 'Sleep', id: 'sleep' },
+  { name: 'Hormones', id: 'hormones' },
+  { name: 'Women’s Health', id: 'womens-health' },
+  { name: 'Men’s Health', id: 'mens-health' },
+  { name: 'Heart Health', id: 'heart-health' },
+  { name: 'Gut Health', id: 'gut-health' },
+  { name: 'Supplements', id: 'supplements' }
+];
+
+function setupAllDropdown() {
+  const dropdown = document.getElementById('burger-dropdown');
+  if (!dropdown) return;
+  dropdown.innerHTML = `<ul>${categories.map(cat => `<li data-id="${cat.id}">${cat.name}</li>`).join('')}</ul>`;
+  dropdown.querySelectorAll('li').forEach(li => {
+    li.addEventListener('click', () => {
+      window.location.hash = `#/category/${li.dataset.id}`;
+      dropdown.classList.add('hidden');
+    });
+  });
+
+  // Show/hide dropdown on hover
+  const wrapper = document.querySelector('.menu-dropdown-wrapper');
+  if (wrapper) {
+    wrapper.addEventListener('mouseenter', () => {
+      dropdown.classList.remove('hidden');
+    });
+    wrapper.addEventListener('mouseleave', () => {
+      dropdown.classList.add('hidden');
+    });
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   // Initialize landing page
   const landingPage = new LandingPage();
@@ -70,4 +106,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize menu functionality
   setupMenuToggle();
+  setupAllDropdown();
 });
