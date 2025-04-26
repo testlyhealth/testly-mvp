@@ -23,25 +23,14 @@ export class WelcomeOverlay {
         overlay.innerHTML = `
             <div class="welcome-content">
                 <button class="close-button">&times;</button>
-                <h1>Testly</h1>
-                <p class="welcome-subtitle"><strong>Compare</strong>, <strong>book</strong> and <strong>track</strong> personalised medical tests and treatments,<br>all in <u>one</u> place</p>
-                <div class="welcome-buttons">
-                    <button class="welcome-button guide-me">
-                        <span class="button-text">I'm not sure what I'm looking for, guide me</span>
-                        <i class="fas fa-compass"></i>
-                    </button>
-                    <button class="welcome-button take-me">
-                        <span class="button-text">I already know what I want, take me to it</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                    <button class="welcome-button doctor">
-                        <span class="button-text">I want to get advice from a doctor</span>
-                        <i class="fas fa-user-md"></i>
-                    </button>
-                    <button class="welcome-button questionnaire">
-                        <span class="button-text">I want to take the health improvement questionnaire</span>
-                        <i class="fas fa-clipboard-list"></i>
-                    </button>
+                <h1>Welcome to Testly</h1>
+                <p class="welcome-subtitle">your solution to finding the right personalised medical test or treatment <strong>for you</strong></p>
+                <p class="welcome-subtitle"><strong>COMPARE</strong>, <strong>BOOK</strong> and <strong>TRACK</strong>, all in one place.</p>
+                <button class="how-it-works-btn">How does it work?</button>
+                <p class="guidance-question">Need guidance to find the right personalised test or treatment for you?</p>
+                <div class="guidance-buttons">
+                    <button class="guidance-btn yes-btn">Yes, I need GUIDANCE</button>
+                    <button class="guidance-btn no-btn">No thanks, I already know what I'm looking for. Take me straight to PICK FOR MYSELF</button>
                 </div>
                 <button class="skip-button">SKIP >></button>
             </div>
@@ -59,11 +48,19 @@ export class WelcomeOverlay {
         // Skip button click
         this.skipButton.addEventListener('click', () => this.closeOverlay());
 
-        // Welcome button clicks
-        const buttons = this.overlay.querySelectorAll('.welcome-button');
-        buttons.forEach(button => {
+        // How it works button click
+        const howItWorksBtn = this.overlay.querySelector('.how-it-works-btn');
+        howItWorksBtn.addEventListener('click', () => {
+            // TODO: Implement how it works functionality
+            console.log('How it works clicked');
+        });
+
+        // Guidance buttons click
+        const guidanceBtns = this.overlay.querySelectorAll('.guidance-btn');
+        guidanceBtns.forEach(button => {
             button.addEventListener('click', () => {
-                // For now, just close the overlay
+                // TODO: Implement guidance functionality
+                console.log('Guidance button clicked:', button.textContent);
                 this.closeOverlay();
             });
         });

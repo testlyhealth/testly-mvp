@@ -5,7 +5,7 @@ import { displayBlogPage } from './blog.js';
 import { displayArticle } from './article.js';
 import { $, $all } from './dom.js';
 import { initLoginModal } from './login-modal.js';
-import { WelcomeOverlay } from './components/welcome-overlay.js';
+import { LandingPage } from './components/landing-page.js';
 import { initUserDropdown } from './user-dropdown.js';
 
 // Handle routing
@@ -29,9 +29,28 @@ function handleRoute() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Initial route
-  handleRoute();
-  
+  // Initialize landing page
+  const landingPage = new LandingPage();
+  landingPage.init();
+
+  // Listen for landing page closure
+  window.addEventListener('landingPageClosed', (event) => {
+    const route = event.detail.route;
+    if (route) {
+        window.location.hash = route;
+    } else {
+        // Show homepage
+        const mainContent = document.querySelector('.product-grid');
+        if (mainContent) {
+            mainContent.style.display = 'block';
+            displayHomePage();
+            // Initialize other components
+            initLoginModal();
+            initUserDropdown();
+        }
+    }
+  });
+
   // Handle route changes
   window.addEventListener('hashchange', handleRoute);
   
@@ -49,18 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Initialize login modal
-  initLoginModal();
-
-  // Initialize welcome overlay
-  const welcomeOverlay = new WelcomeOverlay();
-  welcomeOverlay.init();
-
-  // Initialize user dropdown
-  initUserDropdown();
-
-  // Add click handler for Guide me button
-  $('.guide-me').addEventListener('click', () => {
-    welcomeOverlay.showOverlay();
-  });
+  // Initialize menu functionality
+  setupMenuToggle();
 });

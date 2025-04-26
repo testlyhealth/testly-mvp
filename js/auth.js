@@ -86,7 +86,8 @@ export async function signOut() {
 function updateUIForSignedInUser(user) {
   const loginBtn = document.querySelector('.login-btn');
   if (loginBtn) {
-    loginBtn.textContent = user.displayName || 'My Account';
+    // Keep the SVG icon and add the name as a tooltip
+    loginBtn.title = user.displayName || 'My Account';
     loginBtn.classList.add('signed-in');
   }
 }

@@ -5,17 +5,40 @@ import { blogPosts } from './blog-data.js';
 export function displayHomePage() {
   const mainContent = $('.product-grid');
   
-  // Create the hero section
+  // Create the hero section with 5 boxes
   const heroSection = `
-    <section class="hero-section">
-      <div class="hero-overlay"></div>
-      <div class="hero-content">
-        <h1>Take Control of Your Health</h1>
-        <p>Discover personalized health insights with our comprehensive range of at-home tests</p>
-        <button class="cta-button">Explore Tests</button>
+    <section class="hero-grid">
+      <div class="hero-box large">
+        <div class="box-content">
+          <h2>Lose weight with GLP-1s</h2>
+          <p>Get started with our comprehensive weight loss program</p>
+          <button class="cta-button">Get started</button>
+        </div>
       </div>
-      <div class="hero-image">
-        <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Bright wellness and yoga lifestyle" />
+      <div class="hero-box large">
+        <div class="box-content">
+          <h2>Get hard faster with Sparks</h2>
+          <p>Best seller for enhanced performance</p>
+          <button class="cta-button">Get started</button>
+        </div>
+      </div>
+      <div class="hero-box small">
+        <div class="box-content">
+          <h3>Access Zepbound® in a vial</h3>
+          <button class="cta-button">Get started</button>
+        </div>
+      </div>
+      <div class="hero-box small">
+        <div class="box-content">
+          <h3>Have better sex with Daily Rise</h3>
+          <button class="cta-button">Get started</button>
+        </div>
+      </div>
+      <div class="hero-box small">
+        <div class="box-content">
+          <h3>Regrow your hair</h3>
+          <button class="cta-button">Get started</button>
+        </div>
       </div>
     </section>
   `;
@@ -98,9 +121,7 @@ export function displayHomePage() {
     const tile = e.target.closest('.category-tile');
     if (tile) {
       const categoryId = tile.dataset.category;
-      import('./products.js').then(module => {
-        module.displayCategoryProducts(categoryId);
-      });
+      window.location.hash = `#/category/${categoryId}`;
     }
   });
 
@@ -111,6 +132,13 @@ export function displayHomePage() {
       const articleId = card.dataset.articleId;
       window.location.hash = `#/blog/${articleId}`;
     }
+  });
+
+  // Add click handler to CTA buttons
+  $all('.cta-button').forEach(button => {
+    button.addEventListener('click', () => {
+      window.location.hash = '#/category/general-health';
+    });
   });
 }
 
