@@ -210,33 +210,26 @@ export async function displayCategoryProducts(categoryId) {
       // Create the filter panel
       const filterPanel = createFilterPanel(tests);
 
-      // Create the tests grid container
+      // Create the tests grid container with empty grid first
       const testsGridContainer = `
         <div class="tests-container">
           ${filterPanel}
           <div class="main-content">
             ${categoryHeader}
-            <div class="products-grid" id="tests-grid">
-              ${tests.map(test => createBloodTestCard(test)).join('')}
-            </div>
+            <div class="products-grid" id="tests-grid"></div>
           </div>
         </div>
       `;
 
-      // Update the main content
+      // Update the main content with empty grid
       mainContent.innerHTML = testsGridContainer;
 
       // Setup filter panel functionality
       setupFilterPanel(tests, updateTestsGrid);
 
-      // Add event listeners to the initial "Add to Basket" buttons
-      $all('.add-to-basket').forEach(button => {
-        button.addEventListener('click', (e) => {
-          const testId = e.target.dataset.testId;
-          // We'll implement basket functionality later
-          console.log('Added to basket:', testId);
-        });
-      });
+      // Update the grid with the actual content
+      await updateTestsGrid(tests);
+
     } catch (error) {
       console.error('Error loading blood tests:', error);
       mainContent.innerHTML = `
