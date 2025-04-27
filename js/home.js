@@ -10,10 +10,12 @@ export function displayHomePage() {
   const heroSection = `
     <section class="hero-grid">
       <div class="hero-box large">
+        <video class="hero-video" autoplay muted playsinline style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:0;transform:translateX(15%);">
+          <source src="images/scales-video.mp4" type="video/mp4">
+        </video>
         <div class="box-content">
           <div class="box-text">
-            <h2>Lose weight with GLP-1s</h2>
-            <p>Get started with our comprehensive weight loss program</p>
+            <h2>Lose weight<br>with GLP-1s</h2>
           </div>
           <button class="cta-button">Get started <span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         </div>
@@ -225,6 +227,15 @@ export function displayHomePage() {
       weightLossVideo.pause();
       weightLossVideo.currentTime = weightLossVideo.duration;
       observer.disconnect();
+    };
+  }
+
+  // Stop the scales video after first play
+  const scalesVideo = document.querySelector('.hero-video');
+  if (scalesVideo) {
+    scalesVideo.onended = function() {
+      scalesVideo.pause();
+      scalesVideo.currentTime = scalesVideo.duration;
     };
   }
 
