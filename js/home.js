@@ -11,34 +11,44 @@ export function displayHomePage() {
     <section class="hero-grid">
       <div class="hero-box large">
         <div class="box-content">
-          <h2>Lose weight with GLP-1s</h2>
-          <p>Get started with our comprehensive weight loss program</p>
-          <button class="cta-button">Get started</button>
+          <div class="box-text">
+            <h2>Lose weight with GLP-1s</h2>
+            <p>Get started with our comprehensive weight loss program</p>
+          </div>
+          <button class="cta-button">Get started <span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         </div>
       </div>
       <div class="hero-box large">
         <div class="box-content">
-          <h2>Get hard faster with Sparks</h2>
-          <p>Best seller for enhanced performance</p>
-          <button class="cta-button">Get started</button>
+          <div class="box-text">
+            <h2>Get hard faster with Sparks</h2>
+            <p>Best seller for enhanced performance</p>
+          </div>
+          <button class="cta-button">Get started <span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         </div>
       </div>
       <div class="hero-box small zepbound-box">
         <div class="box-content">
-          <h3>Access Zepbound® in a vial</h3>
-          <button class="cta-button">Get started</button>
+          <div class="box-text">
+            <h3>Access Zepbound® in a vial</h3>
+          </div>
+          <button class="cta-button"><span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         </div>
       </div>
       <div class="hero-box small daily-rise-box">
         <div class="box-content">
-          <h3>Have better sex with Daily Rise</h3>
-          <button class="cta-button">Get started</button>
+          <div class="box-text">
+            <h3>Have better sex with Daily Rise</h3>
+          </div>
+          <button class="cta-button"><span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         </div>
       </div>
       <div class="hero-box small hair-box">
         <div class="box-content">
-          <h3>Regrow your hair</h3>
-          <button class="cta-button">Get started</button>
+          <div class="box-text">
+            <h3>Regrow your hair</h3>
+          </div>
+          <button class="cta-button"><span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         </div>
       </div>
     </section>
