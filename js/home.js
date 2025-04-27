@@ -44,49 +44,77 @@ export function displayHomePage() {
     </section>
   `;
 
-  // Create the category tiles
-  const categoryTiles = `
-    <div class="categories-section">
-      <h2>Health Categories</h2>
-      <p>Explore our range of health tests and find the right one for you</p>
-      <div class="category-tiles">
-        ${Object.entries(categories).map(([id, category]) => `
-          <div class="category-tile" data-category="${id}">
-            <div class="category-image">
-              <i class="fas ${getCategoryIcon(id)}"></i>
-            </div>
-            <div class="category-content">
-              <h3>${category.title}</h3>
-              <p>${category.description}</p>
+  // Create the tracking banner section
+  const trackingBanner = `
+    <section class="tracking-banner">
+      <div class="banner-content">
+        <div class="banner-text">
+          <h2>Track all your results across multiple providers</h2>
+          <p>Get a complete view of your health journey with our unified dashboard</p>
+          <button class="cta-button">View Dashboard</button>
+        </div>
+        <div class="banner-graph">
+          <img src="images/graph.jpeg" alt="Upward trending graph" class="graph-image" style="width:100%;max-width:400px;display:block;margin:0 auto;" />
+        </div>
+      </div>
+    </section>
+  `;
+
+  // Remove the trust indicators section
+  // Add the 4 cheapest products section
+  const cheapestProducts = [
+    {
+      provider: "London Health Company",
+      test_name: "General health blood test",
+      price: 33,
+      biomarkers: 15,
+      link: "https://londonhealthcompany.co.uk/products/general-health-blood-test-15"
+    },
+    {
+      provider: "Numan",
+      test_name: "Core blood test",
+      price: 78.40,
+      biomarkers: 16,
+      link: "https://www.numan.com/lps/gbr/blood-test/core-health-check"
+    },
+    {
+      provider: "Medichecks",
+      test_name: "Health and lifestyle blood test",
+      price: 89,
+      biomarkers: 19,
+      link: "https://www.medichecks.com/products/health-and-lifestyle-check-blood-test"
+    },
+    {
+      provider: "London Medical Laboratory",
+      test_name: "General health profile",
+      price: 89,
+      biomarkers: 19,
+      link: "https://www.londonmedicallaboratory.com/product/general-health"
+    }
+  ];
+
+  const cheapestSection = `
+    <section class="cheapest-products-section">
+      <div class="cheapest-products-grid">
+        ${cheapestProducts.map(product => `
+          <div class="cheapest-product-card">
+            <div class="cheapest-product-content">
+              <div class="cheapest-product-provider">${product.provider}</div>
+              <h3>${product.test_name}</h3>
+              <img src="${product.logo}" alt="${product.provider} logo" class="cheapest-product-logo" />
+              <div class="cheapest-product-biomarkers">${product.biomarkers} biomarkers</div>
+              <div class="cheapest-product-price">£${product.price.toFixed(2)}</div>
             </div>
           </div>
         `).join('')}
       </div>
-    </div>
-  `;
-
-  // Create the trust indicators section
-  const trustIndicators = `
-    <section class="trust-indicators">
-      <div class="trust-item">
-        <i class="fas fa-truck"></i>
-        <h3>Free Delivery</h3>
-        <p>On all test kits</p>
-      </div>
-      <div class="trust-item">
-        <i class="fas fa-certificate"></i>
-        <h3>Certified Labs</h3>
-        <p>UKAS accredited</p>
-      </div>
-      <div class="trust-item">
-        <i class="fas fa-clock"></i>
-        <h3>Quick Results</h3>
-        <p>Within 48 hours</p>
-      </div>
-      <div class="trust-item">
-        <i class="fas fa-shield-alt"></i>
-        <h3>Secure & Private</h3>
-        <p>Data protection</p>
+      <div class="cheapest-products-actions-row">
+        ${cheapestProducts.map(product => `
+          <div class="cheapest-product-actions">
+            <a href="${product.link}" class="cheapest-btn get-started" target="_blank">Get started</a>
+            <a href="${product.link}" class="cheapest-btn learn-more" target="_blank">Learn more</a>
+          </div>
+        `).join('')}
       </div>
     </section>
   `;
@@ -115,16 +143,7 @@ export function displayHomePage() {
   `;
 
   // Update the main content
-  mainContent.innerHTML = heroSection + categoryTiles + trustIndicators + blogSection;
-
-  // Add click handlers to category tiles
-  $('.category-tiles').addEventListener('click', (e) => {
-    const tile = e.target.closest('.category-tile');
-    if (tile) {
-      const categoryId = tile.dataset.category;
-      window.location.hash = `#/category/${categoryId}`;
-    }
-  });
+  mainContent.innerHTML = heroSection + trackingBanner + cheapestSection + blogSection;
 
   // Add click handlers to blog cards
   $('.blog-grid').addEventListener('click', (e) => {
