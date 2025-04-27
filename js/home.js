@@ -11,8 +11,8 @@ export function displayHomePage() {
     <section class="dynamic-title-section">
       <div class="title-container">
         <h1 class="main-title">
-          <span class="dynamic-text">Weight loss</span>
-          <span class="static-text">, we got you</span>
+          <div class="static-text">Compare and book</div>
+          <div class="dynamic-text">blood tests</div>
         </h1>
       </div>
     </section>
@@ -222,6 +222,32 @@ export function displayHomePage() {
 
   // Update the main content
   mainContent.innerHTML = titleSection + heroSection + trackingBannerVideo + cheapestSection + trackingBanner + blogSection;
+
+  // Dynamic title text animation
+  const dynamicText = document.querySelector('.dynamic-text');
+  const phrases = [
+    'blood tests',
+    'weight loss treatments',
+    'hormone clinics',
+    'supplements'
+  ];
+  let currentIndex = 0;
+
+  function updateDynamicText() {
+    dynamicText.classList.add('fade-out');
+    
+    setTimeout(() => {
+      dynamicText.textContent = phrases[currentIndex];
+      dynamicText.classList.remove('fade-out');
+      currentIndex = (currentIndex + 1) % phrases.length;
+    }, 500);
+  }
+
+  // Initial update
+  updateDynamicText();
+  
+  // Set up the interval for subsequent updates
+  setInterval(updateDynamicText, 3000);
 
   // Set video playback rate and stop after one play for the weight loss banner
   const weightLossVideo = document.querySelector('.health-banner-video');

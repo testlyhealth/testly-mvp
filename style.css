@@ -3331,7 +3331,7 @@ body {
   }
 
   .dynamic-title-section {
-    padding: 4rem 2rem 2rem;
+    padding: 1.5rem 2rem;
     max-width: 1200px;
     margin: 0 auto;
   }
@@ -3345,28 +3345,34 @@ body {
     font-weight: 400;
     color: var(--text);
     line-height: 1.2;
-  }
-
-  .dynamic-text {
-    display: inline-block;
-    position: relative;
-    color: var(--accent);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .static-text {
-    display: inline-block;
-  }
-
-  @keyframes fadeInOut {
-    0%, 100% { opacity: 0; transform: translateY(10px); }
-    20%, 80% { opacity: 1; transform: translateY(0); }
+    display: block;
+    font-size: 3.5rem;
   }
 
   .dynamic-text {
-    animation: fadeInOut 4s infinite;
+    display: block;
+    position: relative;
+    color: var(--accent);
+    font-size: 3.5rem;
+    min-height: 4.2rem;
+    opacity: 1;
+    transition: opacity 0.5s ease;
   }
 
-  /* Adjust spacing for the hero grid */
-  .hero-grid {
-    margin-top: 1rem;
+  .dynamic-text.fade-out {
+    opacity: 0;
+  }
+
+  @keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(10px); }
+    20% { opacity: 1; transform: translateY(0); }
+    80% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-10px); }
   }
