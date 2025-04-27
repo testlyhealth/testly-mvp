@@ -6,6 +6,18 @@ import { blogPosts } from './blog-data.js';
 export function displayHomePage() {
   const mainContent = $('.product-grid');
   
+  // Create the dynamic title section
+  const titleSection = `
+    <section class="dynamic-title-section">
+      <div class="title-container">
+        <h1 class="main-title">
+          <span class="dynamic-text">Weight loss</span>
+          <span class="static-text">, we got you</span>
+        </h1>
+      </div>
+    </section>
+  `;
+  
   // Create the hero section with 5 boxes
   const heroSection = `
     <section class="hero-grid">
@@ -21,10 +33,12 @@ export function displayHomePage() {
         </div>
       </div>
       <div class="hero-box large">
+        <video class="hero-video" autoplay muted playsinline style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:0;">
+          <source src="images/man-laugh.mp4" type="video/mp4">
+        </video>
         <div class="box-content">
           <div class="box-text">
-            <h2>Get hard faster with Sparks</h2>
-            <p>Best seller for enhanced performance</p>
+            <h2>Is testosterone<br>for you?</h2>
           </div>
           <button class="cta-button">Get started <span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         </div>
@@ -74,13 +88,13 @@ export function displayHomePage() {
 
   // Create the alternate banner with video
   const trackingBannerVideo = `
-    <div style="position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;width:100vw;height:300px;overflow:hidden;margin-top:-1rem;">
+    <div style="position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;width:100vw;height:300px;overflow:hidden;">
       <video class="health-banner-video" autoplay muted playsinline style="position:absolute;top:0;left:0;width:100vw;height:100%;object-fit:cover;object-position:20% 50%;z-index:0;transform:scaleX(-1);margin:0;padding:0;">
         <source src="images/weight-loss-video.mp4" type="video/mp4">
         Your browser does not support the video tag.
       </video>
       <div class="banner-text" style="position:relative;z-index:2;text-align:left;max-width:500px;color:#fff;padding:3rem 0 3rem 4rem;margin:0;">
-        <h2 style="color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.5);font-weight:400;font-size:2.2rem;line-height:1.3;">Is weightloss medication right for you?</h2>
+        <h2 style="color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.5);">Is weightloss medication right for you?</h2>
         <p style="font-size:1.1rem;color:#fff;margin-top:0.3rem;text-shadow:0 2px 12px rgba(0,0,0,0.5);">Find out here</p>
         <button class="cta-button" style="margin-top:1.2rem;">Get started <span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
       </div>
@@ -158,7 +172,7 @@ export function displayHomePage() {
   ];
 
   const cheapestSection = `
-    <section class="cheapest-products-section" style="margin-top:-1rem;">
+    <section class="cheapest-products-section">
       <div class="cheapest-products-grid cheapest-products-scroll">
         ${cheapestProducts.map(product => `
           <div class="cheapest-product-card">
@@ -207,7 +221,7 @@ export function displayHomePage() {
   `;
 
   // Update the main content
-  mainContent.innerHTML = heroSection + trackingBannerVideo + cheapestSection + trackingBanner + blogSection;
+  mainContent.innerHTML = titleSection + heroSection + trackingBannerVideo + cheapestSection + trackingBanner + blogSection;
 
   // Set video playback rate and stop after one play for the weight loss banner
   const weightLossVideo = document.querySelector('.health-banner-video');
@@ -269,4 +283,4 @@ function getCategoryIcon(categoryId) {
     'supplements': 'fa-pills'
   };
   return icons[categoryId] || 'fa-heartbeat';
-} 
+}

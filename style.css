@@ -3329,3 +3329,44 @@ body {
     position: relative;
     z-index: 1;
   }
+
+  .dynamic-title-section {
+    padding: 4rem 2rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .title-container {
+    text-align: center;
+  }
+
+  .main-title {
+    font-size: 3.5rem;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .dynamic-text {
+    display: inline-block;
+    position: relative;
+    color: var(--accent);
+  }
+
+  .static-text {
+    display: inline-block;
+  }
+
+  @keyframes fadeInOut {
+    0%, 100% { opacity: 0; transform: translateY(10px); }
+    20%, 80% { opacity: 1; transform: translateY(0); }
+  }
+
+  .dynamic-text {
+    animation: fadeInOut 4s infinite;
+  }
+
+  /* Adjust spacing for the hero grid */
+  .hero-grid {
+    margin-top: 1rem;
+  }
