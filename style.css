@@ -76,12 +76,14 @@ body {
   }
   
   .main-nav a {
-    color: var(--text);
+    color: var(--text-color);
     text-decoration: none;
-    font-size: 1.15rem;
-    transition: color 0.2s;
-    white-space: nowrap;
+    font-size: 0.95rem;
     font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
   }
   
   .main-nav a:hover {
