@@ -3331,13 +3331,14 @@ body {
   }
 
   .dynamic-title-section {
-    padding: 1.5rem 2rem;
+    padding: 1rem 2rem;
     max-width: 1200px;
     margin: 0 auto;
   }
 
   .title-container {
     text-align: center;
+    margin-top: -1rem;
   }
 
   .main-title {
@@ -3375,4 +3376,9 @@ body {
     20% { opacity: 1; transform: translateY(0); }
     80% { opacity: 1; transform: translateY(0); }
     100% { opacity: 0; transform: translateY(-10px); }
+  }
+
+  /* Adjust spacing for the hero grid */
+  .hero-grid {
+    margin-top: 3rem;
   }
