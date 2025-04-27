@@ -3741,3 +3741,76 @@ body {
     background: var(--accent-hover);
     color: #fff;
   }
+
+  .cheapest-product-logo {
+    display: block;
+    margin: 0.5rem auto 0.5rem auto;
+    width: 100%;
+    max-height: 40px;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  .cheapest-products-scroll {
+    display: flex !important;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: visible;
+    gap: 1rem;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 0.5rem;
+  }
+
+  .cheapest-product-card {
+    min-width: 240px;
+    max-width: 260px;
+    flex: 0 0 240px;
+    scroll-snap-align: start;
+  }
+
+  .cheapest-product-actions {
+    min-width: 240px;
+    max-width: 260px;
+    flex: 0 0 240px;
+  }
+
+  .cheapest-products-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cheapest-products-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .banner-text .cta-button {
+    background: #fff;
+    color: #111;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    padding: 0.6rem 1.8rem 0.6rem 1.2rem;
+    min-width: 120px;
+    border: none;
+    font-weight: 600;
+    box-shadow: none;
+    transition: background 0.2s, color 0.2s;
+    text-align: center;
+    margin-top: 1.2rem;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+
+  .banner-text .cta-button:hover {
+    background: #f7f7f7;
+    color: #111;
+  }
+
+  .banner-text .cta-button .arrow {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin-left: 0.3em;
+    vertical-align: middle;
+  }

@@ -60,6 +60,21 @@ export function displayHomePage() {
     </section>
   `;
 
+  // Create the alternate banner with video
+  const trackingBannerVideo = `
+    <div style="position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;width:100vw;height:300px;overflow:hidden;margin-top:-1rem;">
+      <video class="health-banner-video" autoplay muted playsinline style="position:absolute;top:0;left:0;width:100vw;height:100%;object-fit:cover;object-position:20% 50%;z-index:0;transform:scaleX(-1);margin:0;padding:0;">
+        <source src="images/weight-loss-video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      <div class="banner-text" style="position:relative;z-index:2;text-align:left;max-width:500px;color:#fff;padding:3rem 0 3rem 4rem;margin:0;">
+        <h2 style="color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.5);font-weight:400;font-size:2.2rem;line-height:1.3;">Is weightloss medication right for you?</h2>
+        <p style="font-size:1.1rem;color:#fff;margin-top:0.3rem;text-shadow:0 2px 12px rgba(0,0,0,0.5);">Find out here</p>
+        <button class="cta-button" style="margin-top:1.2rem;">Get started <span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+      </div>
+    </div>
+  `;
+
   // Remove the trust indicators section
   // Add the 4 cheapest products section
   const cheapestProducts = [
@@ -68,6 +83,7 @@ export function displayHomePage() {
       test_name: "General health blood test",
       price: 33,
       biomarkers: 15,
+      logo: "images/logos/london health company.png",
       link: "https://londonhealthcompany.co.uk/products/general-health-blood-test-15"
     },
     {
@@ -75,6 +91,7 @@ export function displayHomePage() {
       test_name: "Core blood test",
       price: 78.40,
       biomarkers: 16,
+      logo: "images/logos/numan.png",
       link: "https://www.numan.com/lps/gbr/blood-test/core-health-check"
     },
     {
@@ -82,6 +99,7 @@ export function displayHomePage() {
       test_name: "Health and lifestyle blood test",
       price: 89,
       biomarkers: 19,
+      logo: "images/logos/medichecks.png",
       link: "https://www.medichecks.com/products/health-and-lifestyle-check-blood-test"
     },
     {
@@ -89,13 +107,47 @@ export function displayHomePage() {
       test_name: "General health profile",
       price: 89,
       biomarkers: 19,
+      logo: "images/logos/london medical laboratory.png",
       link: "https://www.londonmedicallaboratory.com/product/general-health"
+    },
+    // Additional 4 placeholder products
+    {
+      provider: "Superdrug",
+      test_name: "Essential blood test",
+      price: 99,
+      biomarkers: 12,
+      logo: "images/logos/superdrug.png",
+      link: "https://www.superdrug.com/health-services/blood-tests/essential"
+    },
+    {
+      provider: "Bluecrest",
+      test_name: "Wellness check",
+      price: 120,
+      biomarkers: 18,
+      logo: "images/logos/bluecrest.png",
+      link: "https://www.bluecrestwellness.com/blood-tests/wellness-check"
+    },
+    {
+      provider: "Thriva",
+      test_name: "Baseline blood test",
+      price: 110,
+      biomarkers: 14,
+      logo: "images/logos/thriva.png",
+      link: "https://thriva.co/products/baseline-blood-test"
+    },
+    {
+      provider: "Forth",
+      test_name: "Vitality blood test",
+      price: 105,
+      biomarkers: 17,
+      logo: "images/logos/forth.png",
+      link: "https://www.forthwithlife.co.uk/blood-tests/vitality"
     }
   ];
 
   const cheapestSection = `
-    <section class="cheapest-products-section">
-      <div class="cheapest-products-grid">
+    <section class="cheapest-products-section" style="margin-top:-1rem;">
+      <div class="cheapest-products-grid cheapest-products-scroll">
         ${cheapestProducts.map(product => `
           <div class="cheapest-product-card">
             <div class="cheapest-product-content">
@@ -108,7 +160,7 @@ export function displayHomePage() {
           </div>
         `).join('')}
       </div>
-      <div class="cheapest-products-actions-row">
+      <div class="cheapest-products-actions-row cheapest-products-scroll">
         ${cheapestProducts.map(product => `
           <div class="cheapest-product-actions">
             <a href="${product.link}" class="cheapest-btn get-started" target="_blank">Get started</a>
@@ -143,7 +195,28 @@ export function displayHomePage() {
   `;
 
   // Update the main content
-  mainContent.innerHTML = heroSection + trackingBanner + cheapestSection + blogSection;
+  mainContent.innerHTML = heroSection + trackingBannerVideo + cheapestSection + trackingBanner + blogSection;
+
+  // Set video playback rate and stop after one play for the weight loss banner
+  const weightLossVideo = document.querySelector('.health-banner-video');
+  if (weightLossVideo) {
+    weightLossVideo.playbackRate = 0.75;
+    weightLossVideo.pause();
+    // Only play when visible
+    const observer = new window.IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          weightLossVideo.play();
+        }
+      });
+    }, { threshold: 0.3 });
+    observer.observe(weightLossVideo);
+    weightLossVideo.onended = function() {
+      weightLossVideo.pause();
+      weightLossVideo.currentTime = weightLossVideo.duration;
+      observer.disconnect();
+    };
+  }
 
   // Add click handlers to blog cards
   $('.blog-grid').addEventListener('click', (e) => {
