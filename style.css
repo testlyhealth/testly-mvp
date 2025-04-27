@@ -3816,3 +3816,57 @@ body {
     margin-left: 0.3em;
     vertical-align: middle;
   }
+
+  .hero-box.zepbound-box {
+    background-color: #BCB0C9;
+    color: #111;
+  }
+
+  .hero-box.zepbound-box .box-content h3 {
+    color: #111;
+  }
+
+  .hero-box.zepbound-box .cta-button {
+    background-color: white;
+    color: #111;
+  }
+
+  .hero-box.zepbound-box .cta-button:hover {
+    background-color: #f0f0f0;
+  }
+
+  .hero-box.daily-rise-box {
+    background-color: #E1E4E7;
+    color: #111;
+  }
+
+  .hero-box.daily-rise-box .box-content h3 {
+    color: #111;
+  }
+
+  .hero-box.daily-rise-box .cta-button {
+    background-color: white;
+    color: #111;
+  }
+
+  .hero-box.daily-rise-box .cta-button:hover {
+    background-color: #f0f0f0;
+  }
+
+  .hero-box.hair-box {
+    background-color: #BAC3D3;
+    color: #111;
+  }
+
+  .hero-box.hair-box .box-content h3 {
+    color: #111;
+  }
+
+  .hero-box.hair-box .cta-button {
+    background-color: white;
+    color: #111;
+  }
+
+  .hero-box.hair-box .cta-button:hover {
+    background-color: #f0f0f0;
+  }

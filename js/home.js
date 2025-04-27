@@ -23,19 +23,19 @@ export function displayHomePage() {
           <button class="cta-button">Get started</button>
         </div>
       </div>
-      <div class="hero-box small">
+      <div class="hero-box small zepbound-box">
         <div class="box-content">
           <h3>Access Zepbound® in a vial</h3>
           <button class="cta-button">Get started</button>
         </div>
       </div>
-      <div class="hero-box small">
+      <div class="hero-box small daily-rise-box">
         <div class="box-content">
           <h3>Have better sex with Daily Rise</h3>
           <button class="cta-button">Get started</button>
         </div>
       </div>
-      <div class="hero-box small">
+      <div class="hero-box small hair-box">
         <div class="box-content">
           <h3>Regrow your hair</h3>
           <button class="cta-button">Get started</button>
