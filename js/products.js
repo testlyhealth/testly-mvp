@@ -196,7 +196,7 @@ export async function displayCategoryProducts(categoryId) {
       `;
 
       // Fetch the tests data
-      const response = await fetch('./data/providers.json');
+      const response = await fetch('/data/providers.json');
       const tests = await response.json();
       
       // Create the category header

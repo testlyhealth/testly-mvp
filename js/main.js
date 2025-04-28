@@ -34,8 +34,8 @@ const categories = [
   { name: 'Weight Loss', id: 'weight-loss' },
   { name: 'Sleep', id: 'sleep' },
   { name: 'Hormones', id: 'hormones' },
-  { name: 'Women’s Health', id: 'womens-health' },
-  { name: 'Men’s Health', id: 'mens-health' },
+  { name: "Women's Health", id: 'womens-health' },
+  { name: "Men's Health", id: 'mens-health' },
   { name: 'Heart Health', id: 'heart-health' },
   { name: 'Gut Health', id: 'gut-health' },
   { name: 'Supplements', id: 'supplements' }
@@ -65,27 +65,22 @@ function setupAllDropdown() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Initialize landing page
-  const landingPage = new LandingPage();
-  landingPage.init();
+  // Initialize components
+  initLoginModal();
+  initUserDropdown();
+  setupMenuToggle();
+  setupAllDropdown();
 
-  // Listen for landing page closure
-  window.addEventListener('landingPageClosed', (event) => {
-    const route = event.detail.route;
-    if (route) {
-        window.location.hash = route;
-    } else {
-        // Show homepage
-        const mainContent = document.querySelector('.product-grid');
-        if (mainContent) {
-            mainContent.style.display = 'block';
-            displayHomePage();
-            // Initialize other components
-            initLoginModal();
-            initUserDropdown();
-        }
-    }
-  });
+  // Create product grid if it doesn't exist
+  let mainContent = document.querySelector('.product-grid');
+  if (!mainContent) {
+    mainContent = document.createElement('main');
+    mainContent.className = 'product-grid';
+    document.body.appendChild(mainContent);
+  }
+
+  // Show homepage
+  displayHomePage();
 
   // Handle route changes
   window.addEventListener('hashchange', handleRoute);
@@ -103,8 +98,4 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.hash = `#/category/${categoryId}`;
     });
   });
-
-  // Initialize menu functionality
-  setupMenuToggle();
-  setupAllDropdown();
 });

@@ -33,7 +33,7 @@ export function displayHomePage() {
         </div>
       </div>
       <div class="hero-box large">
-        <video class="hero-video" autoplay muted playsinline style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:0;">
+        <video class="hero-video" autoplay muted playsinline style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:brightness(1.1);">
           <source src="images/man-laugh.mp4" type="video/mp4">
         </video>
         <div class="box-content">
@@ -270,14 +270,18 @@ export function displayHomePage() {
     };
   }
 
-  // Stop the scales video after first play
-  const scalesVideo = document.querySelector('.hero-video');
-  if (scalesVideo) {
-    scalesVideo.onended = function() {
-      scalesVideo.pause();
-      scalesVideo.currentTime = scalesVideo.duration;
+  // Stop the videos after first play
+  const videos = document.querySelectorAll('.hero-video');
+  videos.forEach((video, index) => {
+    video.onended = function() {
+      video.pause();
+      if (index === 0) { // scales video
+        video.currentTime = video.duration;
+      } else { // testosterone video
+        video.currentTime = video.duration - 20;
+      }
     };
-  }
+  });
 
   // Add click handlers to blog cards
   $('.blog-grid').addEventListener('click', (e) => {
