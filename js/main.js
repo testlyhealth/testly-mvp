@@ -3,6 +3,7 @@ import { displayCategoryProducts } from './products.js';
 import { displayHomePage } from './home.js';
 import { displayBlogPage } from './blog.js';
 import { displayArticle } from './article.js';
+import { displayBloodTestsPage } from './blood-tests.js';
 import { $, $all } from './dom.js';
 import { initLoginModal } from './login-modal.js';
 import { LandingPage } from './components/landing-page.js';
@@ -11,8 +12,11 @@ import { initUserDropdown } from './user-dropdown.js';
 // Handle routing
 function handleRoute() {
   const hash = window.location.hash;
+  const path = window.location.pathname;
   
-  if (hash.startsWith('#/blog/')) {
+  if (path.includes('blood-tests.html')) {
+    displayBloodTestsPage();
+  } else if (hash.startsWith('#/blog/')) {
     const articleId = hash.split('/')[2];
     displayArticle(articleId);
   } else if (hash === '#/blog') {
