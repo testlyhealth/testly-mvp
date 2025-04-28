@@ -3550,3 +3550,20 @@ body {
   .test-tile.advanced-tile:hover {
     background: #5a5a58;
   }
+
+  .blood-tests-grid h1 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: var(--text);
+    font-size: 2rem;
+  }
+
+  .blood-tests-grid .subtitle {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }

@@ -17,6 +17,7 @@ export function displayBloodTestsPage() {
 
   mainContent.innerHTML = `
     <h1>Blood Tests</h1>
+    <p class="subtitle">Compare blood tests across the whole market and find the best and cheapest test for you</p>
     <div class="tiles-container">
       ${categories.map(category => `
         <a href="#/category/${category.id}" class="test-tile ${category.isAdvanced ? 'advanced-tile' : ''}" style="${category.color ? `background-color: ${category.color}` : ''}">
