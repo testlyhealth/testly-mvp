@@ -1,4 +1,5 @@
 import { $ } from './dom.js';
+import { displayCategoryProducts } from './products.js';
 
 export function displayBloodTestsPage() {
   const mainContent = $('.blood-tests-grid');
@@ -28,4 +29,20 @@ export function displayBloodTestsPage() {
       `).join('')}
     </div>
   `;
+
+  // Add click handlers to the tiles
+  mainContent.querySelectorAll('.test-tile').forEach(tile => {
+    tile.addEventListener('click', (e) => {
+      e.preventDefault();
+      const href = tile.getAttribute('href');
+      if (href.startsWith('#/category/')) {
+        const categoryId = href.split('/')[2];
+        // Clear the blood tests page content
+        mainContent.innerHTML = '';
+        // Update the URL and display category products
+        window.location.hash = `#/category/${categoryId}`;
+        displayCategoryProducts(categoryId);
+      }
+    });
+  });
 } 
