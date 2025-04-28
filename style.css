@@ -3428,3 +3428,27 @@ body {
   .filter-panel .biomarker-group-content {
     font-size: 0.75rem;
   }
+
+  .filter-panel .price-filters,
+  .filter-panel .trustpilot-filters,
+  .filter-panel .location-filters,
+  .filter-panel .results-time-filters,
+  .filter-panel .provider-filters {
+    margin-bottom: 2rem;
+  }
+
+  .filter-panel .price-filters:last-child,
+  .filter-panel .trustpilot-filters:last-child,
+  .filter-panel .location-filters:last-child,
+  .filter-panel .results-time-filters:last-child,
+  .filter-panel .provider-filters:last-child {
+    margin-bottom: 0;
+  }
+
+  .filter-panel .filter-section {
+    margin-bottom: 1rem;
+  }
+
+  .filter-panel .filter-section:last-child {
+    margin-bottom: 0;
+  }

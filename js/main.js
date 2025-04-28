@@ -79,8 +79,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(mainContent);
   }
 
-  // Show homepage
-  displayHomePage();
+  // Handle initial route
+  handleRoute();
 
   // Handle route changes
   window.addEventListener('hashchange', handleRoute);
