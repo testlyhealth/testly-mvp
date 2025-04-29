@@ -7,7 +7,7 @@ export function displayBloodTestsPage() {
 
   const categories = [
     { name: 'Advanced', id: 'advanced', icon: 'fa-microscope', description: 'Let me pick the tests myself', isAdvanced: true },
-    { name: 'General Health', id: 'general-health', icon: 'fa-heartbeat', description: 'Comprehensive health screening and monitoring', color: '#ECEAF8' },
+    { name: 'General Health', id: 'general-health', icon: 'fa-heartbeat', description: 'Comprehensive health screening and monitoring', color: '#ECEAF8', href: 'general-health-tests.html' },
     { name: 'Hormone Health', id: 'hormone-health', icon: 'fa-balance-scale', description: 'Comprehensive hormone health screening and monitoring', color: '#ECEAF8' },
     { name: 'Heart Health', id: 'heart-health', icon: 'fa-heart', description: 'Comprehensive heart health screening and monitoring', color: '#ECEAF8' },
     { name: 'Performance', id: 'performance', icon: 'fa-dumbbell', description: 'Comprehensive performance screening and monitoring', color: '#ECEAF8' },
@@ -21,7 +21,7 @@ export function displayBloodTestsPage() {
     <p class="subtitle">Compare blood tests across the whole market and find the best and cheapest test for you</p>
     <div class="tiles-container">
       ${categories.map(category => `
-        <a href="#/category/${category.id}" class="test-tile ${category.isAdvanced ? 'advanced-tile' : ''}" style="${category.color ? `background-color: ${category.color}` : ''}">
+        <a href="${category.href || `#/category/${category.id}`}" class="test-tile ${category.isAdvanced ? 'advanced-tile' : ''}" style="${category.color ? `background-color: ${category.color}` : ''}">
           <i class="fas ${category.icon}"></i>
           <h3>${category.name}</h3>
           <p>${category.description}</p>
@@ -33,12 +33,13 @@ export function displayBloodTestsPage() {
   // Add click handlers to the tiles
   mainContent.querySelectorAll('.test-tile').forEach(tile => {
     tile.addEventListener('click', (e) => {
-      e.preventDefault();
       const href = tile.getAttribute('href');
       if (href.startsWith('#/category/')) {
+        e.preventDefault();
         const categoryId = href.split('/')[2];
         // Clear the blood tests page content
         mainContent.innerHTML = '';
+        mainContent.style.display = 'none';
         // Update the URL and display category products
         window.location.hash = `#/category/${categoryId}`;
         // Use setTimeout to ensure the DOM is updated before displaying category products

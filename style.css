@@ -48,15 +48,17 @@ body {
     width: 100%;
     z-index: 1000;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    height: 72px;
   }
   
   .header-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem 2rem;
+    padding: 0 2rem;
     max-width: 1200px;
     margin: 0 auto;
+    height: 100%;
   }
   
   .logo {
@@ -136,8 +138,10 @@ body {
   
   /* Update main content margin */
   main.product-grid {
-    margin-top: 72px; /* Reduced from 112px to account for single-line header */
-    padding: 2rem;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    top: 72px;
   }
   
   /* Responsive adjustments */
@@ -2130,8 +2134,8 @@ body {
   .main-content {
     background: var(--white);
     border-left: 1px solid var(--border);
-    min-height: calc(100vh - 112px);
-    padding: 2rem;
+    min-height: calc(100vh - 72px);
+    padding: 0;
     margin-left: 180px;
     flex: 1;
   }
@@ -2202,13 +2206,14 @@ body {
 
   .category-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin: 0;
+    padding: 1rem 0;
   }
 
   .category-header h2 {
     font-size: 2rem;
     color: var(--text);
-    margin-bottom: 0.5rem;
+    margin: 0;
     font-weight: 400;
   }
 
@@ -2216,6 +2221,7 @@ body {
     color: var(--text-light);
     font-size: 1.1rem;
     line-height: 1.4;
+    margin: 0.5rem 0 0 0;
   }
 
   .test-header {

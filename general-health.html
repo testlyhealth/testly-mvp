@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Testly – General Health Blood Tests</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+  <!-- Header bar -->
+  <header class="main-header">
+    <div class="header-content">
+      <button class="burger-menu" aria-label="Open menu">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <a href="index.html" class="logo">Testly</a>
+      <nav class="main-nav">
+        <a href="blood-tests.html">Blood tests</a>
+        <a href="#/category/weight-loss">Weight Loss</a>
+        <a href="#/category/mens-health">Men's Health</a>
+        <a href="#/category/womens-health">Women's Health</a>
+        <a href="#/category/supplements">Supplements</a>
+        <div class="menu-dropdown-wrapper">
+          <button class="menu-button">All</button>
+          <div id="burger-dropdown" class="burger-dropdown hidden"></div>
+        </div>
+      </nav>
+      <div class="header-actions">
+        <button class="login-btn">
+          <i class="fas fa-user"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="general-health-page">
+    <div class="filter-panel">
+      <div class="loading">Loading filters...</div>
+    </div>
+    <div class="main-content">
+      <div class="category-header">
+        <h2>General Health Blood Tests</h2>
+        <p>Comprehensive blood tests to assess your overall health and wellbeing</p>
+      </div>
+      <div class="products-grid" id="tests-grid">
+        <div class="loading">Loading tests...</div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/general-health.js"></script>
+</body>
+</html> 

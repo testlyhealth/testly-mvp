@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Testly – General Health Blood Tests</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .main-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      z-index: 1000;
+    }
+    main {
+      margin-top: 80px;
+      flex: 1;
+    }
+    .page-title {
+      text-align: center;
+      padding: 2rem 0;
+    }
+    .page-title h1 {
+      margin: 0;
+      color: #000;
+      font-size: 2.5rem;
+      font-weight: 600;
+    }
+    .page-title p {
+      margin: 0.5rem 0 0;
+      color: #000;
+      font-size: 1.1rem;
+    }
+    .logo {
+      text-decoration: none;
+    }
+    .recommendations {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .recommendation-box {
+      background: white;
+      border: 1px solid #e2e8f0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .recommendation-box h2 {
+      margin: 0;
+      color: #2d3748;
+      font-size: 1.5rem;
+    }
+    .recommendation-box p {
+      margin: 0;
+      color: #4a5568;
+    }
+    .recommendation-box .price {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #2c5282;
+    }
+    .recommendation-box .button {
+      background: #2c5282;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      width: fit-content;
+    }
+    .recommendation-box .button:hover {
+      background: #2b6cb0;
+    }
+    .provider-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .provider-logo {
+      height: 40px;
+      object-fit: contain;
+    }
+    .provider-name {
+      font-size: 1.1rem;
+      color: #4a5568;
+    }
+    .test-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin: 1rem 0;
+      padding: 1rem;
+      background: #f8fafc;
+      border-radius: 0.5rem;
+    }
+    .test-details > div {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .test-details strong {
+      color: #2d3748;
+      min-width: 120px;
+    }
+    .biomarkers {
+      color: #4a5568;
+    }
+    .results-time {
+      color: #4a5568;
+    }
+    .accreditations {
+      color: #4a5568;
+    }
+    .trust-score {
+      color: #4a5568;
+    }
+    .doctors-report {
+      color: #4a5568;
+    }
+    .pricing-info {
+      color: #4a5568;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header bar -->
+  <header class="main-header">
+    <div class="header-content">
+      <button class="burger-menu" aria-label="Open menu">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <a href="index.html" class="logo">Testly</a>
+      <nav class="main-nav">
+        <a href="blood-tests.html">Blood tests</a>
+        <a href="#/category/weight-loss">Weight Loss</a>
+        <a href="#/category/mens-health">Men's Health</a>
+        <a href="#/category/womens-health">Women's Health</a>
+        <a href="#/category/supplements">Supplements</a>
+        <div class="menu-dropdown-wrapper">
+          <button class="menu-button">All</button>
+          <div id="burger-dropdown" class="burger-dropdown hidden"></div>
+        </div>
+      </nav>
+      <div class="header-actions">
+        <button class="login-btn">
+          <i class="fas fa-user"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="recommendations">
+      <div class="recommendation-box">
+        <h2>Our Top All-Round Recommendation</h2>
+        <p>Comprehensive health screening with the best balance of biomarkers and value</p>
+        <div class="price">£149</div>
+        <a href="#" class="button">View Details</a>
+      </div>
+
+      <div class="recommendation-box">
+        <h2>Best Value for Money</h2>
+        <p>Essential health markers at an affordable price</p>
+        <div class="price">£99</div>
+        <a href="#" class="button">View Details</a>
+      </div>
+
+      <div class="recommendation-box">
+        <h2>No Expense Spared</h2>
+        <p>The most comprehensive health screening available</p>
+        <div class="price">£299</div>
+        <a href="#" class="button">View Details</a>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/general-health-tests.js"></script>
+</body>
+</html> 

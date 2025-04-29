@@ -14,7 +14,23 @@ function handleRoute() {
   const hash = window.location.hash;
   const path = window.location.pathname;
   
+  // Clear any existing content
+  const bloodTestsGrid = $('.blood-tests-grid');
+  const productGrid = $('.product-grid');
+  
+  if (bloodTestsGrid) {
+    bloodTestsGrid.innerHTML = '';
+    bloodTestsGrid.style.display = 'none';
+  }
+  
+  if (productGrid) {
+    productGrid.style.display = 'block';
+  }
+  
   if (path.includes('blood-tests.html')) {
+    if (bloodTestsGrid) {
+      bloodTestsGrid.style.display = 'block';
+    }
     displayBloodTestsPage();
   } else if (hash.startsWith('#/blog/')) {
     const articleId = hash.split('/')[2];
