@@ -41,7 +41,10 @@ export function displayBloodTestsPage() {
         mainContent.innerHTML = '';
         // Update the URL and display category products
         window.location.hash = `#/category/${categoryId}`;
-        displayCategoryProducts(categoryId);
+        // Use setTimeout to ensure the DOM is updated before displaying category products
+        setTimeout(() => {
+          displayCategoryProducts(categoryId);
+        }, 0);
       }
     });
   });

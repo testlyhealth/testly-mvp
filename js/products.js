@@ -176,6 +176,12 @@ async function updateTestsGrid(tests) {
 // Function to display products for a category
 export async function displayCategoryProducts(categoryId) {
   const mainContent = $('.product-grid');
+  const bloodTestsGrid = $('.blood-tests-grid');
+  
+  // Clear the blood tests page content if it exists
+  if (bloodTestsGrid) {
+    bloodTestsGrid.innerHTML = '';
+  }
   
   if (categoryId === 'general-health') {
     try {
