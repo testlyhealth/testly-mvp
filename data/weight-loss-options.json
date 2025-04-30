@@ -1,0 +1,64 @@
+{
+    "provider": "string",
+    "provider_url": "string",
+    "weight_loss_program_name": "string",
+    "description": "string",
+    "medications_available": [
+      "Wegovy (semaglutide)",
+      "Ozempic (semaglutide)",
+      "Saxenda (liraglutide)",
+      "Semaglutide (generic)",
+      "Liraglutide (generic)",
+      "Other"
+    ],
+    "price_per_month": {
+      "Wegovy (semaglutide)": "string",
+      "Ozempic (semaglutide)": "string",
+      "Saxenda (liraglutide)": "string",
+      "Semaglutide (generic)": "string",
+      "Liraglutide (generic)": "string",
+      "Other": "string"
+    },
+    "dose_strengths_available": {
+      "Wegovy (semaglutide)": ["0.25 mg", "0.5 mg", "1 mg", "1.7 mg", "2.4 mg"],
+      "Ozempic (semaglutide)": ["0.25 mg", "0.5 mg", "1 mg", "2 mg"],
+      "Saxenda (liraglutide)": ["0.6 mg", "1.2 mg", "1.8 mg", "2.4 mg", "3 mg"],
+      "Semaglutide (generic)": ["Specify mg"],
+      "Liraglutide (generic)": ["Specify mg"]
+    },
+    "uptitration_schedule": {
+      "Wegovy (semaglutide)": "string",
+      "Ozempic (semaglutide)": "string",
+      "Saxenda (liraglutide)": "string",
+      "Semaglutide (generic)": "string",
+      "Liraglutide (generic)": "string"
+    },
+    "initial_consultation_required": "Yes | No",
+    "consultation_type": "Online form | Video consult | Phone call | In-person",
+    "prescriber_type": "Doctor | Pharmacist | Nurse | Not specified",
+    "includes_diagnostic_tests": "Yes | No",
+    "follow_up_frequency": "Weekly | Biweekly | Monthly | Optional | Not specified",
+    "support_included": [
+      "Health coach",
+      "Doctor review",
+      "Diet plan",
+      "Exercise plan",
+      "Mobile app",
+      "Community access",
+      "1:1 check-ins"
+    ],
+    "subscription_model": "Yes | No",
+    "can_cancel_anytime": "Yes | No | With notice",
+    "delivery_included": "Yes | No",
+    "delivery_speed": "Next day | 2–3 days | 5–7 days | Not specified",
+    "packaging_description": "string",
+    "uk_regulatory_approval": [
+      "MHRA",
+      "CQC",
+      "GPhC",
+      "Not specified"
+    ],
+    "trustpilot_score": "number",
+    "disclaimer_or_warnings": "string",
+    "terms_url": "string"
+  }

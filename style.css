@@ -137,11 +137,17 @@ body {
   }
   
   /* Update main content margin */
+  main {
+    margin-top: 72px; /* Height of the fixed header */
+    padding: 0;
+    position: relative;
+  }
+  
+  /* Remove the old product-grid specific margin */
   main.product-grid {
     margin: 0;
     padding: 0;
     position: relative;
-    top: 72px;
   }
   
   /* Responsive adjustments */
@@ -2788,10 +2794,10 @@ body {
     font-weight: 300;
   }
 
-  .hero-box.large .cta-button {
+  .hero-box .cta-button {
+    border-radius: 999px;
     background: #111;
     color: #fff;
-    border-radius: 999px;
     font-size: 0.8rem;
     padding: 0.6rem 1.8rem 0.6rem 1.2rem;
     min-width: 120px;
@@ -2808,12 +2814,12 @@ body {
     margin-top: auto;
   }
 
-  .hero-box.large .cta-button:hover {
+  .hero-box .cta-button:hover {
     background: #333;
     color: #fff;
   }
 
-  .hero-box.large .cta-button .arrow {
+  .hero-box .cta-button .arrow {
     display: inline-block;
     width: 18px;
     height: 18px;
@@ -2821,7 +2827,7 @@ body {
     vertical-align: middle;
   }
 
-  .hero-box.large .cta-button .arrow svg path {
+  .hero-box .cta-button .arrow svg path {
     stroke: #fff;
   }
 
@@ -3743,4 +3749,69 @@ body {
   .blood-test-card .toggle-details:hover {
     background: var(--accent);
     color: white;
+  }
+
+  .hero-grid-large {
+    display: flex;
+    gap: 1rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .hero-box {
+    flex: 1;
+    background: #ECEAF8;
+    border: 1px solid var(--border);
+    height: 300px;
+  }
+
+  .hero-grid-small {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    padding: 0 2rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .hero-box {
+    background: #ECEAF8;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    box-shadow: 0 2px 4px var(--card-shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .hero-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--card-shadow);
+  }
+
+  .hero-box.large {
+    height: 300px;
+  }
+
+  .hero-box.small {
+    height: 160px;
+  }
+
+  .hero-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  .hero-box.large:first-child .hero-video {
+    transform: translateX(15%);
+  }
+
+  .hero-box.large:nth-child(2) .hero-video {
+    filter: brightness(1.1);
   }

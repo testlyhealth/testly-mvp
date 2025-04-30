@@ -19,7 +19,7 @@
       </button>
       <div class="logo">Testly</div>
       <nav class="main-nav">
-        <a href="blood-tests.html">Blood tests</a>
+        <a href="#/blood-tests">Blood tests</a>
         <a href="#/category/weight-loss">Weight Loss</a>
         <a href="#/category/mens-health">Men's Health</a>
         <a href="#/category/womens-health">Women's Health</a>
@@ -37,9 +37,110 @@
     </div>
   </header>
 
-  <!-- Main product area -->
-  <main class="product-grid">
-    <p>Select a category to get started.</p>
+  <!-- Main content area -->
+  <main>
+    <!-- Dynamic title section -->
+    <section class="dynamic-title-section">
+      <div class="title-container">
+        <h1 class="main-title">
+          <div class="static-text">Compare and book</div>
+          <div class="dynamic-text">blood tests</div>
+        </h1>
+      </div>
+    </section>
+
+    <!-- Hero section with 2 large boxes -->
+    <section class="hero-grid-large">
+      <div class="hero-box">
+        <div class="box-content">
+          <div class="box-text">
+            <h2>Lose weight<br>with GLP-1s</h2>
+          </div>
+          <button class="cta-button">Get started <span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        </div>
+      </div>
+      <div class="hero-box">
+        <div class="box-content">
+          <div class="box-text">
+            <h2>Is testosterone<br>for you?</h2>
+          </div>
+          <button class="cta-button">Get started <span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Small boxes section -->
+    <section class="hero-grid-small">
+      <div class="hero-box small zepbound-box">
+        <div class="box-content">
+          <div class="box-text">
+            <h3>Access Zepbound® in a vial</h3>
+          </div>
+          <button class="cta-button"><span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        </div>
+      </div>
+      <div class="hero-box small daily-rise-box">
+        <div class="box-content">
+          <div class="box-text">
+            <h3>Have better sex with Daily Rise</h3>
+          </div>
+          <button class="cta-button"><span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        </div>
+      </div>
+      <div class="hero-box small hair-box">
+        <div class="box-content">
+          <div class="box-text">
+            <h3>Regrow your hair</h3>
+          </div>
+          <button class="cta-button"><span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Weight loss banner with video -->
+    <div style="position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;width:100vw;height:300px;overflow:hidden;">
+      <video class="health-banner-video" autoplay muted playsinline style="position:absolute;top:0;left:0;width:100vw;height:100%;object-fit:cover;object-position:20% 50%;z-index:0;transform:scaleX(-1);margin:0;padding:0;">
+        <source src="images/weight-loss-video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      <div class="banner-text" style="position:relative;z-index:2;text-align:left;max-width:500px;color:#fff;padding:3rem 0 3rem 4rem;margin:0;">
+        <h2 style="color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.5);">Is weightloss medication right for you?</h2>
+        <p style="font-size:1.1rem;color:#fff;margin-top:0.3rem;text-shadow:0 2px 12px rgba(0,0,0,0.5);">Find out here</p>
+        <button class="cta-button" style="margin-top:1.2rem;">Get started <span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+      </div>
+    </div>
+
+    <!-- Cheapest products section -->
+    <section class="cheapest-products-section">
+      <div class="cheapest-products-grid cheapest-products-scroll">
+        <!-- Product cards will be dynamically loaded -->
+      </div>
+      <div class="cheapest-products-actions-row cheapest-products-scroll">
+        <!-- Action buttons will be dynamically loaded -->
+      </div>
+    </section>
+
+    <!-- Tracking banner section -->
+    <section class="tracking-banner">
+      <div class="banner-content">
+        <div class="banner-text">
+          <h2>Track all your results across multiple providers</h2>
+          <p>Get a complete view of your health journey with our unified dashboard</p>
+          <button class="cta-button">View Dashboard</button>
+        </div>
+        <div class="banner-graph">
+          <img src="images/graph.jpeg" alt="Upward trending graph" class="graph-image" style="width:100%;max-width:400px;display:block;margin:0 auto;" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Blog section -->
+    <div class="blog-section">
+      <h2>Latest health insights</h2>
+      <div class="blog-grid">
+        <!-- Blog posts will be dynamically loaded -->
+      </div>
+    </div>
   </main>
 
   <!-- Pop-down panels (hidden for now) -->
@@ -93,6 +194,69 @@
 
     // Dispatch event when Firebase is ready
     window.dispatchEvent(new Event('firebaseReady'));
+  </script>
+
+  <!-- Dynamic content initialization -->
+  <script type="module">
+    // Initialize dynamic title text animation
+    const dynamicText = document.querySelector('.dynamic-text');
+    const phrases = [
+      'blood tests',
+      'weight loss treatments',
+      'hormone clinics',
+      'supplements'
+    ];
+    let currentIndex = 0;
+
+    function updateDynamicText() {
+      dynamicText.classList.add('fade-out');
+      
+      setTimeout(() => {
+        dynamicText.textContent = phrases[currentIndex];
+        dynamicText.classList.remove('fade-out');
+        currentIndex = (currentIndex + 1) % phrases.length;
+      }, 500);
+    }
+
+    // Initial update
+    updateDynamicText();
+    
+    // Set up the interval for subsequent updates
+    setInterval(updateDynamicText, 3000);
+
+    // Handle video playback
+    const videos = document.querySelectorAll('.hero-video');
+    videos.forEach((video, index) => {
+      video.onended = function() {
+        video.pause();
+        if (index === 0) { // scales video
+          video.currentTime = video.duration;
+        } else { // testosterone video
+          video.currentTime = video.duration - 20;
+        }
+      };
+    });
+
+    // Handle weight loss banner video
+    const weightLossVideo = document.querySelector('.health-banner-video');
+    if (weightLossVideo) {
+      weightLossVideo.playbackRate = 0.75;
+      weightLossVideo.pause();
+      // Only play when visible
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            weightLossVideo.play();
+          }
+        });
+      }, { threshold: 0.3 });
+      observer.observe(weightLossVideo);
+      weightLossVideo.onended = function() {
+        weightLossVideo.pause();
+        weightLossVideo.currentTime = weightLossVideo.duration;
+        observer.disconnect();
+      };
+    }
   </script>
 </body>
 </html>

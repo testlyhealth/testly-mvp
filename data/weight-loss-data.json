@@ -1,0 +1,118 @@
+  {
+    "provider": "Juniper",
+    "provider_url": "https://www.myjuniper.co.uk/glp-medication",
+    "weight_loss_program_name": "Weight Reset Programme",
+    "description": "Juniper’s Weight Reset Programme offers GLP-1-based weight loss treatments, including Wegovy and Mounjaro, combined with lifestyle coaching to promote sustainable weight loss.",
+    "medications_available": [
+      "Wegovy (semaglutide)",
+      "Mounjaro (tirzepatide)"
+    ],
+    "price_per_month": {
+      "Wegovy (semaglutide)": "From £189",
+      "Mounjaro (tirzepatide)": "From £189"
+    },
+    "dose_strengths_available": {
+      "Wegovy (semaglutide)": ["0.25 mg", "0.5 mg", "1 mg", "1.7 mg", "2.4 mg"],
+      "Mounjaro (tirzepatide)": ["2.5 mg", "5 mg", "7.5 mg", "10 mg", "12.5 mg", "15 mg"]
+    },
+    "uptitration_schedule": {
+      "Wegovy (semaglutide)": "Start at 0.25 mg once weekly for 4 weeks, then increase every 4 weeks to 0.5 mg, 1 mg, 1.7 mg, and finally 2.4 mg as maintenance dose.",
+      "Mounjaro (tirzepatide)": "Start at 2.5 mg once weekly, increasing every 4 weeks through 5 mg, 7.5 mg, 10 mg, 12.5 mg, up to 15 mg as maintenance dose."
+    },
+    "initial_consultation_required": "Yes",
+    "consultation_type": "Online form",
+    "prescriber_type": "Doctor",
+    "includes_diagnostic_tests": "No",
+    "follow_up_frequency": "Monthly",
+    "support_included": [
+      "Health coach",
+      "Doctor review",
+      "Diet plan",
+      "Exercise plan",
+      "Mobile app",
+      "Community access",
+      "1:1 check-ins"
+    ],
+    "subscription_model": "Yes",
+    "can_cancel_anytime": "Yes",
+    "delivery_included": "Yes",
+    "delivery_speed": "2–3 days",
+    "packaging_description": "Discreet packaging with cold-chain shipping to maintain medication efficacy.",
+    "availability": [
+      "UK"
+    ],
+    "trustpilot_score": 4.8,
+    "regulatory_approval": [
+      "MHRA",
+      "CQC",
+      "GPhC"
+    ],
+    "disclaimer_or_warnings": "Wegovy and Mounjaro are prescription medications and should be used under medical supervision. Not suitable for individuals with a history of certain medical conditions. Consult with a healthcare professional before starting treatment.",
+    "terms_url": "https://www.myjuniper.co.uk/terms"
+  }, 
+  
+  {
+    "provider": "Numan",
+    "provider_url": "https://www.numan.com/lps/gbr/offers/wlprogramme-100cdn",
+    "weight_loss_program_name": "Weight Loss Programme",
+    "description": "Numan’s Weight Loss Programme offers clinically-proven weight loss medications, including Wegovy and Mounjaro, combined with personalized coaching and continuous clinical support to promote sustainable weight loss.",
+    "medications_available": [
+      "Wegovy (semaglutide)",
+      "Mounjaro (tirzepatide)"
+    ],
+    "price_per_month": {
+      "Wegovy (semaglutide)": {
+        "0.25 mg": "£209",
+        "0.5 mg": "£209",
+        "1 mg": "£209",
+        "1.7 mg": "£249",
+        "2.4 mg": "£299"
+      },
+      "Mounjaro (tirzepatide)": {
+        "2.5 mg": "£209",
+        "5 mg": "£209",
+        "7.5 mg": "£229",
+        "10 mg": "£229",
+        "12.5 mg": "£299",
+        "15 mg": "£299"
+      }
+    },
+    "dose_strengths_available": {
+      "Wegovy (semaglutide)": ["0.25 mg", "0.5 mg", "1 mg", "1.7 mg", "2.4 mg"],
+      "Mounjaro (tirzepatide)": ["2.5 mg", "5 mg", "7.5 mg", "10 mg", "12.5 mg", "15 mg"]
+    },
+    "uptitration_schedule": {
+      "Wegovy (semaglutide)": "Start at 0.25 mg once weekly for 4 weeks, then increase every 4 weeks to 0.5 mg, 1 mg, 1.7 mg, and finally 2.4 mg as maintenance dose.",
+      "Mounjaro (tirzepatide)": "Start at 2.5 mg once weekly, increasing every 4 weeks through 5 mg, 7.5 mg, 10 mg, 12.5 mg, up to 15 mg as maintenance dose."
+    },
+    "initial_consultation_required": "Yes",
+    "consultation_type": "Online form",
+    "prescriber_type": "Doctor",
+    "includes_diagnostic_tests": "No",
+    "follow_up_frequency": "Monthly",
+    "support_included": [
+      "Health coach",
+      "Doctor review",
+      "Diet plan",
+      "Exercise plan",
+      "Mobile app",
+      "Community access",
+      "1:1 check-ins"
+    ],
+    "subscription_model": "Yes",
+    "can_cancel_anytime": "Yes",
+    "delivery_included": "Yes",
+    "delivery_speed": "2–3 days",
+    "packaging_description": "Discreet packaging with cold-chain shipping to maintain medication efficacy.",
+    "availability": [
+      "UK"
+    ],
+    "trustpilot_score": 4.6,
+    "regulatory_approval": [
+      "MHRA",
+      "CQC",
+      "GPhC"
+    ],
+    "disclaimer_or_warnings": "Wegovy and Mounjaro are prescription medications and should be used under medical supervision. Not suitable for individuals with a history of certain medical conditions. Consult with a healthcare professional before starting treatment.",
+    "terms_url": "https://www.numan.com/terms-and-conditions"
+  }, 
