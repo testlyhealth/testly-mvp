@@ -3752,9 +3752,19 @@ body {
   }
 
   .hero-grid-large {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
-    padding: 2rem;
+    padding: 2rem 2rem 0 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .hero-grid-small {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    padding: 0 2rem 2rem;
     max-width: 1200px;
     margin: 0 auto;
   }
