@@ -2761,7 +2761,7 @@ body {
   .hero-box.small {
     grid-column: span 1;
     grid-row: 2;
-    height: 160px;
+    height: 140px; /* Reduced height for small hero boxes */
   }
 
   .hero-box.large:first-child {
@@ -3805,7 +3805,7 @@ body {
   }
 
   .hero-box.small {
-    height: 160px;
+    height: 140px; /* Reduced height for small hero boxes */
   }
 
   .hero-video {

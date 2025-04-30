@@ -187,6 +187,16 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(mainContent);
   }
 
+  // Handle navigation
+  const navLinks = document.querySelectorAll('.main-nav a:not(.logo)');
+  navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const path = link.getAttribute('href').substring(1);
+      window.location.hash = path;
+    });
+  });
+
   // Handle initial route
   handleRoute();
 
