@@ -1,69 +1,62 @@
-import { $, $all } from './dom.js';
-import { signOut } from './auth.js';
+import { $ } from './dom.js';
+import store from './store.js';
 
 export function initUserDropdown() {
     const loginBtn = $('.login-btn');
+    const headerActions = $('.header-actions');
     
-    // Create dropdown menu
-    const dropdown = document.createElement('div');
-    dropdown.className = 'user-dropdown hidden';
-    dropdown.innerHTML = `
+    // Create user dropdown
+    const userDropdown = document.createElement('div');
+    userDropdown.className = 'user-dropdown hidden';
+    userDropdown.innerHTML = `
         <div class="dropdown-content">
-            <a href="#" class="dropdown-item basket-link">
-                <i class="fas fa-shopping-basket"></i>
-                Basket
+            <a href="#/account" class="dropdown-item">
+                <i class="fas fa-user"></i>
+                Account
             </a>
-            <a href="#" class="dropdown-item account-settings">
-                <i class="fas fa-cog"></i>
-                Account Settings
+            <a href="#/orders" class="dropdown-item">
+                <i class="fas fa-box"></i>
+                Orders
             </a>
-            <a href="#" class="dropdown-item logout">
+            <a href="#/cart" class="dropdown-item">
+                <i class="fas fa-shopping-cart"></i>
+                Cart
+            </a>
+            <button class="dropdown-item logout">
                 <i class="fas fa-sign-out-alt"></i>
                 Logout
-            </a>
+            </button>
         </div>
     `;
     
     // Add dropdown to the header
-    loginBtn.parentElement.appendChild(dropdown);
+    headerActions.appendChild(userDropdown);
     
-    // Show dropdown when login button is clicked
+    // Toggle dropdown
     loginBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (loginBtn.classList.contains('signed-in')) {
-            dropdown.classList.toggle('hidden');
-        }
-    });
-    
-    // Handle logout
-    const logoutBtn = dropdown.querySelector('.logout');
-    logoutBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        try {
-            await signOut();
-            dropdown.classList.add('hidden');
-        } catch (error) {
-            console.error('Logout failed:', error);
-            alert('Logout failed: ' + error.message);
-        }
-    });
-    
-    // Handle basket link
-    const basketLink = dropdown.querySelector('.basket-link');
-    basketLink.addEventListener('click', (e) => {
-        e.preventDefault();
         e.stopPropagation();
-        const basketPanel = document.getElementById('basket-panel');
-        if (basketPanel) {
-            basketPanel.classList.toggle('hidden');
+        if (window.firebaseAuth?.currentUser) {
+            userDropdown.classList.toggle('hidden');
         }
-        dropdown.classList.add('hidden');
     });
     
     // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
-        if (!loginBtn.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.add('hidden');
+        if (!e.target.closest('.user-dropdown') && !e.target.closest('.login-btn')) {
+            userDropdown.classList.add('hidden');
+        }
+    });
+    
+    // Handle logout
+    const logoutBtn = userDropdown.querySelector('.logout');
+    logoutBtn.addEventListener('click', async () => {
+        try {
+            await window.firebaseSignOut(window.firebaseAuth);
+            store.setUser(null);
+            userDropdown.classList.add('hidden');
+        } catch (error) {
+            console.error('Logout error:', error);
+            store.setError('Failed to log out. Please try again.');
         }
     });
 } 

@@ -1,4 +1,5 @@
 import { signInWithGoogle, signInWithEmail, signUpWithEmail } from './auth.js';
+import store from './store.js';
 
 // Create login modal HTML
 function createLoginModal() {
@@ -41,85 +42,146 @@ function createLoginModal() {
   `;
 }
 
-// Initialize login modal
+// Login Modal Component
 export function initLoginModal() {
-  // Add modal to body
-  document.body.insertAdjacentHTML('beforeend', createLoginModal());
-  
-  const modal = document.querySelector('.login-modal');
-  const closeBtn = modal.querySelector('.close-modal');
-  const loginBtn = document.querySelector('.login-btn');
-  const googleLoginBtn = modal.querySelector('.google-login-btn');
-  const emailLoginForm = modal.querySelector('.email-login-form');
-  const toggleSignupLink = modal.querySelector('.toggle-signup');
-  
-  // Show modal when login button is clicked (only if not signed in)
-  loginBtn.addEventListener('click', (e) => {
-    if (!loginBtn.classList.contains('signed-in')) {
-      modal.classList.remove('hidden');
-    }
-  });
-  
-  // Close modal
-  closeBtn.addEventListener('click', () => {
-    modal.classList.add('hidden');
-  });
-  
-  // Close modal when clicking outside
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      modal.classList.add('hidden');
-    }
-  });
-  
-  // Handle Google login
-  googleLoginBtn.addEventListener('click', async () => {
-    try {
-      console.log('Attempting Google sign in...');
-      const user = await signInWithGoogle();
-      console.log('Google sign in successful:', user);
-      modal.classList.add('hidden');
-    } catch (error) {
-      console.error('Google login failed:', error);
-      // Show error message to user
-      alert('Google sign in failed: ' + error.message);
-    }
-  });
-  
-  // Handle email login
-  emailLoginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = emailLoginForm.querySelector('#email').value;
-    const password = emailLoginForm.querySelector('#password').value;
-    const isSignUp = emailLoginForm.classList.contains('signup-mode');
+    const loginBtn = document.querySelector('.login-btn');
+    const headerActions = document.querySelector('.header-actions');
     
-    try {
-      console.log(`Attempting ${isSignUp ? 'sign up' : 'sign in'} with email...`);
-      const user = isSignUp 
-        ? await signUpWithEmail(email, password)
-        : await signInWithEmail(email, password);
-      console.log(`${isSignUp ? 'Sign up' : 'Sign in'} successful:`, user);
-      modal.classList.add('hidden');
-    } catch (error) {
-      console.error(`${isSignUp ? 'Sign up' : 'Sign in'} failed:`, error);
-      // Show error message to user
-      alert(`${isSignUp ? 'Sign up' : 'Sign in'} failed: ` + error.message);
-    }
-  });
-  
-  // Toggle between sign in and sign up
-  toggleSignupLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    const isSignUp = emailLoginForm.classList.toggle('signup-mode');
-    const submitBtn = emailLoginForm.querySelector('button[type="submit"]');
-    const toggleText = toggleSignupLink.textContent;
+    // Create user dropdown
+    const userDropdown = document.createElement('div');
+    userDropdown.className = 'user-dropdown hidden';
+    userDropdown.innerHTML = `
+        <div class="dropdown-content">
+            <a href="#/account" class="dropdown-item">
+                <i class="fas fa-user"></i>
+                Account
+            </a>
+            <a href="#/orders" class="dropdown-item">
+                <i class="fas fa-box"></i>
+                Orders
+            </a>
+            <a href="#/cart" class="dropdown-item">
+                <i class="fas fa-shopping-cart"></i>
+                Cart
+            </a>
+            <button class="dropdown-item logout">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </div>
+    `;
     
-    if (isSignUp) {
-      submitBtn.textContent = 'Sign Up';
-      toggleSignupLink.textContent = 'Sign in';
-    } else {
-      submitBtn.textContent = 'Sign In';
-      toggleSignupLink.textContent = 'Sign up';
+    // Create login modal
+    const loginModal = document.createElement('div');
+    loginModal.className = 'login-modal hidden';
+    loginModal.innerHTML = `
+        <div class="login-modal-content">
+            <button class="close-modal">&times;</button>
+            <div class="login-options">
+                <button class="google-login-btn">
+                    <i class="fab fa-google"></i>
+                    Continue with Google
+                </button>
+                <div class="divider">
+                    <span>or</span>
+                </div>
+                <form class="email-login-form">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <button type="submit" class="email-login-btn">Login</button>
+                </form>
+                <p class="signup-link">
+                    Don't have an account? <a href="#/signup">Sign up</a>
+                </p>
+            </div>
+        </div>
+    `;
+
+    // Add elements to DOM
+    headerActions.appendChild(userDropdown);
+    document.body.appendChild(loginModal);
+
+    // Function to close modal
+    const closeModal = () => {
+        loginModal.classList.add('hidden');
+    };
+
+    // Toggle dropdown
+    loginBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (window.firebaseAuth.currentUser) {
+            userDropdown.classList.toggle('hidden');
+        } else {
+            loginModal.classList.remove('hidden');
+        }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.user-dropdown') && !e.target.closest('.login-btn')) {
+            userDropdown.classList.add('hidden');
+        }
+    });
+
+    // Close modal
+    const closeModalBtn = loginModal.querySelector('.close-modal');
+    closeModalBtn.addEventListener('click', closeModal);
+
+    // Close modal when clicking outside
+    loginModal.addEventListener('click', (e) => {
+        if (e.target === loginModal) {
+            closeModal();
+        }
+    });
+
+    // Handle Google login
+    const googleLoginBtn = loginModal.querySelector('.google-login-btn');
+    if (googleLoginBtn) {
+        googleLoginBtn.addEventListener('click', async () => {
+            try {
+                const result = await window.firebaseSignInWithPopup(window.firebaseAuth, window.firebaseGoogleProvider);
+                store.setUser(result.user);
+                closeModal();
+            } catch (error) {
+                console.error('Google login error:', error);
+                store.setError('Failed to sign in with Google. Please try again.');
+            }
+        });
     }
-  });
+
+    // Handle form submission
+    const emailForm = loginModal.querySelector('.email-login-form');
+    emailForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = emailForm.querySelector('#email').value;
+        const password = emailForm.querySelector('#password').value;
+
+        try {
+            const result = await window.firebaseSignInWithEmailAndPassword(window.firebaseAuth, email, password);
+            store.setUser(result.user);
+            closeModal();
+        } catch (error) {
+            console.error('Login error:', error);
+            store.setError('Failed to sign in. Please check your credentials.');
+        }
+    });
+
+    // Handle logout
+    const logoutBtn = userDropdown.querySelector('.logout');
+    logoutBtn.addEventListener('click', async () => {
+        try {
+            await window.firebaseSignOut(window.firebaseAuth);
+            store.setUser(null);
+            userDropdown.classList.add('hidden');
+        } catch (error) {
+            console.error('Logout error:', error);
+            store.setError('Failed to log out. Please try again.');
+        }
+    });
 } 

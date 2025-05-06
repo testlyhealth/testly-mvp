@@ -1,0 +1,42 @@
+{
+  "tests": [
+    {
+      "id": "bt001",
+      "name": "Comprehensive Health Check",
+      "provider": "Medichecks",
+      "category": "general",
+      "price": 89.99,
+      "description": "Complete health check including liver function, kidney function, and full blood count",
+      "testsIncluded": [
+        "Full Blood Count",
+        "Liver Function",
+        "Kidney Function",
+        "Cholesterol",
+        "Diabetes Check"
+      ],
+      "turnaroundTime": "2-3 days",
+      "sampleType": "Finger-prick",
+      "url": "https://www.medichecks.com/comprehensive-health-check",
+      "lastUpdated": "2024-03-15"
+    },
+    {
+      "id": "bt002",
+      "name": "Male Hormone Check",
+      "provider": "Thriva",
+      "category": "mens-health",
+      "price": 79.99,
+      "description": "Comprehensive male hormone check including testosterone and thyroid function",
+      "testsIncluded": [
+        "Testosterone",
+        "Free Testosterone",
+        "SHBG",
+        "Thyroid Function",
+        "Vitamin D"
+      ],
+      "turnaroundTime": "3-4 days",
+      "sampleType": "Finger-prick",
+      "url": "https://thriva.co/male-hormone-check",
+      "lastUpdated": "2024-03-14"
+    }
+  ]
+} 

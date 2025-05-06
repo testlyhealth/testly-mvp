@@ -86,7 +86,7 @@ export async function signOut() {
 function updateUIForSignedInUser(user) {
   const loginBtn = document.querySelector('.login-btn');
   if (loginBtn) {
-    // Keep the SVG icon and add the name as a tooltip
+    loginBtn.innerHTML = '<i class="fas fa-user-check"></i>';
     loginBtn.title = user.displayName || 'My Account';
     loginBtn.classList.add('signed-in');
   }
@@ -96,7 +96,8 @@ function updateUIForSignedInUser(user) {
 function updateUIForSignedOutUser() {
   const loginBtn = document.querySelector('.login-btn');
   if (loginBtn) {
-    loginBtn.textContent = 'Login';
+    loginBtn.innerHTML = '<i class="fas fa-user"></i>';
+    loginBtn.title = 'Login';
     loginBtn.classList.remove('signed-in');
   }
 }

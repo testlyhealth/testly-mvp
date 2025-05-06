@@ -1,0 +1,24 @@
+{
+  "providers": [
+    {
+      "id": "medichecks",
+      "name": "Medichecks",
+      "logo": "/images/providers/medichecks.png",
+      "description": "UK's leading online blood testing service",
+      "website": "https://www.medichecks.com",
+      "trustpilotRating": 4.8,
+      "sampleTypes": ["Finger-prick", "Venous"],
+      "turnaroundTime": "2-3 days"
+    },
+    {
+      "id": "thriva",
+      "name": "Thriva",
+      "logo": "/images/providers/thriva.png",
+      "description": "Personalized health testing and insights",
+      "website": "https://thriva.co",
+      "trustpilotRating": 4.7,
+      "sampleTypes": ["Finger-prick"],
+      "turnaroundTime": "3-4 days"
+    }
+  ]
+} 

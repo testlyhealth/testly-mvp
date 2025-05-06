@@ -1,0 +1,32 @@
+{
+  "categories": [
+    {
+      "id": "general",
+      "name": "General Health",
+      "description": "Comprehensive health checks and general wellness tests",
+      "icon": "heartbeat",
+      "popularTests": ["Full Blood Count", "Liver Function", "Kidney Function"]
+    },
+    {
+      "id": "mens-health",
+      "name": "Men's Health",
+      "description": "Tests specifically for men's health concerns",
+      "icon": "male",
+      "popularTests": ["Testosterone", "PSA", "Thyroid Function"]
+    },
+    {
+      "id": "womens-health",
+      "name": "Women's Health",
+      "description": "Tests specifically for women's health concerns",
+      "icon": "female",
+      "popularTests": ["Hormone Panel", "Thyroid Function", "Iron Studies"]
+    },
+    {
+      "id": "weight-loss",
+      "name": "Weight Loss",
+      "description": "Tests to support weight loss and metabolic health",
+      "icon": "weight",
+      "popularTests": ["Metabolic Panel", "Thyroid Function", "Insulin"]
+    }
+  ]
+} 

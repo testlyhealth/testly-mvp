@@ -49,6 +49,9 @@ body {
     z-index: 1000;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     height: 72px;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
   
   .header-content {
@@ -59,6 +62,10 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     height: 100%;
+    position: relative;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
   
   .logo {
@@ -75,6 +82,10 @@ body {
     gap: 2rem;
     margin: 0 2rem;
     flex-wrap: nowrap;
+    position: relative;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
   
   .main-nav a {
@@ -139,7 +150,7 @@ body {
   /* Update main content margin */
   main {
     margin-top: 72px; /* Height of the fixed header */
-    padding: 0;
+    padding: 1rem 0 0 0; /* Reduced from 2rem to 1rem */
     position: relative;
   }
   
@@ -2060,16 +2071,14 @@ body {
   /* User Dropdown Styles */
   .user-dropdown {
     position: absolute;
-    top: calc(100% + 5px);
+    top: 100%;
     right: 0;
     background: var(--white);
-    border: 1.5px solid var(--text);
-    border-radius: 0;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
     min-width: 200px;
-    z-index: 2000;
-    padding: 0.5rem 0;
-    display: block;
   }
 
   .user-dropdown.hidden {
@@ -2088,7 +2097,6 @@ body {
     color: var(--text);
     text-decoration: none;
     transition: background-color 0.2s;
-    border-radius: 0;
   }
 
   .dropdown-item:hover {
@@ -2096,21 +2104,18 @@ body {
   }
 
   .dropdown-item i {
-    width: 20px;
+    width: 1.25rem;
     text-align: center;
-    color: var(--text-light);
   }
 
   .dropdown-item.logout {
-    color: var(--text);
-  }
-
-  .dropdown-item.logout i {
-    color: var(--text);
-  }
-
-  .dropdown-item.logout:hover {
-    background-color: var(--card-bg);
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: inherit;
+    font-family: inherit;
   }
   
   /* Update login button styles */
@@ -3452,14 +3457,14 @@ body {
     padding: 1rem 2rem;
     max-width: 1200px;
     margin: 0 auto;
-  }
+}
 
-  .title-container {
+.title-container {
     text-align: center;
-    margin-top: -1rem;
-  }
+    margin: 1rem 0; /* Add equal margin above and below */
+}
 
-  .main-title {
+.main-title {
     font-size: 3.5rem;
     font-weight: 400;
     color: var(--text);
@@ -3824,4 +3829,315 @@ body {
 
   .hero-box.large:nth-child(2) .hero-video {
     filter: brightness(1.1);
+  }
+
+  /* Loading state */
+  body.loading::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(to right, #007bff, #00ff88);
+    animation: loading 1s infinite linear;
+    z-index: 9999;
+  }
+
+  @keyframes loading {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Cart button */
+  .cart-btn {
+    position: relative;
+    padding: 0.5rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: inherit;
+  }
+
+  .cart-btn::after {
+    content: attr(data-count);
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4444;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.2s ease;
+  }
+
+  .cart-btn[data-count]:not([data-count="0"])::after {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Error notification */
+  .error-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #ff4444;
+    color: white;
+    padding: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 9999;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+
+  /* Loading Overlay */
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.3s ease;
+  }
+
+  .loading-overlay.hidden {
+    display: none;
+  }
+
+  .loading-spinner {
+    text-align: center;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  .loading-spinner p {
+    color: var(--text);
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Page Transitions */
+  .page-transition {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .page-transition.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Blood Tests Page Styles */
+  .blood-tests-page {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .categories-section {
+    margin-bottom: 3rem;
+  }
+
+  .categories-section h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    color: #333;
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .category-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+
+  .category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .category-card i {
+    font-size: 2.5rem;
+    color: #4CAF50;
+    margin-bottom: 1rem;
+  }
+
+  .category-card h3 {
+    margin: 0.5rem 0;
+    color: #333;
+  }
+
+  .category-card p {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .general-health-section h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    color: #333;
+  }
+
+  .tests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .test-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .test-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .test-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.2rem;
+  }
+
+  .provider {
+    background: #f0f0f0;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: #666;
+  }
+
+  .description {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+  }
+
+  .test-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .price {
+    font-weight: bold;
+    color: #4CAF50;
+  }
+
+  .tests-included {
+    margin: 1rem 0;
+  }
+
+  .tests-included h4 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+    font-size: 1rem;
+  }
+
+  .tests-included ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .tests-included li {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+    padding-left: 1.2rem;
+    position: relative;
+  }
+
+  .tests-included li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #4CAF50;
+  }
+
+  .test-card .cta-button {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    padding: 0.8rem;
+    background: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+  }
+
+  .test-card .cta-button:hover {
+    background: #45a049;
+  }
+
+  @media (max-width: 768px) {
+    .blood-tests-page {
+      padding: 1rem;
+    }
+    
+    .categories-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .tests-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .categories-section h1 {
+      font-size: 2rem;
+    }
   }

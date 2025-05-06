@@ -8,87 +8,166 @@ import { $, $all } from './dom.js';
 import { initLoginModal } from './login-modal.js';
 import { LandingPage } from './components/landing-page.js';
 import { initUserDropdown } from './user-dropdown.js';
+import Router from './router.js';
+import store from './store.js';
 
-// Main application router
-class Router {
-    constructor() {
-        this.routes = new Map();
-        this.init();
+// Define routes
+const routes = [
+  { path: '/blood-tests', template: 'blood-tests.html' },
+  { path: '/category/weight-loss', template: 'weight-loss.html' },
+  { path: '/category/mens-health', template: 'mens-health.html' },
+  { path: '/category/womens-health', template: 'womens-health.html' },
+  { path: '/category/supplements', template: 'supplements.html' }
+];
+
+// Initialize router
+const router = new Router(routes);
+
+// Handle route changes
+async function handleRoute() {
+  const hash = window.location.hash.slice(1) || '/';
+  
+  if (hash === '/blood-tests') {
+    try {
+      store.setLoading(true);
+      const content = await displayBloodTestsPage();
+      router.render(content);
+    } catch (error) {
+      console.error('Error loading blood tests page:', error);
+      store.setError('Failed to load blood tests page. Please try again.');
+    } finally {
+      store.setLoading(false);
     }
-
-    init() {
-        // Handle initial route
-        window.addEventListener('load', () => this.handleRoute());
-        
-        // Handle route changes
-        window.addEventListener('hashchange', () => this.handleRoute());
-        
-        // Register routes
-        this.registerRoutes();
+  } else {
+    const route = routes.find(r => r.path === hash) || routes.find(r => r.path === '*');
+    
+    if (route) {
+      try {
+        store.setLoading(true);
+        const template = await router.loadTemplate(route.template);
+        router.render(template);
+      } catch (error) {
+        console.error('Error loading route:', error);
+        store.setError('Failed to load page. Please try again.');
+      } finally {
+        store.setLoading(false);
+      }
     }
-
-    registerRoutes() {
-        // Empty string route (homepage) is handled by static HTML
-        this.routes.set('blood-tests', this.showBloodTests);
-        this.routes.set('category/weight-loss', this.showWeightLoss);
-        this.routes.set('category/mens-health', this.showMensHealth);
-        this.routes.set('category/womens-health', this.showWomensHealth);
-        this.routes.set('category/supplements', this.showSupplements);
-    }
-
-    async handleRoute() {
-        const hash = window.location.hash.slice(2) || ''; // Remove #/ and get path
-        
-        // If we're on the homepage (empty hash), don't do anything
-        if (!hash) {
-            return;
-        }
-
-        const handler = this.routes.get(hash);
-        
-        if (handler) {
-            await handler();
-        } else {
-            this.show404();
-        }
-    }
-
-    // Route handlers
-    async showBloodTests() {
-        const main = document.querySelector('main');
-        main.innerHTML = '<p>Blood Tests page content loading...</p>';
-        // TODO: Load blood tests content
-    }
-
-    async showWeightLoss() {
-        const main = document.querySelector('main');
-        main.innerHTML = '<p>Weight Loss page content loading...</p>';
-        // TODO: Load weight loss content
-    }
-
-    async showMensHealth() {
-        const main = document.querySelector('main');
-        main.innerHTML = "<p>Men's Health page content loading...</p>";
-        // TODO: Load men's health content
-    }
-
-    async showWomensHealth() {
-        const main = document.querySelector('main');
-        main.innerHTML = "<p>Women's Health page content loading...</p>";
-        // TODO: Load women's health content
-    }
-
-    async showSupplements() {
-        const main = document.querySelector('main');
-        main.innerHTML = '<p>Supplements page content loading...</p>';
-        // TODO: Load supplements content
-    }
-
-    show404() {
-        const main = document.querySelector('main');
-        main.innerHTML = '<p>Page not found</p>';
-    }
+  }
 }
+
+// Initialize the application
+function initApp() {
+  // Set up navigation click handlers
+  document.querySelectorAll('nav a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const href = link.getAttribute('href');
+      if (href.startsWith('#')) {
+        window.location.hash = href;
+      }
+    });
+  });
+
+  // Set up login button
+  const loginBtn = document.querySelector('.login-btn');
+  if (loginBtn) {
+    loginBtn.addEventListener('click', () => {
+      // TODO: Implement login modal
+      console.log('Login clicked');
+    });
+  }
+
+  // Subscribe to state changes
+  store.subscribe((state) => {
+    // Update UI based on state changes
+    updateUI(state);
+  });
+
+  // Initialize Firebase auth state listener
+  if (window.firebaseAuth) {
+    window.firebaseAuth.onAuthStateChanged((user) => {
+      store.setUser(user);
+      updateLoginButton(user);
+    });
+  }
+
+  // Initialize router
+  router.init();
+}
+
+// Update login button based on auth state
+function updateLoginButton(user) {
+  const loginBtn = document.querySelector('.login-btn');
+  if (loginBtn) {
+    if (user) {
+      loginBtn.innerHTML = '<i class="fas fa-user-check"></i>';
+      loginBtn.title = 'Account';
+      loginBtn.classList.add('signed-in');
+    } else {
+      loginBtn.innerHTML = '<i class="fas fa-user"></i>';
+      loginBtn.title = 'Login';
+      loginBtn.classList.remove('signed-in');
+    }
+  }
+}
+
+// Update UI based on state
+function updateUI(state) {
+  // Update login button
+  const loginBtn = document.querySelector('.login-btn');
+  if (loginBtn) {
+    if (state.user) {
+      loginBtn.innerHTML = '<i class="fas fa-user-check"></i>';
+      loginBtn.title = 'Logged in';
+    } else {
+      loginBtn.innerHTML = '<i class="fas fa-user"></i>';
+      loginBtn.title = 'Login';
+    }
+  }
+
+  // Update cart count if we have a cart button
+  const cartBtn = document.querySelector('.cart-btn');
+  if (cartBtn) {
+    const itemCount = state.cart.reduce((total, item) => total + item.quantity, 0);
+    cartBtn.setAttribute('data-count', itemCount);
+  }
+
+  // Show loading state
+  if (state.loading) {
+    document.body.classList.add('loading');
+  } else {
+    document.body.classList.remove('loading');
+  }
+
+  // Show error if any
+  if (state.error) {
+    showError(state.error);
+  }
+}
+
+// Show error notification
+function showError(message) {
+  const existingError = document.querySelector('.error-notification');
+  if (existingError) {
+    existingError.remove();
+  }
+
+  const errorDiv = document.createElement('div');
+  errorDiv.className = 'error-notification';
+  errorDiv.textContent = message;
+  document.body.appendChild(errorDiv);
+
+  setTimeout(() => {
+    errorDiv.remove();
+  }, 5000);
+}
+
+// Initialize the app when Firebase is ready
+window.addEventListener('firebaseReady', initApp);
+
+// Initialize router
+router.init();
 
 // Initialize UI components
 function initializeUI() {
@@ -119,21 +198,9 @@ function initializeUI() {
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-    const router = new Router();
     initializeUI();
-});
-
-// Firebase auth state observer
-window.addEventListener('firebaseReady', () => {
-    window.firebaseAuth.onAuthStateChanged((user) => {
-        if (user) {
-            console.log('User is signed in');
-            // TODO: Update UI for signed-in user
-        } else {
-            console.log('No user is signed in');
-            // TODO: Update UI for signed-out user
-        }
-    });
+    initUserDropdown();
+    initApp();
 });
 
 // Define categories for the All dropdown
