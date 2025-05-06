@@ -1,5 +1,6 @@
 import { loadingOverlay } from './components/loading-overlay.js';
 import { displayBloodTestsPage } from './pages/blood-tests.js';
+import { displayCategoryProducts } from './products.js';
 
 // Router class to handle SPA navigation
 export default class Router {
@@ -12,10 +13,12 @@ export default class Router {
   }
 
   init() {
-    // Store original homepage content
-    this.originalHomeContent = this.mainContent.innerHTML;
+    // Store original home content
+    if (this.mainContent) {
+      this.originalHomeContent = this.mainContent.innerHTML;
+    }
     
-    // Set up hash change listener
+    // Listen for hash changes
     window.addEventListener('hashchange', this.handleRoute);
     
     // Handle initial route
@@ -35,6 +38,12 @@ export default class Router {
       } else if (hash === '/blood-tests') {
         // Handle blood tests page
         const content = await displayBloodTestsPage();
+        await this.render(content);
+        this.setupBloodTestsHandlers();
+      } else if (hash.startsWith('/category/')) {
+        // Handle category pages
+        const categoryId = hash.split('/')[2];
+        const content = await displayCategoryProducts(categoryId);
         await this.render(content);
       } else {
         // Find matching route
@@ -60,6 +69,19 @@ export default class Router {
     }
   }
 
+  setupBloodTestsHandlers() {
+    // Add click handlers to the category boxes
+    this.mainContent.querySelectorAll('.category-box').forEach(box => {
+      box.addEventListener('click', (e) => {
+        const categoryId = box.dataset.category;
+        if (categoryId) {
+          // Update the URL and display category products
+          window.location.hash = `#/category/${categoryId}`;
+        }
+      });
+    });
+  }
+
   async renderHome() {
     if (this.originalHomeContent) {
       // Store the current scroll position
@@ -79,8 +101,10 @@ export default class Router {
       // Update content while preserving layout
       this.mainContent.innerHTML = this.originalHomeContent;
       
-      // Force a reflow
-      this.mainContent.offsetHeight;
+      // Force a reflow and ensure proper layout
+      this.mainContent.style.display = 'none';
+      this.mainContent.offsetHeight; // Force reflow
+      this.mainContent.style.display = '';
       
       // Add visible class for transition in
       this.mainContent.classList.add('visible');
@@ -168,37 +192,34 @@ export default class Router {
     }
   }
 
-  async loadTemplate(templateName) {
-    try {
-      const response = await fetch(`templates/${templateName}`);
-      if (!response.ok) {
-        throw new Error('Template not found');
-      }
-      return await response.text();
-    } catch (error) {
-      console.error('Error loading template:', error);
-      throw error;
-    }
-  }
-
   async render(content) {
-    // Only add transition classes for non-home pages
-    if (window.location.hash !== '' && window.location.hash !== '#/') {
-      this.mainContent.classList.add('page-transition');
-      this.mainContent.classList.remove('visible');
-      
-      // Wait for transition out
-      await new Promise(resolve => setTimeout(resolve, 300));
-    }
+    // Store the current scroll position
+    const scrollPosition = window.scrollY;
     
-    // Update content
+    // Create a temporary container to hold the new content
+    const tempContainer = document.createElement('div');
+    tempContainer.innerHTML = content;
+    
+    // Add transition classes
+    this.mainContent.classList.add('page-transition');
+    this.mainContent.classList.remove('visible');
+    
+    // Wait for transition out
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // Update content while preserving layout
     this.mainContent.innerHTML = content;
     
-    // Force a reflow
-    this.mainContent.offsetHeight;
+    // Force a reflow and ensure proper layout
+    this.mainContent.style.display = 'none';
+    this.mainContent.offsetHeight; // Force reflow
+    this.mainContent.style.display = '';
     
     // Add visible class for transition in
     this.mainContent.classList.add('visible');
+    
+    // Restore scroll position
+    window.scrollTo(0, scrollPosition);
   }
 
   async renderError(title, message) {
@@ -210,5 +231,18 @@ export default class Router {
       </div>
     `;
     await this.render(errorContent);
+  }
+
+  async loadTemplate(templateName) {
+    try {
+      const response = await fetch(`templates/${templateName}`);
+      if (!response.ok) {
+        throw new Error('Template not found');
+      }
+      return await response.text();
+    } catch (error) {
+      console.error('Error loading template:', error);
+      throw error;
+    }
   }
 } 

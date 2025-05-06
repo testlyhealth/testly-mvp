@@ -1,63 +1,38 @@
-import { bloodTestService } from '../services/bloodTestService.js';
+import { $ } from '../dom.js';
+import { displayCategoryProducts } from '../products.js';
 
 export async function displayBloodTestsPage() {
-  try {
-    // Fetch categories
-    const categories = await bloodTestService.getCategories();
-    
-    // Create the page content
-    const content = `
-      <div class="blood-tests-page">
-        <section class="categories-section">
-          <h1>Find the right blood test for you</h1>
-          <div class="categories-grid">
-            ${categories.map(category => `
-              <div class="category-card" data-category="${category.id}">
-                <i class="fas fa-${category.icon}"></i>
-                <h3>${category.name}</h3>
-                <p>${category.description}</p>
-              </div>
-            `).join('')}
-          </div>
-        </section>
+  const categories = [
+    { name: 'Advanced', id: 'advanced', icon: 'fa-microscope', description: 'Let me pick the tests myself', isAdvanced: true },
+    { name: 'General Health', id: 'general-health', icon: 'fa-heartbeat', description: 'Comprehensive health screening and monitoring', color: '#ECEAF8' },
+    { name: 'Hormone Health', id: 'hormone-health', icon: 'fa-balance-scale', description: 'Comprehensive hormone health screening and monitoring', color: '#ECEAF8' },
+    { name: 'Heart Health', id: 'heart-health', icon: 'fa-heart', description: 'Comprehensive heart health screening and monitoring', color: '#ECEAF8' },
+    { name: 'Performance', id: 'performance', icon: 'fa-dumbbell', description: 'Comprehensive performance screening and monitoring', color: '#ECEAF8' },
+    { name: 'Thyroid', id: 'thyroid', icon: 'fa-bolt', description: 'Comprehensive thyroid screening and monitoring', color: '#ECEAF8' },
+    { name: 'Fertility', id: 'fertility', icon: 'fa-baby', description: 'Comprehensive fertility screening and monitoring', color: '#ECEAF8' },
+    { name: 'Vitamins & Minerals', id: 'vitamins-minerals', icon: 'fa-pills', description: 'Comprehensive vitamin and mineral screening', color: '#ECEAF8' }
+  ];
 
-        <section class="general-health-section">
-          <h2>General Health Tests</h2>
-          <div class="tests-grid">
-            ${(await bloodTestService.getBloodTests({ category: 'general' })).map(test => `
-              <div class="test-card">
-                <div class="test-header">
-                  <h3>${test.name}</h3>
-                  <span class="provider">${test.provider}</span>
-                </div>
-                <p class="description">${test.description}</p>
-                <div class="test-details">
-                  <div class="price">£${test.price}</div>
-                  <div class="turnaround">${test.turnaroundTime}</div>
-                  <div class="sample-type">${test.sampleType}</div>
-                </div>
-                <div class="tests-included">
-                  <h4>Tests Included:</h4>
-                  <ul>
-                    ${test.testsIncluded.map(t => `<li>${t}</li>`).join('')}
-                  </ul>
-                </div>
-                <a href="${test.url}" target="_blank" class="cta-button">View Test</a>
-              </div>
-            `).join('')}
+  return `
+    <section class="categories-section">
+      <h1>Find the right blood test for you</h1>
+      <div class="category-grid">
+        ${categories.map(category => `
+          <div class="category-box ${category.isAdvanced ? 'advanced-search' : ''}" data-category="${category.id}">
+            <div class="box-content">
+              <h3>${category.name}</h3>
+              <p>${category.description}</p>
+              <button class="cta-button">
+                <span class='arrow'>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              </button>
+            </div>
           </div>
-        </section>
+        `).join('')}
       </div>
-    `;
-
-    return content;
-  } catch (error) {
-    console.error('Error displaying blood tests page:', error);
-    return `
-      <div class="error-container">
-        <h2>Error Loading Blood Tests</h2>
-        <p>Please try again later</p>
-      </div>
-    `;
-  }
+    </section>
+  `;
 } 

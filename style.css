@@ -48,7 +48,7 @@ body {
     width: 100%;
     z-index: 1000;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    height: 72px;
+    height: 64px; /* Reduced from 72px */
     transform: translateZ(0);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
@@ -149,16 +149,15 @@ body {
   
   /* Update main content margin */
   main {
-    margin-top: 72px; /* Height of the fixed header */
-    padding: 1rem 0 0 0; /* Reduced from 2rem to 1rem */
-    position: relative;
+    margin-top: 64px; /* Match header height */
+    min-height: calc(100vh - 64px);
+    background: var(--background);
   }
   
   /* Remove the old product-grid specific margin */
   main.product-grid {
-    margin: 0;
-    padding: 0;
-    position: relative;
+    margin-top: 64px;
+    padding: 2rem;
   }
   
   /* Responsive adjustments */
@@ -472,9 +471,9 @@ body {
   }
   
   .welcome-section h1 {
-    font-size: 2rem;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
     color: var(--text);
-    margin-bottom: 0.5rem;
   }
   
   .welcome-section p {
@@ -640,8 +639,8 @@ body {
   
   .blog-header h1 {
     font-size: 2.5rem;
-    color: var(--text);
     margin-bottom: 1rem;
+    color: var(--text);
   }
   
   .blog-header p {
@@ -677,10 +676,10 @@ body {
   }
   
   .article-header h1 {
-    font-size: 2rem;
-    color: var(--text);
-    line-height: 1.3;
+    font-size: 2.5rem;
     margin-bottom: 1rem;
+    color: var(--text);
+    line-height: 1.2;
   }
   
   .article-body {
@@ -1167,9 +1166,9 @@ body {
     box-shadow: -2px 0 5px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 112px); /* Subtract header height */
+    height: calc(100vh - 64px); /* Match header height */
     position: fixed;
-    top: 112px;
+    top: 64px; /* Match header height */
     right: 0;
     z-index: 1000;
     transform: translateX(100%);
@@ -1425,8 +1424,7 @@ body {
 
   .hero-content h1 {
     font-size: 3rem;
-    color: var(--text);
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     line-height: 1.2;
     font-weight: 700;
   }
@@ -1639,36 +1637,29 @@ body {
   }
   
   .categories-section {
-    padding: 3rem 2rem;
+    padding: 2rem;
     background-color: white;
+    margin: 0;
   }
 
-  .categories-section h2 {
+  .categories-section h1 {
     text-align: center;
-    font-size: 2rem;
-    color: var(--text);
-    margin-bottom: 1rem;
+    margin: 0;
+    padding: 3rem 0;
+    font-size: 2.5rem;
+    color: #333;
   }
 
-  .categories-section p {
-    text-align: center;
-    color: var(--text-light);
-    font-size: 1.1rem;
-    margin-bottom: 2rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .category-tiles {
+  .category-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1rem;
-    padding: 0.5rem 0;
-    margin-bottom: 2rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 1200px;
   }
 
-  .category-tile {
+  .category-card {
     background: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -1681,12 +1672,21 @@ body {
     gap: 1rem;
   }
 
-  .category-tile:hover {
+  .category-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px var(--card-shadow);
   }
 
-  .category-tile .category-image i {
+  .category-image {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .category-image i {
     font-size: 1.5rem;
     color: #1e293b;
     filter: none;
@@ -1697,7 +1697,7 @@ body {
     min-width: 0;
   }
 
-  .category-tile h3 {
+  .category-card h3 {
     color: var(--text);
     margin-bottom: 0.3rem;
     font-size: 1rem;
@@ -1707,7 +1707,7 @@ body {
     font-weight: 600;
   }
 
-  .category-tile p {
+  .category-card p {
     color: var(--text-light);
     font-size: 0.8rem;
     line-height: 1.2;
@@ -1928,7 +1928,6 @@ body {
 
   .welcome-content h1 {
     font-size: 2.5rem;
-    color: var(--accent);
     margin-bottom: 1rem;
     font-weight: 700;
   }
@@ -2145,7 +2144,7 @@ body {
   .main-content {
     background: var(--white);
     border-left: 1px solid var(--border);
-    min-height: calc(100vh - 72px);
+    min-height: calc(100vh - 64px);
     padding: 0;
     margin-left: 180px;
     flex: 1;
@@ -2159,9 +2158,9 @@ body {
     padding: 1rem;
     position: fixed;
     left: 0;
-    top: 112px;
+    top: 64px; /* Match header height */
     width: 180px;
-    height: calc(100vh - 112px);
+    height: calc(100vh - 64px); /* Match header height */
     overflow-y: auto;
     z-index: 100;
     border-right: 1px solid var(--border);
@@ -2481,9 +2480,8 @@ body {
   }
 
   .landing-content h1 {
-    font-size: 3.5rem;
-    color: var(--text);
-    margin-bottom: 1.5rem;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
     font-weight: 700;
   }
 
@@ -3578,10 +3576,9 @@ body {
 
   /* Blood Tests Grid Styles */
   .blood-tests-grid {
-    padding: 1rem;
-    max-width: 800px;
+    padding: 2rem;
+    max-width: 1200px;
     margin: 0 auto;
-    margin-top: 72px; /* Account for fixed header */
   }
 
   .tiles-container {
@@ -3678,7 +3675,7 @@ body {
     text-align: center;
     margin-bottom: 1rem;
     color: var(--text);
-    font-size: 2rem;
+    font-size: 2.5rem;
   }
 
   .blood-tests-grid .subtitle {
@@ -3905,16 +3902,19 @@ body {
   /* Loading Overlay */
   .loading-overlay {
     position: fixed;
-    top: 0;
+    top: 64px; /* Match header height */
     left: 0;
     width: 100%;
-    height: 100%;
+    height: calc(100vh - 64px); /* Match header height */
     background: rgba(255, 255, 255, 0.9);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
     transition: opacity 0.3s ease;
+    will-change: opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
   }
 
   .loading-overlay.hidden {
@@ -3950,8 +3950,13 @@ body {
   /* Page Transitions */
   .page-transition {
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateY(0);
+    transition: opacity 0.3s ease;
+    position: relative;
+    min-height: calc(100vh - 64px);
+    will-change: opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
   }
 
   .page-transition.visible {
@@ -3961,9 +3966,110 @@ body {
 
   /* Blood Tests Page Styles */
   .blood-tests-page {
-    padding: 2rem;
+    padding: 2rem 0;
     max-width: 1200px;
     margin: 0 auto;
+  }
+
+  .blood-tests-page .hero-grid-small {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    padding: 0;
+    margin: 2rem 0;
+  }
+
+  .blood-tests-page .hero-box {
+    background: #ECEAF8;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    box-shadow: 0 2px 4px var(--card-shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    aspect-ratio: 1;
+    max-height: 140px;
+  }
+
+  .blood-tests-page .box-content {
+    padding: 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  .blood-tests-page .box-text {
+    flex: 1;
+    padding-right: 3rem;
+    overflow: hidden;
+  }
+
+  .blood-tests-page .box-text h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+    font-weight: 500;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .blood-tests-page .box-text p {
+    color: var(--text-light);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .blood-tests-page .cta-button {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    background: #111;
+    color: #fff;
+    border-radius: 999px;
+    width: 48px;
+    height: 36px;
+    min-width: 48px;
+    padding: 0;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .blood-tests-page .cta-button:hover {
+    background: #333;
+  }
+
+  .blood-tests-page .cta-button .arrow svg path {
+    stroke: #fff;
+  }
+
+  @media (max-width: 768px) {
+    .blood-tests-page .hero-grid-small {
+      grid-template-columns: 1fr;
+    }
+    
+    .blood-tests-page .hero-box {
+      max-height: 120px;
+    }
+    
+    .blood-tests-page .box-text h3 {
+      font-size: 1rem;
+    }
+    
+    .blood-tests-page .box-text p {
+      font-size: 0.8rem;
+    }
   }
 
   .categories-section {
@@ -4140,4 +4246,417 @@ body {
     .categories-section h1 {
       font-size: 2rem;
     }
+  }
+
+  .blood-tests-page .category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    padding: 0;
+    margin: 2rem auto;
+    max-width: 1200px;
+  }
+
+  .blood-tests-page .category-box {
+    background: #ECEAF8;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    box-shadow: 0 2px 4px var(--card-shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    height: 160px;
+    width: 100%;
+  }
+
+  .blood-tests-page .category-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--card-shadow);
+  }
+
+  .blood-tests-page .category-box h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+    font-weight: 500;
+    padding-right: 4rem;
+    text-align: left;
+  }
+
+  .blood-tests-page .category-box p {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+    padding-right: 4rem;
+    text-align: left;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .blood-tests-page .category-box.advanced-search {
+    background: #6D6D6B;
+    color: white;
+  }
+
+  .blood-tests-page .category-box.advanced-search h3,
+  .blood-tests-page .category-box.advanced-search p {
+    color: white;
+  }
+
+  .blood-tests-page .category-box .cta-button {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    background: #111;
+    color: #fff;
+    border-radius: 999px;
+    width: 48px;
+    height: 36px;
+    min-width: 48px;
+    padding: 0;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+    z-index: 1;
+  }
+
+  .blood-tests-page .category-box .cta-button:hover {
+    background: #333;
+  }
+
+  .blood-tests-page .category-box .cta-button .arrow svg path {
+    stroke: #fff;
+  }
+
+  @media (max-width: 768px) {
+    .blood-tests-page .category-box {
+      height: 140px;
+    }
+    
+    .blood-tests-page .category-box .box-content {
+      padding: 1.2rem;
+    }
+    
+    .blood-tests-page .category-box h3 {
+      font-size: 1.1rem;
+      padding-right: 3rem;
+    }
+    
+    .blood-tests-page .category-box p {
+      font-size: 0.9rem;
+      padding-right: 3rem;
+    }
+  }
+
+  .blood-tests-page {
+    padding: 2rem 0;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .blood-tests-page .categories-section {
+    margin-bottom: 2rem;
+  }
+
+  .blood-tests-page .categories-section h1 {
+    text-align: center;
+    margin: 2rem 0;
+    font-size: 2.5rem;
+    color: #333;
+  }
+
+  .blood-tests-page .hero-grid-small {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 1200px;
+  }
+
+  .blood-tests-page .hero-box {
+    background: #ECEAF8;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    box-shadow: 0 2px 4px var(--card-shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    aspect-ratio: 1;
+    max-height: 140px;
+  }
+
+  .blood-tests-page .box-content {
+    padding: 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  .blood-tests-page .box-text {
+    flex: 1;
+    padding-right: 3rem;
+    overflow: hidden;
+  }
+
+  .blood-tests-page .box-text h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+    font-weight: 500;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .blood-tests-page .box-text p {
+    color: var(--text-light);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .blood-tests-page .cta-button {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    background: #111;
+    color: #fff;
+    border-radius: 999px;
+    width: 48px;
+    height: 36px;
+    min-width: 48px;
+    padding: 0;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .blood-tests-page .cta-button:hover {
+    background: #333;
+  }
+
+  .blood-tests-page .cta-button .arrow svg path {
+    stroke: #fff;
+  }
+
+  .blood-tests-page .hero-box.advanced-search {
+    background: #6D6D6B;
+    color: white;
+  }
+
+  .blood-tests-page .hero-box.advanced-search h3,
+  .blood-tests-page .hero-box.advanced-search p {
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    .blood-tests-page .hero-grid-small {
+        grid-template-columns: 1fr;
+    }
+    
+    .blood-tests-page .hero-box {
+        max-height: 120px;
+    }
+    
+    .blood-tests-page .box-text h3 {
+        font-size: 1rem;
+    }
+    
+    .blood-tests-page .box-text p {
+        font-size: 0.8rem;
+    }
+  }
+
+  /* Base Typography */
+  h1 {
+    font-size: 2.5rem;
+    line-height: 1.2;
+    margin: 0 0 1rem 0;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  /* Specific h1 styles for different contexts */
+  .welcome-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .blog-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .article-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero-content h1 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .welcome-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .landing-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .blood-tests-grid h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .categories-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    h1 {
+        font-size: 1.75rem;
+    }
+    
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+  }
+
+  .category-box {
+    background: #ECEAF8;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    box-shadow: 0 2px 4px var(--card-shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    height: 160px;
+    width: 100%;
+  }
+
+  .category-box .box-content {
+    padding: 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  .category-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--card-shadow);
+  }
+
+  .category-box h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+    font-weight: 500;
+    padding-right: 4rem;
+    text-align: left;
+  }
+
+  .category-box p {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+    padding-right: 4rem;
+    text-align: left;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .category-box.advanced-search {
+    background: #6D6D6B;
+    color: white;
+  }
+
+  .category-box.advanced-search h3,
+  .category-box.advanced-search p {
+    color: white;
+  }
+
+  .category-box .cta-button {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    background: #111;
+    color: #fff;
+    border-radius: 999px;
+    width: 48px;
+    height: 36px;
+    min-width: 48px;
+    padding: 0;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+    z-index: 1;
+  }
+
+  .category-box .cta-button:hover {
+    background: #333;
+  }
+
+  .category-box .cta-button .arrow svg path {
+    stroke: #fff;
+  }
+
+  @media (max-width: 768px) {
+    .category-box {
+      height: 140px;
+    }
+    
+    .category-box .box-content {
+      padding: 1.2rem;
+    }
+    
+    .category-box h3 {
+      font-size: 1.1rem;
+      padding-right: 3rem;
+    }
+    
+    .category-box p {
+      font-size: 0.9rem;
+      padding-right: 3rem;
+    }
+  }
   }
