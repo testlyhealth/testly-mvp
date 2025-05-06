@@ -165,5 +165,13 @@ function initializeUI() {
 document.addEventListener('DOMContentLoaded', () => {
     initializeUI();
     initUserDropdown();
-    initApp();
+
+    // Make the 'Find the right blood test for you' button go to the blood tests page
+    const bloodTestBtn = document.querySelector('.hero-grid-small .zepbound-box .cta-button');
+    if (bloodTestBtn) {
+      bloodTestBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.hash = '#/blood-tests';
+      });
+    }
 });

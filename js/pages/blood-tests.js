@@ -3,7 +3,7 @@ import { displayCategoryProducts } from '../products.js';
 
 export async function displayBloodTestsPage() {
   const categories = [
-    { name: 'Advanced', id: 'advanced', icon: 'fa-microscope', description: 'Let me pick the tests myself', isAdvanced: true },
+    { name: 'Advanced', id: 'advanced', icon: 'fa-microscope', description: 'Let me manually pick the tests myself', isAdvanced: true },
     { name: 'General Health', id: 'general-health', icon: 'fa-heartbeat', description: 'Comprehensive health screening and monitoring', color: '#ECEAF8' },
     { name: 'Hormone Health', id: 'hormone-health', icon: 'fa-balance-scale', description: 'Comprehensive hormone health screening and monitoring', color: '#ECEAF8' },
     { name: 'Heart Health', id: 'heart-health', icon: 'fa-heart', description: 'Comprehensive heart health screening and monitoring', color: '#ECEAF8' },

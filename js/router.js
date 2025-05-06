@@ -1,6 +1,7 @@
 import { loadingOverlay } from './components/loading-overlay.js';
 import { displayBloodTestsPage } from './pages/blood-tests.js';
 import { displayCategoryProducts } from './products.js';
+import { displayHomePage } from './pages/home.js';
 
 // Router class to handle SPA navigation
 export default class Router {
@@ -83,37 +84,16 @@ export default class Router {
   }
 
   async renderHome() {
-    if (this.originalHomeContent) {
-      // Store the current scroll position
-      const scrollPosition = window.scrollY;
-      
-      // Create a temporary container to hold the new content
-      const tempContainer = document.createElement('div');
-      tempContainer.innerHTML = this.originalHomeContent;
-      
-      // Add transition classes
-      this.mainContent.classList.add('page-transition');
-      this.mainContent.classList.remove('visible');
-      
-      // Wait for transition out
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      // Update content while preserving layout
-      this.mainContent.innerHTML = this.originalHomeContent;
-      
-      // Force a reflow and ensure proper layout
-      this.mainContent.style.display = 'none';
-      this.mainContent.offsetHeight; // Force reflow
-      this.mainContent.style.display = '';
-      
-      // Add visible class for transition in
-      this.mainContent.classList.add('visible');
-      
-      // Restore scroll position
-      window.scrollTo(0, scrollPosition);
-      
-      // Initialize dynamic content
-      this.initializeHomePageContent();
+    const content = displayHomePage();
+    await this.render(content);
+    // Add homepage-specific event listeners if needed
+    // For example, attach the blood test button event listener here if not handled elsewhere
+    const bloodTestBtn = document.querySelector('.hero-grid-small .zepbound-box .cta-button');
+    if (bloodTestBtn) {
+      bloodTestBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.hash = '#/blood-tests';
+      });
     }
   }
 
