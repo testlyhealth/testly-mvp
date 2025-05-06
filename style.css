@@ -4675,4 +4675,95 @@ body {
       padding-right: 3rem;
     }
   }
+
+  @media (max-width: 600px) {
+    .dynamic-title-section {
+      padding: 0.5rem 0.5rem;
+    }
+    .main-title, .static-text, .dynamic-text {
+      font-size: 2rem !important;
+    }
+    .hero-grid-large {
+      grid-template-columns: 1fr;
+      gap: 0.7rem;
+      padding: 1rem;
+    }
+    .hero-grid-small {
+      grid-template-columns: 1fr;
+      gap: 0.7rem;
+      padding: 0 1rem 1rem 1rem;
+    }
+    .hero-box, .hero-box.small {
+      height: auto;
+      min-height: 120px;
+      max-height: none;
+      border-radius: 0;
+    }
+    .box-content {
+      padding: 1rem;
+    }
+    .box-text h2, .box-text h3 {
+      font-size: 1.1rem !important;
+      margin-bottom: 0.5rem;
+    }
+    .cta-button {
+      font-size: 1rem;
+      padding: 0.7rem 1.2rem;
+      min-width: 44px;
+      height: 40px;
+    }
+    .hero-video, .hero-box img {
+      max-width: 100%;
+      height: auto;
+      min-height: 100px;
+    }
+    .banner-text {
+      padding: 1rem 0 1rem 1rem !important;
+      font-size: 1rem;
+    }
+    .cheapest-products-section, .tracking-banner, .blog-section {
+      padding: 1rem 0.5rem;
+    }
+    .cheapest-products-grid, .cheapest-products-actions-row, .blog-grid {
+      grid-template-columns: 1fr !important;
+      gap: 0.7rem;
+      padding: 0;
+    }
+    .banner-graph img {
+      max-width: 100%;
+      height: auto;
+    }
+    .tracking-banner .banner-content {
+      flex-direction: column;
+      gap: 1rem;
+      padding: 0 0.5rem;
+    }
+    .blog-section h2 {
+      font-size: 1.2rem;
+    }
+    .category-tiles {
+      grid-template-columns: 1fr;
+      padding: 1rem;
+    }
+    .main-header, .header-content {
+      padding: 0 0.5rem !important;
+      height: 56px !important;
+    }
+    .main-header {
+      height: 56px !important;
+    }
+    main {
+      margin-top: 56px !important;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .hero-grid-large,
+    .hero-grid-small {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 0.7rem !important;
+      padding: 1rem !important;
+    }
+    /* Keep the rest of the mobile rules as before */
   }
