@@ -2,6 +2,7 @@ import { loadingOverlay } from './components/loading-overlay.js';
 import { displayBloodTestsPage } from './pages/blood-tests.js';
 import { displayCategoryProducts } from './products.js';
 import { displayHomePage } from './pages/home.js';
+import { displayGeneralHealthPage } from './pages/general-health.js';
 
 // Router class to handle SPA navigation
 export default class Router {
@@ -41,6 +42,10 @@ export default class Router {
         const content = await displayBloodTestsPage();
         await this.render(content);
         this.setupBloodTestsHandlers();
+      } else if (hash === '/general-health') {
+        // Handle general health page
+        const content = displayGeneralHealthPage();
+        await this.render(content);
       } else if (hash.startsWith('/category/')) {
         // Handle category pages
         const categoryId = hash.split('/')[2];
