@@ -1567,7 +1567,7 @@ body {
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-
+  
   /* Trust Indicators */
   .trust-indicators {
     display: grid;
@@ -4942,5 +4942,394 @@ body {
     
     .hero-box.small .box-text h3 {
         font-size: 1rem !important;
+    }
+  }
+
+  /* Filter Panel Styles */
+  .filter-panel {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    width: 300px;
+    height: calc(100vh - 64px);
+    background: var(--card-bg);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem;
+    overflow-y: auto;
+    z-index: 100;
+  }
+
+  .filter-panel-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .filter-panel h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+
+  .filter-panel h4 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+
+  .filter-section {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+  }
+
+  .filter-section:last-child {
+    border-bottom: none;
+  }
+
+  .price-range {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .price-range input[type="range"] {
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  .price-range input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .price-inputs {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .price-inputs input[type="number"] {
+    width: 80px;
+    padding: 0.3rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+
+  select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--card-bg);
+    color: var(--text);
+  }
+
+  .checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .checkbox-option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+  }
+
+  .apply-filters-btn,
+  .reset-filters-btn {
+    padding: 0.8rem;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .apply-filters-btn {
+    background: var(--accent);
+    color: white;
+  }
+
+  .apply-filters-btn:hover {
+    background: var(--accent-dark);
+  }
+
+  .reset-filters-btn {
+    background: var(--border);
+    color: var(--text);
+  }
+
+  .reset-filters-btn:hover {
+    background: var(--border-dark);
+  }
+
+  /* Blood Test Card Styles */
+  .blood-test-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  .test-rank {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+  }
+
+  .test-header {
+    margin-bottom: 1rem;
+  }
+
+  .provider-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .provider-logo {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  .provider-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .test-name {
+    font-size: 1.1rem;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .test-price {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .biomarkers-section {
+    margin-bottom: 1rem;
+  }
+
+  .biomarkers-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .biomarker-info h4 {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin: 0;
+  }
+
+  .toggle-biomarkers,
+  .toggle-details {
+    background: none;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .toggle-biomarkers:hover,
+  .toggle-details:hover {
+    background: var(--accent);
+    color: white;
+  }
+
+  .biomarkers-list {
+    margin-top: 1rem;
+  }
+
+  .biomarker-group {
+    margin-bottom: 1rem;
+  }
+
+  .group-header {
+    font-size: 0.9rem;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .biomarker-group ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .biomarker-group li {
+    font-size: 0.9rem;
+    color: var(--text-light);
+  }
+
+  .test-locations {
+    margin-bottom: 1rem;
+  }
+
+  .test-locations h4 {
+    font-size: 0.9rem;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .test-locations ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .test-locations li {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    background: var(--border);
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+  }
+
+  .test-results {
+    margin-bottom: 1rem;
+  }
+
+  .test-results p {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin: 0;
+  }
+
+  .additional-details {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .detail-section {
+    margin-bottom: 1rem;
+  }
+
+  .detail-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .detail-section h4 {
+    font-size: 0.9rem;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .detail-section p,
+  .detail-section ul {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin: 0;
+  }
+
+  .detail-section ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .detail-section li {
+    margin-bottom: 0.3rem;
+  }
+
+  .provider-link {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .provider-link:hover {
+    text-decoration: underline;
+  }
+
+  .add-to-basket {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .add-to-basket:hover {
+    background: var(--accent-dark);
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  /* Main Content Layout */
+  .main-content {
+    margin-left: 300px;
+    padding: 2rem;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .filter-panel {
+      position: fixed;
+      left: -300px;
+      transition: left 0.3s ease;
+    }
+
+    .filter-panel.visible {
+      left: 0;
+    }
+
+    .main-content {
+      margin-left: 0;
+      padding: 1rem;
+    }
+
+    .products-grid {
+      grid-template-columns: 1fr;
     }
   }

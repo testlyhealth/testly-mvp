@@ -2,6 +2,40 @@ import { $, $all } from './dom.js';
 import { createFilterPanel, setupFilterPanel } from './filter-panel.js';
 import { basket } from './basket.js';
 
+// Function to get grouped biomarkers
+async function getGroupedBiomarkers(biomarkers) {
+  try {
+    const response = await fetch('/data/biomarker-groupings.json');
+    const groupings = await response.json();
+    
+    const grouped = new Map();
+    biomarkers.forEach(biomarker => {
+      let found = false;
+      for (const [group, items] of Object.entries(groupings)) {
+        if (items.includes(biomarker)) {
+          if (!grouped.has(group)) {
+            grouped.set(group, []);
+          }
+          grouped.get(group).push(biomarker);
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        if (!grouped.has('Other')) {
+          grouped.set('Other', []);
+        }
+        grouped.get('Other').push(biomarker);
+      }
+    });
+    
+    return grouped;
+  } catch (error) {
+    console.error('Error loading biomarker groupings:', error);
+    return new Map([['All Biomarkers', biomarkers]]);
+  }
+}
+
 // Function to create a blood test card
 async function createBloodTestCard(test, rank) {
   // Get the provider logo filename
@@ -81,87 +115,65 @@ async function createBloodTestCard(test, rank) {
   `;
 }
 
-// Function to group biomarkers
-async function getGroupedBiomarkers(biomarkers) {
-  try {
-    const response = await fetch('/data/biomarker-groupings.json');
-    const groupings = await response.json();
-    
-    // Create a map of biomarkers to their groups
-    const biomarkerToGroup = new Map();
-    groupings.forEach(group => {
-      group.biomarkers.forEach(biomarker => {
-        biomarkerToGroup.set(biomarker, group.group);
-      });
-    });
-
-    // Group the biomarkers
-    const groupedBiomarkers = new Map();
-    biomarkers.forEach(biomarker => {
-      const group = biomarkerToGroup.get(biomarker) || 'Other';
-      if (!groupedBiomarkers.has(group)) {
-        groupedBiomarkers.set(group, []);
+// Function to filter tests based on criteria
+function filterTests(tests, filters) {
+  return tests.filter(test => {
+    // Filter by price range
+    if (filters.priceRange) {
+      if (test.price < filters.priceRange.min || test.price > filters.priceRange.max) {
+        return false;
       }
-      groupedBiomarkers.get(group).push(biomarker);
-    });
+    }
 
-    return groupedBiomarkers;
-  } catch (error) {
-    console.error('Error loading biomarker groupings:', error);
-    return new Map([['All biomarkers', biomarkers]]);
-  }
+    // Filter by provider
+    if (filters.provider && filters.provider !== 'all') {
+      if (test.provider !== filters.provider) {
+        return false;
+      }
+    }
+
+    // Filter by location
+    if (filters.location && filters.location !== 'all') {
+      if (!test["blood test location"].includes(filters.location)) {
+        return false;
+      }
+    }
+
+    // Filter by biomarker count
+    if (filters.biomarkerCount) {
+      if (test["biomarker number"] < filters.biomarkerCount) {
+        return false;
+      }
+    }
+
+    // Filter by doctor's report
+    if (filters.doctorsReport) {
+      if (test["doctors report"] !== "Yes") {
+        return false;
+      }
+    }
+
+    return true;
+  });
 }
 
 // Function to update the tests grid
 async function updateTestsGrid(tests) {
-  const testsGrid = $('#tests-grid');
-  if (testsGrid) {
-    // Sort tests by price
-    const sortedTests = [...tests].sort((a, b) => a.price - b.price);
-    
-    // Create cards with ranking
-    const cards = await Promise.all(sortedTests.map((test, index) => createBloodTestCard(test, index + 1)));
-    testsGrid.innerHTML = cards.join('');
-    
-    // Add event listeners to the "Add to Basket" buttons
-    $all('.add-to-basket').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const testId = e.target.dataset.testId;
-        const test = tests.find(t => t.test_name === testId);
-        if (test) {
-          basket.addItem(test);
-        }
-      });
-    });
-
-    // Add event listeners to the biomarker toggle buttons
-    $all('.toggle-biomarkers').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const biomarkersList = e.target.closest('.biomarkers-section').querySelector('.biomarkers-list');
-        const isExpanded = button.getAttribute('aria-expanded') === 'true';
-
-        biomarkersList.classList.toggle('hidden');
-        button.setAttribute('aria-expanded', !isExpanded);
-        button.textContent = isExpanded ? 'Show all' : 'Hide';
-      });
-    });
-
-    // Add event listeners to the details toggle buttons
-    $all('.toggle-details').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const detailsSection = e.target.closest('.test-details').querySelector('.additional-details');
-        const isExpanded = button.getAttribute('aria-expanded') === 'true';
-
-        detailsSection.classList.toggle('hidden');
-        button.setAttribute('aria-expanded', !isExpanded);
-        button.textContent = isExpanded ? 'Details' : 'Hide details';
-      });
-    });
-  }
+  // Sort tests by price
+  const sortedTests = [...tests].sort((a, b) => a.price - b.price);
+  
+  // Create cards with ranking
+  const cards = await Promise.all(sortedTests.map((test, index) => createBloodTestCard(test, index + 1)));
+  
+  return `
+    <div class="tests-grid">
+      ${cards.join('')}
+    </div>
+  `;
 }
 
 // Initialize the page
-async function initPage() {
+export async function displayGeneralHealthPage() {
   try {
     // Fetch the tests data
     const response = await fetch('/data/providers.json');
@@ -169,29 +181,41 @@ async function initPage() {
     
     // Create the filter panel
     const filterPanel = createFilterPanel(tests);
-    $('.filter-panel').innerHTML = filterPanel;
-
-    // Setup filter panel functionality
-    setupFilterPanel(tests, updateTestsGrid);
-
-    // Update the grid with the actual content
-    await updateTestsGrid(tests);
-
-  } catch (error) {
-    console.error('Error loading blood tests:', error);
-    $('.filter-panel').innerHTML = `
-      <div class="error-message">
-        <p>Error loading filters</p>
+    
+    // Create the main content
+    const content = `
+      <div class="general-health-page">
+        <div class="filter-panel">
+          ${filterPanel}
+        </div>
+        <div class="main-content">
+          <div class="category-header">
+            <h2>General Health Blood Tests</h2>
+            <p>Comprehensive blood tests to assess your overall health and wellbeing</p>
+          </div>
+          ${await updateTestsGrid(tests)}
+        </div>
       </div>
     `;
-    $('#tests-grid').innerHTML = `
+
+    // Setup filter panel functionality after rendering
+    setTimeout(() => {
+      setupFilterPanel(tests, async (filteredTests) => {
+        const testsGrid = $('.tests-grid');
+        if (testsGrid) {
+          testsGrid.innerHTML = (await updateTestsGrid(filteredTests)).trim();
+        }
+      });
+    }, 0);
+
+    return content;
+  } catch (error) {
+    console.error('Error loading blood tests:', error);
+    return `
       <div class="error-message">
         <p>Error loading blood tests. Please try again later.</p>
         <button onclick="window.location.reload()">Retry</button>
       </div>
     `;
   }
-}
-
-// Initialize the page when the DOM is loaded
-document.addEventListener('DOMContentLoaded', initPage); 
+} 

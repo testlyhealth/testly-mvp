@@ -3,6 +3,7 @@ import { $, $all } from './dom.js';
 class Basket {
   constructor() {
     this.items = [];
+    this.loadFromLocalStorage();
     this.total = 0;
     this.init();
   }
@@ -11,6 +12,17 @@ class Basket {
     // Initialize basket UI
     this.updateBasketCount();
     this.setupBasketPanel();
+  }
+
+  loadFromLocalStorage() {
+    const savedItems = localStorage.getItem('basket');
+    if (savedItems) {
+      this.items = JSON.parse(savedItems);
+    }
+  }
+
+  saveToLocalStorage() {
+    localStorage.setItem('basket', JSON.stringify(this.items));
   }
 
   setupBasketPanel() {
@@ -30,45 +42,81 @@ class Basket {
     });
   }
 
-  addItem(test) {
-    const existingItem = this.items.find(item => item.test_name === test.test_name);
-    
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
-      this.items.push({
-        test_name: test.test_name,
-        provider: test.provider,
-        price: test.price,
-        quantity: 1
-      });
-    }
-
-    this.updateBasket();
+  addItem(item) {
+    this.items.push(item);
+    this.saveToLocalStorage();
+    this.updateBasketUI();
   }
 
-  removeItem(testName) {
-    const index = this.items.findIndex(item => item.test_name === testName);
-    if (index !== -1) {
-      this.items.splice(index, 1);
-      this.updateBasket();
-    }
+  removeItem(index) {
+    this.items.splice(index, 1);
+    this.saveToLocalStorage();
+    this.updateBasketUI();
   }
 
-  updateQuantity(testName, quantity) {
-    const item = this.items.find(item => item.test_name === testName);
-    if (item) {
-      item.quantity = Math.max(0, quantity);
-      if (item.quantity === 0) {
-        this.removeItem(testName);
+  clear() {
+    this.items = [];
+    this.saveToLocalStorage();
+    this.updateBasketUI();
+  }
+
+  getTotal() {
+    return this.items.reduce((total, item) => total + item.price, 0);
+  }
+
+  updateBasketUI() {
+    const basketCount = $('.basket-count');
+    if (basketCount) {
+      basketCount.textContent = this.items.length;
+    }
+
+    const basketPanel = $('#basket-panel');
+    if (basketPanel) {
+      if (this.items.length === 0) {
+        basketPanel.innerHTML = `
+          <div class="empty-basket">
+            <p>Your basket is empty</p>
+          </div>
+        `;
       } else {
-        this.updateBasket();
+        basketPanel.innerHTML = `
+          <div class="basket-items">
+            ${this.items.map((item, index) => `
+              <div class="basket-item">
+                <div class="item-info">
+                  <h4>${item.test_name}</h4>
+                  <p>${item.provider}</p>
+                </div>
+                <div class="item-price">£${item.price}</div>
+                <button class="remove-item" data-index="${index}">×</button>
+              </div>
+            `).join('')}
+          </div>
+          <div class="basket-total">
+            <span>Total:</span>
+            <span>£${this.getTotal()}</span>
+          </div>
+          <button class="checkout-btn">Proceed to Checkout</button>
+        `;
+
+        // Add event listeners to remove buttons
+        basketPanel.querySelectorAll('.remove-item').forEach(button => {
+          button.addEventListener('click', (e) => {
+            const index = parseInt(e.target.dataset.index);
+            this.removeItem(index);
+          });
+        });
+
+        // Add event listener to checkout button
+        const checkoutBtn = basketPanel.querySelector('.checkout-btn');
+        if (checkoutBtn) {
+          checkoutBtn.addEventListener('click', () => {
+            // TODO: Implement checkout functionality
+            console.log('Proceeding to checkout...');
+          });
+        }
       }
     }
-  }
-
-  calculateTotal() {
-    return this.items.reduce((total, item) => total + (item.price * item.quantity), 0);
   }
 
   updateBasketCount() {
@@ -93,7 +141,7 @@ class Basket {
 
   updateBasketPanel() {
     const basketPanel = $('#basket-panel');
-    const total = this.calculateTotal();
+    const total = this.getTotal();
 
     if (this.items.length === 0) {
       basketPanel.innerHTML = `
@@ -117,11 +165,6 @@ class Basket {
               <p>${item.provider}</p>
             </div>
             <div class="item-price">£${item.price}</div>
-            <div class="item-quantity">
-              <button class="quantity-btn minus">-</button>
-              <span>${item.quantity}</span>
-              <button class="quantity-btn plus">+</button>
-            </div>
             <button class="remove-item">×</button>
           </div>
         `).join('')}
@@ -147,26 +190,11 @@ class Basket {
       basketPanel.classList.add('hidden');
     });
 
-    // Quantity buttons
-    basketPanel.querySelectorAll('.quantity-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const item = e.target.closest('.basket-item');
-        const testName = item.querySelector('h4').textContent;
-        const currentQuantity = parseInt(item.querySelector('.item-quantity span').textContent);
-        
-        if (e.target.classList.contains('plus')) {
-          this.updateQuantity(testName, currentQuantity + 1);
-        } else if (e.target.classList.contains('minus')) {
-          this.updateQuantity(testName, currentQuantity - 1);
-        }
-      });
-    });
-
     // Remove buttons
     basketPanel.querySelectorAll('.remove-item').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        const testName = e.target.closest('.basket-item').querySelector('h4').textContent;
-        this.removeItem(testName);
+        const index = parseInt(e.target.closest('.basket-item').dataset.index);
+        this.removeItem(index);
       });
     });
 
@@ -175,11 +203,6 @@ class Basket {
       // TODO: Implement checkout functionality
       console.log('Proceeding to checkout...');
     });
-  }
-
-  updateBasket() {
-    this.updateBasketCount();
-    this.updateBasketPanel();
   }
 }
 

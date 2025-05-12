@@ -14,6 +14,7 @@ import store from './store.js';
 // Define routes
 const routes = [
   { path: '/blood-tests', template: 'blood-tests.html' },
+  { path: '/general-health', template: 'general-health.html' },
   { path: '/category/weight-loss', template: 'weight-loss.html' },
   { path: '/category/mens-health', template: 'mens-health.html' },
   { path: '/category/womens-health', template: 'womens-health.html' },
@@ -101,39 +102,6 @@ async function init() {
 // Start the app when DOM is ready
 document.addEventListener('DOMContentLoaded', init);
 
-// Handle route changes
-async function handleRoute() {
-  const hash = window.location.hash.slice(1) || '/';
-  
-  if (hash === '/blood-tests') {
-    try {
-      store.setLoading(true);
-      const content = await displayBloodTestsPage();
-      router.render(content);
-    } catch (error) {
-      console.error('Error loading blood tests page:', error);
-      store.setError('Failed to load blood tests page. Please try again.');
-    } finally {
-      store.setLoading(false);
-    }
-  } else {
-    const route = routes.find(r => r.path === hash) || routes.find(r => r.path === '*');
-    
-    if (route) {
-      try {
-        store.setLoading(true);
-        const template = await router.loadTemplate(route.template);
-        router.render(template);
-      } catch (error) {
-        console.error('Error loading route:', error);
-        store.setError('Failed to load page. Please try again.');
-      } finally {
-        store.setLoading(false);
-      }
-    }
-  }
-}
-
 // Initialize UI components
 function initializeUI() {
     // Burger menu functionality
@@ -160,25 +128,3 @@ function initializeUI() {
         });
     }
 }
-
-// Initialize the application
-document.addEventListener('DOMContentLoaded', () => {
-    initializeUI();
-    initUserDropdown();
-
-    // Make the 'Find the right blood test for you' button go to the blood tests page
-    const bloodTestBtn = document.querySelector('.hero-grid-small .zepbound-box .cta-button');
-    if (bloodTestBtn) {
-      bloodTestBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.location.hash = '#/blood-tests';
-      });
-    }
-
-    // Render homepage if on home route (no hash or #/)
-    if (!window.location.hash || window.location.hash === '#/' || window.location.hash === '#') {
-      import('./home.js').then(module => {
-        module.displayHomePage();
-      });
-    }
-});
