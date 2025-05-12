@@ -63,44 +63,48 @@ function setupAllDropdown() {
 }
 
 // Initialize the app
-async function init() {
-  // Setup menu toggle
-  setupMenuToggle();
-  
-  // Initialize login modal
-  initLoginModal();
-  
-  // Initialize user dropdown
-  initUserDropdown();
-  
-  // Setup All dropdown
-  setupAllDropdown();
-  
-  // Setup navigation
-  const navLinks = document.querySelectorAll('.main-nav a:not(.logo)');
-  navLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      const path = link.getAttribute('href').substring(1);
-      window.location.hash = path;
-    });
-  });
-
-  // Make logo clickable to return to home
-  const logo = document.querySelector('.logo');
-  if (logo) {
-    logo.style.cursor = 'pointer';
-    logo.addEventListener('click', () => {
-      window.location.hash = '#/';
-    });
-  }
-  
-  // Initialize router
+function init() {
+  // Initialize the router
   router.init();
+  
+  // Setup blood tests menu
+  setupBloodTestsMenu();
+  
+  // Start the app
+  router.handleRoute();
 }
 
-// Start the app when DOM is ready
+// Start the app when the DOM is ready
 document.addEventListener('DOMContentLoaded', init);
+
+// Setup blood tests menu
+function setupBloodTestsMenu() {
+  const bloodTestsLink = document.querySelector('.blood-tests-link');
+  const bloodTestsMenu = document.querySelector('.blood-tests-menu');
+  
+  if (!bloodTestsLink || !bloodTestsMenu) return;
+  
+  // Toggle menu on click
+  bloodTestsLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    bloodTestsMenu.classList.toggle('visible');
+  });
+  
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.blood-tests-menu') && !e.target.closest('.blood-tests-link')) {
+      bloodTestsMenu.classList.remove('visible');
+    }
+  });
+  
+  // Close menu when clicking a menu item
+  bloodTestsMenu.querySelectorAll('.menu-item').forEach(item => {
+    item.addEventListener('click', () => {
+      bloodTestsMenu.classList.remove('visible');
+    });
+  });
+}
 
 // Initialize UI components
 function initializeUI() {

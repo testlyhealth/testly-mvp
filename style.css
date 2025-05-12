@@ -4870,6 +4870,80 @@ body {
       width: 100% !important;
       box-sizing: border-box !important;
     }
+    .hero-box.small .box-text {
+      max-width: 100% !important;
+      padding-right: 0 !important;
+      word-break: break-word !important;
+    }
+    .hero-box.small .cta-button {
+      position: static !important;
+      margin: 0.5rem 0 0 auto !important;
+      transform: none !important;
+      width: auto !important;
+      min-width: 44px !important;
+      height: 40px !important;
+      display: block !important;
+      border-radius: 999px !important;
+      background: #111 !important;
+      color: #fff !important;
+      padding: 0.6rem 1.8rem 0.6rem 1.2rem !important;
+      font-size: 0.8rem !important;
+      border: none !important;
+      font-weight: 600 !important;
+      box-shadow: none !important;
+      text-align: center !important;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .hero-grid-small {
+      display: block !important;
+      padding: 1rem !important;
+    }
+    .hero-box.small {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      margin-bottom: 0.7rem !important;
+      display: block !important;
+    }
+    .hero-box.small:last-child {
+      margin-bottom: 0 !important;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .hero-box.small {
+      position: relative !important;
+      height: 100px !important;
+      min-height: 100px !important;
+      max-height: 100px !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: flex-end !important;
+    }
+    .hero-box.small img {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      z-index: 0 !important;
+      min-height: 0 !important;
+      max-height: 100% !important;
+      display: block !important;
+    }
+    .hero-box.small .box-content {
+      position: relative !important;
+      z-index: 1 !important;
+      padding: 0.7rem 1rem !important;
+      background: rgba(255,255,255,0.85) !important;
+      min-width: 0 !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
   }
 
   @media (max-width: 600px) {
@@ -5331,5 +5405,69 @@ body {
 
     .products-grid {
       grid-template-columns: 1fr;
+    }
+  }
+
+  /* Blood Tests Menu Styles */
+  .blood-tests-menu {
+    position: absolute;
+    top: 64px;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform: translateY(-10px);
+    opacity: 0;
+    pointer-events: none;
+    border-top: 1px solid var(--border);
+    display: none;
+  }
+
+  .blood-tests-menu.visible {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+    display: block;
+  }
+
+  .blood-tests-menu .menu-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+  }
+
+  .blood-tests-menu .menu-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .blood-tests-menu .menu-list a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    transition: color 0.2s ease;
+  }
+
+  .blood-tests-menu .menu-list a:hover {
+    color: var(--accent);
+  }
+
+  @media (max-width: 768px) {
+    .blood-tests-menu .menu-container {
+      padding: 1rem;
+    }
+    
+    .blood-tests-menu .menu-list {
+      gap: 1rem;
+    }
+    
+    .blood-tests-menu .menu-list a {
+      font-size: 0.9rem;
     }
   }
