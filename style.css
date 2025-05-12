@@ -734,7 +734,7 @@ body {
   .blood-test-card {
     background: var(--card-bg);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 0 !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin-bottom: 20px;
@@ -2313,7 +2313,7 @@ body {
   .blood-test-card {
     background: var(--card-bg);
     border: 1px solid var(--border);
-    border-radius: 0;
+    border-radius: 0 !important;
     box-shadow: 0 2px 4px var(--card-shadow);
     padding: 20px;
     transition: transform 0.2s, box-shadow 0.2s;
@@ -2543,6 +2543,10 @@ body {
         border-radius: 8px;
         border: 1px solid var(--border);
         padding: 0.8rem;
+        top: unset;
+        left: unset;
+        box-shadow: none;
+        border-right: none;
     }
 
     .products-grid {
@@ -4260,16 +4264,26 @@ body {
   }
 
   .tests-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
+    display: block;
+    padding: 0;
+    max-width: 800px;
+    margin: 0 auto;
   }
 
-  .test-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  .blood-test-card {
+    width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+    padding: 1.5rem 0;
+  }
+
+  .blood-test-card:last-child {
+    border-bottom: none;
   }
 
   .test-header {
