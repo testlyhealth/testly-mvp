@@ -16,20 +16,11 @@ export function createFilterPanel(tests) {
       <h3>Filter Results</h3>
       
       <div class="filter-section">
-        <h4>Price Range</h4>
-        <div class="price-range">
-          <input type="range" id="price-min" min="${minPrice}" max="${maxPrice}" value="${minPrice}" step="10">
-          <input type="range" id="price-max" min="${minPrice}" max="${maxPrice}" value="${maxPrice}" step="10">
-          <div class="price-inputs">
-            <div>
-              <label for="price-min-value">Min: £</label>
-              <input type="number" id="price-min-value" value="${minPrice}" min="${minPrice}" max="${maxPrice}">
-            </div>
-            <div>
-              <label for="price-max-value">Max: £</label>
-              <input type="number" id="price-max-value" value="${maxPrice}" min="${minPrice}" max="${maxPrice}">
-            </div>
-          </div>
+        <h4>Price</h4>
+        <p>£0 - £${maxPrice}</p>
+        <div class="price-slider">
+          <input type="range" id="price-min" min="0" max="${maxPrice}" value="0" step="10">
+          <input type="range" id="price-max" min="0" max="${maxPrice}" value="${maxPrice}" step="10">
         </div>
       </div>
 
@@ -111,16 +102,10 @@ export function setupFilterPanel(tests, updateCallback) {
     
     if (min > max) {
       priceMin.value = max;
-      priceMinValue.value = max;
-    } else {
-      priceMinValue.value = min;
     }
     
     if (max < min) {
       priceMax.value = min;
-      priceMaxValue.value = min;
-    } else {
-      priceMaxValue.value = max;
     }
   }
 

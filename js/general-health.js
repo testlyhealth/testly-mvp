@@ -176,7 +176,7 @@ async function updateTestsGrid(tests) {
 export async function displayGeneralHealthPage() {
   try {
     // Fetch the tests data
-    const response = await fetch('/data/providers.json');
+    const response = await fetch('/data/blood-tests/providers.json');
     const tests = await response.json();
     
     // Create the filter panel
