@@ -3,6 +3,7 @@ import { displayBloodTestsPage } from './pages/blood-tests.js';
 import { displayCategoryProducts } from './products.js';
 import { displayHomePage } from './pages/home.js';
 import { displayGeneralHealthPage } from './pages/general-health.js';
+import { setupDynamicTextAnimation } from './home.js';
 
 // Router class to handle SPA navigation
 export default class Router {
@@ -91,6 +92,7 @@ export default class Router {
   async renderHome() {
     const content = displayHomePage();
     await this.render(content);
+    setupDynamicTextAnimation();
     // Add homepage-specific event listeners if needed
     // For example, attach the blood test button event listener here if not handled elsewhere
     const bloodTestBtn = document.querySelector('.hero-grid-small .zepbound-box .cta-button');

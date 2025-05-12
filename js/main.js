@@ -1,6 +1,6 @@
 import { setupMenuToggle } from './menu.js';
 import { displayCategoryProducts } from './products.js';
-import { displayHomePage } from './pages/home.js';
+import { displayHomePage } from './home.js';
 import { displayBlogPage } from './blog.js';
 import { displayArticle } from './article.js';
 import { displayBloodTestsPage } from './pages/blood-tests.js';
@@ -172,6 +172,13 @@ document.addEventListener('DOMContentLoaded', () => {
       bloodTestBtn.addEventListener('click', (e) => {
         e.preventDefault();
         window.location.hash = '#/blood-tests';
+      });
+    }
+
+    // Render homepage if on home route (no hash or #/)
+    if (!window.location.hash || window.location.hash === '#/' || window.location.hash === '#') {
+      import('./home.js').then(module => {
+        module.displayHomePage();
       });
     }
 });

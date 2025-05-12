@@ -4,7 +4,13 @@ import { categories } from './data.js';
 import { blogPosts } from './blog-data.js';
 
 export function displayHomePage() {
-  const mainContent = $('.product-grid');
+  console.log('displayHomePage running');
+  // Try .product-grid, fallback to <main>
+  let mainContent = document.querySelector('.product-grid') || document.querySelector('main');
+  if (!mainContent) {
+    console.error('No main content container found!');
+    return;
+  }
   
   // Create the dynamic title section
   const titleSection = `
@@ -223,8 +229,14 @@ export function displayHomePage() {
   // Update the main content
   mainContent.innerHTML = titleSection + heroSection + trackingBannerVideo + cheapestSection + trackingBanner + blogSection;
 
+  console.log('Setting up dynamic text animation');
   // Dynamic title text animation
   const dynamicText = document.querySelector('.dynamic-text');
+  console.log('dynamicText element:', dynamicText);
+  // Highlight the element being updated
+  dynamicText.style.border = '2px solid red';
+  // Log all .dynamic-text elements
+  console.log('All .dynamic-text elements:', document.querySelectorAll('.dynamic-text'));
   const phrases = [
     'blood tests',
     'weight loss treatments',
@@ -233,9 +245,15 @@ export function displayHomePage() {
   ];
   let currentIndex = 0;
 
+  // Clear any previous interval
+  if (window.dynamicTextInterval) {
+    clearInterval(window.dynamicTextInterval);
+    window.dynamicTextInterval = null;
+  }
+
   function updateDynamicText() {
+    console.log('Updating dynamic text to:', phrases[currentIndex]);
     dynamicText.classList.add('fade-out');
-    
     setTimeout(() => {
       dynamicText.textContent = phrases[currentIndex];
       dynamicText.classList.remove('fade-out');
@@ -245,9 +263,9 @@ export function displayHomePage() {
 
   // Initial update
   updateDynamicText();
-  
   // Set up the interval for subsequent updates
-  setInterval(updateDynamicText, 3000);
+  window.dynamicTextInterval = setInterval(updateDynamicText, 3000);
+  console.log('Interval set:', window.dynamicTextInterval);
 
   // Set video playback rate and stop after one play for the weight loss banner
   const weightLossVideo = document.querySelector('.health-banner-video');
@@ -313,4 +331,33 @@ function getCategoryIcon(categoryId) {
     'supplements': 'fa-pills'
   };
   return icons[categoryId] || 'fa-heartbeat';
+}
+
+export function setupDynamicTextAnimation() {
+  const dynamicText = document.querySelector('.dynamic-text');
+  if (!dynamicText) return;
+  const phrases = [
+    'blood tests',
+    'weight loss treatments',
+    'hormone clinics',
+    'supplements'
+  ];
+  let currentIndex = 0;
+
+  if (window.dynamicTextInterval) {
+    clearInterval(window.dynamicTextInterval);
+    window.dynamicTextInterval = null;
+  }
+
+  function updateDynamicText() {
+    dynamicText.classList.add('fade-out');
+    setTimeout(() => {
+      dynamicText.textContent = phrases[currentIndex];
+      dynamicText.classList.remove('fade-out');
+      currentIndex = (currentIndex + 1) % phrases.length;
+    }, 500);
+  }
+
+  updateDynamicText();
+  window.dynamicTextInterval = setInterval(updateDynamicText, 3000);
 }

@@ -4869,11 +4869,6 @@ body {
       min-width: 0 !important;
       width: 100% !important;
       box-sizing: border-box !important;
-      flex: 1 1 auto !important;
-      display: flex !important;
-      flex-direction: column !important;
-      justify-content: center !important;
-      height: 100% !important;
     }
   }
 
