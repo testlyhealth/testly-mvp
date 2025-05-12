@@ -70,6 +70,9 @@ function init() {
   // Setup blood tests menu
   setupBloodTestsMenu();
   
+  // Setup mobile menu
+  setupMobileMenu();
+  
   // Start the app
   router.handleRoute();
 }
@@ -84,24 +87,82 @@ function setupBloodTestsMenu() {
   
   if (!bloodTestsLink || !bloodTestsMenu) return;
   
-  // Toggle menu on click
+  // Toggle menu on click and prevent navigation
   bloodTestsLink.addEventListener('click', (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent navigation
     e.stopPropagation();
     bloodTestsMenu.classList.toggle('visible');
   });
   
   // Close menu when clicking outside
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('.blood-tests-menu') && !e.target.closest('.blood-tests-link')) {
+    if (!bloodTestsMenu.contains(e.target) && !bloodTestsLink.contains(e.target)) {
       bloodTestsMenu.classList.remove('visible');
     }
   });
   
-  // Close menu when clicking a menu item
-  bloodTestsMenu.querySelectorAll('.menu-item').forEach(item => {
+  // Close menu when mouse leaves
+  bloodTestsMenu.addEventListener('mouseleave', () => {
+    bloodTestsMenu.classList.remove('visible');
+  });
+  
+  // Close menu when navigating to a new page
+  window.addEventListener('hashchange', () => {
+    bloodTestsMenu.classList.remove('visible');
+  });
+}
+
+// Setup mobile menu
+function setupMobileMenu() {
+  const burgerMenu = document.querySelector('.burger-menu');
+  const mobileMenu = document.querySelector('.mobile-menu');
+  const secondaryMenu = document.querySelector('.mobile-menu-secondary');
+  const submenuLinks = document.querySelectorAll('.mobile-menu-list a.has-submenu');
+  const backButton = document.querySelector('.mobile-menu-back');
+  
+  if (!burgerMenu || !mobileMenu) return;
+  
+  // Ensure menu is hidden by default
+  mobileMenu.classList.remove('visible');
+  secondaryMenu.classList.remove('visible');
+  
+  // Toggle main menu
+  burgerMenu.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    mobileMenu.classList.toggle('visible');
+  });
+  
+  // Handle submenu navigation
+  submenuLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      secondaryMenu.classList.add('visible');
+    });
+  });
+  
+  // Handle back button
+  backButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    secondaryMenu.classList.remove('visible');
+  });
+  
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!mobileMenu.contains(e.target) && !burgerMenu.contains(e.target)) {
+      mobileMenu.classList.remove('visible');
+      secondaryMenu.classList.remove('visible');
+    }
+  });
+  
+  // Close menu when selecting a menu item
+  const menuItems = document.querySelectorAll('.mobile-menu-list a:not(.has-submenu)');
+  menuItems.forEach(item => {
     item.addEventListener('click', () => {
-      bloodTestsMenu.classList.remove('visible');
+      mobileMenu.classList.remove('visible');
+      secondaryMenu.classList.remove('visible');
     });
   });
 }

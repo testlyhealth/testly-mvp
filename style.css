@@ -5471,3 +5471,113 @@ body {
       font-size: 0.9rem;
     }
   }
+
+  /* Mobile Menu Styles */
+  .mobile-menu {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 64px);
+    background: #fff;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    display: none;
+    visibility: hidden;
+  }
+
+  .mobile-menu.visible {
+    transform: translateX(0);
+    display: block;
+    visibility: visible;
+  }
+
+  .mobile-menu-container {
+    display: flex;
+    height: 100%;
+  }
+
+  .mobile-menu-primary {
+    width: 100%;
+    padding: 1rem;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+  }
+
+  .mobile-menu-secondary {
+    width: 100%;
+    padding: 1rem;
+    background: #f8f9fa;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+  }
+
+  .mobile-menu-secondary.visible {
+    transform: translateX(0);
+  }
+
+  .mobile-menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .mobile-menu-list li {
+    margin-bottom: 0.5rem;
+  }
+
+  .mobile-menu-list a {
+    display: block;
+    padding: 1rem;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+  }
+
+  .mobile-menu-list a:hover {
+    background-color: var(--card-bg);
+  }
+
+  .mobile-menu-list a.has-submenu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .mobile-menu-list a.has-submenu::after {
+    content: "›";
+    font-size: 1.5rem;
+    color: var(--text-light);
+  }
+
+  .mobile-menu-back {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    cursor: pointer;
+  }
+
+  .mobile-menu-back::before {
+    content: "‹";
+    margin-right: 0.5rem;
+    font-size: 1.5rem;
+  }
+
+  @media (max-width: 900px) {
+    .mobile-menu {
+      display: block;
+    }
+  }
