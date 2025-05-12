@@ -37,6 +37,165 @@
       "sampleType": "Finger-prick",
       "url": "https://thriva.co/male-hormone-check",
       "lastUpdated": "2024-03-14"
+    },
+    {
+      "id": "bt003",
+      "name": "Well Woman Check",
+      "provider": "Bluecrest",
+      "category": "general",
+      "price": 99.99,
+      "description": "Comprehensive health check for women including hormone balance and thyroid function",
+      "testsIncluded": [
+        "Full Blood Count",
+        "Thyroid Function",
+        "Iron Studies",
+        "Vitamin D",
+        "Hormone Balance"
+      ],
+      "turnaroundTime": "3-4 days",
+      "sampleType": "Venous",
+      "url": "https://www.bluecrest.com/well-woman-check",
+      "lastUpdated": "2024-03-13"
+    },
+    {
+      "id": "bt004",
+      "name": "Advanced Health Check",
+      "provider": "London Medical Laboratory",
+      "category": "general",
+      "price": 149.99,
+      "description": "Extensive health check covering all major health markers and organ function",
+      "testsIncluded": [
+        "Full Blood Count",
+        "Liver Function",
+        "Kidney Function",
+        "Thyroid Function",
+        "Hormone Profile",
+        "Vitamin D",
+        "Iron Studies",
+        "Diabetes Check"
+      ],
+      "turnaroundTime": "2-3 days",
+      "sampleType": "Venous",
+      "url": "https://www.londonmedicallaboratory.com/advanced-health-check",
+      "lastUpdated": "2024-03-12"
+    },
+    {
+      "id": "bt005",
+      "name": "Essential Health Check",
+      "provider": "Nuffield Health",
+      "category": "general",
+      "price": 69.99,
+      "description": "Basic health check covering essential health markers",
+      "testsIncluded": [
+        "Full Blood Count",
+        "Cholesterol",
+        "Diabetes Check",
+        "Liver Function"
+      ],
+      "turnaroundTime": "2-3 days",
+      "sampleType": "Venous",
+      "url": "https://www.nuffieldhealth.com/essential-health-check",
+      "lastUpdated": "2024-03-11"
+    },
+    {
+      "id": "bt006",
+      "name": "Comprehensive Health Screen",
+      "provider": "Forth",
+      "category": "general",
+      "price": 129.99,
+      "description": "Detailed health screening with comprehensive biomarker analysis",
+      "testsIncluded": [
+        "Full Blood Count",
+        "Liver Function",
+        "Kidney Function",
+        "Thyroid Function",
+        "Hormone Profile",
+        "Vitamin D",
+        "Iron Studies"
+      ],
+      "turnaroundTime": "2-3 days",
+      "sampleType": "Finger-prick",
+      "url": "https://www.forthwithlife.co.uk/comprehensive-health-screen",
+      "lastUpdated": "2024-03-10"
+    },
+    {
+      "id": "bt007",
+      "name": "Basic Health Check",
+      "provider": "Superdrug",
+      "category": "general",
+      "price": 49.99,
+      "description": "Simple health check covering basic health markers",
+      "testsIncluded": [
+        "Full Blood Count",
+        "Cholesterol",
+        "Diabetes Check"
+      ],
+      "turnaroundTime": "2-3 days",
+      "sampleType": "Finger-prick",
+      "url": "https://www.superdrug.com/basic-health-check",
+      "lastUpdated": "2024-03-09"
+    },
+    {
+      "id": "bt008",
+      "name": "Premium Health Check",
+      "provider": "Lola",
+      "category": "general",
+      "price": 199.99,
+      "description": "Premium health check with extensive biomarker coverage and detailed analysis",
+      "testsIncluded": [
+        "Full Blood Count",
+        "Liver Function",
+        "Kidney Function",
+        "Thyroid Function",
+        "Hormone Profile",
+        "Vitamin D",
+        "Iron Studies",
+        "Diabetes Check",
+        "Cardiac Markers"
+      ],
+      "turnaroundTime": "2-3 days",
+      "sampleType": "Venous",
+      "url": "https://www.lola.com/premium-health-check",
+      "lastUpdated": "2024-03-08"
+    },
+    {
+      "id": "bt009",
+      "name": "Standard Health Check",
+      "provider": "Lloyds Pharmacy",
+      "category": "general",
+      "price": 59.99,
+      "description": "Standard health check covering common health markers",
+      "testsIncluded": [
+        "Full Blood Count",
+        "Cholesterol",
+        "Diabetes Check",
+        "Liver Function"
+      ],
+      "turnaroundTime": "2-3 days",
+      "sampleType": "Finger-prick",
+      "url": "https://www.lloydspharmacy.com/standard-health-check",
+      "lastUpdated": "2024-03-07"
+    },
+    {
+      "id": "bt010",
+      "name": "Complete Health Check",
+      "provider": "Selph",
+      "category": "general",
+      "price": 119.99,
+      "description": "Complete health check with comprehensive biomarker coverage",
+      "testsIncluded": [
+        "Full Blood Count",
+        "Liver Function",
+        "Kidney Function",
+        "Thyroid Function",
+        "Hormone Profile",
+        "Vitamin D",
+        "Iron Studies"
+      ],
+      "turnaroundTime": "2-3 days",
+      "sampleType": "Finger-prick",
+      "url": "https://www.selph.com/complete-health-check",
+      "lastUpdated": "2024-03-06"
     }
   ]
 } 
