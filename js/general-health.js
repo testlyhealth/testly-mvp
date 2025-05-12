@@ -5,7 +5,7 @@ import { basket } from './basket.js';
 // Function to get grouped biomarkers
 async function getGroupedBiomarkers(testsIncluded) {
   try {
-    const response = await fetch('/data/biomarker-groupings.json');
+    const response = await fetch('data/biomarker-groupings.json');
     const groupings = await response.json();
     
     const grouped = new Map();
@@ -146,7 +146,7 @@ async function updateTestsGrid(tests) {
 export async function displayGeneralHealthPage() {
   try {
     // Fetch the tests data
-    const response = await fetch('/data/blood-tests/tests.json');
+    const response = await fetch('data/blood-tests/tests.json');
     const data = await response.json();
     const tests = data.tests; // Extract the tests array from the response
     
