@@ -39,7 +39,22 @@ async function getGroupedBiomarkers(testsIncluded) {
 // Function to create a blood test card
 async function createBloodTestCard(test, rank) {
   // Get the provider logo filename
-  const providerLogo = test.provider + '.png';
+  const providerLogoMap = {
+    'Numan': 'numan.png',
+    'Nuffield Health': 'nuffield.png',
+    'London Health Company': 'london health company.png',
+    'Lloyds Pharmacy': 'lloyds pharmacy.png',
+    'London Medical Laboratory': 'london medical laboratory.png',
+    'Selph': 'selph.png',
+    'Bluecrest': 'bluecrest.png',
+    'Lola': 'lola.png',
+    'Superdrug': 'superdrug.png',
+    'Thriva': 'thriva.png',
+    'Forth': 'forth.png',
+    'Medichecks': 'medichecks.png'
+  };
+  
+  const providerLogo = providerLogoMap[test.provider] || 'default-logo.png';
   
   // Get grouped biomarkers
   const groupedBiomarkers = await getGroupedBiomarkers(test.testsIncluded);
