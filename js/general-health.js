@@ -3,20 +3,20 @@ import { createFilterPanel, setupFilterPanel } from './filter-panel.js';
 import { basket } from './basket.js';
 
 // Function to get grouped biomarkers
-async function getGroupedBiomarkers(biomarkers) {
+async function getGroupedBiomarkers(testsIncluded) {
   try {
     const response = await fetch('/data/biomarker-groupings.json');
     const groupings = await response.json();
     
     const grouped = new Map();
-    biomarkers.forEach(biomarker => {
+    testsIncluded.forEach(test => {
       let found = false;
-      for (const [group, items] of Object.entries(groupings)) {
-        if (items.includes(biomarker)) {
-          if (!grouped.has(group)) {
-            grouped.set(group, []);
+      for (const group of groupings) {
+        if (group.biomarkers.includes(test)) {
+          if (!grouped.has(group.group)) {
+            grouped.set(group.group, []);
           }
-          grouped.get(group).push(biomarker);
+          grouped.get(group.group).push(test);
           found = true;
           break;
         }
@@ -25,14 +25,14 @@ async function getGroupedBiomarkers(biomarkers) {
         if (!grouped.has('Other')) {
           grouped.set('Other', []);
         }
-        grouped.get('Other').push(biomarker);
+        grouped.get('Other').push(test);
       }
     });
     
     return grouped;
   } catch (error) {
     console.error('Error loading biomarker groupings:', error);
-    return new Map([['All Biomarkers', biomarkers]]);
+    return new Map([['All Tests', testsIncluded]]);
   }
 }
 
@@ -42,17 +42,17 @@ async function createBloodTestCard(test, rank) {
   const providerLogo = test.provider + '.png';
   
   // Get grouped biomarkers
-  const groupedBiomarkers = await getGroupedBiomarkers(test.biomarkers);
+  const groupedBiomarkers = await getGroupedBiomarkers(test.testsIncluded);
   
   return `
-    <div class="product-card blood-test-card" data-test-id="${test.test_name}">
+    <div class="product-card blood-test-card" data-test-id="${test.id}">
       <div class="test-rank">${rank}</div>
       <div class="test-header">
         <div class="provider-info">
           <img src="images/logos/${providerLogo}" alt="${test.provider} logo" class="provider-logo">
           <span class="provider-name">${test.provider}</span>
         </div>
-        <h3 class="test-name">${test.test_name}</h3>
+        <h3 class="test-name">${test.name}</h3>
       </div>
       <p>${test.description}</p>
       <div class="test-details">
@@ -60,57 +60,41 @@ async function createBloodTestCard(test, rank) {
         <div class="biomarkers-section">
           <div class="biomarkers-header">
             <div class="biomarker-info">
-              <h4>Biomarker number: ${test["biomarker number"]}</h4>
+              <h4>Tests Included: ${test.testsIncluded.length}</h4>
               <button class="toggle-biomarkers" aria-expanded="false">Show all</button>
             </div>
           </div>
           <div class="biomarkers-list hidden">
-            ${Array.from(groupedBiomarkers.entries()).map(([group, biomarkers]) => `
+            ${Array.from(groupedBiomarkers.entries()).map(([group, tests]) => `
               <div class="biomarker-group">
                 <h5 class="group-header">${group}</h5>
                 <ul>
-                  ${biomarkers.map(biomarker => `<li>${biomarker}</li>`).join('')}
+                  ${tests.map(test => `<li>${test}</li>`).join('')}
                 </ul>
               </div>
             `).join('')}
           </div>
         </div>
         <div class="test-locations">
-          <h4>Available at:</h4>
-          <ul>
-            ${test["blood test location"].map(location => `<li>${location}</li>`).join('')}
-          </ul>
+          <h4>Sample Type:</h4>
+          <p>${test.sampleType}</p>
         </div>
         <div class="test-results">
-          <p>Results in ${test["Days till results returned"]} days</p>
+          <p>Results in ${test.turnaroundTime}</p>
         </div>
         <button class="toggle-details" aria-expanded="false">Details</button>
         <div class="additional-details hidden">
           <div class="detail-section">
-            <h4>Pricing Information</h4>
-            <p>${test["pricing information"]}</p>
-          </div>
-          <div class="detail-section">
-            <h4>Doctor's Report</h4>
-            <p>${test["doctors report"] === "Yes" ? "Includes a doctor's report" : "No doctor's report included"}</p>
-          </div>
-          <div class="detail-section">
-            <h4>Lab Accreditations</h4>
-            <ul>
-              ${test["lab accreditations"].map(accreditation => `<li>${accreditation}</li>`).join('')}
-            </ul>
-          </div>
-          <div class="detail-section">
-            <h4>Trustpilot Score</h4>
-            <p>${test["trust pilot score"]}/5</p>
+            <h4>Last Updated</h4>
+            <p>${test.lastUpdated}</p>
           </div>
           <div class="detail-section">
             <h4>Learn More</h4>
-            <a href="${test.link}" target="_blank" class="provider-link">Visit ${test.provider} website</a>
+            <a href="${test.url}" target="_blank" class="provider-link">Visit ${test.provider} website</a>
           </div>
         </div>
       </div>
-      <button class="add-to-basket" data-test-id="${test.test_name}">Add to Basket</button>
+      <button class="add-to-basket" data-test-id="${test.id}">Add to Basket</button>
     </div>
   `;
 }
@@ -132,23 +116,9 @@ function filterTests(tests, filters) {
       }
     }
 
-    // Filter by location
-    if (filters.location && filters.location !== 'all') {
-      if (!test["blood test location"].includes(filters.location)) {
-        return false;
-      }
-    }
-
-    // Filter by biomarker count
-    if (filters.biomarkerCount) {
-      if (test["biomarker number"] < filters.biomarkerCount) {
-        return false;
-      }
-    }
-
-    // Filter by doctor's report
-    if (filters.doctorsReport) {
-      if (test["doctors report"] !== "Yes") {
+    // Filter by category
+    if (filters.category && filters.category !== 'all') {
+      if (test.category !== filters.category) {
         return false;
       }
     }
@@ -176,8 +146,9 @@ async function updateTestsGrid(tests) {
 export async function displayGeneralHealthPage() {
   try {
     // Fetch the tests data
-    const response = await fetch('/data/blood-tests/providers.json');
-    const tests = await response.json();
+    const response = await fetch('/data/blood-tests/tests.json');
+    const data = await response.json();
+    const tests = data.tests; // Extract the tests array from the response
     
     // Create the filter panel
     const filterPanel = createFilterPanel(tests);
