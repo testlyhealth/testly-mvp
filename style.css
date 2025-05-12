@@ -733,16 +733,13 @@ body {
   /* Blood Test Cards */
   .blood-test-card {
     background: var(--card-bg);
-    border: 1px solid var(--border);
+    border: 1px solid black;
     border-radius: 0 !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px var(--card-shadow);
     padding: 20px;
-    margin-bottom: 20px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    display: flex;
-    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
     position: relative;
-    padding-bottom: 60px; /* Add space for the button */
+    padding-bottom: 60px; /* Add space for the buttons */
   }
   
   /* Add background color to the first blood test card */
@@ -2280,7 +2277,7 @@ body {
   /* Blood Test Cards */
   .blood-test-card {
     background: var(--card-bg);
-    border: 1px solid var(--border);
+    border: 1px solid black;
     border-radius: 0 !important;
     box-shadow: 0 2px 4px var(--card-shadow);
     padding: 20px;
@@ -5203,7 +5200,7 @@ body {
   /* Blood Test Card Styles */
   .blood-test-card {
     background: var(--card-bg);
-    border: 1px solid var(--border);
+    border: 1px solid black;
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
