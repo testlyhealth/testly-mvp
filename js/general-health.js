@@ -184,15 +184,22 @@ export async function displayGeneralHealthPage() {
       </div>
     `;
 
-    // Setup filter panel functionality after rendering
-    setTimeout(() => {
+    // Return the content first
+    const mainContent = $('.product-grid');
+    if (mainContent) {
+      mainContent.innerHTML = content;
+    }
+
+    // Wait for the next frame to ensure DOM is updated
+    requestAnimationFrame(() => {
+      // Setup filter panel functionality after DOM is updated
       setupFilterPanel(tests, async (filteredTests) => {
         const testsGrid = $('.tests-grid');
         if (testsGrid) {
           testsGrid.innerHTML = (await updateTestsGrid(filteredTests)).trim();
         }
       });
-    }, 0);
+    });
 
     return content;
   } catch (error) {

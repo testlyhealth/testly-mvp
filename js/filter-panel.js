@@ -17,10 +17,12 @@ export function createFilterPanel(tests) {
       
       <div class="filter-section">
         <h4>Price</h4>
-        <p>£0 - £${maxPrice}</p>
+        <div class="price-range">
+          <span id="price-min-value">£${minPrice.toFixed(2)}</span> - <span id="price-max-value">£${maxPrice.toFixed(2)}</span>
+        </div>
         <div class="price-slider">
-          <input type="range" id="price-min" min="0" max="${maxPrice}" value="0" step="10">
-          <input type="range" id="price-max" min="0" max="${maxPrice}" value="${maxPrice}" step="10">
+          <input type="range" id="price-min" min="${minPrice}" max="${maxPrice}" value="${minPrice}" step="1">
+          <input type="range" id="price-max" min="${minPrice}" max="${maxPrice}" value="${maxPrice}" step="1">
         </div>
       </div>
 
@@ -57,16 +59,35 @@ export function createFilterPanel(tests) {
         </div>
       </div>
 
-      <button id="apply-filters" class="apply-filters-btn">Apply Filters</button>
-      <button id="reset-filters" class="reset-filters-btn">Reset Filters</button>
+      <div class="filter-buttons">
+        <button id="apply-filters" class="apply-filters-btn">Apply Filters</button>
+        <button id="reset-filters" class="reset-filters-btn">Reset</button>
+      </div>
     </div>
   `;
 }
 
 // Function to setup filter panel functionality
 export function setupFilterPanel(tests, updateCallback) {
-  const filterPanel = $('.filter-panel-content');
-  if (!filterPanel) return;
+  // First try to find the filter panel content
+  let filterPanel = $('.filter-panel-content');
+  
+  // If not found, try to find the filter panel and then its content
+  if (!filterPanel) {
+    const filterPanelContainer = $('.filter-panel');
+    if (filterPanelContainer) {
+      filterPanel = filterPanelContainer.querySelector('.filter-panel-content');
+    }
+  }
+
+  if (!filterPanel) {
+    console.error('Filter panel not found. Available elements:', {
+      filterPanelContent: $('.filter-panel-content'),
+      filterPanel: $('.filter-panel'),
+      mainContent: $('.main-content')
+    });
+    return;
+  }
 
   let currentFilters = {
     priceRange: {
@@ -80,69 +101,62 @@ export function setupFilterPanel(tests, updateCallback) {
   };
 
   // Price range inputs
-  const priceMin = $('#price-min');
-  const priceMax = $('#price-max');
-  const priceMinValue = $('#price-min-value');
-  const priceMaxValue = $('#price-max-value');
+  const priceMin = filterPanel.querySelector('#price-min');
+  const priceMax = filterPanel.querySelector('#price-max');
+  const priceMinValue = filterPanel.querySelector('#price-min-value');
+  const priceMaxValue = filterPanel.querySelector('#price-max-value');
+
+  if (!priceMin || !priceMax || !priceMinValue || !priceMaxValue) {
+    console.error('Price range elements not found in filter panel:', {
+      priceMin: !!priceMin,
+      priceMax: !!priceMax,
+      priceMinValue: !!priceMinValue,
+      priceMaxValue: !!priceMaxValue
+    });
+    return;
+  }
 
   // Other filter inputs
-  const providerFilter = $('#provider-filter');
-  const locationFilter = $('#location-filter');
-  const biomarkerCount = $('#biomarker-count');
-  const doctorsReport = $('#doctors-report');
+  const providerFilter = filterPanel.querySelector('#provider-filter');
+  const locationFilter = filterPanel.querySelector('#location-filter');
+  const biomarkerCount = filterPanel.querySelector('#biomarker-count');
+  const doctorsReport = filterPanel.querySelector('#doctors-report');
 
   // Filter buttons
-  const applyFiltersBtn = $('#apply-filters');
-  const resetFiltersBtn = $('#reset-filters');
+  const applyFiltersBtn = filterPanel.querySelector('#apply-filters');
+  const resetFiltersBtn = filterPanel.querySelector('#reset-filters');
 
-  // Update price range values
+  // Update price range values and apply filters
   function updatePriceRange() {
-    const min = parseInt(priceMin.value);
-    const max = parseInt(priceMax.value);
+    let min = parseFloat(priceMin.value);
+    let max = parseFloat(priceMax.value);
     
+    // Ensure min doesn't exceed max
     if (min > max) {
+      min = max;
       priceMin.value = max;
     }
     
+    // Ensure max doesn't go below min
     if (max < min) {
+      max = min;
       priceMax.value = min;
     }
-  }
+    
+    // Update the displayed values with 2 decimal places
+    priceMinValue.textContent = `£${min.toFixed(2)}`;
+    priceMaxValue.textContent = `£${max.toFixed(2)}`;
 
-  // Event listeners for price range
-  priceMin.addEventListener('input', updatePriceRange);
-  priceMax.addEventListener('input', updatePriceRange);
-  priceMinValue.addEventListener('input', (e) => {
-    const value = parseInt(e.target.value);
-    if (value >= parseInt(priceMin.min) && value <= parseInt(priceMin.max)) {
-      priceMin.value = value;
-      updatePriceRange();
-    }
-  });
-  priceMaxValue.addEventListener('input', (e) => {
-    const value = parseInt(e.target.value);
-    if (value >= parseInt(priceMax.min) && value <= parseInt(priceMax.max)) {
-      priceMax.value = value;
-      updatePriceRange();
-    }
-  });
-
-  // Apply filters
-  applyFiltersBtn.addEventListener('click', () => {
-    currentFilters = {
-      priceRange: {
-        min: parseInt(priceMin.value),
-        max: parseInt(priceMax.value)
-      },
-      provider: providerFilter.value,
-      location: locationFilter.value,
-      biomarkerCount: parseInt(biomarkerCount.value) || 0,
-      doctorsReport: doctorsReport.checked
+    // Update current filters
+    currentFilters.priceRange = {
+      min: min,
+      max: max
     };
 
+    // Apply filters immediately
     const filteredTests = tests.filter(test => {
       // Price range filter
-      if (test.price < currentFilters.priceRange.min || test.price > currentFilters.priceRange.max) {
+      if (test.price < min || test.price > max) {
         return false;
       }
 
@@ -170,37 +184,63 @@ export function setupFilterPanel(tests, updateCallback) {
     });
 
     updateCallback(filteredTests);
-  });
+  }
+
+  // Event listeners for price range
+  priceMin.addEventListener('input', updatePriceRange);
+  priceMax.addEventListener('input', updatePriceRange);
+
+  // Apply filters button click
+  if (applyFiltersBtn) {
+    applyFiltersBtn.addEventListener('click', () => {
+      currentFilters = {
+        priceRange: {
+          min: parseFloat(priceMin.value),
+          max: parseFloat(priceMax.value)
+        },
+        provider: providerFilter.value,
+        location: locationFilter.value,
+        biomarkerCount: parseInt(biomarkerCount.value) || 0,
+        doctorsReport: doctorsReport.checked
+      };
+      updatePriceRange();
+    });
+  }
 
   // Reset filters
-  resetFiltersBtn.addEventListener('click', () => {
-    // Reset price range
-    const minPrice = Math.min(...tests.map(test => test.price));
-    const maxPrice = Math.max(...tests.map(test => test.price));
-    priceMin.value = minPrice;
-    priceMax.value = maxPrice;
-    priceMinValue.value = minPrice;
-    priceMaxValue.value = maxPrice;
+  if (resetFiltersBtn) {
+    resetFiltersBtn.addEventListener('click', () => {
+      // Reset price range
+      const minPrice = Math.min(...tests.map(test => test.price));
+      const maxPrice = Math.max(...tests.map(test => test.price));
+      priceMin.value = minPrice;
+      priceMax.value = maxPrice;
+      priceMinValue.textContent = `£${minPrice.toFixed(2)}`;
+      priceMaxValue.textContent = `£${maxPrice.toFixed(2)}`;
 
-    // Reset other filters
-    providerFilter.value = 'all';
-    locationFilter.value = 'all';
-    biomarkerCount.value = '0';
-    doctorsReport.checked = false;
+      // Reset other filters
+      if (providerFilter) providerFilter.value = 'all';
+      if (locationFilter) locationFilter.value = 'all';
+      if (biomarkerCount) biomarkerCount.value = '0';
+      if (doctorsReport) doctorsReport.checked = false;
 
-    // Reset current filters
-    currentFilters = {
-      priceRange: {
-        min: minPrice,
-        max: maxPrice
-      },
-      provider: 'all',
-      location: 'all',
-      biomarkerCount: 0,
-      doctorsReport: false
-    };
+      // Reset current filters
+      currentFilters = {
+        priceRange: {
+          min: minPrice,
+          max: maxPrice
+        },
+        provider: 'all',
+        location: 'all',
+        biomarkerCount: 0,
+        doctorsReport: false
+      };
 
-    // Update the grid with all tests
-    updateCallback(tests);
-  });
+      // Apply reset filters
+      updatePriceRange();
+    });
+  }
+
+  // Initial filter application
+  updatePriceRange();
 } 
