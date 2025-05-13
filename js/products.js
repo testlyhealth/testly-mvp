@@ -128,17 +128,29 @@ async function createBloodTestCard(test, rank) {
 // Function to update the tests grid
 async function updateTestsGrid(tests) {
   const testsGrid = $('#tests-grid');
-  if (testsGrid) {
-    // Sort tests by price
-    const sortedTests = [...tests].sort((a, b) => a.price - b.price);
-    
-    // Create cards with ranking
-    const cards = await Promise.all(sortedTests.map((test, index) => createBloodTestCard(test, index + 1)));
-    testsGrid.innerHTML = cards.join('');
-    
+  if (!testsGrid) {
+    console.error('Tests grid not found');
+    return;
+  }
+
+  // Sort tests by price
+  const sortedTests = [...tests].sort((a, b) => a.price - b.price);
+  
+  // Create cards with ranking
+  const cards = await Promise.all(sortedTests.map((test, index) => createBloodTestCard(test, index + 1)));
+  
+  // Update the grid content
+  testsGrid.innerHTML = cards.join('');
+  
+  // Wait for the next frame to ensure DOM is updated
+  requestAnimationFrame(() => {
     // Add event listeners to the "Add to Basket" buttons
     $all('.add-to-basket').forEach(button => {
-      button.addEventListener('click', (e) => {
+      // Remove any existing event listeners
+      const newButton = button.cloneNode(true);
+      button.parentNode.replaceChild(newButton, button);
+      
+      newButton.addEventListener('click', (e) => {
         const testId = e.target.dataset.testId;
         const test = tests.find(t => t.test_name === testId);
         if (test) {
@@ -149,28 +161,36 @@ async function updateTestsGrid(tests) {
 
     // Add event listeners to the biomarker toggle buttons
     $all('.toggle-biomarkers').forEach(button => {
-      button.addEventListener('click', (e) => {
+      // Remove any existing event listeners
+      const newButton = button.cloneNode(true);
+      button.parentNode.replaceChild(newButton, button);
+      
+      newButton.addEventListener('click', (e) => {
         const biomarkersList = e.target.closest('.biomarkers-section').querySelector('.biomarkers-list');
-        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+        const isExpanded = newButton.getAttribute('aria-expanded') === 'true';
 
         biomarkersList.classList.toggle('hidden');
-        button.setAttribute('aria-expanded', !isExpanded);
-        button.textContent = isExpanded ? 'Show all' : 'Hide';
+        newButton.setAttribute('aria-expanded', !isExpanded);
+        newButton.textContent = isExpanded ? 'Show all' : 'Hide';
       });
     });
 
     // Add event listeners to the details toggle buttons
     $all('.toggle-details').forEach(button => {
-      button.addEventListener('click', (e) => {
+      // Remove any existing event listeners
+      const newButton = button.cloneNode(true);
+      button.parentNode.replaceChild(newButton, button);
+      
+      newButton.addEventListener('click', (e) => {
         const detailsSection = e.target.closest('.test-details').querySelector('.additional-details');
-        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+        const isExpanded = newButton.getAttribute('aria-expanded') === 'true';
 
         detailsSection.classList.toggle('hidden');
-        button.setAttribute('aria-expanded', !isExpanded);
-        button.textContent = isExpanded ? 'Details' : 'Hide details';
+        newButton.setAttribute('aria-expanded', !isExpanded);
+        newButton.textContent = isExpanded ? 'Details' : 'Hide details';
       });
     });
-  }
+  });
 }
 
 // Function to display products for a category
