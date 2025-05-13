@@ -70,11 +70,11 @@ async function createBloodTestCard(test, rank) {
         <div class="biomarkers-section">
           <div class="biomarkers-header">
             <div class="biomarker-info">
-              <h4>Biomarker number: ${test["biomarker number"]}</h4>
-              <button class="toggle-biomarkers" aria-expanded="false">Show all</button>
+              <h4>Tests included: ${test["biomarker number"]}</h4>
+              <button class="toggle-biomarkers" aria-expanded="true">Hide</button>
             </div>
           </div>
-          <div class="biomarkers-list hidden">
+          <div class="biomarkers-list">
             ${Array.from(groupedBiomarkers.entries()).map(([group, biomarkers]) => `
               <div class="biomarker-group">
                 <h5 class="group-header">${group}</h5>
@@ -218,11 +218,19 @@ export async function displayCategoryProducts(categoryId) {
       // Update the main content with empty grid
       mainContent.innerHTML = testsGridContainer;
 
-      // Setup filter panel functionality
-      setupFilterPanel(tests, updateTestsGrid);
+      // Wait for the next frame to ensure DOM is updated
+      requestAnimationFrame(() => {
+        // Setup filter panel functionality after DOM is updated
+        setupFilterPanel(tests, async (filteredTests) => {
+          const testsGrid = $('#tests-grid');
+          if (testsGrid) {
+            testsGrid.innerHTML = (await updateTestsGrid(filteredTests)).trim();
+          }
+        });
 
-      // Update the grid with the actual content
-      await updateTestsGrid(tests);
+        // Initial grid update
+        updateTestsGrid(tests);
+      });
 
     } catch (error) {
       console.error('Error loading blood tests:', error);

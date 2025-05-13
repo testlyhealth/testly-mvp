@@ -867,14 +867,13 @@ body {
   
   .toggle-biomarkers {
     background: none;
-    border: 1px solid var(--accent);
+    border: 2px solid var(--accent);
     color: var(--accent);
-    cursor: pointer;
-    padding: 0.3rem 0.6rem;
-    font-size: 0.85rem;
-    transition: all 0.2s;
+    padding: 0.5rem 1rem;
     border-radius: 4px;
-    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
   }
   
   .toggle-biomarkers:hover {
@@ -898,15 +897,26 @@ body {
   }
   
   .biomarkers-list {
-    margin-top: 0.5rem;
-    padding: 0.5rem;
-    background: var(--background);
-    border-radius: 4px;
+    margin-top: 1rem;
     transition: all 0.3s ease;
+    max-height: 1000px;
+    overflow: hidden;
   }
   
   .biomarkers-list.hidden {
-    display: none;
+    max-height: 0;
+    margin-top: 0;
+    opacity: 0;
+  }
+  
+  .biomarker-group {
+    margin-bottom: 1rem;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+  
+  .biomarkers-list.hidden .biomarker-group {
+    opacity: 0;
   }
   
   .biomarkers-list ul {
@@ -2388,15 +2398,26 @@ body {
   }
 
   .biomarkers-list {
-    margin-top: 0.5rem;
-    padding: 0.5rem;
-    background: var(--background);
-    border-radius: 0;
+    margin-top: 1rem;
     transition: all 0.3s ease;
+    max-height: 1000px;
+    overflow: hidden;
   }
 
   .biomarkers-list.hidden {
-    display: none;
+    max-height: 0;
+    margin-top: 0;
+    opacity: 0;
+  }
+
+  .biomarker-group {
+    margin-bottom: 1rem;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+
+  .biomarkers-list.hidden .biomarker-group {
+    opacity: 0;
   }
 
   .biomarkers-list ul {
