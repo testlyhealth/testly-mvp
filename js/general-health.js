@@ -19,20 +19,26 @@ const providerLogoMap = {
 };
 
 // Function to get grouped biomarkers
-async function getGroupedBiomarkers(testsIncluded) {
+async function getGroupedBiomarkers(biomarkers) {
   try {
     const response = await fetch('data/biomarker-groupings.json');
     const groupings = await response.json();
     
     const grouped = new Map();
-    testsIncluded.forEach(test => {
+    biomarkers.forEach(biomarker => {
       let found = false;
       for (const group of groupings) {
-        if (group.biomarkers.includes(test)) {
+        // Check both regular and advanced biomarkers
+        const allBiomarkers = [
+          ...(group.biomarkers || []),
+          ...(group['advanced-biomarkers'] || [])
+        ];
+        
+        if (allBiomarkers.some(b => b.toLowerCase() === biomarker.toLowerCase())) {
           if (!grouped.has(group.group)) {
             grouped.set(group.group, []);
           }
-          grouped.get(group.group).push(test);
+          grouped.get(group.group).push(biomarker);
           found = true;
           break;
         }
@@ -41,31 +47,34 @@ async function getGroupedBiomarkers(testsIncluded) {
         if (!grouped.has('Other')) {
           grouped.set('Other', []);
         }
-        grouped.get('Other').push(test);
+        grouped.get('Other').push(biomarker);
       }
     });
     
     return grouped;
   } catch (error) {
     console.error('Error loading biomarker groupings:', error);
-    return new Map([['All Tests', testsIncluded]]);
+    return new Map([['All Tests', biomarkers]]);
   }
 }
 
 // Single source of truth for card creation
 async function createTestCard(test, index) {
-  const groupedBiomarkers = await getGroupedBiomarkers(test.testsIncluded);
+  const groupedBiomarkers = await getGroupedBiomarkers(test.biomarkers);
   const providerLogo = providerLogoMap[test.provider] || 'default-logo.png';
   
+  // Calculate total number of biomarkers
+  const totalBiomarkers = test.biomarkers.length;
+  
   return `
-    <div class="product-card blood-test-card" data-test-id="${test.id}">
+    <div class="product-card blood-test-card" data-test-id="${test.test_name}">
       <div class="test-rank">${index + 1}</div>
       <div class="test-header">
         <div class="provider-info">
           <img src="images/logos/${providerLogo}" alt="${test.provider} logo" class="provider-logo">
           <span class="provider-name">${test.provider}</span>
         </div>
-        <h3 class="test-name">${test.name}</h3>
+        <h3 class="test-name">${test.test_name}</h3>
       </div>
       <p>${test.description}</p>
       <div class="test-details">
@@ -73,15 +82,17 @@ async function createTestCard(test, index) {
         <div class="biomarkers-section">
           <div class="biomarkers-header">
             <div class="biomarker-info">
-              <h4>Tests Included: ${test.testsIncluded.length}</h4>
-              <button class="toggle-biomarkers" aria-expanded="true">Hide</button>
+              <h4>Tests Included: ${totalBiomarkers}</h4>
+              <button class="toggle-biomarkers" aria-expanded="false">Show</button>
             </div>
           </div>
-          <div class="biomarkers-list">
+          <div class="biomarkers-list hidden">
             ${Array.from(groupedBiomarkers.entries()).map(([group, tests]) => `
               <div class="biomarker-group">
-                <h5 class="group-header">${group}</h5>
-                <ul>
+                <h5 class="group-header" style="cursor: pointer; padding: 8px; background: #f5f5f5; margin: 4px 0; border-radius: 4px;">
+                  ${group} (${tests.length} tests)
+                </h5>
+                <ul class="biomarker-items hidden" style="padding-left: 20px;">
                   ${tests.map(test => `<li>${test}</li>`).join('')}
                 </ul>
               </div>
@@ -90,24 +101,28 @@ async function createTestCard(test, index) {
         </div>
         <div class="test-locations">
           <h4>Sample Type:</h4>
-          <p>${test.sampleType}</p>
+          <p>${test['blood test location'].join(', ')}</p>
         </div>
         <div class="test-results">
-          <p>Results in ${test.turnaroundTime}</p>
+          <p>Results in ${test['Days till results returned']} days</p>
         </div>
         <button class="toggle-details" aria-expanded="false">Details</button>
         <div class="additional-details hidden">
           <div class="detail-section">
-            <h4>Last Updated</h4>
-            <p>${test.lastUpdated}</p>
+            <h4>Doctor's Report</h4>
+            <p>${test['doctors report']}</p>
+          </div>
+          <div class="detail-section">
+            <h4>Lab Accreditations</h4>
+            <p>${test['lab accreditations'].join(', ')}</p>
           </div>
           <div class="detail-section">
             <h4>Learn More</h4>
-            <a href="${test.url}" target="_blank" class="provider-link">Visit ${test.provider} website</a>
+            <a href="${test.link}" target="_blank" class="provider-link">Visit ${test.provider} website</a>
           </div>
         </div>
       </div>
-      <button class="add-to-basket" data-test-id="${test.id}">Add to Basket</button>
+      <button class="add-to-basket" data-test-id="${test.test_name}">Add to Basket</button>
     </div>
   `;
 }
@@ -140,33 +155,6 @@ function filterTests(tests, filters) {
   });
 }
 
-// Function to attach event listeners to test cards
-function attachTestCardEventListeners() {
-  // Add event listeners to the toggle buttons
-  $all('.toggle-biomarkers').forEach(button => {
-    button.addEventListener('click', (e) => {
-      const biomarkersList = e.target.closest('.biomarkers-section').querySelector('.biomarkers-list');
-      const isExpanded = button.getAttribute('aria-expanded') === 'true';
-
-      biomarkersList.classList.toggle('hidden');
-      button.setAttribute('aria-expanded', !isExpanded);
-      button.textContent = isExpanded ? 'Show' : 'Hide';
-    });
-  });
-
-  // Add event listeners to the details toggle buttons
-  $all('.toggle-details').forEach(button => {
-    button.addEventListener('click', (e) => {
-      const detailsSection = e.target.closest('.test-details').querySelector('.additional-details');
-      const isExpanded = button.getAttribute('aria-expanded') === 'true';
-
-      detailsSection.classList.toggle('hidden');
-      button.setAttribute('aria-expanded', !isExpanded);
-      button.textContent = isExpanded ? 'Details' : 'Hide details';
-    });
-  });
-}
-
 // Function to create test cards HTML
 async function createTestCardsHTML(tests) {
   // Sort tests by price
@@ -187,25 +175,48 @@ async function updateTestGridContent(tests) {
   
   // Wait for the next frame to ensure DOM is updated
   requestAnimationFrame(() => {
-    attachTestCardEventListeners();
-  });
-}
+    // Add event listeners to the toggle buttons
+    $all('.toggle-biomarkers').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const biomarkersList = e.target.closest('.biomarkers-section').querySelector('.biomarkers-list');
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
 
-// Function to update the tests grid
-async function updateTestsGrid(tests) {
-  await updateTestGridContent(tests);
-  return `
-    <div class="tests-grid">
-      ${await createTestCardsHTML(tests)}
-    </div>
-  `;
+        biomarkersList.classList.toggle('hidden');
+        button.setAttribute('aria-expanded', !isExpanded);
+        button.textContent = isExpanded ? 'Show' : 'Hide';
+      });
+    });
+
+    // Add event listeners to the group headers
+    $all('.group-header').forEach(header => {
+      header.addEventListener('click', (e) => {
+        const biomarkerItems = e.target.nextElementSibling;
+        const isExpanded = !biomarkerItems.classList.contains('hidden');
+        
+        biomarkerItems.classList.toggle('hidden');
+        e.target.setAttribute('aria-expanded', !isExpanded);
+      });
+    });
+
+    // Add event listeners to the details toggle buttons
+    $all('.toggle-details').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const detailsSection = e.target.closest('.test-details').querySelector('.additional-details');
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+        detailsSection.classList.toggle('hidden');
+        button.setAttribute('aria-expanded', !isExpanded);
+        button.textContent = isExpanded ? 'Details' : 'Hide details';
+      });
+    });
+  });
 }
 
 // Function to create the page structure
 function createPageStructure(filterPanel, testsGrid) {
   return `
     <div class="general-health-page">
-      <div class="filter-panel">
+      <div class="filter-panel" id="filter-panel">
         ${filterPanel}
       </div>
       <div class="main-content">
@@ -233,6 +244,7 @@ function createErrorContent() {
 
 // Function to initialize page elements and event listeners
 async function initializePageElements(tests) {
+  console.log('initializePageElements called with', tests.length, 'tests');
   const mainContent = $('main');
   if (!mainContent) {
     console.error('Main content container not found');
@@ -240,20 +252,68 @@ async function initializePageElements(tests) {
   }
 
   // Create the filter panel
+  console.log('Creating filter panel...');
   const filterPanel = createFilterPanel(tests);
   
   // Create the test cards HTML
+  console.log('Creating test cards HTML...');
   const testsGrid = await createTestCardsHTML(tests);
+  console.log('Test cards HTML created, length:', testsGrid.length);
   
   // Create and set the main content
+  console.log('Creating page structure...');
   const content = createPageStructure(filterPanel, testsGrid);
+  console.log('Page structure created, length:', content.length);
+  
+  // Update the main content
   mainContent.innerHTML = content;
   
-  // Add event listeners after the content is added to the DOM
-  attachTestCardEventListeners();
+  // Wait for the next frame to ensure DOM is updated
+  await new Promise(resolve => requestAnimationFrame(resolve));
+  
+  // Add event listeners to the toggle buttons
+  console.log('Setting up event listeners...');
+  $all('.toggle-biomarkers').forEach(button => {
+    button.addEventListener('click', (e) => {
+      console.log('Toggle button clicked');
+      const biomarkersList = e.target.closest('.biomarkers-section').querySelector('.biomarkers-list');
+      const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+      biomarkersList.classList.toggle('hidden');
+      button.setAttribute('aria-expanded', !isExpanded);
+      button.textContent = isExpanded ? 'Show' : 'Hide';
+    });
+  });
+
+  // Add event listeners to the group headers
+  $all('.group-header').forEach(header => {
+    header.addEventListener('click', (e) => {
+      console.log('Group header clicked');
+      const biomarkerItems = e.target.nextElementSibling;
+      const isExpanded = !biomarkerItems.classList.contains('hidden');
+      
+      biomarkerItems.classList.toggle('hidden');
+      e.target.setAttribute('aria-expanded', !isExpanded);
+    });
+  });
+
+  // Add event listeners to the details toggle buttons
+  $all('.toggle-details').forEach(button => {
+    button.addEventListener('click', (e) => {
+      console.log('Details button clicked');
+      const detailsSection = e.target.closest('.test-details').querySelector('.additional-details');
+      const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+      detailsSection.classList.toggle('hidden');
+      button.setAttribute('aria-expanded', !isExpanded);
+      button.textContent = isExpanded ? 'Details' : 'Hide details';
+    });
+  });
 
   // Setup filter panel functionality
+  console.log('Setting up filter panel...');
   setupFilterPanel(tests, async (filteredTests) => {
+    console.log('Filter panel callback with', filteredTests.length, 'tests');
     await updateTestGridContent(filteredTests);
   });
 
@@ -262,20 +322,32 @@ async function initializePageElements(tests) {
 
 // Initialize the page
 export async function displayGeneralHealthPage() {
+  console.log('displayGeneralHealthPage called');
   try {
-    // Fetch the tests data
-    const response = await fetch('data/blood-tests/tests.json');
-    const data = await response.json();
-    const tests = data.tests;
+    // Fetch the providers data
+    console.log('Fetching providers data...');
+    const response = await fetch('data/providers.json');
+    const providers = await response.json();
+    console.log('Providers data loaded:', providers.length, 'providers found');
     
-    // Initialize page elements and return content
+    // Filter for general health tests
+    const tests = providers.filter(test => 
+      test.biomarkers.some(biomarker => 
+        biomarker.toLowerCase().includes('cholesterol') || 
+        biomarker.toLowerCase().includes('liver') || 
+        biomarker.toLowerCase().includes('kidney')
+      )
+    );
+    console.log('Filtered tests:', tests.length, 'tests found');
+    
+    // Initialize page elements
+    console.log('Initializing page elements...');
     const content = await initializePageElements(tests);
-    if (!content) {
-      return createErrorContent();
-    }
+    console.log('Page elements initialized, content length:', content.length);
+    
     return content;
   } catch (error) {
-    console.error('Error loading blood tests:', error);
+    console.error('Error in displayGeneralHealthPage:', error);
     return createErrorContent();
   }
 } 

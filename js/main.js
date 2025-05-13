@@ -14,7 +14,7 @@ import store from './store.js';
 // Define routes
 const routes = [
   { path: '/blood-tests', template: 'blood-tests.html' },
-  { path: '/general-health', template: 'general-health.html' },
+  { path: '/general-health', template: null }, // Special case for general health
   { path: '/category/weight-loss', template: 'weight-loss.html' },
   { path: '/category/mens-health', template: 'mens-health.html' },
   { path: '/category/womens-health', template: 'womens-health.html' },

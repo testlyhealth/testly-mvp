@@ -28,6 +28,7 @@ export default class Router {
 
   async handleRoute() {
     const hash = window.location.hash.slice(1) || '/';
+    console.log('Router handling route:', hash);
     
     // Show loading overlay
     loadingOverlay.show();
@@ -35,42 +36,60 @@ export default class Router {
     try {
       // If it's the home route, restore original content
       if (hash === '/') {
+        console.log('Handling home route');
         await this.renderHome();
       } else if (hash === '/blood-tests') {
-        // Handle blood tests page
+        console.log('Handling blood tests route');
         const content = await displayBloodTestsPage();
         await this.render(content);
         this.setupBloodTestsHandlers();
       } else if (hash === '/general-health') {
-        // Handle general health page
+        console.log('Handling general health route');
         const content = await displayGeneralHealthPage();
-        await this.render(content);
+        console.log('General health content received, length:', content.length);
+        // Don't render again since displayGeneralHealthPage already renders the content
       } else if (hash.startsWith('/category/')) {
-        // Handle category pages
+        console.log('Handling category route:', hash);
         const categoryId = hash.split('/')[2];
         const content = await displayCategoryProducts(categoryId);
         await this.render(content);
       } else {
         // Find matching route
         const route = this.routes.find(r => r.path === hash);
+        console.log('Found matching route:', route);
         
         if (route) {
-          try {
-            const template = await this.loadTemplate(route.template);
-            await this.render(template);
-          } catch (error) {
-            console.error('Error loading template:', error);
-            // Show error page or fallback content
-            await this.renderError('Page Not Found', 'The page you\'re looking for doesn\'t exist.');
+          if (route.template === null) {
+            console.log('Handling special route:', hash);
+            const content = await this.handleSpecialRoute(hash);
+            await this.render(content);
+          } else {
+            try {
+              console.log('Loading template:', route.template);
+              const template = await this.loadTemplate(route.template);
+              await this.render(template);
+            } catch (error) {
+              console.error('Error loading template:', error);
+              await this.renderError('Page Not Found', 'The page you\'re looking for doesn\'t exist.');
+            }
           }
         } else {
-          // Handle 404 - route not found
+          console.log('No matching route found');
           await this.renderError('Page Not Found', 'The page you\'re looking for doesn\'t exist.');
         }
       }
     } finally {
       // Hide loading overlay
       loadingOverlay.hide();
+    }
+  }
+
+  async handleSpecialRoute(hash) {
+    switch (hash) {
+      case '/general-health':
+        return await displayGeneralHealthPage();
+      default:
+        throw new Error('Unknown special route');
     }
   }
 
@@ -178,6 +197,7 @@ export default class Router {
   }
 
   async render(content) {
+    console.log('Router rendering content, length:', content.length);
     // Store the current scroll position
     const scrollPosition = window.scrollY;
     
@@ -193,6 +213,7 @@ export default class Router {
     await new Promise(resolve => setTimeout(resolve, 300));
     
     // Update content while preserving layout
+    console.log('Updating main content');
     this.mainContent.innerHTML = content;
     
     // Force a reflow and ensure proper layout

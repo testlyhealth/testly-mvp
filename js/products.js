@@ -175,18 +175,6 @@ async function updateTestsGrid(tests) {
 
 // Function to display products for a category
 export async function displayCategoryProducts(categoryId) {
-  const mainContent = $('.product-grid');
-  const bloodTestsGrid = $('.blood-tests-grid');
-  
-  // Clear and hide the blood tests page content if it exists
-  if (bloodTestsGrid) {
-    bloodTestsGrid.innerHTML = '';
-    bloodTestsGrid.style.display = 'none';
-  }
-  
-  // Show the main content
-  mainContent.style.display = 'block';
-  
   if (categoryId === 'general-health') {
     try {
       // Fetch the tests data
@@ -200,95 +188,44 @@ export async function displayCategoryProducts(categoryId) {
           <p>Comprehensive blood tests to assess your overall health and wellbeing</p>
         </div>
       `;
-
+      
       // Create the filter panel
       const filterPanel = createFilterPanel(tests);
-
-      // Create the tests grid container with empty grid first
-      const testsGridContainer = `
-        <div class="filter-panel">
-          ${filterPanel}
-        </div>
-        <div class="main-content">
+      
+      // Create the test cards
+      const sortedTests = [...tests].sort((a, b) => a.price - b.price);
+      const cards = await Promise.all(sortedTests.map((test, index) => createBloodTestCard(test, index + 1)));
+      
+      // Return the complete content
+      return `
+        <div class="product-grid">
           ${categoryHeader}
-          <div class="products-grid" id="tests-grid"></div>
+          <div class="filter-panel" id="filter-panel">
+            ${filterPanel}
+          </div>
+          <div class="tests-grid">
+            ${cards.join('')}
+          </div>
         </div>
       `;
-
-      // Update the main content with empty grid
-      mainContent.innerHTML = testsGridContainer;
-
-      // Wait for the next frame to ensure DOM is updated
-      requestAnimationFrame(() => {
-        // Setup filter panel functionality after DOM is updated
-        setupFilterPanel(tests, async (filteredTests) => {
-          const testsGrid = $('#tests-grid');
-          if (testsGrid) {
-            testsGrid.innerHTML = (await updateTestsGrid(filteredTests)).trim();
-          }
-        });
-
-        // Initial grid update
-        updateTestsGrid(tests);
-      });
-
     } catch (error) {
-      console.error('Error loading blood tests:', error);
-      mainContent.innerHTML = `
-        <div class="filter-panel">
-          <div class="error-message">
-            <p>Error loading filters</p>
-          </div>
-        </div>
-        <div class="main-content">
-          <div class="category-header">
-            <h2>General Health Blood Tests</h2>
-            <p>Comprehensive blood tests to assess your overall health and wellbeing</p>
-          </div>
-          <div class="error-message">
-            <p>Error loading blood tests. Please try again later.</p>
-            <button onclick="window.location.reload()">Retry</button>
-          </div>
+      console.error('Error loading category products:', error);
+      return `
+        <div class="error-message">
+          <p>Error loading products. Please try again later.</p>
+          <button onclick="window.location.reload()">Retry</button>
         </div>
       `;
     }
-  } else {
-    // Handle other categories
-    const category = categories[categoryId];
-    
-    if (!category) {
-      mainContent.innerHTML = '<p>Category not found</p>';
-      return;
-    }
-
-    // Create the category header
-    const categoryHeader = `
-      <div class="category-header">
-        <h2>${category.title}</h2>
-        <p>${category.description}</p>
-      </div>
-    `;
-
-    // Create the products grid
-    const productsGrid = `
-      <div class="main-content">
-        ${categoryHeader}
-        <div class="products-grid">
-          ${category.products.map(product => createProductCard(product)).join('')}
-        </div>
-      </div>
-    `;
-
-    // Update the main content
-    mainContent.innerHTML = productsGrid;
-
-    // Add event listeners to the "Add to Basket" buttons
-    $all('.add-to-basket').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const productId = e.target.dataset.productId;
-        // We'll implement basket functionality later
-        console.log('Added to basket:', productId);
-      });
-    });
   }
+  
+  // Handle other categories
+  return `
+    <div class="product-grid">
+      <div class="category-header">
+        <h2>${categories[categoryId]?.name || 'Category'} Products</h2>
+        <p>Coming soon</p>
+      </div>
+    </div>
+  `;
 } 
