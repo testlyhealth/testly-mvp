@@ -2998,6 +2998,9 @@ body {
       cursor: pointer;
       z-index: 1100;
     }
+    .burger-menu svg {
+      stroke: var(--text) !important;
+    }
     .header-actions {
       position: absolute;
       right: 2rem;
