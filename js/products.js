@@ -128,29 +128,17 @@ async function createBloodTestCard(test, rank) {
 // Function to update the tests grid
 async function updateTestsGrid(tests) {
   const testsGrid = $('#tests-grid');
-  if (!testsGrid) {
-    console.error('Tests grid not found');
-    return;
-  }
-
-  // Sort tests by price
-  const sortedTests = [...tests].sort((a, b) => a.price - b.price);
-  
-  // Create cards with ranking
-  const cards = await Promise.all(sortedTests.map((test, index) => createBloodTestCard(test, index + 1)));
-  
-  // Update the grid content
-  testsGrid.innerHTML = cards.join('');
-  
-  // Wait for the next frame to ensure DOM is updated
-  requestAnimationFrame(() => {
+  if (testsGrid) {
+    // Sort tests by price
+    const sortedTests = [...tests].sort((a, b) => a.price - b.price);
+    
+    // Create cards with ranking
+    const cards = await Promise.all(sortedTests.map((test, index) => createBloodTestCard(test, index + 1)));
+    testsGrid.innerHTML = cards.join('');
+    
     // Add event listeners to the "Add to Basket" buttons
     $all('.add-to-basket').forEach(button => {
-      // Remove any existing event listeners
-      const newButton = button.cloneNode(true);
-      button.parentNode.replaceChild(newButton, button);
-      
-      newButton.addEventListener('click', (e) => {
+      button.addEventListener('click', (e) => {
         const testId = e.target.dataset.testId;
         const test = tests.find(t => t.test_name === testId);
         if (test) {
@@ -161,40 +149,44 @@ async function updateTestsGrid(tests) {
 
     // Add event listeners to the biomarker toggle buttons
     $all('.toggle-biomarkers').forEach(button => {
-      // Remove any existing event listeners
-      const newButton = button.cloneNode(true);
-      button.parentNode.replaceChild(newButton, button);
-      
-      newButton.addEventListener('click', (e) => {
+      button.addEventListener('click', (e) => {
         const biomarkersList = e.target.closest('.biomarkers-section').querySelector('.biomarkers-list');
-        const isExpanded = newButton.getAttribute('aria-expanded') === 'true';
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
 
         biomarkersList.classList.toggle('hidden');
-        newButton.setAttribute('aria-expanded', !isExpanded);
-        newButton.textContent = isExpanded ? 'Show all' : 'Hide';
+        button.setAttribute('aria-expanded', !isExpanded);
+        button.textContent = isExpanded ? 'Show all' : 'Hide';
       });
     });
 
     // Add event listeners to the details toggle buttons
     $all('.toggle-details').forEach(button => {
-      // Remove any existing event listeners
-      const newButton = button.cloneNode(true);
-      button.parentNode.replaceChild(newButton, button);
-      
-      newButton.addEventListener('click', (e) => {
+      button.addEventListener('click', (e) => {
         const detailsSection = e.target.closest('.test-details').querySelector('.additional-details');
-        const isExpanded = newButton.getAttribute('aria-expanded') === 'true';
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
 
         detailsSection.classList.toggle('hidden');
-        newButton.setAttribute('aria-expanded', !isExpanded);
-        newButton.textContent = isExpanded ? 'Details' : 'Hide details';
+        button.setAttribute('aria-expanded', !isExpanded);
+        button.textContent = isExpanded ? 'Details' : 'Hide details';
       });
     });
-  });
+  }
 }
 
 // Function to display products for a category
 export async function displayCategoryProducts(categoryId) {
+  const mainContent = $('.product-grid');
+  const bloodTestsGrid = $('.blood-tests-grid');
+  
+  // Clear and hide the blood tests page content if it exists
+  if (bloodTestsGrid) {
+    bloodTestsGrid.innerHTML = '';
+    bloodTestsGrid.style.display = 'none';
+  }
+  
+  // Show the main content
+  mainContent.style.display = 'block';
+  
   if (categoryId === 'general-health') {
     try {
       // Fetch the tests data
@@ -208,44 +200,95 @@ export async function displayCategoryProducts(categoryId) {
           <p>Comprehensive blood tests to assess your overall health and wellbeing</p>
         </div>
       `;
-      
+
       // Create the filter panel
       const filterPanel = createFilterPanel(tests);
-      
-      // Create the test cards
-      const sortedTests = [...tests].sort((a, b) => a.price - b.price);
-      const cards = await Promise.all(sortedTests.map((test, index) => createBloodTestCard(test, index + 1)));
-      
-      // Return the complete content
-      return `
-        <div class="product-grid">
+
+      // Create the tests grid container with empty grid first
+      const testsGridContainer = `
+        <div class="filter-panel">
+          ${filterPanel}
+        </div>
+        <div class="main-content">
           ${categoryHeader}
-          <div class="filter-panel" id="filter-panel">
-            ${filterPanel}
-          </div>
-          <div class="tests-grid">
-            ${cards.join('')}
-          </div>
+          <div class="products-grid" id="tests-grid"></div>
         </div>
       `;
+
+      // Update the main content with empty grid
+      mainContent.innerHTML = testsGridContainer;
+
+      // Wait for the next frame to ensure DOM is updated
+      requestAnimationFrame(() => {
+        // Setup filter panel functionality after DOM is updated
+        setupFilterPanel(tests, async (filteredTests) => {
+          const testsGrid = $('#tests-grid');
+          if (testsGrid) {
+            testsGrid.innerHTML = (await updateTestsGrid(filteredTests)).trim();
+          }
+        });
+
+        // Initial grid update
+        updateTestsGrid(tests);
+      });
+
     } catch (error) {
-      console.error('Error loading category products:', error);
-      return `
-        <div class="error-message">
-          <p>Error loading products. Please try again later.</p>
-          <button onclick="window.location.reload()">Retry</button>
+      console.error('Error loading blood tests:', error);
+      mainContent.innerHTML = `
+        <div class="filter-panel">
+          <div class="error-message">
+            <p>Error loading filters</p>
+          </div>
+        </div>
+        <div class="main-content">
+          <div class="category-header">
+            <h2>General Health Blood Tests</h2>
+            <p>Comprehensive blood tests to assess your overall health and wellbeing</p>
+          </div>
+          <div class="error-message">
+            <p>Error loading blood tests. Please try again later.</p>
+            <button onclick="window.location.reload()">Retry</button>
+          </div>
         </div>
       `;
     }
-  }
-  
-  // Handle other categories
-  return `
-    <div class="product-grid">
+  } else {
+    // Handle other categories
+    const category = categories[categoryId];
+    
+    if (!category) {
+      mainContent.innerHTML = '<p>Category not found</p>';
+      return;
+    }
+
+    // Create the category header
+    const categoryHeader = `
       <div class="category-header">
-        <h2>${categories[categoryId]?.name || 'Category'} Products</h2>
-        <p>Coming soon</p>
+        <h2>${category.title}</h2>
+        <p>${category.description}</p>
       </div>
-    </div>
-  `;
+    `;
+
+    // Create the products grid
+    const productsGrid = `
+      <div class="main-content">
+        ${categoryHeader}
+        <div class="products-grid">
+          ${category.products.map(product => createProductCard(product)).join('')}
+        </div>
+      </div>
+    `;
+
+    // Update the main content
+    mainContent.innerHTML = productsGrid;
+
+    // Add event listeners to the "Add to Basket" buttons
+    $all('.add-to-basket').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const productId = e.target.dataset.productId;
+        // We'll implement basket functionality later
+        console.log('Added to basket:', productId);
+      });
+    });
+  }
 } 

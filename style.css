@@ -5732,3 +5732,57 @@ body {
   .blood-test-card .detail-section p {
     color: black !important;
   }
+
+  .provider-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .provider-checkboxes::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .provider-checkboxes::-webkit-scrollbar-track {
+    background: var(--border);
+    border-radius: 3px;
+  }
+
+  .provider-checkboxes::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 3px;
+  }
+
+  .provider-checkboxes .checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.1rem 0;
+  }
+
+  .provider-checkboxes .checkbox-option input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+  }
+
+  .provider-checkboxes .checkbox-option label {
+    font-size: 0.9rem;
+    color: var(--text);
+    cursor: pointer;
+    user-select: none;
+    line-height: 1.1;
+  }
+
+  .provider-checkboxes .checkbox-option:hover label {
+    color: var(--accent);
+  }
+
+  .provider-checkboxes .checkbox-option input[type="checkbox"]:disabled + label {
+    color: var(--text-light);
+    cursor: not-allowed;
+  }
