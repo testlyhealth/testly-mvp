@@ -1,6 +1,10 @@
 import { $, $all } from './dom.js';
+import { CardService } from './services/cardService.js';
 import { createFilterPanel, setupFilterPanel } from './filter-panel.js';
 import { basket } from './basket.js';
+
+// Initialize card service
+const cardService = new CardService();
 
 // Provider logo mapping
 const providerLogoMap = {
@@ -157,57 +161,55 @@ function filterTests(tests, filters) {
 
 // Function to create test cards HTML
 async function createTestCardsHTML(tests) {
-  // Sort tests by price
-  const sortedTests = [...tests].sort((a, b) => a.price - b.price);
-  
-  // Create cards with ranking
-  const cards = await Promise.all(sortedTests.map((test, index) => createTestCard(test, index)));
-  return cards.join('');
+  return await cardService.createCards(tests);
 }
 
 // Function to update the test grid with new content
 async function updateTestGridContent(tests) {
   const testsGrid = $('.tests-grid');
   if (!testsGrid) return;
-
-  // Update the grid content
-  testsGrid.innerHTML = await createTestCardsHTML(tests);
   
-  // Wait for the next frame to ensure DOM is updated
-  requestAnimationFrame(() => {
-    // Add event listeners to the toggle buttons
-    $all('.toggle-biomarkers').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const biomarkersList = e.target.closest('.biomarkers-section').querySelector('.biomarkers-list');
-        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+  const newContent = await createTestCardsHTML(tests);
+  testsGrid.innerHTML = newContent;
+  
+  // Reattach event listeners
+  attachEventListeners();
+}
 
-        biomarkersList.classList.toggle('hidden');
-        button.setAttribute('aria-expanded', !isExpanded);
-        button.textContent = isExpanded ? 'Show' : 'Hide';
-      });
+// Function to attach event listeners
+function attachEventListeners() {
+  // Toggle biomarkers
+  $all('.toggle-biomarkers').forEach(button => {
+    button.addEventListener('click', (e) => {
+      const biomarkersList = e.target.closest('.biomarkers-section').querySelector('.biomarkers-list');
+      const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+      biomarkersList.classList.toggle('hidden');
+      button.setAttribute('aria-expanded', !isExpanded);
+      button.textContent = isExpanded ? 'Show' : 'Hide';
     });
+  });
 
-    // Add event listeners to the group headers
-    $all('.group-header').forEach(header => {
-      header.addEventListener('click', (e) => {
-        const biomarkerItems = e.target.nextElementSibling;
-        const isExpanded = !biomarkerItems.classList.contains('hidden');
-        
-        biomarkerItems.classList.toggle('hidden');
-        e.target.setAttribute('aria-expanded', !isExpanded);
-      });
+  // Group headers
+  $all('.group-header').forEach(header => {
+    header.addEventListener('click', (e) => {
+      const biomarkerItems = e.target.nextElementSibling;
+      const isExpanded = !biomarkerItems.classList.contains('hidden');
+      
+      biomarkerItems.classList.toggle('hidden');
+      e.target.setAttribute('aria-expanded', !isExpanded);
     });
+  });
 
-    // Add event listeners to the details toggle buttons
-    $all('.toggle-details').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const detailsSection = e.target.closest('.test-details').querySelector('.additional-details');
-        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+  // Details toggle
+  $all('.toggle-details').forEach(button => {
+    button.addEventListener('click', (e) => {
+      const detailsSection = e.target.closest('.test-details').querySelector('.additional-details');
+      const isExpanded = button.getAttribute('aria-expanded') === 'true';
 
-        detailsSection.classList.toggle('hidden');
-        button.setAttribute('aria-expanded', !isExpanded);
-        button.textContent = isExpanded ? 'Details' : 'Hide details';
-      });
+      detailsSection.classList.toggle('hidden');
+      button.setAttribute('aria-expanded', !isExpanded);
+      button.textContent = isExpanded ? 'Details' : 'Hide details';
     });
   });
 }
@@ -235,9 +237,9 @@ function createPageStructure(filterPanel, testsGrid) {
 // Function to create error content
 function createErrorContent() {
   return `
-    <div class="error-message">
-      <p>Error loading blood tests. Please try again later.</p>
-      <button onclick="window.location.reload()">Retry</button>
+    <div class="error-container">
+      <h2>Error</h2>
+      <p>Failed to load the page content. Please try again later.</p>
     </div>
   `;
 }
@@ -320,34 +322,14 @@ async function initializePageElements(tests) {
   return content;
 }
 
-// Initialize the page
+// Export the display function
 export async function displayGeneralHealthPage() {
-  console.log('displayGeneralHealthPage called');
   try {
-    // Fetch the providers data
-    console.log('Fetching providers data...');
-    const response = await fetch('data/providers.json');
-    const providers = await response.json();
-    console.log('Providers data loaded:', providers.length, 'providers found');
-    
-    // Filter for general health tests
-    const tests = providers.filter(test => 
-      test.biomarkers.some(biomarker => 
-        biomarker.toLowerCase().includes('cholesterol') || 
-        biomarker.toLowerCase().includes('liver') || 
-        biomarker.toLowerCase().includes('kidney')
-      )
-    );
-    console.log('Filtered tests:', tests.length, 'tests found');
-    
-    // Initialize page elements
-    console.log('Initializing page elements...');
-    const content = await initializePageElements(tests);
-    console.log('Page elements initialized, content length:', content.length);
-    
-    return content;
+    const response = await fetch('/data/providers.json');
+    const tests = await response.json();
+    return await initializePageElements(tests);
   } catch (error) {
-    console.error('Error in displayGeneralHealthPage:', error);
+    console.error('Error loading general health page:', error);
     return createErrorContent();
   }
 } 
