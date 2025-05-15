@@ -5737,8 +5737,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.15rem;
-    max-height: 200px;
-    overflow-y: auto;
     padding-right: 0.5rem;
     margin-bottom: 0.5rem;
   }
