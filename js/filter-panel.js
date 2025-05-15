@@ -27,7 +27,7 @@ export function createFilterPanel(tests) {
       </div>
 
       <div class="filter-section">
-        <h4>Provider</h4>
+        <h4>Providers</h4>
         <div class="provider-checkboxes">
           <div class="checkbox-option">
             <input type="checkbox" id="provider-all" checked>
@@ -43,30 +43,30 @@ export function createFilterPanel(tests) {
       </div>
 
       <div class="filter-section">
-        <h4>Location</h4>
-        <select id="location-filter">
-          <option value="all">All Locations</option>
+        <h4>Locations</h4>
+        <div class="provider-checkboxes">
+          <div class="checkbox-option">
+            <input type="checkbox" id="location-all" checked>
+            <label for="location-all">All Locations</label>
+          </div>
           ${locations.map(location => `
-            <option value="${location}">${location}</option>
+            <div class="checkbox-option">
+              <input type="checkbox" id="location-${location.toLowerCase().replace(/\s+/g, '-')}" class="location-checkbox" value="${location}">
+              <label for="location-${location.toLowerCase().replace(/\s+/g, '-')}">${location}</label>
+            </div>
           `).join('')}
-        </select>
-      </div>
-
-      <div class="filter-section">
-        <h4>Minimum Biomarkers</h4>
-        <input type="number" id="biomarker-count" min="0" value="0">
+        </div>
       </div>
 
       <div class="filter-section">
         <h4>Additional Options</h4>
         <div class="checkbox-option">
           <input type="checkbox" id="doctors-report">
-          <label for="doctors-report">Include Doctor's Report</label>
+          <label for="doctors-report">Doctor's report included</label>
         </div>
       </div>
 
       <div class="filter-buttons">
-        <button id="apply-filters" class="apply-filters-btn">Apply Filters</button>
         <button id="reset-filters" class="reset-filters-btn">Reset</button>
       </div>
     </div>
@@ -100,9 +100,8 @@ export function setupFilterPanel(tests, updateCallback) {
       min: Math.min(...tests.map(test => test.price)),
       max: Math.max(...tests.map(test => test.price))
     },
-    providers: [], // Changed from single provider to array
-    location: 'all',
-    biomarkerCount: 0,
+    providers: [],
+    locations: [],
     doctorsReport: false
   };
 
@@ -126,72 +125,37 @@ export function setupFilterPanel(tests, updateCallback) {
   const providerAll = filterPanel.querySelector('#provider-all');
   const providerCheckboxes = filterPanel.querySelectorAll('.provider-checkbox');
 
+  // Location checkboxes
+  const locationAll = filterPanel.querySelector('#location-all');
+  const locationCheckboxes = filterPanel.querySelectorAll('.location-checkbox');
+
   // Other filter inputs
-  const locationFilter = filterPanel.querySelector('#location-filter');
-  const biomarkerCount = filterPanel.querySelector('#biomarker-count');
   const doctorsReport = filterPanel.querySelector('#doctors-report');
 
-  // Filter buttons
-  const applyFiltersBtn = filterPanel.querySelector('#apply-filters');
+  // Reset filters button
   const resetFiltersBtn = filterPanel.querySelector('#reset-filters');
 
-  // Handle "All Providers" checkbox
-  if (providerAll) {
-    providerAll.addEventListener('change', (e) => {
-      const isChecked = e.target.checked;
-      providerCheckboxes.forEach(checkbox => {
-        checkbox.checked = isChecked;
-        checkbox.disabled = isChecked;
-      });
-    });
-  }
-
-  // Handle individual provider checkboxes
-  providerCheckboxes.forEach(checkbox => {
-    checkbox.addEventListener('change', () => {
-      const allChecked = Array.from(providerCheckboxes).every(cb => cb.checked);
-      if (providerAll) {
-        providerAll.checked = allChecked;
-      }
-    });
-  });
-
-  // Update price range values and apply filters
-  function updatePriceRange() {
-    let min = parseFloat(priceMin.value);
-    let max = parseFloat(priceMax.value);
-    
-    // Ensure min doesn't exceed max
-    if (min > max) {
-      min = max;
-      priceMin.value = max;
-    }
-    
-    // Ensure max doesn't go below min
-    if (max < min) {
-      max = min;
-      priceMax.value = min;
-    }
-    
-    // Update the displayed values with 2 decimal places
-    priceMinValue.textContent = `£${min.toFixed(2)}`;
-    priceMaxValue.textContent = `£${max.toFixed(2)}`;
-
+  // Function to apply filters
+  function applyFilters() {
     // Update current filters
-    currentFilters.priceRange = {
-      min: min,
-      max: max
+    currentFilters = {
+      priceRange: {
+        min: parseFloat(priceMin.value),
+        max: parseFloat(priceMax.value)
+      },
+      providers: Array.from(providerCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value),
+      locations: Array.from(locationCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value),
+      doctorsReport: doctorsReport.checked
     };
 
-    // Get selected providers
-    currentFilters.providers = Array.from(providerCheckboxes)
-      .filter(cb => cb.checked)
-      .map(cb => cb.value);
-
-    // Apply filters immediately
+    // Apply filters
     const filteredTests = tests.filter(test => {
       // Price range filter
-      if (test.price < min || test.price > max) {
+      if (test.price < currentFilters.priceRange.min || test.price > currentFilters.priceRange.max) {
         return false;
       }
 
@@ -201,12 +165,7 @@ export function setupFilterPanel(tests, updateCallback) {
       }
 
       // Location filter
-      if (currentFilters.location !== 'all' && !test["blood test location"].includes(currentFilters.location)) {
-        return false;
-      }
-
-      // Biomarker count filter
-      if (test["biomarker number"] < currentFilters.biomarkerCount) {
+      if (currentFilters.locations.length > 0 && !test["blood test location"].some(loc => currentFilters.locations.includes(loc))) {
         return false;
       }
 
@@ -221,27 +180,84 @@ export function setupFilterPanel(tests, updateCallback) {
     updateCallback(filteredTests);
   }
 
-  // Event listeners for price range
-  priceMin.addEventListener('input', updatePriceRange);
-  priceMax.addEventListener('input', updatePriceRange);
-
-  // Apply filters button click
-  if (applyFiltersBtn) {
-    applyFiltersBtn.addEventListener('click', () => {
-      currentFilters = {
-        priceRange: {
-          min: parseFloat(priceMin.value),
-          max: parseFloat(priceMax.value)
-        },
-        providers: Array.from(providerCheckboxes)
-          .filter(cb => cb.checked)
-          .map(cb => cb.value),
-        location: locationFilter.value,
-        biomarkerCount: parseInt(biomarkerCount.value) || 0,
-        doctorsReport: doctorsReport.checked
-      };
-      updatePriceRange();
+  // Handle "All Providers" checkbox
+  if (providerAll) {
+    providerAll.addEventListener('change', (e) => {
+      const isChecked = e.target.checked;
+      providerCheckboxes.forEach(checkbox => {
+        checkbox.checked = isChecked;
+        checkbox.disabled = isChecked;
+      });
+      applyFilters();
     });
+  }
+
+  // Handle "All Locations" checkbox
+  if (locationAll) {
+    locationAll.addEventListener('change', (e) => {
+      const isChecked = e.target.checked;
+      locationCheckboxes.forEach(checkbox => {
+        checkbox.checked = isChecked;
+        checkbox.disabled = isChecked;
+      });
+      applyFilters();
+    });
+  }
+
+  // Handle individual provider checkboxes
+  providerCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+      const allChecked = Array.from(providerCheckboxes).every(cb => cb.checked);
+      if (providerAll) {
+        providerAll.checked = allChecked;
+      }
+      applyFilters();
+    });
+  });
+
+  // Handle individual location checkboxes
+  locationCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+      const allChecked = Array.from(locationCheckboxes).every(cb => cb.checked);
+      if (locationAll) {
+        locationAll.checked = allChecked;
+      }
+      applyFilters();
+    });
+  });
+
+  // Event listeners for price range
+  priceMin.addEventListener('input', () => {
+    let min = parseFloat(priceMin.value);
+    let max = parseFloat(priceMax.value);
+    
+    // Ensure min doesn't exceed max
+    if (min > max) {
+      min = max;
+      priceMin.value = max;
+    }
+    
+    priceMinValue.textContent = `£${min.toFixed(2)}`;
+    applyFilters();
+  });
+
+  priceMax.addEventListener('input', () => {
+    let min = parseFloat(priceMin.value);
+    let max = parseFloat(priceMax.value);
+    
+    // Ensure max doesn't go below min
+    if (max < min) {
+      max = min;
+      priceMax.value = min;
+    }
+    
+    priceMaxValue.textContent = `£${max.toFixed(2)}`;
+    applyFilters();
+  });
+
+  // Event listener for doctor's report
+  if (doctorsReport) {
+    doctorsReport.addEventListener('change', applyFilters);
   }
 
   // Reset filters
@@ -264,28 +280,23 @@ export function setupFilterPanel(tests, updateCallback) {
         checkbox.disabled = false;
       });
 
+      // Reset location checkboxes
+      if (locationAll) {
+        locationAll.checked = true;
+      }
+      locationCheckboxes.forEach(checkbox => {
+        checkbox.checked = true;
+        checkbox.disabled = false;
+      });
+
       // Reset other filters
-      if (locationFilter) locationFilter.value = 'all';
-      if (biomarkerCount) biomarkerCount.value = '0';
       if (doctorsReport) doctorsReport.checked = false;
 
-      // Reset current filters
-      currentFilters = {
-        priceRange: {
-          min: minPrice,
-          max: maxPrice
-        },
-        providers: [],
-        location: 'all',
-        biomarkerCount: 0,
-        doctorsReport: false
-      };
-
       // Apply reset filters
-      updatePriceRange();
+      applyFilters();
     });
   }
 
   // Initial filter application
-  updatePriceRange();
+  applyFilters();
 } 
