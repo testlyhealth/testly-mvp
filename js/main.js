@@ -1,6 +1,5 @@
 import { setupMenuToggle } from './menu.js';
 import { displayCategoryProducts } from './products.js';
-import { displayHomePage } from './home.js';
 import { displayBlogPage } from './blog.js';
 import { displayArticle } from './article.js';
 import { displayBloodTestsPage } from './pages/blood-tests.js';
@@ -37,31 +36,6 @@ const categories = [
   { name: 'Supplements', id: 'supplements' }
 ];
 
-function setupAllDropdown() {
-  const dropdown = document.getElementById('burger-dropdown');
-  if (!dropdown) return;
-  
-  dropdown.innerHTML = `<ul>${categories.map(cat => `<li data-id="${cat.id}">${cat.name}</li>`).join('')}</ul>`;
-  
-  dropdown.querySelectorAll('li').forEach(li => {
-    li.addEventListener('click', () => {
-      window.location.hash = `#/category/${li.dataset.id}`;
-      dropdown.classList.add('hidden');
-    });
-  });
-
-  // Show/hide dropdown on hover
-  const wrapper = document.querySelector('.menu-dropdown-wrapper');
-  if (wrapper) {
-    wrapper.addEventListener('mouseenter', () => {
-      dropdown.classList.remove('hidden');
-    });
-    wrapper.addEventListener('mouseleave', () => {
-      dropdown.classList.add('hidden');
-    });
-  }
-}
-
 // Initialize the app
 function init() {
   // Initialize the router
@@ -73,12 +47,15 @@ function init() {
   // Setup mobile menu
   setupMobileMenu();
   
-  // Start the app
-  router.handleRoute();
+  // Initialize UI components
+  initializeUI();
+  
+  // Initialize login modal
+  initLoginModal();
+  
+  // Initialize user dropdown
+  initUserDropdown();
 }
-
-// Start the app when the DOM is ready
-document.addEventListener('DOMContentLoaded', init);
 
 // Setup blood tests menu
 function setupBloodTestsMenu() {
@@ -116,80 +93,64 @@ function setupBloodTestsMenu() {
 function setupMobileMenu() {
   const burgerMenu = document.querySelector('.burger-menu');
   const mobileMenu = document.querySelector('.mobile-menu');
-  const secondaryMenu = document.querySelector('.mobile-menu-secondary');
-  const submenuLinks = document.querySelectorAll('.mobile-menu-list a.has-submenu');
-  const backButton = document.querySelector('.mobile-menu-back');
+  const mobileMenuBack = document.querySelector('.mobile-menu-back');
+  const mobileMenuPrimary = document.querySelector('.mobile-menu-primary');
+  const mobileMenuSecondary = document.querySelector('.mobile-menu-secondary');
   
   if (!burgerMenu || !mobileMenu) return;
   
-  // Ensure menu is hidden by default
-  mobileMenu.classList.remove('visible');
-  secondaryMenu.classList.remove('visible');
-  
-  // Toggle main menu
-  burgerMenu.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  // Toggle mobile menu
+  burgerMenu.addEventListener('click', () => {
     mobileMenu.classList.toggle('visible');
   });
   
-  // Handle submenu navigation
-  submenuLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      secondaryMenu.classList.add('visible');
-    });
-  });
-  
   // Handle back button
-  backButton.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    secondaryMenu.classList.remove('visible');
-  });
+  if (mobileMenuBack && mobileMenuPrimary && mobileMenuSecondary) {
+    mobileMenuBack.addEventListener('click', () => {
+      mobileMenuPrimary.style.display = 'block';
+      mobileMenuSecondary.classList.remove('visible');
+    });
+  }
   
-  // Close menu when clicking outside
-  document.addEventListener('click', (e) => {
-    if (!mobileMenu.contains(e.target) && !burgerMenu.contains(e.target)) {
-      mobileMenu.classList.remove('visible');
-      secondaryMenu.classList.remove('visible');
-    }
-  });
-  
-  // Close menu when selecting a menu item
-  const menuItems = document.querySelectorAll('.mobile-menu-list a:not(.has-submenu)');
-  menuItems.forEach(item => {
-    item.addEventListener('click', () => {
-      mobileMenu.classList.remove('visible');
-      secondaryMenu.classList.remove('visible');
+  // Handle submenu items
+  const submenuItems = document.querySelectorAll('.has-submenu');
+  submenuItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (mobileMenuPrimary && mobileMenuSecondary) {
+        mobileMenuPrimary.style.display = 'none';
+        mobileMenuSecondary.classList.add('visible');
+      }
     });
   });
 }
 
 // Initialize UI components
 function initializeUI() {
-    // Burger menu functionality
-    const burgerMenu = document.querySelector('.burger-menu');
-    const burgerDropdown = document.querySelector('#burger-dropdown');
-    
-    burgerMenu.addEventListener('click', () => {
-        burgerDropdown.classList.toggle('hidden');
-    });
+  // Burger menu functionality
+  const burgerMenu = document.querySelector('.burger-menu');
+  const burgerDropdown = document.querySelector('#burger-dropdown');
+  
+  burgerMenu.addEventListener('click', () => {
+    burgerDropdown.classList.toggle('hidden');
+  });
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (event) => {
-        if (!event.target.closest('.menu-dropdown-wrapper')) {
-            burgerDropdown.classList.add('hidden');
-        }
-    });
-
-    // Make logo clickable to return to home
-    const logo = document.querySelector('.logo');
-    if (logo) {
-        logo.style.cursor = 'pointer';
-        logo.addEventListener('click', () => {
-            window.location.hash = '#/';
-        });
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.menu-dropdown-wrapper')) {
+      burgerDropdown.classList.add('hidden');
     }
+  });
+
+  // Make logo clickable to return to home
+  const logo = document.querySelector('.logo');
+  if (logo) {
+    logo.style.cursor = 'pointer';
+    logo.addEventListener('click', () => {
+      window.location.hash = '#/';
+    });
+  }
 }
+
+// Start the app
+init();

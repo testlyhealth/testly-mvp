@@ -1,24 +1,19 @@
 import { loadingOverlay } from './components/loading-overlay.js';
 import { displayBloodTestsPage } from './pages/blood-tests.js';
 import { displayCategoryProducts } from './products.js';
-import { displayHomePage } from './pages/home.js';
+import { getHomePageContent, initializeHomePage } from './pages/home.js';
 import { displayGeneralHealthPage } from './general-health.js';
-import { setupDynamicTextAnimation } from './home.js';
 
 // Router class to handle SPA navigation
 export default class Router {
   constructor(routes) {
     this.routes = routes;
-    this.originalHomeContent = null;
     this.mainContent = document.querySelector('main');
     this.init = this.init.bind(this);
     this.handleRoute = this.handleRoute.bind(this);
   }
 
   init() {
-    // Store original home content
-    this.originalHomeContent = this.mainContent.innerHTML;
-    
     // Handle initial route
     this.handleRoute();
     
@@ -34,11 +29,15 @@ export default class Router {
     loadingOverlay.show();
     
     try {
-      // If it's the home route, restore original content
+      // If it's the home route, handle it separately
       if (hash === '/') {
         console.log('Handling home route');
         await this.renderHome();
-      } else if (hash === '/blood-tests') {
+        return;
+      }
+      
+      // Handle other routes
+      if (hash === '/blood-tests') {
         console.log('Handling blood tests route');
         const content = await displayBloodTestsPage();
         await this.render(content);
@@ -47,7 +46,6 @@ export default class Router {
         console.log('Handling general health route');
         const content = await displayGeneralHealthPage();
         console.log('General health content received, length:', content.length);
-        // Don't render again since displayGeneralHealthPage already renders the content
       } else if (hash.startsWith('/category/')) {
         console.log('Handling category route:', hash);
         const categoryId = hash.split('/')[2];
@@ -84,116 +82,10 @@ export default class Router {
     }
   }
 
-  async handleSpecialRoute(hash) {
-    switch (hash) {
-      case '/general-health':
-        return await displayGeneralHealthPage();
-      default:
-        throw new Error('Unknown special route');
-    }
-  }
-
-  setupBloodTestsHandlers() {
-    // Add click handlers to the category boxes
-    this.mainContent.querySelectorAll('.category-box').forEach(box => {
-      box.addEventListener('click', (e) => {
-        const categoryId = box.dataset.category;
-        if (categoryId) {
-          // Update the URL and display category products
-          window.location.hash = `#/category/${categoryId}`;
-        }
-      });
-    });
-  }
-
   async renderHome() {
-    const content = displayHomePage();
+    const content = getHomePageContent();
     await this.render(content);
-    setupDynamicTextAnimation();
-    // Add homepage-specific event listeners if needed
-    // For example, attach the blood test button event listener here if not handled elsewhere
-    const bloodTestBtn = document.querySelector('.hero-grid-small .zepbound-box .cta-button');
-    if (bloodTestBtn) {
-      bloodTestBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.location.hash = '#/blood-tests';
-      });
-    }
-  }
-
-  initializeHomePageContent() {
-    // Initialize dynamic text animation
-    const dynamicText = document.querySelector('.dynamic-text');
-    if (dynamicText) {
-      const phrases = [
-        'blood tests',
-        'weight loss treatments',
-        'hormone clinics',
-        'supplements'
-      ];
-      let currentIndex = 0;
-
-      function updateDynamicText() {
-        dynamicText.classList.add('fade-out');
-        
-        setTimeout(() => {
-          dynamicText.textContent = phrases[currentIndex];
-          dynamicText.classList.remove('fade-out');
-          currentIndex = (currentIndex + 1) % phrases.length;
-        }, 500);
-      }
-
-      // Initial update
-      updateDynamicText();
-      
-      // Set up the interval for subsequent updates
-      setInterval(updateDynamicText, 3000);
-    }
-
-    // Handle video playback
-    const videos = document.querySelectorAll('.hero-video');
-    videos.forEach((video, index) => {
-      if (index === 1) { // testosterone video
-        const timeUpdateHandler = function() {
-          if (video.currentTime >= 6) { // Stop after 6 seconds
-            video.pause();
-            video.currentTime = 6; // Keep at 6 second mark
-            video.removeEventListener('timeupdate', timeUpdateHandler);
-          }
-        };
-        video.addEventListener('timeupdate', timeUpdateHandler);
-      }
-
-      video.onended = function() {
-        video.pause();
-        if (index === 0) { // scales video
-          video.currentTime = video.duration;
-        } else { // testosterone video
-          video.currentTime = 6; // Keep at 6 second mark
-        }
-      };
-    });
-
-    // Handle weight loss banner video
-    const weightLossVideo = document.querySelector('.health-banner-video');
-    if (weightLossVideo) {
-      weightLossVideo.playbackRate = 0.75;
-      weightLossVideo.pause();
-      // Only play when visible
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            weightLossVideo.play();
-          }
-        });
-      }, { threshold: 0.3 });
-      observer.observe(weightLossVideo);
-      weightLossVideo.onended = function() {
-        weightLossVideo.pause();
-        weightLossVideo.currentTime = weightLossVideo.duration;
-        observer.disconnect();
-      };
-    }
+    initializeHomePage();
   }
 
   async render(content) {
@@ -237,6 +129,28 @@ export default class Router {
       </div>
     `;
     await this.render(errorContent);
+  }
+
+  setupBloodTestsHandlers() {
+    // Add click handlers to the category boxes
+    this.mainContent.querySelectorAll('.category-box').forEach(box => {
+      box.addEventListener('click', (e) => {
+        const categoryId = box.dataset.category;
+        if (categoryId) {
+          // Update the URL and display category products
+          window.location.hash = `#/category/${categoryId}`;
+        }
+      });
+    });
+  }
+
+  async handleSpecialRoute(hash) {
+    switch (hash) {
+      case '/general-health':
+        return await displayGeneralHealthPage();
+      default:
+        throw new Error('Unknown special route');
+    }
   }
 
   async loadTemplate(templateName) {

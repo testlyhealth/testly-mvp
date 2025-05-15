@@ -1,6 +1,10 @@
-// Home page component
-export function displayHomePage() {
-    return `
+// Home page module
+import { $, $all } from '../dom.js';
+import { blogPosts } from '../blog-data.js';
+
+// Static homepage content
+export function getHomePageContent() {
+  return `
     <section class="dynamic-title-section">
       <div class="title-container">
         <h1 class="main-title">
@@ -100,25 +104,134 @@ export function displayHomePage() {
     <div class="blog-section">
       <h2>Latest health insights</h2>
       <div class="blog-grid">
-        <!-- Blog posts will be dynamically loaded -->
+        ${blogPosts.map(post => `
+          <article class="blog-card" data-article-id="${post.id}">
+            <div class="blog-card-header">
+              <span class="blog-category">${post.category}</span>
+              <span class="blog-read-time">${post.readTime}</span>
+            </div>
+            <h3>${post.title}</h3>
+            <p>${post.excerpt}</p>
+            <div class="blog-card-footer">
+              <span class="blog-date">${new Date(post.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+              <a href="#/blog/${post.id}" class="read-more">Read more →</a>
+            </div>
+          </article>
+        `).join('')}
       </div>
     </div>
-    `;
+  `;
 }
 
-function setupHomePageInteractions() {
-    // Add any home page specific event listeners or functionality
-    const productGrid = document.querySelector('.product-grid');
-    if (productGrid) {
-        // Add event listeners for product grid interactions
+// Homepage-specific functionality
+export function initializeHomePage() {
+  setupDynamicTextAnimation();
+  setupVideoPlayback();
+  setupNavigationHandlers();
+  setupBlogSection();
+}
+
+// Dynamic text animation
+function setupDynamicTextAnimation() {
+  const dynamicText = document.querySelector('.dynamic-text');
+  if (!dynamicText) return;
+
+  const phrases = [
+    'blood tests',
+    'weight loss treatments',
+    'hormone clinics',
+    'supplements'
+  ];
+  let currentIndex = 0;
+
+  function updateDynamicText() {
+    dynamicText.classList.add('fade-out');
+    setTimeout(() => {
+      dynamicText.textContent = phrases[currentIndex];
+      dynamicText.classList.remove('fade-out');
+      currentIndex = (currentIndex + 1) % phrases.length;
+    }, 500);
+  }
+
+  updateDynamicText();
+  setInterval(updateDynamicText, 3000);
+}
+
+// Video playback controls
+function setupVideoPlayback() {
+  // Hero videos
+  const videos = document.querySelectorAll('.hero-video');
+  videos.forEach((video, index) => {
+    if (index === 1) { // testosterone video
+      const timeUpdateHandler = function() {
+        if (video.currentTime >= 6) {
+          video.pause();
+          video.currentTime = 6;
+          video.removeEventListener('timeupdate', timeUpdateHandler);
+        }
+      };
+      video.addEventListener('timeupdate', timeUpdateHandler);
     }
 
-    // Add event listener for the 'Find the right blood test for you' button
-    const bloodTestBtn = document.querySelector('.hero-grid-small .zepbound-box .cta-button');
-    if (bloodTestBtn) {
-        bloodTestBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.location.hash = '#/blood-tests';
-        });
+    video.onended = function() {
+      video.pause();
+      if (index === 0) {
+        video.currentTime = video.duration;
+      } else {
+        video.currentTime = 6;
+      }
+    };
+  });
+
+  // Weight loss banner video
+  const weightLossVideo = document.querySelector('.health-banner-video');
+  if (weightLossVideo) {
+    weightLossVideo.playbackRate = 0.75;
+    weightLossVideo.pause();
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          weightLossVideo.play();
+        }
+      });
+    }, { threshold: 0.3 });
+    
+    observer.observe(weightLossVideo);
+    weightLossVideo.onended = function() {
+      weightLossVideo.pause();
+      weightLossVideo.currentTime = weightLossVideo.duration;
+      observer.disconnect();
+    };
+  }
+}
+
+// Navigation handlers
+function setupNavigationHandlers() {
+  // CTA buttons
+  $all('.cta-button').forEach(button => {
+    button.addEventListener('click', () => {
+      window.location.hash = '#/category/general-health';
+    });
+  });
+
+  // Blood test button
+  const bloodTestBtn = document.querySelector('.hero-grid-small .zepbound-box .cta-button');
+  if (bloodTestBtn) {
+    bloodTestBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.hash = '#/blood-tests';
+    });
+  }
+}
+
+// Blog section handlers
+function setupBlogSection() {
+  $('.blog-grid')?.addEventListener('click', (e) => {
+    const card = e.target.closest('.blog-card');
+    if (card) {
+      const articleId = card.dataset.articleId;
+      window.location.hash = `#/blog/${articleId}`;
     }
+  });
 } 
