@@ -50,14 +50,9 @@ export class CardService {
                 </div>
               </div>
               <div class="biomarkers-list">
-                ${Array.from(groupedBiomarkers.entries()).map(([group, biomarkers]) => `
-                  <div class="biomarker-group">
-                    <h5 class="group-header">${group}</h5>
-                    <ul>
-                      ${biomarkers.map(biomarker => `<li>${biomarker}</li>`).join('')}
-                    </ul>
-                  </div>
-                `).join('')}
+                <ul>
+                  ${Array.from(groupedBiomarkers.keys()).map(group => `<li>${group}</li>`).join('')}
+                </ul>
               </div>
             </div>
           ` : ''}
