@@ -46,6 +46,7 @@ export class CardService {
               <div class="biomarkers-header">
                 <div class="biomarker-info">
                   <h4>Tests included: ${test["biomarker number"]}</h4>
+                  <button class="toggle-all-biomarkers" aria-expanded="false">Show all</button>
                 </div>
               </div>
               <div class="biomarkers-list">
@@ -213,6 +214,32 @@ export class CardService {
         biomarkerItems.classList.toggle('hidden');
         toggleButton.setAttribute('aria-expanded', !isExpanded);
         toggleButton.innerHTML = isExpanded ? 'Show<span class="toggle-icon">▼</span>' : 'Hide<span class="toggle-icon">▼</span>';
+      });
+    });
+
+    // Add event listeners to the "Show all/Hide all" buttons
+    $all('.toggle-all-biomarkers').forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const biomarkersSection = e.target.closest('.biomarkers-section');
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+        
+        // Toggle all biomarker items
+        biomarkersSection.querySelectorAll('.biomarker-items').forEach(items => {
+          items.classList.toggle('hidden', isExpanded);
+        });
+        
+        // Update all toggle buttons
+        biomarkersSection.querySelectorAll('.toggle-biomarkers').forEach(toggle => {
+          toggle.setAttribute('aria-expanded', !isExpanded);
+          toggle.innerHTML = isExpanded ? 'Show<span class="toggle-icon">▼</span>' : 'Hide<span class="toggle-icon">▼</span>';
+        });
+        
+        // Update the "Show all" button
+        button.setAttribute('aria-expanded', !isExpanded);
+        button.textContent = isExpanded ? 'Show all' : 'Hide all';
       });
     });
 
