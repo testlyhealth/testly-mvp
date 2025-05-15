@@ -1,6 +1,10 @@
 // Home page module
 import { $, $all } from '../dom.js';
 import { blogPosts } from '../blog-data.js';
+import { CardService } from '../services/cardService.js';
+
+// Initialize card service
+const cardService = new CardService();
 
 // Static homepage content
 export function getHomePageContent() {
@@ -125,6 +129,53 @@ export function getHomePageContent() {
 
 // Homepage-specific functionality
 export function initializeHomePage() {
+  // Load and display cheapest products
+  const cheapestProducts = [
+    {
+      provider: "London Health Company",
+      test_name: "General health blood test",
+      price: 33,
+      biomarkers: 15,
+      logo: "images/logos/london health company.png",
+      link: "https://londonhealthcompany.co.uk/products/general-health-blood-test-15"
+    },
+    {
+      provider: "Numan",
+      test_name: "Core blood test",
+      price: 78.40,
+      biomarkers: 16,
+      logo: "images/logos/numan.png",
+      link: "https://www.numan.com/lps/gbr/blood-test/core-health-check"
+    },
+    {
+      provider: "Medichecks",
+      test_name: "Health and lifestyle blood test",
+      price: 89,
+      biomarkers: 19,
+      logo: "images/logos/medichecks.png",
+      link: "https://www.medichecks.com/products/health-and-lifestyle-check-blood-test"
+    },
+    {
+      provider: "London Medical Laboratory",
+      test_name: "General health profile",
+      price: 89,
+      biomarkers: 19,
+      logo: "images/logos/london medical laboratory.png",
+      link: "https://www.londonmedicallaboratory.com/product/general-health"
+    }
+  ];
+
+  // Initialize cheapest products section
+  const cheapestProductsSection = document.querySelector('.cheapest-products-section');
+  if (cheapestProductsSection) {
+    const cards = cardService.createCards(cheapestProducts);
+    const grid = cheapestProductsSection.querySelector('.products-grid');
+    if (grid) {
+      grid.innerHTML = cards;
+      cardService.setupCardEventHandlers(cheapestProducts);
+    }
+  }
+
   setupDynamicTextAnimation();
   setupVideoPlayback();
   setupNavigationHandlers();
