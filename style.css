@@ -5784,3 +5784,74 @@ body {
     color: var(--text-light);
     cursor: not-allowed;
   }
+
+  .biomarker-group {
+    margin-bottom: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+
+  .group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .group-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .toggle-biomarkers {
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .toggle-biomarkers:hover {
+    color: var(--primary-dark);
+  }
+
+  .toggle-icon {
+    font-size: 0.75rem;
+    transition: transform 0.2s ease;
+  }
+
+  .toggle-biomarkers[aria-expanded="true"] .toggle-icon {
+    transform: rotate(180deg);
+  }
+
+  .biomarker-items {
+    padding: 0.75rem 1rem;
+    margin: 0;
+    list-style: none;
+  }
+
+  .biomarker-items.hidden {
+    display: none;
+  }
+
+  .biomarker-items li {
+    padding: 0.25rem 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  .biomarker-items li:before {
+    content: "•";
+    color: var(--primary);
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+  }

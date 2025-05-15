@@ -94,7 +94,7 @@ async function createTestCard(test, index) {
             ${Array.from(groupedBiomarkers.entries()).map(([group, tests]) => `
               <div class="biomarker-group">
                 <h5 class="group-header" style="cursor: pointer; padding: 8px; background: #f5f5f5; margin: 4px 0; border-radius: 4px;">
-                  ${group} (${tests.length} tests)
+                  ${group} (${tests.length} tests) ▶
                 </h5>
                 <ul class="biomarker-items hidden" style="padding-left: 20px;">
                   ${tests.map(test => `<li>${test}</li>`).join('')}
@@ -193,11 +193,16 @@ function attachEventListeners() {
   // Group headers
   $all('.group-header').forEach(header => {
     header.addEventListener('click', (e) => {
-      const biomarkerItems = e.target.nextElementSibling;
+      e.stopPropagation(); // Prevent event bubbling
+      const biomarkerItems = header.nextElementSibling;
       const isExpanded = !biomarkerItems.classList.contains('hidden');
       
       biomarkerItems.classList.toggle('hidden');
-      e.target.setAttribute('aria-expanded', !isExpanded);
+      header.setAttribute('aria-expanded', !isExpanded);
+      
+      // Update the header text to show expand/collapse state
+      const headerText = header.textContent.split(' (')[0];
+      header.textContent = `${headerText} (${biomarkerItems.querySelectorAll('li').length} tests) ${isExpanded ? '▼' : '▶'}`;
     });
   });
 
@@ -273,50 +278,20 @@ async function initializePageElements(tests) {
   // Wait for the next frame to ensure DOM is updated
   await new Promise(resolve => requestAnimationFrame(resolve));
   
-  // Add event listeners to the toggle buttons
-  console.log('Setting up event listeners...');
-  $all('.toggle-biomarkers').forEach(button => {
-    button.addEventListener('click', (e) => {
-      console.log('Toggle button clicked');
-      const biomarkersList = e.target.closest('.biomarkers-section').querySelector('.biomarkers-list');
-      const isExpanded = button.getAttribute('aria-expanded') === 'true';
-
-      biomarkersList.classList.toggle('hidden');
-      button.setAttribute('aria-expanded', !isExpanded);
-      button.textContent = isExpanded ? 'Show' : 'Hide';
-    });
-  });
-
-  // Add event listeners to the group headers
-  $all('.group-header').forEach(header => {
-    header.addEventListener('click', (e) => {
-      console.log('Group header clicked');
-      const biomarkerItems = e.target.nextElementSibling;
-      const isExpanded = !biomarkerItems.classList.contains('hidden');
-      
-      biomarkerItems.classList.toggle('hidden');
-      e.target.setAttribute('aria-expanded', !isExpanded);
-    });
-  });
-
-  // Add event listeners to the details toggle buttons
-  $all('.toggle-details').forEach(button => {
-    button.addEventListener('click', (e) => {
-      console.log('Details button clicked');
-      const detailsSection = e.target.closest('.test-details').querySelector('.additional-details');
-      const isExpanded = button.getAttribute('aria-expanded') === 'true';
-
-      detailsSection.classList.toggle('hidden');
-      button.setAttribute('aria-expanded', !isExpanded);
-      button.textContent = isExpanded ? 'Details' : 'Hide details';
-    });
-  });
+  // Set up event handlers once after the content is in the DOM
+  cardService.setupCardEventHandlers(tests);
 
   // Setup filter panel functionality
   console.log('Setting up filter panel...');
   setupFilterPanel(tests, async (filteredTests) => {
     console.log('Filter panel callback with', filteredTests.length, 'tests');
-    await updateTestGridContent(filteredTests);
+    const newContent = await createTestCardsHTML(filteredTests);
+    const testsGrid = $('.tests-grid');
+    if (testsGrid) {
+      testsGrid.innerHTML = newContent;
+      // Set up event handlers again after updating the content
+      cardService.setupCardEventHandlers(filteredTests);
+    }
   });
 
   return content;

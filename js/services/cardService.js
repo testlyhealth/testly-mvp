@@ -46,13 +46,25 @@ export class CardService {
               <div class="biomarkers-header">
                 <div class="biomarker-info">
                   <h4>Tests included: ${test["biomarker number"]}</h4>
-                  <button class="toggle-biomarkers" aria-expanded="true">Hide</button>
                 </div>
               </div>
               <div class="biomarkers-list">
-                <ul>
-                  ${Array.from(groupedBiomarkers.keys()).map(group => `<li>${group}</li>`).join('')}
-                </ul>
+                ${Array.from(groupedBiomarkers.entries()).map(([group, biomarkers]) => `
+                  <div class="biomarker-group">
+                    <div class="group-header">
+                      <h4>${group}</h4>
+                      <button class="toggle-biomarkers" aria-expanded="false">
+                        Show
+                        <span class="toggle-icon">▼</span>
+                      </button>
+                    </div>
+                    <ul class="biomarker-items hidden">
+                      ${biomarkers.map(biomarker => `
+                        <li>${biomarker}</li>
+                      `).join('')}
+                    </ul>
+                  </div>
+                `).join('')}
               </div>
             </div>
           ` : ''}
@@ -100,41 +112,48 @@ export class CardService {
 
   async getGroupedBiomarkers(biomarkers) {
     try {
+      // Ensure biomarkers is an array
+      const biomarkerArray = Array.isArray(biomarkers) ? biomarkers : [];
+      
       const response = await fetch('/data/biomarker-groupings.json');
       const groupings = await response.json();
       
-      // Create a map of biomarkers to their groups
-      const biomarkerToGroup = new Map();
-      groupings.forEach(group => {
-        // Check both regular and advanced biomarkers
-        const allBiomarkers = [
-          ...(group.biomarkers || []),
-          ...(group['advanced-biomarkers'] || [])
-        ];
-        
-        allBiomarkers.forEach(biomarker => {
-          biomarkerToGroup.set(biomarker.toLowerCase(), group.group);
-        });
-      });
-
-      // Group the biomarkers
-      const groupedBiomarkers = new Map();
-      biomarkers.forEach(biomarker => {
-        const group = biomarkerToGroup.get(biomarker.toLowerCase()) || 'Other';
-        if (!groupedBiomarkers.has(group)) {
-          groupedBiomarkers.set(group, []);
+      const grouped = new Map();
+      biomarkerArray.forEach(biomarker => {
+        let found = false;
+        for (const group of groupings) {
+          // Check both regular and advanced biomarkers
+          const allBiomarkers = [
+            ...(group.biomarkers || []),
+            ...(group['advanced-biomarkers'] || [])
+          ];
+          
+          if (allBiomarkers.some(b => b.toLowerCase() === biomarker.toLowerCase())) {
+            if (!grouped.has(group.group)) {
+              grouped.set(group.group, []);
+            }
+            grouped.get(group.group).push(biomarker);
+            found = true;
+            break;
+          }
         }
-        groupedBiomarkers.get(group).push(biomarker);
+        if (!found) {
+          if (!grouped.has('Other')) {
+            grouped.set('Other', []);
+          }
+          grouped.get('Other').push(biomarker);
+        }
       });
-
-      return groupedBiomarkers;
+      
+      return grouped;
     } catch (error) {
       console.error('Error loading biomarker groupings:', error);
-      return new Map([['All biomarkers', biomarkers]]);
+      return new Map([['All Tests', Array.isArray(biomarkers) ? biomarkers : []]]);
     }
   }
 
   async createCards(tests, options = {}) {
+    console.log('Creating cards...');
     // Sort tests by price
     const sortedTests = [...tests].sort((a, b) => a.price - b.price);
     
@@ -149,6 +168,17 @@ export class CardService {
   }
 
   setupCardEventHandlers(tests) {
+    console.log('Setting up card event handlers...');
+    
+    // Remove any existing event listeners first
+    $all('.biomarker-group').forEach(group => {
+      const toggleButton = group.querySelector('.toggle-biomarkers');
+      if (toggleButton) {
+        const newButton = toggleButton.cloneNode(true);
+        toggleButton.parentNode.replaceChild(newButton, toggleButton);
+      }
+    });
+    
     // Add event listeners to the "Add to Basket" buttons
     $all('.add-to-basket').forEach(button => {
       button.addEventListener('click', (e) => {
@@ -162,15 +192,27 @@ export class CardService {
       });
     });
 
-    // Add event listeners to the biomarker toggle buttons
-    $all('.toggle-biomarkers').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const biomarkersList = e.target.closest('.biomarkers-section').querySelector('.biomarkers-list');
-        const isExpanded = button.getAttribute('aria-expanded') === 'true';
-
-        biomarkersList.classList.toggle('hidden');
-        button.setAttribute('aria-expanded', !isExpanded);
-        button.textContent = isExpanded ? 'Show all' : 'Hide';
+    // Add event listeners to individual group toggle buttons
+    $all('.biomarker-group').forEach(group => {
+      const toggleButton = group.querySelector('.toggle-biomarkers');
+      const biomarkerItems = group.querySelector('.biomarker-items');
+      
+      if (!toggleButton || !biomarkerItems) {
+        console.error('Missing elements in group:', {
+          hasToggleButton: !!toggleButton,
+          hasBiomarkerItems: !!biomarkerItems
+        });
+        return;
+      }
+      
+      toggleButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
+        biomarkerItems.classList.toggle('hidden');
+        toggleButton.setAttribute('aria-expanded', !isExpanded);
+        toggleButton.innerHTML = isExpanded ? 'Show<span class="toggle-icon">▼</span>' : 'Hide<span class="toggle-icon">▼</span>';
       });
     });
 
