@@ -28,23 +28,35 @@ export class CardService {
     // Get grouped biomarkers
     const groupedBiomarkers = await this.getGroupedBiomarkers(test.biomarkers);
     
+    // Ensure required fields have fallback values
+    const testData = {
+      ...test,
+      "blood test location": test["blood test location"] || [],
+      "Days till results returned": test["Days till results returned"] || "N/A",
+      "pricing information": test["pricing information"] || "Contact provider for pricing details",
+      "doctors report": test["doctors report"] || "No",
+      "lab accreditations": test["lab accreditations"] || ["Not specified"],
+      "trust pilot score": test["trust pilot score"] || "N/A",
+      link: test.link || "#"
+    };
+    
     return `
-      <div class="product-card blood-test-card" data-test-id="${test.test_name}">
+      <div class="product-card blood-test-card" data-test-id="${testData.test_name}">
         ${showRank ? `<div class="test-rank">${options.rank}</div>` : ''}
         <div class="test-header">
           <div class="provider-info">
-            <img src="images/logos/${providerLogo}" alt="${test.provider} logo" class="provider-logo">
+            <img src="images/logos/${providerLogo}" alt="${testData.provider} logo" class="provider-logo">
           </div>
-          <h3 class="test-name"><span class="provider-name">${test.provider}</span> - ${test.test_name}</h3>
+          <h3 class="test-name"><span class="provider-name">${testData.provider}</span> - ${testData.test_name}</h3>
         </div>
-        <p>${test.description}</p>
+        <p>${testData.description || ''}</p>
         <div class="test-details">
-          <div class="test-price">£${test.price}</div>
+          <div class="test-price">£${testData.price || 'N/A'}</div>
           ${showBiomarkers ? `
             <div class="biomarkers-section">
               <div class="biomarkers-header">
                 <div class="biomarker-info">
-                  <h4>Tests included: ${test["biomarker number"]}</h4>
+                  <h4>Tests included: ${testData["biomarker number"] || '0'}</h4>
                   <button class="toggle-all-biomarkers" aria-expanded="false">Show all</button>
                 </div>
               </div>
@@ -71,40 +83,40 @@ export class CardService {
             <div class="test-locations">
               <h4>Available at:</h4>
               <ul>
-                ${test["blood test location"].map(location => `<li>${location}</li>`).join('')}
+                ${testData["blood test location"].map(location => `<li>${location}</li>`).join('')}
               </ul>
             </div>
             <div class="test-results">
-              <p>Results in ${test["Days till results returned"]} days</p>
+              <p>Results in ${testData["Days till results returned"]} days</p>
             </div>
             <button class="toggle-details" aria-expanded="false">Details</button>
             <div class="additional-details hidden">
               <div class="detail-section">
                 <h4>Pricing Information</h4>
-                <p>${test["pricing information"]}</p>
+                <p>${testData["pricing information"]}</p>
               </div>
               <div class="detail-section">
                 <h4>Doctor's Report</h4>
-                <p>${test["doctors report"] === "Yes" ? "Includes a doctor's report" : "No doctor's report included"}</p>
+                <p>${testData["doctors report"] === "Yes" ? "Includes a doctor's report" : "No doctor's report included"}</p>
               </div>
               <div class="detail-section">
                 <h4>Lab Accreditations</h4>
                 <ul>
-                  ${test["lab accreditations"].map(accreditation => `<li>${accreditation}</li>`).join('')}
+                  ${testData["lab accreditations"].map(accreditation => `<li>${accreditation}</li>`).join('')}
                 </ul>
               </div>
               <div class="detail-section">
                 <h4>Trustpilot Score</h4>
-                <p>${test["trust pilot score"]}/5</p>
+                <p>${testData["trust pilot score"]}/5</p>
               </div>
               <div class="detail-section">
                 <h4>Learn More</h4>
-                <a href="${test.link}" target="_blank" class="provider-link">Visit ${test.provider} website</a>
+                <a href="${testData.link}" target="_blank" class="provider-link">Visit ${testData.provider} website</a>
               </div>
             </div>
           ` : ''}
         </div>
-        <button class="add-to-basket" data-test-id="${test.test_name}">Add to Basket</button>
+        <button class="add-to-basket" data-test-id="${testData.test_name}">Add to Basket</button>
       </div>
     `;
   }
@@ -114,8 +126,20 @@ export class CardService {
       // Ensure biomarkers is an array
       const biomarkerArray = Array.isArray(biomarkers) ? biomarkers : [];
       
-      const response = await fetch('/data/biomarker-groupings.json');
-      const groupings = await response.json();
+      // Try to fetch the groupings, but don't fail if it doesn't exist
+      let groupings = [];
+      try {
+        const response = await fetch('/data/biomarker-groupings.json');
+        if (response.ok) {
+          groupings = await response.json();
+        }
+      } catch (error) {
+        console.warn('Could not load biomarker groupings, using default grouping');
+        // Use a simple default grouping if the file can't be loaded
+        groupings = [
+          { group: 'All Tests', biomarkers: biomarkerArray }
+        ];
+      }
       
       const grouped = new Map();
       biomarkerArray.forEach(biomarker => {
@@ -146,7 +170,7 @@ export class CardService {
       
       return grouped;
     } catch (error) {
-      console.error('Error loading biomarker groupings:', error);
+      console.error('Error in getGroupedBiomarkers:', error);
       return new Map([['All Tests', Array.isArray(biomarkers) ? biomarkers : []]]);
     }
   }
