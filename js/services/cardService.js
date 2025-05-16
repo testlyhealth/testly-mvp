@@ -34,9 +34,8 @@ export class CardService {
         <div class="test-header">
           <div class="provider-info">
             <img src="images/logos/${providerLogo}" alt="${test.provider} logo" class="provider-logo">
-            <span class="provider-name">${test.provider}</span>
           </div>
-          <h3 class="test-name">${test.test_name}</h3>
+          <h3 class="test-name"><span class="provider-name">${test.provider}</span> - ${test.test_name}</h3>
         </div>
         <p>${test.description}</p>
         <div class="test-details">
@@ -55,7 +54,6 @@ export class CardService {
                     <div class="group-header">
                       <h4>${group}</h4>
                       <button class="toggle-biomarkers" aria-expanded="false">
-                        Show
                         <span class="toggle-icon">▼</span>
                       </button>
                     </div>
@@ -213,7 +211,7 @@ export class CardService {
         const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
         biomarkerItems.classList.toggle('hidden');
         toggleButton.setAttribute('aria-expanded', !isExpanded);
-        toggleButton.innerHTML = isExpanded ? 'Show<span class="toggle-icon">▼</span>' : 'Hide<span class="toggle-icon">▼</span>';
+        toggleButton.innerHTML = `<span class="toggle-icon">${isExpanded ? '▼' : '▲'}</span>`;
       });
     });
 
@@ -234,7 +232,7 @@ export class CardService {
         // Update all toggle buttons
         biomarkersSection.querySelectorAll('.toggle-biomarkers').forEach(toggle => {
           toggle.setAttribute('aria-expanded', !isExpanded);
-          toggle.innerHTML = isExpanded ? 'Show<span class="toggle-icon">▼</span>' : 'Hide<span class="toggle-icon">▼</span>';
+          toggle.innerHTML = `<span class="toggle-icon">${isExpanded ? '▼' : '▲'}</span>`;
         });
         
         // Update the "Show all" button
