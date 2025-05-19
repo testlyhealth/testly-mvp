@@ -15,7 +15,11 @@ export class CardService {
       'Superdrug': 'superdrug.png',
       'Bluecrest': 'bluecrest.png',
       'Thriva': 'thriva.png',
-      'Forth': 'forth.png'
+      'Forth': 'forth.png',
+      'Lloyds Pharmacy': 'lloyds pharmacy.png',
+      'Selph': 'selph.png',
+      'Lola': 'lola.png',
+      'Nuffield Health': 'nuffield.png'
     };
   }
 
@@ -98,8 +102,8 @@ export class CardService {
       // Ensure biomarkers is an array
       const biomarkerArray = Array.isArray(biomarkers) ? biomarkers : [];
       
-      const response = await fetch('/data/biomarker-groupings.json');
-      const groupings = await response.json();
+      // Use the API utility instead of direct fetch
+      const groupings = await get('data/biomarker-groupings.json');
       
       const grouped = new Map();
       biomarkerArray.forEach(biomarker => {
@@ -131,6 +135,7 @@ export class CardService {
       return grouped;
     } catch (error) {
       console.error('Error loading biomarker groupings:', error);
+      // Return a simple grouping with all biomarkers in one group
       return new Map([['All Tests', Array.isArray(biomarkers) ? biomarkers : []]]);
     }
   }
