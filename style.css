@@ -2175,7 +2175,7 @@ body {
 
   /* Filter Panel */
   .filter-panel {
-    position: sticky;
+    position: fixed;
     top: 0;
     left: 0;
     width: 300px;
@@ -5127,7 +5127,7 @@ body {
 
   /* Filter Panel Styles */
   .filter-panel {
-    position: sticky;
+    position: fixed;
     top: 0;
     left: 0;
     width: 300px;
@@ -5962,36 +5962,4 @@ body {
     margin: 0;
     font-size: 0.95rem;
     font-weight: 600;
-  }
-
-  .general-health-page {
-    display: flex;
-    min-height: 100vh;
-  }
-
-  .main-content {
-    flex: 1;
-    padding: 2rem;
-    margin-left: 300px;
-  }
-
-  @media (max-width: 1024px) {
-    .general-health-page {
-      flex-direction: column;
-    }
-    
-    .filter-panel {
-      position: fixed;
-      transform: translateX(-100%);
-      width: 280px;
-    }
-    
-    .filter-panel.visible {
-      transform: translateX(0);
-    }
-    
-    .main-content {
-      margin-left: 0;
-      padding: 1rem;
-    }
   }
