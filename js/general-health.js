@@ -3,6 +3,7 @@ import { CardService } from './services/cardService.js';
 import { createFilterPanel, setupFilterPanel } from './filter-panel.js';
 import { basket } from './basket.js';
 import { get } from './utils/api.js';
+import { resolvePath } from './config.js';
 
 // Initialize card service
 const cardService = new CardService();
@@ -66,6 +67,7 @@ async function getGroupedBiomarkers(biomarkers) {
 async function createTestCard(test, index) {
   const groupedBiomarkers = await getGroupedBiomarkers(test.biomarkers);
   const providerLogo = providerLogoMap[test.provider] || 'default-logo.png';
+  const logoPath = resolvePath(`images/logos/${providerLogo}`);
   
   // Calculate total number of biomarkers
   const totalBiomarkers = test.biomarkers.length;
@@ -75,7 +77,7 @@ async function createTestCard(test, index) {
       <div class="test-rank">${index + 1}</div>
       <div class="test-header">
         <div class="provider-info">
-          <img src="images/logos/${providerLogo}" alt="${test.provider} logo" class="provider-logo">
+          <img src="${logoPath}" alt="${test.provider} logo" class="provider-logo">
           <span class="provider-name">${test.provider}</span>
         </div>
         <h3 class="test-name">${test.test_name}</h3>
