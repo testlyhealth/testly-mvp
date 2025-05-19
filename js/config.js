@@ -2,10 +2,17 @@
 const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const isGitHubPages = window.location.hostname.includes('github.io');
 
+// Get the repository name from the path
+const getRepoName = () => {
+  if (!isGitHubPages) return '';
+  const pathParts = window.location.pathname.split('/');
+  return pathParts[1] || ''; // Return the first part of the path or empty string
+};
+
 // Base URL configuration
 const config = {
-  baseUrl: isDevelopment ? '' : '/Draft-3', // Adjust this to match your GitHub Pages repository name
-  apiBaseUrl: isDevelopment ? '' : '/Draft-3',
+  baseUrl: isDevelopment ? '' : `/${getRepoName()}`,
+  apiBaseUrl: isDevelopment ? '' : `/${getRepoName()}`,
   environment: isDevelopment ? 'development' : 'production'
 };
 
