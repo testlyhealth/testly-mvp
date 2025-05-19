@@ -1,8 +1,8 @@
 // Configuration for different environments
 const config = {
   // Base path for all API calls and assets
-  basePath: window.location.hostname === 'testlyhealth.github.io' 
-    ? '/testlyhealth.github.io'  // GitHub Pages
+  basePath: window.location.hostname === 'testly-mvp.github.io' 
+    ? '/testly-mvp'  // GitHub Pages
     : '',  // Local development
 
   // API endpoints

@@ -46,6 +46,7 @@ export default class Router {
         console.log('Handling general health route');
         const content = await displayGeneralHealthPage();
         console.log('General health content received, length:', content.length);
+        await this.render(content);
       } else if (hash.startsWith('/category/')) {
         console.log('Handling category route:', hash);
         const categoryId = hash.split('/')[2];

@@ -27,36 +27,27 @@ const providerLogoMap = {
 async function getGroupedBiomarkers(biomarkers) {
   try {
     const response = await fetch(getUrl('data/biomarker-groupings.json'));
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const groupings = await response.json();
     
-    const grouped = new Map();
+    // Create a map of biomarker groups
+    const groups = new Map();
+    
+    // Add all biomarkers to "All Tests" group
+    groups.set('All Tests', biomarkers);
+    
+    // Group biomarkers by their categories
     biomarkers.forEach(biomarker => {
-      let found = false;
-      for (const group of groupings) {
-        // Check both regular and advanced biomarkers
-        const allBiomarkers = [
-          ...(group.biomarkers || []),
-          ...(group['advanced-biomarkers'] || [])
-        ];
-        
-        if (allBiomarkers.some(b => b.toLowerCase() === biomarker.toLowerCase())) {
-          if (!grouped.has(group.group)) {
-            grouped.set(group.group, []);
-          }
-          grouped.get(group.group).push(biomarker);
-          found = true;
-          break;
-        }
+      const category = biomarker.category || 'Uncategorized';
+      if (!groups.has(category)) {
+        groups.set(category, []);
       }
-      if (!found) {
-        if (!grouped.has('Other')) {
-          grouped.set('Other', []);
-        }
-        grouped.get('Other').push(biomarker);
-      }
+      groups.get(category).push(biomarker);
     });
     
-    return grouped;
+    return groups;
   } catch (error) {
     console.error('Error loading biomarker groupings:', error);
     return new Map([['All Tests', biomarkers]]);
@@ -313,6 +304,9 @@ async function initializePageElements(tests) {
 export async function displayGeneralHealthPage() {
   try {
     const response = await fetch(getUrl('data/providers.json'));
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const tests = await response.json();
     return await initializePageElements(tests);
   } catch (error) {
