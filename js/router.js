@@ -119,6 +119,9 @@ export default class Router {
     
     // Restore scroll position
     window.scrollTo(0, scrollPosition);
+
+    // Dispatch event to notify that content has been rendered
+    document.dispatchEvent(new Event('contentRendered'));
   }
 
   async renderError(title, message) {

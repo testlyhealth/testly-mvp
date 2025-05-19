@@ -243,10 +243,7 @@ function attachEventListeners(tests) {
 
 // Function to create page structure
 function createPageStructure(filterPanel, testsGrid) {
-  const mainContent = $('main');
-  if (!mainContent) return;
-
-  mainContent.innerHTML = `
+  return `
     <div class="page-container">
       <aside class="filter-panel">
         ${filterPanel}
@@ -272,12 +269,6 @@ function createErrorContent() {
 async function initializePageElements(tests) {
   console.log('initializePageElements called with', tests.length, 'tests');
   
-  // Create filter panel with tests data
-  const filterPanel = createFilterPanel(tests);
-  
-  // Create page structure
-  createPageStructure(filterPanel, null);
-  
   // Get the tests grid
   const testsGrid = $('.tests-grid');
   if (!testsGrid) {
@@ -302,12 +293,27 @@ export async function displayGeneralHealthPage() {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const tests = await response.json();
-    await initializePageElements(tests);
+    
+    // Create filter panel with tests data
+    const filterPanel = createFilterPanel(tests);
+    
+    // Create and return the page structure
+    const content = createPageStructure(filterPanel, null);
+    
+    // Store tests data in a global variable for later use
+    window._generalHealthTests = tests;
+    
+    // Add a custom event listener for when the content is rendered
+    document.addEventListener('contentRendered', () => {
+      if (window._generalHealthTests) {
+        initializePageElements(window._generalHealthTests);
+        delete window._generalHealthTests;
+      }
+    }, { once: true });
+    
+    return content;
   } catch (error) {
     console.error('Error loading general health page:', error);
-    const mainContent = $('main');
-    if (mainContent) {
-      mainContent.innerHTML = createErrorContent();
-    }
+    return createErrorContent();
   }
 } 

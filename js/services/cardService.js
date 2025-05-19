@@ -28,7 +28,11 @@ export class CardService {
     
     // Get grouped biomarkers
     const groupedBiomarkers = await this.getGroupedBiomarkers(test.biomarkers);
-    
+
+    // Defensive: ensure these are arrays
+    const bloodTestLocations = Array.isArray(test["blood test location"]) ? test["blood test location"] : [];
+    const labAccreditations = Array.isArray(test["lab accreditations"]) ? test["lab accreditations"] : [];
+
     return `
       <div class="product-card blood-test-card" data-test-id="${test.test_name}">
         ${showRank ? `<div class="test-rank">${options.rank}</div>` : ''}
@@ -72,17 +76,17 @@ export class CardService {
             <div class="test-locations">
               <h4>Available at:</h4>
               <ul>
-                ${test["blood test location"].map(location => `<li>${location}</li>`).join('')}
+                ${bloodTestLocations.length > 0 ? bloodTestLocations.map(location => `<li>${location}</li>`).join('') : '<li>Not specified</li>'}
               </ul>
             </div>
             <div class="test-results">
-              <p>Results in ${test["Days till results returned"]} days</p>
+              <p>Results in ${test["Days till results returned"] || 'N/A'} days</p>
             </div>
             <button class="toggle-details" aria-expanded="false">Details</button>
             <div class="additional-details hidden">
               <div class="detail-section">
                 <h4>Pricing Information</h4>
-                <p>${test["pricing information"]}</p>
+                <p>${test["pricing information"] || 'N/A'}</p>
               </div>
               <div class="detail-section">
                 <h4>Doctor's Report</h4>
@@ -91,12 +95,12 @@ export class CardService {
               <div class="detail-section">
                 <h4>Lab Accreditations</h4>
                 <ul>
-                  ${test["lab accreditations"].map(accreditation => `<li>${accreditation}</li>`).join('')}
+                  ${labAccreditations.length > 0 ? labAccreditations.map(accreditation => `<li>${accreditation}</li>`).join('') : '<li>Not specified</li>'}
                 </ul>
               </div>
               <div class="detail-section">
                 <h4>Trustpilot Score</h4>
-                <p>${test["trust pilot score"]}/5</p>
+                <p>${test["trust pilot score"] ? test["trust pilot score"] + '/5' : 'N/A'}</p>
               </div>
               <div class="detail-section">
                 <h4>Learn More</h4>
