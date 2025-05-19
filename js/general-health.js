@@ -87,16 +87,19 @@ async function createTestCard(test, index) {
           <div class="biomarkers-header">
             <div class="biomarker-info">
               <h4>Tests Included: ${totalBiomarkers}</h4>
-              <button class="toggle-biomarkers" aria-expanded="false">Show</button>
+              <button class="toggle-all-biomarkers" aria-expanded="false">Show all</button>
             </div>
           </div>
           <div class="biomarkers-list hidden">
             ${Array.from(groupedBiomarkers.entries()).map(([group, tests]) => `
               <div class="biomarker-group">
-                <h5 class="group-header" style="cursor: pointer; padding: 8px; background: #f5f5f5; margin: 4px 0; border-radius: 4px;">
-                  ${group} (${tests.length} tests) ▶
-                </h5>
-                <ul class="biomarker-items hidden" style="padding-left: 20px;">
+                <div class="group-header">
+                  <h4>${group}</h4>
+                  <button class="toggle-biomarkers" aria-expanded="false">
+                    <span class="toggle-icon">▼</span>
+                  </button>
+                </div>
+                <ul class="biomarker-items hidden">
                   ${tests.map(test => `<li>${test}</li>`).join('')}
                 </ul>
               </div>
