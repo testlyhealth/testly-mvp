@@ -55,7 +55,7 @@ export function createFilterPanel(tests) {
               <label for="location-${location.toLowerCase().replace(/\s+/g, '-')}">${location}</label>
             </div>
           `).join('')}
-        </div>
+      </div>
       </div>
 
       <div class="filter-section">

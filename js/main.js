@@ -109,7 +109,7 @@ function setupMobileMenu() {
     mobileMenuBack.addEventListener('click', () => {
       mobileMenuPrimary.style.display = 'block';
       mobileMenuSecondary.classList.remove('visible');
-    });
+  });
   }
   
   // Handle submenu items
@@ -127,29 +127,29 @@ function setupMobileMenu() {
 
 // Initialize UI components
 function initializeUI() {
-  // Burger menu functionality
-  const burgerMenu = document.querySelector('.burger-menu');
-  const burgerDropdown = document.querySelector('#burger-dropdown');
-  
-  burgerMenu.addEventListener('click', () => {
-    burgerDropdown.classList.toggle('hidden');
-  });
-
-  // Close dropdown when clicking outside
-  document.addEventListener('click', (event) => {
-    if (!event.target.closest('.menu-dropdown-wrapper')) {
-      burgerDropdown.classList.add('hidden');
-    }
-  });
-
-  // Make logo clickable to return to home
-  const logo = document.querySelector('.logo');
-  if (logo) {
-    logo.style.cursor = 'pointer';
-    logo.addEventListener('click', () => {
-      window.location.hash = '#/';
+    // Burger menu functionality
+    const burgerMenu = document.querySelector('.burger-menu');
+    const burgerDropdown = document.querySelector('#burger-dropdown');
+    
+    burgerMenu.addEventListener('click', () => {
+        burgerDropdown.classList.toggle('hidden');
     });
-  }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!event.target.closest('.menu-dropdown-wrapper')) {
+            burgerDropdown.classList.add('hidden');
+        }
+    });
+
+    // Make logo clickable to return to home
+    const logo = document.querySelector('.logo');
+    if (logo) {
+        logo.style.cursor = 'pointer';
+        logo.addEventListener('click', () => {
+            window.location.hash = '#/';
+        });
+    }
 }
 
 // Start the app

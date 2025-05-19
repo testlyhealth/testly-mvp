@@ -168,7 +168,7 @@ async function createTestCardsHTML(tests) {
 async function updateTestGridContent(tests) {
   const testsGrid = $('.tests-grid');
   if (!testsGrid) return;
-  
+
   const newContent = await createTestCardsHTML(tests);
   testsGrid.innerHTML = newContent;
   
@@ -179,42 +179,42 @@ async function updateTestGridContent(tests) {
 // Function to attach event listeners
 function attachEventListeners() {
   // Toggle biomarkers
-  $all('.toggle-biomarkers').forEach(button => {
-    button.addEventListener('click', (e) => {
-      const biomarkersList = e.target.closest('.biomarkers-section').querySelector('.biomarkers-list');
-      const isExpanded = button.getAttribute('aria-expanded') === 'true';
+    $all('.toggle-biomarkers').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const biomarkersList = e.target.closest('.biomarkers-section').querySelector('.biomarkers-list');
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
 
-      biomarkersList.classList.toggle('hidden');
-      button.setAttribute('aria-expanded', !isExpanded);
-      button.textContent = isExpanded ? 'Show' : 'Hide';
+        biomarkersList.classList.toggle('hidden');
+        button.setAttribute('aria-expanded', !isExpanded);
+        button.textContent = isExpanded ? 'Show' : 'Hide';
+      });
     });
-  });
 
   // Group headers
-  $all('.group-header').forEach(header => {
-    header.addEventListener('click', (e) => {
+    $all('.group-header').forEach(header => {
+      header.addEventListener('click', (e) => {
       e.stopPropagation(); // Prevent event bubbling
       const biomarkerItems = header.nextElementSibling;
-      const isExpanded = !biomarkerItems.classList.contains('hidden');
-      
-      biomarkerItems.classList.toggle('hidden');
+        const isExpanded = !biomarkerItems.classList.contains('hidden');
+        
+        biomarkerItems.classList.toggle('hidden');
       header.setAttribute('aria-expanded', !isExpanded);
       
       // Update the header text to show expand/collapse state
       const headerText = header.textContent.split(' (')[0];
       header.textContent = `${headerText} (${biomarkerItems.querySelectorAll('li').length} tests) ${isExpanded ? '▼' : '▶'}`;
+      });
     });
-  });
 
   // Details toggle
-  $all('.toggle-details').forEach(button => {
-    button.addEventListener('click', (e) => {
-      const detailsSection = e.target.closest('.test-details').querySelector('.additional-details');
-      const isExpanded = button.getAttribute('aria-expanded') === 'true';
+    $all('.toggle-details').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const detailsSection = e.target.closest('.test-details').querySelector('.additional-details');
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
 
-      detailsSection.classList.toggle('hidden');
-      button.setAttribute('aria-expanded', !isExpanded);
-      button.textContent = isExpanded ? 'Details' : 'Hide details';
+        detailsSection.classList.toggle('hidden');
+        button.setAttribute('aria-expanded', !isExpanded);
+        button.textContent = isExpanded ? 'Details' : 'Hide details';
     });
   });
 }

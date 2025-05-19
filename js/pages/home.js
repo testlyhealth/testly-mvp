@@ -8,7 +8,7 @@ const cardService = new CardService();
 
 // Static homepage content
 export function getHomePageContent() {
-  return `
+    return `
     <section class="dynamic-title-section">
       <div class="title-container">
         <h1 class="main-title">
@@ -124,7 +124,7 @@ export function getHomePageContent() {
         `).join('')}
       </div>
     </div>
-  `;
+    `;
 }
 
 // Homepage-specific functionality
@@ -206,7 +206,7 @@ function setupDynamicTextAnimation() {
 
   updateDynamicText();
   setInterval(updateDynamicText, 3000);
-}
+    }
 
 // Video playback controls
 function setupVideoPlayback() {
@@ -267,13 +267,13 @@ function setupNavigationHandlers() {
   });
 
   // Blood test button
-  const bloodTestBtn = document.querySelector('.hero-grid-small .zepbound-box .cta-button');
-  if (bloodTestBtn) {
-    bloodTestBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.hash = '#/blood-tests';
-    });
-  }
+    const bloodTestBtn = document.querySelector('.hero-grid-small .zepbound-box .cta-button');
+    if (bloodTestBtn) {
+        bloodTestBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.hash = '#/blood-tests';
+        });
+    }
 }
 
 // Blog section handlers
