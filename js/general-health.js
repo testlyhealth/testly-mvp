@@ -2,8 +2,6 @@ import { $, $all } from './dom.js';
 import { CardService } from './services/cardService.js';
 import { createFilterPanel, setupFilterPanel } from './filter-panel.js';
 import { basket } from './basket.js';
-import { get } from './utils/api.js';
-import { resolvePath } from './config.js';
 
 // Initialize card service
 const cardService = new CardService();
@@ -27,7 +25,8 @@ const providerLogoMap = {
 // Function to get grouped biomarkers
 async function getGroupedBiomarkers(biomarkers) {
   try {
-    const groupings = await get('data/biomarker-groupings.json');
+    const response = await fetch('data/biomarker-groupings.json');
+    const groupings = await response.json();
     
     const grouped = new Map();
     biomarkers.forEach(biomarker => {
@@ -67,7 +66,6 @@ async function getGroupedBiomarkers(biomarkers) {
 async function createTestCard(test, index) {
   const groupedBiomarkers = await getGroupedBiomarkers(test.biomarkers);
   const providerLogo = providerLogoMap[test.provider] || 'default-logo.png';
-  const logoPath = resolvePath(`images/logos/${providerLogo}`);
   
   // Calculate total number of biomarkers
   const totalBiomarkers = test.biomarkers.length;
@@ -77,7 +75,7 @@ async function createTestCard(test, index) {
       <div class="test-rank">${index + 1}</div>
       <div class="test-header">
         <div class="provider-info">
-          <img src="${logoPath}" alt="${test.provider} logo" class="provider-logo">
+          <img src="images/logos/${providerLogo}" alt="${test.provider} logo" class="provider-logo">
           <span class="provider-name">${test.provider}</span>
         </div>
         <h3 class="test-name">${test.test_name}</h3>
@@ -308,7 +306,8 @@ async function initializePageElements(tests) {
 // Export the display function
 export async function displayGeneralHealthPage() {
   try {
-    const tests = await get('data/providers.json');
+    const response = await fetch('/data/providers.json');
+    const tests = await response.json();
     return await initializePageElements(tests);
   } catch (error) {
     console.error('Error loading general health page:', error);
