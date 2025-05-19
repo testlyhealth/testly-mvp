@@ -22,7 +22,7 @@ function createProductCard(product) {
 // Function to group biomarkers
 async function getGroupedBiomarkers(biomarkers) {
   try {
-    const response = await fetch('/data/biomarker-groupings.json');
+    const response = await fetch('data/biomarker-groupings.json');
     const groupings = await response.json();
     
     // Create a map of biomarkers to their groups
@@ -46,7 +46,7 @@ async function getGroupedBiomarkers(biomarkers) {
     return groupedBiomarkers;
   } catch (error) {
     console.error('Error loading biomarker groupings:', error);
-    return new Map([['All biomarkers', biomarkers]]);
+    return new Map([['All Tests', biomarkers]]);
   }
 }
 
@@ -80,7 +80,7 @@ export async function displayCategoryProducts(categoryId) {
   if (categoryId === 'general-health') {
     try {
       // Fetch the tests data
-      const response = await fetch('/data/providers.json');
+      const response = await fetch('data/providers.json');
       const tests = await response.json();
       
       // Create the category header
@@ -180,5 +180,17 @@ export async function displayCategoryProducts(categoryId) {
         console.log('Added to basket:', productId);
       });
     });
+  }
+}
+
+async function loadProducts() {
+  try {
+    const response = await fetch('data/providers.json');
+    const products = await response.json();
+    
+    // ... existing code ...
+  } catch (error) {
+    console.error('Error loading products:', error);
+    return [];
   }
 } 

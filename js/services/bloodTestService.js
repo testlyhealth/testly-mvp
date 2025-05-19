@@ -2,7 +2,7 @@
 export class BloodTestService {
   constructor() {
     this.cache = new Map();
-    this.baseUrl = '/data/blood-tests'; // Will be replaced with API endpoint later
+    this.baseUrl = 'data';  // Changed from '/data' to 'data'
   }
 
   async getBloodTests(filters = {}) {

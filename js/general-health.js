@@ -311,7 +311,7 @@ async function initializePageElements(tests) {
 // Export the display function
 export async function displayGeneralHealthPage() {
   try {
-    const response = await fetch('/data/providers.json');
+    const response = await fetch('data/providers.json');
     const tests = await response.json();
     return await initializePageElements(tests);
   } catch (error) {
