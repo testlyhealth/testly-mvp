@@ -2,6 +2,7 @@ import { $, $all } from './dom.js';
 import { CardService } from './services/cardService.js';
 import { createFilterPanel, setupFilterPanel } from './filter-panel.js';
 import { basket } from './basket.js';
+import { get } from './utils/api.js';
 
 // Initialize card service
 const cardService = new CardService();
@@ -25,8 +26,7 @@ const providerLogoMap = {
 // Function to get grouped biomarkers
 async function getGroupedBiomarkers(biomarkers) {
   try {
-    const response = await fetch('data/biomarker-groupings.json');
-    const groupings = await response.json();
+    const groupings = await get('data/biomarker-groupings.json');
     
     const grouped = new Map();
     biomarkers.forEach(biomarker => {
@@ -306,8 +306,7 @@ async function initializePageElements(tests) {
 // Export the display function
 export async function displayGeneralHealthPage() {
   try {
-    const response = await fetch('/data/providers.json');
-    const tests = await response.json();
+    const tests = await get('data/providers.json');
     return await initializePageElements(tests);
   } catch (error) {
     console.error('Error loading general health page:', error);
