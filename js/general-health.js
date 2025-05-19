@@ -295,6 +295,8 @@ async function initializePageElements(tests) {
     const testsGrid = $('.tests-grid');
     if (testsGrid) {
       testsGrid.innerHTML = newContent;
+      // Wait for DOM update before setting up event handlers
+      await new Promise(resolve => setTimeout(resolve, 0));
       // Set up event handlers again after updating the content
       cardService.setupCardEventHandlers(filteredTests);
     }
