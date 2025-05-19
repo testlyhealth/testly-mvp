@@ -275,14 +275,20 @@ async function initializePageElements(tests) {
   // Update the main content
   mainContent.innerHTML = content;
   
-  // Wait for the next frame to ensure DOM is updated
-  await new Promise(resolve => requestAnimationFrame(resolve));
+  // Wait for the DOM to be fully updated
+  await new Promise(resolve => setTimeout(resolve, 0));
   
   // Set up event handlers once after the content is in the DOM
   cardService.setupCardEventHandlers(tests);
 
   // Setup filter panel functionality
   console.log('Setting up filter panel...');
+  const filterPanelElement = $('.filter-panel');
+  if (filterPanelElement) {
+    filterPanelElement.style.height = 'calc(100vh - 64px)'; // Account for header height
+    filterPanelElement.style.top = '64px'; // Position below header
+  }
+  
   setupFilterPanel(tests, async (filteredTests) => {
     console.log('Filter panel callback with', filteredTests.length, 'tests');
     const newContent = await createTestCardsHTML(filteredTests);

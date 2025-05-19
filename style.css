@@ -789,10 +789,14 @@ body {
     font-size: 1.1rem;
     color: #333;
     flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
   
   .test-name .provider-name {
     font-weight: 700;
+    color: #333;
   }
   
   .test-price {
@@ -2360,10 +2364,14 @@ body {
     margin: 0;
     color: #333;
     flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .test-name .provider-name {
     font-weight: 700;
+    color: #333;
   }
 
   .test-price {
