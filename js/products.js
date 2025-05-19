@@ -3,6 +3,7 @@ import { categories } from './data.js';
 import { createFilterPanel, setupFilterPanel } from './filter-panel.js';
 import { basket } from './basket.js';
 import { CardService } from './services/cardService.js';
+import { getUrl } from './config.js';
 
 // Initialize card service
 const cardService = new CardService();
@@ -22,7 +23,7 @@ function createProductCard(product) {
 // Function to group biomarkers
 async function getGroupedBiomarkers(biomarkers) {
   try {
-    const response = await fetch('data/biomarker-groupings.json');
+    const response = await fetch(getUrl('data/biomarker-groupings.json'));
     const groupings = await response.json();
     
     // Create a map of biomarkers to their groups
@@ -80,7 +81,7 @@ export async function displayCategoryProducts(categoryId) {
   if (categoryId === 'general-health') {
     try {
       // Fetch the tests data
-      const response = await fetch('data/providers.json');
+      const response = await fetch(getUrl('data/providers.json'));
       const tests = await response.json();
       
       // Create the category header
@@ -185,7 +186,7 @@ export async function displayCategoryProducts(categoryId) {
 
 async function loadProducts() {
   try {
-    const response = await fetch('data/providers.json');
+    const response = await fetch(getUrl('data/providers.json'));
     const products = await response.json();
     
     // ... existing code ...

@@ -2,6 +2,7 @@ import { $, $all } from './dom.js';
 import { CardService } from './services/cardService.js';
 import { createFilterPanel, setupFilterPanel } from './filter-panel.js';
 import { basket } from './basket.js';
+import { getUrl } from './config.js';
 
 // Initialize card service
 const cardService = new CardService();
@@ -25,7 +26,7 @@ const providerLogoMap = {
 // Function to get grouped biomarkers
 async function getGroupedBiomarkers(biomarkers) {
   try {
-    const response = await fetch('data/biomarker-groupings.json');
+    const response = await fetch(getUrl('data/biomarker-groupings.json'));
     const groupings = await response.json();
     
     const grouped = new Map();
@@ -311,7 +312,7 @@ async function initializePageElements(tests) {
 // Export the display function
 export async function displayGeneralHealthPage() {
   try {
-    const response = await fetch('data/providers.json');
+    const response = await fetch(getUrl('data/providers.json'));
     const tests = await response.json();
     return await initializePageElements(tests);
   } catch (error) {

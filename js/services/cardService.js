@@ -1,5 +1,6 @@
 import { getGroupedBiomarkers } from '../utils/biomarkerUtils.js';
 import { $all } from '../dom.js';
+import { getUrl } from '../config.js';
 
 export class CardService {
   constructor() {
@@ -114,7 +115,7 @@ export class CardService {
       // Ensure biomarkers is an array
       const biomarkerArray = Array.isArray(biomarkers) ? biomarkers : [];
       
-      const response = await fetch('data/biomarker-groupings.json');
+      const response = await fetch(getUrl('data/biomarker-groupings.json'));
       const groupings = await response.json();
       
       const grouped = new Map();

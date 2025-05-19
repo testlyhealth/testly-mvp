@@ -1,14 +1,15 @@
+import { getUrl } from '../config.js';
+
 // Blood test data service
 export class BloodTestService {
   constructor() {
     this.cache = new Map();
-    this.baseUrl = 'data';  // Changed from '/data' to 'data'
   }
 
   async getBloodTests(filters = {}) {
     try {
       // For now, load from JSON
-      const response = await fetch(`${this.baseUrl}/tests.json`);
+      const response = await fetch(getUrl('data/tests.json'));
       if (!response.ok) throw new Error('Failed to fetch blood tests');
       
       const data = await response.json();
@@ -37,7 +38,7 @@ export class BloodTestService {
 
   async getProviders() {
     try {
-      const response = await fetch(`${this.baseUrl}/providers.json`);
+      const response = await fetch(getUrl('data/providers.json'));
       if (!response.ok) throw new Error('Failed to fetch providers');
       const data = await response.json();
       return data.providers; // Get the providers array from the response
@@ -49,7 +50,7 @@ export class BloodTestService {
 
   async getCategories() {
     try {
-      const response = await fetch(`${this.baseUrl}/categories.json`);
+      const response = await fetch(getUrl('data/categories.json'));
       if (!response.ok) throw new Error('Failed to fetch categories');
       const data = await response.json();
       return data.categories; // Get the categories array from the response
