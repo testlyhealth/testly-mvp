@@ -123,23 +123,6 @@ function setupMobileMenu() {
       }
     });
   });
-
-  // Handle all menu items (both primary and secondary)
-  const menuItems = document.querySelectorAll('.mobile-menu-list a');
-  menuItems.forEach(item => {
-    item.addEventListener('click', (e) => {
-      // Don't prevent default for submenu items
-      if (!item.classList.contains('has-submenu')) {
-        // Close the mobile menu
-        mobileMenu.classList.remove('visible');
-        // Reset the secondary menu state
-        if (mobileMenuPrimary && mobileMenuSecondary) {
-          mobileMenuPrimary.style.display = 'block';
-          mobileMenuSecondary.classList.remove('visible');
-        }
-      }
-    });
-  });
 }
 
 // Initialize UI components
