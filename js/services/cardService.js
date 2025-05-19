@@ -116,6 +116,9 @@ export class CardService {
       const biomarkerArray = Array.isArray(biomarkers) ? biomarkers : [];
       
       const response = await fetch(getUrl('data/biomarker-groupings.json'));
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const groupings = await response.json();
       
       const grouped = new Map();
@@ -148,7 +151,9 @@ export class CardService {
       return grouped;
     } catch (error) {
       console.error('Error loading biomarker groupings:', error);
-      return new Map([['All Tests', biomarkers]]);
+      // Ensure we return a Map with an array of biomarkers
+      const biomarkerArray = Array.isArray(biomarkers) ? biomarkers : [];
+      return new Map([['All Tests', biomarkerArray]]);
     }
   }
 
