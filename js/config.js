@@ -12,7 +12,7 @@ const config = {
 
   // Base path for all API calls and assets
   get basePath() {
-    if (!this.isGitHubPages) return '';
+    if (!this.isGitHubPages) return '/';  // Use root path for local development
     const repoName = this.getRepoName();
     return repoName ? `/${repoName}/` : '/';
   },

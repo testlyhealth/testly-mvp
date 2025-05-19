@@ -127,7 +127,12 @@ async function createTestCard(test, index) {
 }
 
 // Function to filter tests based on criteria
-function filterTests(tests, filters) {
+function filterTests(tests, filters = {}) {
+  // If no filters are provided, return all tests
+  if (!filters || Object.keys(filters).length === 0) {
+    return tests;
+  }
+
   return tests.filter(test => {
     // Filter by price range
     if (filters.priceRange) {
@@ -137,17 +142,22 @@ function filterTests(tests, filters) {
     }
 
     // Filter by provider
-    if (filters.provider && filters.provider !== 'all') {
-      if (test.provider !== filters.provider) {
+    if (filters.providers && filters.providers.length > 0) {
+      if (!filters.providers.includes(test.provider)) {
         return false;
       }
     }
 
-    // Filter by category
-    if (filters.category && filters.category !== 'all') {
-      if (test.category !== filters.category) {
+    // Filter by location
+    if (filters.locations && filters.locations.length > 0) {
+      if (!test["blood test location"].some(loc => filters.locations.includes(loc))) {
         return false;
       }
+    }
+
+    // Filter by doctor's report
+    if (filters.doctorsReport && test["doctors report"] !== "Yes") {
+      return false;
     }
 
     return true;
@@ -164,71 +174,85 @@ async function updateTestGridContent(tests) {
   const testsGrid = $('.tests-grid');
   if (!testsGrid) return;
 
-  const newContent = await createTestCardsHTML(tests);
-  testsGrid.innerHTML = newContent;
-  
-  // Reattach event listeners
-  attachEventListeners();
+  try {
+    const newContent = await cardService.createCards(tests);
+    testsGrid.innerHTML = newContent;
+    
+    // Reattach event listeners
+    attachEventListeners(tests);
+  } catch (error) {
+    console.error('Error creating cards:', error);
+    testsGrid.innerHTML = '<div class="error-message">Error loading tests. Please try again later.</div>';
+  }
 }
 
 // Function to attach event listeners
-function attachEventListeners() {
+function attachEventListeners(tests) {
   // Toggle biomarkers
-    $all('.toggle-biomarkers').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const biomarkersList = e.target.closest('.biomarkers-section').querySelector('.biomarkers-list');
-        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+  $all('.toggle-biomarkers').forEach(button => {
+    button.addEventListener('click', (e) => {
+      const biomarkersList = e.target.closest('.biomarkers-section').querySelector('.biomarkers-list');
+      const isExpanded = button.getAttribute('aria-expanded') === 'true';
 
-        biomarkersList.classList.toggle('hidden');
-        button.setAttribute('aria-expanded', !isExpanded);
-        button.textContent = isExpanded ? 'Show' : 'Hide';
-      });
+      biomarkersList.classList.toggle('hidden');
+      button.setAttribute('aria-expanded', !isExpanded);
+      button.textContent = isExpanded ? 'Show' : 'Hide';
     });
+  });
 
   // Group headers
-    $all('.group-header').forEach(header => {
-      header.addEventListener('click', (e) => {
+  $all('.group-header').forEach(header => {
+    header.addEventListener('click', (e) => {
       e.stopPropagation(); // Prevent event bubbling
       const biomarkerItems = header.nextElementSibling;
-        const isExpanded = !biomarkerItems.classList.contains('hidden');
-        
-        biomarkerItems.classList.toggle('hidden');
+      const isExpanded = !biomarkerItems.classList.contains('hidden');
+      
+      biomarkerItems.classList.toggle('hidden');
       header.setAttribute('aria-expanded', !isExpanded);
       
       // Update the header text to show expand/collapse state
       const headerText = header.textContent.split(' (')[0];
       header.textContent = `${headerText} (${biomarkerItems.querySelectorAll('li').length} tests) ${isExpanded ? '▼' : '▶'}`;
-      });
     });
+  });
 
-  // Details toggle
-    $all('.toggle-details').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const detailsSection = e.target.closest('.test-details').querySelector('.additional-details');
-        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+  // Toggle details
+  $all('.toggle-details').forEach(button => {
+    button.addEventListener('click', (e) => {
+      const details = e.target.nextElementSibling;
+      const isExpanded = button.getAttribute('aria-expanded') === 'true';
+      
+      details.classList.toggle('hidden');
+      button.setAttribute('aria-expanded', !isExpanded);
+      button.textContent = isExpanded ? 'Show Details' : 'Hide Details';
+    });
+  });
 
-        detailsSection.classList.toggle('hidden');
-        button.setAttribute('aria-expanded', !isExpanded);
-        button.textContent = isExpanded ? 'Details' : 'Hide details';
+  // Add to basket buttons
+  $all('.add-to-basket').forEach(button => {
+    button.addEventListener('click', (e) => {
+      const testId = e.target.dataset.testId;
+      const test = tests.find(t => t.test_name === testId);
+      if (test) {
+        const event = new CustomEvent('addToBasket', { detail: { test } });
+        document.dispatchEvent(event);
+      }
     });
   });
 }
 
-// Function to create the page structure
+// Function to create page structure
 function createPageStructure(filterPanel, testsGrid) {
-  return `
-    <div class="general-health-page">
-      <div class="filter-panel" id="filter-panel">
+  const mainContent = $('main');
+  if (!mainContent) return;
+
+  mainContent.innerHTML = `
+    <div class="page-container">
+      <aside class="filter-panel">
         ${filterPanel}
-      </div>
+      </aside>
       <div class="main-content">
-        <div class="category-header">
-          <h2>General Health Blood Tests</h2>
-          <p>Comprehensive blood tests to assess your overall health and wellbeing</p>
-        </div>
-        <div class="tests-grid">
-          ${testsGrid}
-        </div>
+        <div class="tests-grid"></div>
       </div>
     </div>
   `;
@@ -238,69 +262,39 @@ function createPageStructure(filterPanel, testsGrid) {
 function createErrorContent() {
   return `
     <div class="error-container">
-      <h2>Error</h2>
-      <p>Failed to load the page content. Please try again later.</p>
+      <h2>Error Loading Content</h2>
+      <p>We're having trouble loading the tests. Please try again later.</p>
     </div>
   `;
 }
 
-// Function to initialize page elements and event listeners
+// Function to initialize page elements
 async function initializePageElements(tests) {
   console.log('initializePageElements called with', tests.length, 'tests');
-  const mainContent = $('main');
-  if (!mainContent) {
-    console.error('Main content container not found');
-    return createErrorContent();
-  }
-
-  // Create the filter panel
-  console.log('Creating filter panel...');
+  
+  // Create filter panel with tests data
   const filterPanel = createFilterPanel(tests);
   
-  // Create the test cards HTML
-  console.log('Creating test cards HTML...');
-  const testsGrid = await createTestCardsHTML(tests);
-  console.log('Test cards HTML created, length:', testsGrid.length);
+  // Create page structure
+  createPageStructure(filterPanel, null);
   
-  // Create and set the main content
-  console.log('Creating page structure...');
-  const content = createPageStructure(filterPanel, testsGrid);
-  console.log('Page structure created, length:', content.length);
-  
-  // Update the main content
-  mainContent.innerHTML = content;
-  
-  // Wait for the DOM to be fully updated
-  await new Promise(resolve => setTimeout(resolve, 0));
-  
-  // Set up event handlers once after the content is in the DOM
-  cardService.setupCardEventHandlers(tests);
-
-  // Setup filter panel functionality
-  console.log('Setting up filter panel...');
-  const filterPanelElement = $('.filter-panel');
-  if (filterPanelElement) {
-    filterPanelElement.style.height = 'calc(100vh - 64px)'; // Account for header height
-    filterPanelElement.style.top = '64px'; // Position below header
+  // Get the tests grid
+  const testsGrid = $('.tests-grid');
+  if (!testsGrid) {
+    console.error('Tests grid not found');
+    return;
   }
   
-  setupFilterPanel(tests, async (filteredTests) => {
-    console.log('Filter panel callback with', filteredTests.length, 'tests');
-    const newContent = await createTestCardsHTML(filteredTests);
-    const testsGrid = $('.tests-grid');
-    if (testsGrid) {
-      testsGrid.innerHTML = newContent;
-      // Wait for DOM update before setting up event handlers
-      await new Promise(resolve => setTimeout(resolve, 0));
-      // Set up event handlers again after updating the content
-      cardService.setupCardEventHandlers(filteredTests);
-    }
+  // Update the grid with test cards
+  await updateTestGridContent(tests);
+  
+  // Setup filter panel with tests data and filter function
+  setupFilterPanel(tests, (filteredTests) => {
+    updateTestGridContent(filteredTests);
   });
-
-  return content;
 }
 
-// Export the display function
+// Export the main function
 export async function displayGeneralHealthPage() {
   try {
     const response = await fetch(getUrl('data/providers.json'));
@@ -308,9 +302,12 @@ export async function displayGeneralHealthPage() {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const tests = await response.json();
-    return await initializePageElements(tests);
+    await initializePageElements(tests);
   } catch (error) {
     console.error('Error loading general health page:', error);
-    return createErrorContent();
+    const mainContent = $('main');
+    if (mainContent) {
+      mainContent.innerHTML = createErrorContent();
+    }
   }
 } 
