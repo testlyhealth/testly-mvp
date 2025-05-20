@@ -68,24 +68,24 @@ function setupBloodTestsMenu() {
   bloodTestsLink.addEventListener('click', (e) => {
     e.preventDefault(); // Prevent navigation
     e.stopPropagation();
-    bloodTestsMenu.classList.toggle('visible');
+    bloodTestsMenu.classList.toggle('hidden');
   });
   
   // Close menu when clicking outside
   document.addEventListener('click', (e) => {
     if (!bloodTestsMenu.contains(e.target) && !bloodTestsLink.contains(e.target)) {
-      bloodTestsMenu.classList.remove('visible');
+      bloodTestsMenu.classList.add('hidden');
     }
   });
   
   // Close menu when mouse leaves
   bloodTestsMenu.addEventListener('mouseleave', () => {
-    bloodTestsMenu.classList.remove('visible');
+    bloodTestsMenu.classList.add('hidden');
   });
   
   // Close menu when navigating to a new page
   window.addEventListener('hashchange', () => {
-    bloodTestsMenu.classList.remove('visible');
+    bloodTestsMenu.classList.add('hidden');
   });
 }
 
@@ -127,21 +127,6 @@ function setupMobileMenu() {
 
 // Initialize UI components
 function initializeUI() {
-    // Burger menu functionality
-    const burgerMenu = document.querySelector('.burger-menu');
-    const burgerDropdown = document.querySelector('#burger-dropdown');
-    
-    burgerMenu.addEventListener('click', () => {
-        burgerDropdown.classList.toggle('hidden');
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (event) => {
-        if (!event.target.closest('.menu-dropdown-wrapper')) {
-            burgerDropdown.classList.add('hidden');
-        }
-    });
-
     // Make logo clickable to return to home
     const logo = document.querySelector('.logo');
     if (logo) {

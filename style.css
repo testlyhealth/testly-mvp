@@ -89,7 +89,7 @@ body {
   }
   
   .main-nav a {
-    color: var(--text-color);
+    color: var(--text);
     text-decoration: none;
     font-size: 0.95rem;
     font-weight: 500;
@@ -395,11 +395,11 @@ body {
   .products-grid {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    margin-top: 20px;
+    gap: 1rem;
+    width: 100%;
     max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
+    padding: 1rem;
   }
   
   .product-card, .blood-test-card, .blog-card, .category-tile {
@@ -732,1569 +732,21 @@ body {
   
   /* Blood Test Cards */
   .blood-test-card {
-    background: var(--card-bg);
-    border: 1px solid black;
-    border-radius: 0 !important;
-    box-shadow: 0 2px 4px var(--card-shadow);
-    padding: 20px;
-    transition: transform 0.2s, box-shadow 0.2s;
-    position: relative;
-    padding-bottom: 60px; /* Add space for the buttons */
-  }
-  
-  /* Add background color to the first blood test card */
-  .blood-test-card:first-child {
-    background-color: #CEDBD1;
-  }
-  
-  .blood-test-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
-    border-color: var(--accent);
-  }
-  
-  .test-rank {
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    width: 40px;
-    height: 40px;
-    background: var(--accent);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  .test-header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-  
-  .provider-info {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .test-name {
-    margin: 0;
-    font-size: 1.1rem;
-    color: #333;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .test-name .provider-name {
-    font-weight: 700;
-    color: #333;
-  }
-  
-  .test-price {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: var(--accent);
-    margin-bottom: 1rem;
-  }
-  
-  .toggle-biomarkers, .toggle-details {
-    background: none;
-    border: 2px solid var(--accent);
-    color: var(--accent);
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 500;
-  }
-  
-  .toggle-biomarkers:hover, .toggle-details:hover {
-    background: var(--accent);
-    color: white;
-  }
-  
-  .add-to-basket {
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 0.8rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 500;
-    margin-top: 1rem;
-  }
-  
-  .add-to-basket:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-  }
-  
-  /* Biomarkers Section */
-  .biomarkers-section {
-    margin-bottom: 1rem;
-  }
-  
-  .biomarkers-header {
-    margin-bottom: 0.5rem;
-  }
-  
-  .biomarker-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-  
-  .biomarker-info h4 {
-    color: black;
-    font-size: 1rem;
-    margin: 0;
-  }
-  
-  .toggle-biomarkers {
-    background: none;
-    border: 2px solid var(--accent);
-    color: var(--accent);
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 500;
-  }
-  
-  .toggle-biomarkers:hover {
-    background: var(--accent);
-    color: white;
-  }
-  
-  .toggle-biomarkers[aria-expanded="true"] {
-    background: var(--accent);
-    color: white;
-  }
-  
-  .toggle-icon {
-    font-size: 0.8rem;
-    line-height: 1;
-    transition: transform 0.3s ease;
-  }
-  
-  .toggle-biomarkers[aria-expanded="true"] .toggle-icon {
-    transform: rotate(180deg);
-  }
-  
-  .biomarkers-list {
-    margin-top: 1rem;
-    transition: all 0.3s ease;
-    max-height: 1000px;
-    overflow: hidden;
-  }
-  
-  .biomarkers-list.hidden {
-    max-height: 0;
-    margin-top: 0;
-    opacity: 0;
-  }
-  
-  .biomarker-group {
-    margin-bottom: 1rem;
-    opacity: 1;
-    transition: opacity 0.3s ease;
-  }
-  
-  .biomarkers-list.hidden .biomarker-group {
-    opacity: 0;
-  }
-  
-  .biomarkers-list ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.5rem;
-  }
-  
-  .biomarkers-list li {
-    color: black;
-    font-size: 0.9rem;
-    padding-left: 1rem;
-    position: relative;
-  }
-  
-  .biomarkers-list li:before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    color: var(--accent);
-  }
-  
-  /* Biomarker Filter */
-  .biomarker-filter-section {
-    margin-top: 1rem;
-  }
-  
-  .toggle-biomarker-filter {
-    width: 100%;
-    padding: 0.6rem;
-    background: none;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    text-align: center;
-    transition: all 0.2s;
-  }
-  
-  .toggle-biomarker-filter:hover {
-    background: var(--accent);
-    color: white;
-  }
-  
-  .toggle-biomarker-filter[aria-expanded="true"] {
-    background: var(--accent);
-    color: white;
-  }
-  
-  .biomarker-filter-content {
-    margin-top: 0.8rem;
-    transition: all 0.3s ease;
-  }
-  
-  .biomarker-filter-content.hidden {
-    display: none;
-  }
-  
-  .biomarker-groups {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .biomarker-group {
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    overflow: hidden;
-    position: relative;
-  }
-  
-  .toggle-biomarker-group {
-    width: 100%;
-    padding: 0.5rem;
-    padding-right: 120px; /* Increased padding to make more room for the button */
-    background: var(--background);
-    border: none;
-    text-align: left;
-    cursor: pointer;
-    font-size: 0.85rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background-color 0.2s;
-    position: relative;
-    white-space: normal; /* Allow text to wrap */
-    line-height: 1.2; /* Tighter line height for wrapped text */
-  }
-  
-  .toggle-biomarker-group:hover {
-    background: var(--border);
-  }
-  
-  .select-all-biomarkers {
-    position: absolute;
-    right: 0.5rem;
-    top: 50%;
-    transform: translateY(-50%); /* Center vertically */
-    padding: 0.2rem 0.5rem;
-    background: none;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.75rem;
-    transition: all 0.2s;
-    z-index: 2;
     display: block;
-    white-space: nowrap; /* Prevent button text from wrapping */
-  }
-  
-  .select-all-biomarkers:hover {
-    background: var(--accent);
-    color: white;
-  }
-  
-  .biomarker-group-content {
-    padding: 0.5rem;
-    background: var(--white);
-    transition: all 0.3s ease;
-    position: relative;
-  }
-  
-  .biomarker-checkboxes {
-    padding-left: 0.75rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-  }
-  
-  .biomarker-checkboxes label {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    cursor: pointer;
-    font-size: 0.85rem;
-    color: var(--text);
-    transition: color 0.2s;
-    word-break: break-word;
-  }
-  
-  .biomarker-checkboxes label:hover {
-    color: var(--accent);
-  }
-  
-  .toggle-icon {
-    font-size: 0.8rem;
-    transition: transform 0.3s ease;
-  }
-  
-  .toggle-biomarker-group[aria-expanded="true"] .toggle-icon {
-    transform: rotate(180deg);
-  }
-  
-  /* Details Section */
-  .toggle-details {
-    background: none;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    margin: 1rem 0;
-    transition: all 0.2s;
     width: 100%;
-  }
-  
-  .toggle-details:hover {
-    background: var(--accent);
-    color: white;
-  }
-  
-  .additional-details {
-    margin-top: 1rem;
-    padding: 1rem;
-    background: var(--background);
-    border-radius: 4px;
-    transition: all 0.3s ease;
-  }
-  
-  .additional-details.hidden {
-    display: none;
-  }
-  
-  .detail-section {
-    margin-bottom: 1rem;
-  }
-  
-  .detail-section:last-child {
-    margin-bottom: 0;
-  }
-  
-  .detail-section h4 {
-    font-size: 0.9rem;
-    color: var(--text);
-    margin: 0 0 0.5rem 0;
-    font-weight: 600;
-  }
-  
-  .detail-section p {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    margin: 0;
-    line-height: 1.4;
-  }
-  
-  .detail-section ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .detail-section li {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    padding-left: 1rem;
-    position: relative;
-    margin-bottom: 0.3rem;
-  }
-  
-  .detail-section li:before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    color: var(--accent);
-  }
-  
-  .provider-link {
-    color: var(--accent);
-    text-decoration: none;
-    font-size: 0.9rem;
-    display: inline-block;
-    margin-top: 0.5rem;
-  }
-  
-  .provider-link:hover {
-    text-decoration: underline;
-  }
-  
-  /* Basket Styles */
-  .basket-count {
-    background: var(--accent);
-    color: white;
-    padding: 0.1rem 0.4rem;
-    border-radius: 10px;
-    font-size: 0.8rem;
-    margin-left: 0.3rem;
-  }
-
-  #basket-panel {
-    width: 350px;
-    background: var(--white);
-    border-left: 1px solid var(--border);
-    box-shadow: -2px 0 5px rgba(0,0,0,0.05);
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 64px); /* Match header height */
-    position: fixed;
-    top: 64px; /* Match header height */
-    right: 0;
-    z-index: 1000;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-  }
-
-  #basket-panel:not(.hidden) {
-    transform: translateX(0);
-  }
-
-  #basket-panel.hidden {
-    transform: translateX(100%);
-  }
-
-  .basket-header {
-    padding: 1rem;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-shrink: 0;
-  }
-
-  .basket-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    color: var(--text);
-  }
-
-  .close-basket {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: var(--text-light);
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-  }
-
-  .close-basket:hover {
-    color: var(--text);
-  }
-
-  .basket-items {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1rem;
-    min-height: 0; /* Important for flex child scrolling */
-  }
-
-  .basket-item {
-    display: grid;
-    grid-template-columns: 1fr auto auto auto;
-    gap: 1rem;
-    align-items: center;
-    padding: 0.8rem 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .basket-item:last-child {
-    border-bottom: none;
-  }
-
-  .item-details h4 {
-    margin: 0 0 0.3rem 0;
-    font-size: 0.9rem;
-    color: var(--text);
-  }
-
-  .item-details p {
-    margin: 0;
-    font-size: 0.8rem;
-    color: var(--text-light);
-  }
-
-  .item-price {
-    font-weight: 600;
-    color: var(--text);
-  }
-
-  .item-quantity {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .quantity-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text);
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    line-height: 1;
-    transition: all 0.2s;
-  }
-
-  .quantity-btn:hover {
-    background: var(--background);
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  .remove-item {
-    background: none;
-    border: none;
-    color: var(--text-light);
-    cursor: pointer;
-    padding: 0.3rem;
-    font-size: 1.2rem;
-    line-height: 1;
-    transition: color 0.2s;
-  }
-
-  .remove-item:hover {
-    color: var(--text);
-  }
-
-  .basket-footer {
-    padding: 1rem;
-    border-top: 1px solid var(--border);
-    background: var(--white);
-    flex-shrink: 0;
-    margin-top: auto;
-  }
-
-  .basket-total {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text);
-  }
-
-  .checkout-btn {
-    width: 100%;
-    padding: 0.8rem;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: background-color 0.2s;
-  }
-
-  .checkout-btn:hover {
-    background: var(--accent-hover);
-  }
-
-  .basket-empty {
-    padding: 2rem;
-    text-align: center;
-    color: var(--text-light);
-  }
-  
-  .results-time-filters {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-  
-  .results-time-filters label {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    cursor: pointer;
-    font-size: 0.85rem;
-    color: var(--text);
-    transition: color 0.2s;
-  }
-  
-  .results-time-filters label:hover {
-    color: var(--accent);
-  }
-  
-  .biomarker-filters {
-    margin-bottom: 0.5rem;
-  }
-
-  .biomarker-filters label {
-    font-weight: normal;
-    font-size: 0.85rem;
-    color: var(--text);
-  }
-
-  .biomarker-checkboxes {
-    padding-left: 0.75rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-  }
-  
-  .price-filters, .trustpilot-filters, .location-filters, .results-time-filters, .provider-filters {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-
-  .price-filters label:not(:first-child),
-  .trustpilot-filters label:not(:first-child),
-  .location-filters label:not(:first-child),
-  .results-time-filters label:not(:first-child),
-  .provider-filters label:not(:first-child) {
-    padding-left: 0.75rem;
-  }
-  
-  /* Hero Section */
-  .hero-section {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 6rem 2rem;
-    margin-top: 0;
-    margin-bottom: 3rem;
-    min-height: 600px;
-    overflow: hidden;
-    background: var(--white);
-    color: white;
-  }
-
-  /*
-  .hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(2px);
-    z-index: 1;
-  }
-  */
-
-  .hero-content {
-    position: relative;
-    z-index: 2;
-    max-width: 500px;
-    text-align: left;
-    padding: 2rem;
-    background: var(--white);
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    margin-left: 2rem;
-  }
-
-  .hero-content h1 {
-    font-size: 3rem;
-    margin-bottom: 1.5rem;
-    line-height: 1.2;
-    font-weight: 700;
-  }
-
-  .hero-content p {
-    font-size: 1.2rem;
-    color: var(--text-light);
-    margin-bottom: 2rem;
-    line-height: 1.6;
-  }
-
-  .hero-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-  }
-
-  .hero-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-  }
-
-  .cta-button {
-    background: transparent;
-    color: var(--text);
-    border: 1px solid var(--text);
-    padding: 1rem 2rem;
-    border-radius: 5px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 500;
-  }
-
-  .cta-button:hover {
-    background: var(--text);
-    color: var(--white);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-
-  @media (max-width: 768px) {
-    .hero-section {
-      padding: 4rem 1rem;
-      min-height: 500px;
-    }
-
-    .hero-content {
-      padding: 1.5rem;
-    }
-
-    .hero-content h1 {
-      font-size: 2.5rem;
-    }
-  }
-
-  /* Featured Categories */
-  .featured-categories {
-    padding: 3rem 2rem;
-    background-color: white;
-  }
-
-  .featured-categories h2 {
-    text-align: center;
-    font-size: 2rem;
-    color: #2c3e50;
-    margin-bottom: 2rem;
-  }
-
-  .category-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .category-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 1rem;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .category-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px var(--card-shadow);
-  }
-
-  .category-image {
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .category-image i {
-    font-size: 1.5rem;
-    color: #1e293b;
-    filter: none;
-  }
-
-  .category-content {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .category-card h3 {
-    color: var(--text);
-    margin-bottom: 0.3rem;
-    font-size: 1rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-weight: 600;
-  }
-
-  .category-card p {
-    color: var(--text-light);
-    font-size: 0.8rem;
-    line-height: 1.2;
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  /* Trust Indicators */
-  .trust-indicators {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    padding: 1.5rem 2rem;
-    background-color: var(--white);
-    margin: 2rem 0;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .trust-item {
-    text-align: center;
-    padding: 0.5rem;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-  }
-
-  .trust-item i {
-    font-size: 1.8rem;
-    color: var(--accent);
-    margin-bottom: 0.5rem;
-  }
-
-  .trust-item h3 {
-    color: var(--text);
-    margin: 0.3rem 0;
-    font-size: 1rem;
-    font-weight: 600;
-  }
-
-  .trust-item p {
-    color: var(--text-light);
-    margin: 0;
-    font-size: 0.8rem;
-  }
-
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .hero-section {
-      flex-direction: column;
-      text-align: center;
-      padding: 2rem 1rem;
-    }
-
-    .hero-content {
-      padding-right: 0;
-      margin-bottom: 2rem;
-    }
-
-    .hero-content h1 {
-      font-size: 2.5rem;
-    }
-
-    .category-grid {
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-
-    .trust-indicators {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (max-width: 480px) {
-    .trust-indicators {
-      grid-template-columns: 1fr;
-    }
-  }
-  
-  .categories-section {
-    padding: 1.5rem 2rem;
-  }
-
-  .category-grid {
-    padding: 0;
-  }
-
-  .categories-section h1 {
-    padding: 1.5rem 0;
-  }
-
-  .category-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .category-box {
-    height: 120px;
-  }
-
-  @media (max-width: 900px) {
-    .category-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (max-width: 600px) {
-    .category-grid {
-      grid-template-columns: 1fr;
-    }
-    .category-box {
-      height: 100px;
-    }
-  }
-
-  .category-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 1rem;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .category-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px var(--card-shadow);
-  }
-
-  .category-image {
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .category-image i {
-    font-size: 1.5rem;
-    color: #1e293b;
-    filter: none;
-  }
-
-  .category-content {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .category-card h3 {
-    color: var(--text);
-    margin-bottom: 0.3rem;
-    font-size: 1rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-weight: 600;
-  }
-
-  .category-card p {
-    color: var(--text-light);
-    font-size: 0.8rem;
-    line-height: 1.2;
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  /* Login Modal Styles */
-  .login-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-
-  .login-modal.hidden {
-    display: none;
-  }
-
-  .login-modal-content {
-    background-color: white;
-    padding: 2rem;
+    background: #fff;
     border-radius: 8px;
-    width: 100%;
-    max-width: 400px;
-    position: relative;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-
-  .close-modal {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #666;
-  }
-
-  .login-options {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .google-login-btn {
-    background: transparent;
-    color: var(--text);
-    border: 1px solid var(--text);
-    padding: 0.75rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .google-login-btn:hover {
-    background: var(--text);
-    color: var(--white);
-  }
-
-  .divider {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    color: #666;
-  }
-
-  .divider::before,
-  .divider::after {
-    content: '';
-    flex: 1;
-    border-bottom: 1px solid #ddd;
-  }
-
-  .divider span {
-    padding: 0 1rem;
-  }
-
-  .email-login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .form-group label {
-    font-size: 0.9rem;
-    color: #666;
-  }
-
-  .form-group input {
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-  }
-
-  .email-login-btn {
-    background: transparent;
-    color: var(--text);
-    border: 1px solid var(--text);
-    padding: 0.75rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .email-login-btn:hover {
-    background: var(--text);
-    color: var(--white);
-  }
-
-  .signup-link {
-    text-align: center;
-    font-size: 0.9rem;
-    color: #666;
-  }
-
-  .signup-link a {
-    color: #007bff;
-    text-decoration: none;
-  }
-
-  .signup-link a:hover {
-    text-decoration: underline;
-  }
-
-  /* Login button styles */
-  .login-btn {
-    position: relative;
-    background: transparent;
-    color: var(--text);
-    padding: 0.5rem;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .login-btn:hover {
-    color: var(--accent);
-  }
-
-  .login-btn.signed-in {
-    background: transparent;
-    color: var(--text);
-  }
-  
-  .login-btn.signed-in:hover {
-    color: var(--accent);
-  }
-
-  /* Remove any other login button styles that might be overriding */
-  .login-btn[class*="signed-in"] {
-    background: transparent !important;
-    border: none !important;
-    color: var(--text) !important;
-  }
-
-  .login-btn[class*="signed-in"]:hover {
-    color: var(--accent) !important;
-  }
-  
-  /* Welcome Overlay Styles */
-  .welcome-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    opacity: 1;
-    transition: opacity 0.3s ease-in-out;
-  }
-
-  .welcome-overlay.fade-out {
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .welcome-content {
-    background-color: white;
-    padding: 3rem;
-    border-radius: 12px;
-    position: relative;
-    text-align: center;
-    transform: translateY(0);
-    transition: transform 0.3s ease-in-out;
-    width: 100%;
-    max-width: 600px;
-    margin: 2rem;
-  }
-
-  .welcome-overlay.fade-out .welcome-content {
-    transform: translateY(-20px);
-  }
-
-  .welcome-content h1 {
-    font-size: 2.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
     margin-bottom: 1rem;
-    font-weight: 700;
-  }
-
-  .welcome-subtitle {
-    font-size: 1.2rem;
-    color: var(--text);
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
-  }
-
-  .welcome-subtitle strong {
-    color: var(--accent);
-    font-weight: 700;
-  }
-
-  .how-it-works-btn {
-    background: transparent;
-    border: none;
-    color: var(--accent);
-    font-size: 1rem;
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-    margin-bottom: 2rem;
-    transition: color 0.2s ease;
-  }
-
-  .how-it-works-btn:hover {
-    color: var(--accent-hover);
-    text-decoration: underline;
-  }
-
-  .guidance-question {
-    font-size: 1.1rem;
-    color: var(--text);
-    margin-bottom: 1.5rem;
-  }
-
-  .guidance-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    margin-bottom: 6rem;
-    position: relative;
-  }
-
-  .guidance-btn {
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: center;
-  }
-
-  .yes-btn {
-    background: var(--accent);
-    color: white;
-    border: none;
-  }
-
-  .yes-btn:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-  }
-
-  .no-btn {
-    background: transparent;
-    color: var(--text);
-    border: 1px solid var(--text);
-  }
-
-  .no-btn:hover {
-    background: var(--card-bg);
-    color: var(--text);
-    transform: translateY(-3px);
-  }
-
-  .close-button {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: transparent;
-    border: none;
-    font-size: 32px;
-    cursor: pointer;
-    color: var(--text);
-    padding: 10px;
-    line-height: 1;
-    transition: all 0.3s ease;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-  }
-
-  .close-button:hover {
-    background: var(--card-bg);
-    transform: rotate(90deg);
-  }
-
-  .skip-button {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: transparent;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    color: var(--text);
-    padding: 15px 30px;
-    transition: all 0.3s ease;
-    font-weight: 600;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    z-index: 10000;
-  }
-
-  .skip-button:hover {
-    background: var(--card-bg);
-    transform: translateX(5px);
-  }
-
-  .guide-me {
-    cursor: pointer;
-    color: #007bff;
-  }
-
-  .guide-me:hover {
-    text-decoration: underline;
-  }
-
-  /* User Dropdown Styles */
-  .user-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    min-width: 200px;
-  }
-
-  .user-dropdown.hidden {
-    display: none;
-  }
-
-  .dropdown-content {
-    padding: 0.5rem 0;
-  }
-
-  .dropdown-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    color: var(--text);
-    text-decoration: none;
-    transition: background-color 0.2s;
-  }
-
-  .dropdown-item:hover {
-    background-color: var(--card-bg);
-  }
-
-  .dropdown-item i {
-    width: 1.25rem;
-    text-align: center;
-  }
-
-  .dropdown-item.logout {
-    width: 100%;
-    text-align: left;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: inherit;
-    font-family: inherit;
   }
   
-  /* Update login button styles */
-  .login-btn {
-    position: relative;
-  }
-
-  .login-btn.signed-in {
-    background-color: transparent;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-  }
-
-  .login-btn.signed-in:hover {
-    background-color: var(--accent);
-    color: white;
-  }
-  
-  /* Tests Container */
-  .tests-container {
-    display: flex;
-    margin-top: 2rem;
-    position: relative;
-  }
-
-  /* Main Content Area */
-  .main-content {
-    background: var(--white);
-    border-left: 1px solid var(--border);
-    min-height: calc(100vh - 64px);
-    padding: 0;
-    margin-left: 180px;
-    flex: 1;
-  }
-
-  /* Filter Panel */
-  .filter-panel {
-    width: 280px;
-    background: var(--white);
-    border-right: 1px solid var(--border);
-    padding: 1.5rem;
-    position: fixed;
-    top: 64px;
-    left: 0;
-    bottom: 0;
-    overflow-y: auto;
-    z-index: 100;
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
-  }
-
-  .filter-panel-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .filter-panel h3 {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    color: var(--text);
-  }
-
-  .filter-panel h4 {
-    font-size: 0.9rem;
-    margin-bottom: 0.75rem;
-    color: var(--text-light);
-  }
-
-  .filter-section {
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 1rem;
-  }
-
-  .filter-section:last-child {
-    border-bottom: none;
-  }
-
-  select {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    background: var(--card-bg);
-    color: var(--text);
-  }
-
-  .checkbox-option {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .checkbox-option input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-  }
-
-  .apply-filters-btn,
-  .reset-filters-btn {
-    padding: 0.8rem;
-    border: none;
-    border-radius: 4px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-
-  .apply-filters-btn {
-    background: var(--accent);
-    color: white;
-  }
-
-  .apply-filters-btn:hover {
-    background: var(--accent-dark);
-  }
-
-  .reset-filters-btn {
-    background: var(--border);
-    color: var(--text);
-  }
-
-  .reset-filters-btn:hover {
-    background: var(--border-dark);
-  }
-
-  /* Products Grid */
-  .products-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin-top: 20px;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  /* Blood Test Cards */
-  .blood-test-card {
-    background: var(--card-bg);
-    border: 1px solid black;
-    border-radius: 0 !important;
-    box-shadow: 0 2px 4px var(--card-shadow);
-    padding: 20px;
-    transition: transform 0.2s, box-shadow 0.2s;
-    position: relative;
-    padding-bottom: 60px; /* Add space for the buttons */
-  }
-
   .blood-test-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px var(--card-shadow);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
   }
-
+  
   .add-to-basket, .toggle-biomarkers, .toggle-details {
     background: var(--accent);
     color: white;
@@ -2306,56 +758,56 @@ body {
     font-weight: 500;
     font-size: 0.9rem;
   }
-
+  
   .add-to-basket:hover, .toggle-biomarkers:hover, .toggle-details:hover {
     background: var(--accent-hover);
     transform: translateY(-2px);
   }
-
+  
   .category-header {
     text-align: center;
     margin: 0;
     padding: 1rem 0;
   }
-
+  
   .category-header h2 {
     font-size: 2rem;
     color: var(--text);
     margin: 0;
     font-weight: 400;
   }
-
+  
   .category-header p {
     color: var(--text-light);
     font-size: 1.1rem;
     line-height: 1.4;
     margin: 0.5rem 0 0 0;
   }
-
+  
   .test-header {
     margin-bottom: 1rem;
   }
-
+  
   .provider-info {
     display: flex;
     align-items: center;
     gap: 1rem;
     margin-bottom: 0.5rem;
   }
-
+  
   .provider-logo {
     height: 40px;
     width: auto;
     object-fit: contain;
   }
-
+  
   .provider-name {
     font-size: 1.4rem;
     color: black;
     font-weight: 700;
     line-height: 1.3;
   }
-
+  
   .test-name {
     font-size: 1.1rem;
     margin: 0;
@@ -2365,63 +817,63 @@ body {
     align-items: center;
     gap: 0.5rem;
   }
-
+  
   .test-name .provider-name {
     font-weight: 700;
     color: #333;
   }
-
+  
   .test-price {
     font-size: 1.4rem;
     font-weight: 600;
     color: var(--accent);
     margin-bottom: 1rem;
   }
-
+  
   .biomarkers-section {
     margin-bottom: 1rem;
   }
-
+  
   .biomarkers-header {
     margin-bottom: 0.5rem;
   }
-
+  
   .biomarker-info {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
   }
-
+  
   .biomarker-info h4 {
     color: black;
     font-size: 1rem;
     margin: 0;
   }
-
+  
   .biomarkers-list {
     margin-top: 1rem;
     transition: all 0.3s ease;
     max-height: 1000px;
     overflow: hidden;
   }
-
+  
   .biomarkers-list.hidden {
     max-height: 0;
     margin-top: 0;
     opacity: 0;
   }
-
+  
   .biomarker-group {
     margin-bottom: 1rem;
     opacity: 1;
     transition: opacity 0.3s ease;
   }
-
+  
   .biomarkers-list.hidden .biomarker-group {
     opacity: 0;
   }
-
+  
   .biomarkers-list ul {
     list-style-type: none;
     padding: 0;
@@ -4250,1000 +2702,66 @@ body {
   }
 
   .tests-grid {
-    display: block;
-    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
     max-width: 800px;
     margin: 0 auto;
+    padding: 1rem;
   }
 
   .blood-test-card {
-    width: 100%;
-    border-radius: 0;
-    box-shadow: none;
-    border-left: none;
-    border-right: none;
-    border-top: none;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 0;
-    padding: 1.5rem 0;
-  }
-
-  .blood-test-card:last-child {
-    border-bottom: none;
-  }
-
-  .test-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-  }
-
-  .test-header h3 {
-    margin: 0;
-    color: #333;
-    font-size: 1.2rem;
-  }
-
-  .provider {
-    background: #f0f0f0;
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    color: #666;
-  }
-
-  .description {
-    color: #666;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-    line-height: 1.4;
-  }
-
-  .test-details {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    color: #666;
-  }
-
-  .price {
-    font-weight: bold;
-    color: #4CAF50;
-  }
-
-  .tests-included {
-    margin: 1rem 0;
-  }
-
-  .tests-included h4 {
-    margin: 0 0 0.5rem 0;
-    color: #333;
-    font-size: 1rem;
-  }
-
-  .tests-included ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .tests-included li {
-    color: #666;
-    font-size: 0.9rem;
-    margin-bottom: 0.3rem;
-    padding-left: 1.2rem;
-    position: relative;
-  }
-
-  .tests-included li:before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    color: #4CAF50;
-  }
-
-  .test-card .cta-button {
     display: block;
-    text-align: center;
-    margin-top: 1rem;
-    padding: 0.8rem;
-    background: #4CAF50;
-    color: white;
-    text-decoration: none;
-    border-radius: 6px;
-    transition: background-color 0.3s ease;
-  }
-
-  .test-card .cta-button:hover {
-    background: #45a049;
-  }
-
-  @media (max-width: 768px) {
-    .blood-tests-page {
-      padding: 1rem;
-    }
-    
-    .categories-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .tests-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .categories-section h1 {
-      font-size: 2rem;
-    }
-  }
-
-  .blood-tests-page .category-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    padding: 0;
-    margin: 2rem auto;
-    max-width: 1200px;
-  }
-
-  .blood-tests-page .category-box {
-    background: #ECEAF8;
-    border: 1px solid var(--border);
-    border-radius: 0;
-    box-shadow: 0 2px 4px var(--card-shadow);
-    transition: transform 0.2s, box-shadow 0.2s;
-    position: relative;
-    height: 160px;
     width: 100%;
-  }
-
-  .blood-tests-page .category-box:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px var(--card-shadow);
-  }
-
-  .blood-tests-page .category-box h3 {
-    font-size: 1.2rem;
-    margin-bottom: 0.75rem;
-    color: var(--text);
-    font-weight: 500;
-    padding-right: 4rem;
-    text-align: left;
-  }
-
-  .blood-tests-page .category-box p {
-    color: var(--text-light);
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin: 0;
-    padding-right: 4rem;
-    text-align: left;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .blood-tests-page .category-box.advanced-search {
-    background: #6D6D6B;
-    color: white;
-  }
-
-  .blood-tests-page .category-box.advanced-search h3,
-  .blood-tests-page .category-box.advanced-search p {
-    color: white;
-  }
-
-  .blood-tests-page .category-box .cta-button {
-    position: absolute;
-    right: 1.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    margin: 0;
-    background: #111;
-    color: #fff;
-    border-radius: 999px;
-    width: 48px;
-    height: 36px;
-    min-width: 48px;
-    padding: 0;
-    border: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s, color 0.2s;
-    z-index: 1;
-  }
-
-  .blood-tests-page .category-box .cta-button:hover {
-    background: #333;
-  }
-
-  .blood-tests-page .category-box .cta-button .arrow svg path {
-    stroke: #fff;
-  }
-
-  @media (max-width: 768px) {
-    .blood-tests-page .category-box {
-      height: 140px;
-    }
-    
-    .blood-tests-page .category-box .box-content {
-      padding: 1.2rem;
-    }
-    
-    .blood-tests-page .category-box h3 {
-      font-size: 1.1rem;
-      padding-right: 3rem;
-    }
-    
-    .blood-tests-page .category-box p {
-      font-size: 0.9rem;
-      padding-right: 3rem;
-    }
-  }
-
-  .blood-tests-page {
-    padding: 2rem 0;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .blood-tests-page .categories-section {
-    margin-bottom: 2rem;
-  }
-
-  .blood-tests-page .categories-section h1 {
-    text-align: center;
-    margin: 2rem 0;
-    font-size: 2.5rem;
-    color: #333;
-  }
-
-  .blood-tests-page .hero-grid-small {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1rem;
-    padding: 0;
-    margin: 0 auto;
-    max-width: 1200px;
-  }
-
-  .blood-tests-page .hero-box {
-    background: #ECEAF8;
-    border: 1px solid var(--border);
-    border-radius: 0;
-    box-shadow: 0 2px 4px var(--card-shadow);
-    transition: transform 0.2s, box-shadow 0.2s;
-    position: relative;
-    aspect-ratio: 1;
-    max-height: 140px;
-  }
-
-  .blood-tests-page .box-content {
-    padding: 1.5rem;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: relative;
-  }
-
-  .blood-tests-page .box-text {
-    flex: 1;
-    padding-right: 3rem;
-    overflow: hidden;
-  }
-
-  .blood-tests-page .box-text h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-    color: var(--text);
-    font-weight: 500;
-    white-space: normal;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .blood-tests-page .box-text p {
-    color: var(--text-light);
-    font-size: 0.85rem;
-    line-height: 1.4;
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .blood-tests-page .cta-button {
-    position: static !important;
-    right: auto !important;
-    top: auto !important;
-    transform: none !important;
-    margin: 0.5rem 0 0 auto !important;
-    width: auto !important;
-    min-width: 44px !important;
-    height: 40px !important;
-    display: block !important;
-    border-radius: 999px !important;
-    background: #111 !important;
-    color: #fff !important;
-    padding: 0.6rem 1.8rem 0.6rem 1.2rem !important;
-    font-size: 0.8rem !important;
-    border: none !important;
-    font-weight: 600 !important;
-    box-shadow: none !important;
-    text-align: center !important;
-  }
-
-  .blood-tests-page .cta-button:hover {
-    background: #333;
-  }
-
-  .blood-tests-page .cta-button .arrow svg path {
-    stroke: #fff;
-  }
-
-  .blood-tests-page .hero-box.advanced-search {
-    background: #6D6D6B;
-    color: white;
-  }
-
-  .blood-tests-page .hero-box.advanced-search h3,
-  .blood-tests-page .hero-box.advanced-search p {
-    color: white;
-  }
-
-  @media (max-width: 768px) {
-    .blood-tests-page .hero-grid-small {
-        grid-template-columns: 1fr;
-    }
-    
-    .blood-tests-page .hero-box {
-        max-height: 120px;
-    }
-    
-    .blood-tests-page .box-text h3 {
-        font-size: 1rem;
-    }
-    
-    .blood-tests-page .box-text p {
-        font-size: 0.8rem;
-    }
-  }
-
-  /* Base Typography */
-  h1 {
-    font-size: 2.5rem;
-    line-height: 1.2;
-    margin: 0 0 1rem 0;
-    font-weight: 700;
-    color: var(--text);
-  }
-
-  /* Specific h1 styles for different contexts */
-  .welcome-section h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .blog-header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .article-header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .hero-content h1 {
-    font-size: 3rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .welcome-content h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .landing-content h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .blood-tests-grid h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .categories-section h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
-
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    h1 {
-        font-size: 2rem;
-    }
-    
-    .hero-content h1 {
-        font-size: 2.5rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    h1 {
-        font-size: 1.75rem;
-    }
-    
-    .hero-content h1 {
-        font-size: 2rem;
-    }
-  }
-
-  .category-box {
-    background: #ECEAF8;
-    border: 1px solid var(--border);
-    border-radius: 0;
-    box-shadow: 0 2px 4px var(--card-shadow);
-    transition: transform 0.2s, box-shadow 0.2s;
-    position: relative;
-    height: 160px;
-    width: 100%;
-  }
-
-  .category-box .box-content {
-    padding: 1.5rem;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: relative;
-  }
-
-  .category-box:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px var(--card-shadow);
-  }
-
-  .category-box h3 {
-    font-size: 1.2rem;
-    margin-bottom: 0.75rem;
-    color: var(--text);
-    font-weight: 500;
-    padding-right: 4rem;
-    text-align: left;
-  }
-
-  .category-box p {
-    color: var(--text-light);
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin: 0;
-    padding-right: 4rem;
-    text-align: left;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .category-box.advanced-search {
-    background: #6D6D6B;
-    color: white;
-  }
-
-  .category-box.advanced-search h3,
-  .category-box.advanced-search p {
-    color: white;
-  }
-
-  .category-box .cta-button {
-    position: absolute;
-    right: 1.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    margin: 0;
-    background: #111;
-    color: #fff;
-    border-radius: 999px;
-    width: 48px;
-    height: 36px;
-    min-width: 48px;
-    padding: 0;
-    border: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s, color 0.2s;
-    z-index: 1;
-  }
-
-  .category-box .cta-button:hover {
-    background: #333;
-  }
-
-  .category-box .cta-button .arrow svg path {
-    stroke: #fff;
-  }
-
-  @media (max-width: 768px) {
-    .category-box {
-      height: 140px;
-    }
-    
-    .category-box .box-content {
-      padding: 1.2rem;
-    }
-    
-    .category-box h3 {
-      font-size: 1.1rem;
-      padding-right: 3rem;
-    }
-    
-    .category-box p {
-      font-size: 0.9rem;
-      padding-right: 3rem;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .dynamic-title-section {
-      padding: 0.5rem 0.5rem;
-    }
-    .main-title, .static-text, .dynamic-text {
-      font-size: 2rem !important;
-    }
-    .hero-grid-large {
-      grid-template-columns: 1fr;
-      gap: 0.7rem;
-      padding: 1rem;
-    }
-    .hero-grid-small {
-      grid-template-columns: 1fr;
-      gap: 0.7rem;
-      padding: 0 1rem 1rem 1rem;
-    }
-    .hero-box, .hero-box.small {
-      height: auto;
-      min-height: 120px;
-      max-height: none;
-      border-radius: 0;
-    }
-    .box-content {
-      padding: 1rem;
-    }
-    .box-text h2, .box-text h3 {
-      font-size: 1.1rem !important;
-      margin-bottom: 0.5rem;
-    }
-    .cta-button {
-      font-size: 1rem;
-      padding: 0.7rem 1.2rem;
-      min-width: 44px;
-      height: 40px;
-    }
-    .hero-video, .hero-box img {
-      max-width: 100%;
-      height: auto;
-      min-height: 100px;
-    }
-    .banner-text {
-      padding: 1rem 0 1rem 1rem !important;
-      font-size: 1rem;
-    }
-    .cheapest-products-section, .tracking-banner, .blog-section {
-      padding: 1rem 0.5rem;
-    }
-    .cheapest-products-grid, .cheapest-products-actions-row, .blog-grid {
-      grid-template-columns: 1fr !important;
-      gap: 0.7rem;
-      padding: 0;
-    }
-    .banner-graph img {
-      max-width: 100%;
-      height: auto;
-    }
-    .tracking-banner .banner-content {
-      flex-direction: column;
-      gap: 1rem;
-      padding: 0 0.5rem;
-    }
-    .blog-section h2 {
-      font-size: 1.2rem;
-    }
-    .category-tiles {
-      grid-template-columns: 1fr;
-      padding: 1rem;
-    }
-    .main-header, .header-content {
-      padding: 0 0.5rem !important;
-      height: 56px !important;
-    }
-    .main-header {
-      height: 56px !important;
-    }
-    main {
-      margin-top: 56px !important;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .hero-grid-large,
-    .hero-grid-small {
-      display: grid !important;
-      grid-template-columns: 1fr !important;
-      gap: 0.7rem !important;
-      padding: 1rem !important;
-    }
-    .hero-box.small {
-      min-height: 100px !important;
-      height: auto !important;
-      max-height: none !important;
-      display: block !important;
-      position: relative !important;
-      overflow: visible !important;
-    }
-    .hero-box.small img {
-      position: relative !important;
-      width: 100% !important;
-      height: auto !important;
-      object-fit: cover !important;
-      z-index: 0 !important;
-      max-height: 100px !important;
-      min-height: 60px !important;
-      display: block !important;
-    }
-    .hero-box.small .box-content {
-      position: relative !important;
-      z-index: 1 !important;
-      padding: 0.7rem 1rem !important;
-      background: rgba(255,255,255,0.85) !important;
-      min-width: 0 !important;
-      width: 100% !important;
-      box-sizing: border-box !important;
-    }
-    .hero-box.small .box-text {
-      max-width: 100% !important;
-      padding-right: 0 !important;
-      word-break: break-word !important;
-    }
-    .hero-box.small .cta-button {
-      position: static !important;
-      margin: 0.5rem 0 0 auto !important;
-      transform: none !important;
-      width: auto !important;
-      min-width: 44px !important;
-      height: 40px !important;
-      display: block !important;
-      border-radius: 999px !important;
-      background: #111 !important;
-      color: #fff !important;
-      padding: 0.6rem 1.8rem 0.6rem 1.2rem !important;
-      font-size: 0.8rem !important;
-      border: none !important;
-      font-weight: 600 !important;
-      box-shadow: none !important;
-      text-align: center !important;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .hero-grid-small {
-      display: block !important;
-      padding: 1rem !important;
-    }
-    .hero-box.small {
-      width: 100% !important;
-      min-width: 0 !important;
-      max-width: 100% !important;
-      margin-bottom: 0.7rem !important;
-      display: block !important;
-    }
-    .hero-box.small:last-child {
-      margin-bottom: 0 !important;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .hero-box.small {
-      position: relative !important;
-      height: 100px !important;
-      min-height: 100px !important;
-      max-height: 100px !important;
-      overflow: hidden !important;
-      display: flex !important;
-      flex-direction: column !important;
-      justify-content: flex-end !important;
-    }
-    .hero-box.small img {
-      position: absolute !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      object-fit: cover !important;
-      z-index: 0 !important;
-      min-height: 0 !important;
-      max-height: 100% !important;
-      display: block !important;
-    }
-    .hero-box.small .box-content {
-      position: relative !important;
-      z-index: 1 !important;
-      padding: 0.7rem 1rem !important;
-      background: rgba(255,255,255,0.85) !important;
-      min-width: 0 !important;
-      width: 100% !important;
-      box-sizing: border-box !important;
-    }
-    .hero-box.small .box-text {
-      max-width: 100% !important;
-      padding-right: 0 !important;
-      word-break: break-word !important;
-    }
-    .hero-box.small .cta-button {
-      position: static !important;
-      margin: 0.5rem 0 0 auto !important;
-      transform: none !important;
-      width: auto !important;
-      min-width: 44px !important;
-      height: 40px !important;
-      display: block !important;
-      border-radius: 999px !important;
-      background: #111 !important;
-      color: #fff !important;
-      padding: 0.6rem 1.8rem 0.6rem 1.2rem !important;
-      font-size: 0.8rem !important;
-      border: none !important;
-      font-weight: 600 !important;
-      box-shadow: none !important;
-      text-align: center !important;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .hero-grid-small {
-      display: block !important;
-      padding: 1rem !important;
-    }
-    .hero-box.small {
-      width: 100% !important;
-      min-width: 0 !important;
-      max-width: 100% !important;
-      margin-bottom: 0.7rem !important;
-      display: block !important;
-    }
-    .hero-box.small:last-child {
-      margin-bottom: 0 !important;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .hero-box.small {
-      position: relative !important;
-      height: 100px !important;
-      min-height: 100px !important;
-      max-height: 100px !important;
-      overflow: hidden !important;
-      display: flex !important;
-      flex-direction: column !important;
-      justify-content: flex-end !important;
-    }
-    .hero-box.small img {
-      position: absolute !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      object-fit: cover !important;
-      z-index: 0 !important;
-      min-height: 0 !important;
-      max-height: 100% !important;
-      display: block !important;
-    }
-    .hero-box.small .box-content {
-      position: relative !important;
-      z-index: 1 !important;
-      padding: 0.7rem 1rem !important;
-      background: rgba(255,255,255,0.85) !important;
-      min-width: 0 !important;
-      width: 100% !important;
-      box-sizing: border-box !important;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .hero-box.small .box-content {
-      background: none !important;
-    }
-  }
-
-  .hero-box.small {
-    position: relative !important;
-    height: 140px !important;
-    min-height: 140px !important;
-    max-height: 140px !important;
-    overflow: hidden !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-end !important;
-  }
-
-  .hero-box.small img {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    z-index: 0 !important;
-  }
-
-  .hero-box.small .box-content {
-    position: relative !important;
-    z-index: 1 !important;
-    padding: 1.2rem !important;
-    background: transparent !important;
-    min-width: 0 !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    flex: 1 1 auto !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    height: 100% !important;
-  }
-
-  .hero-box.small .box-text {
-    max-width: 100% !important;
-    padding-right: 3rem !important;
-    margin-top: 0 !important;
-  }
-
-  .hero-box.small .box-text h3 {
-    font-size: 1.1rem !important;
-    line-height: 1.4 !important;
-    margin: 0 !important;
-    color: var(--text) !important;
-    font-weight: 500 !important;
-    text-shadow: none !important;
-  }
-
-  .hero-box.small .box-text p {
-    color: var(--text) !important;
-    text-shadow: none !important;
-    margin: 0.5rem 0 0 !important;
-  }
-
-  @media (max-width: 600px) {
-    .hero-box.small .box-content {
-        padding: 1rem !important;
-    }
-    
-    .hero-box.small .box-text h3 {
-        font-size: 1rem !important;
-    }
-  }
-
-  /* Filter Panel Styles */
-  .filter-panel {
-    width: 280px;
-    background: var(--white);
-    border-right: 1px solid var(--border);
-    padding: 1.5rem;
-    position: fixed;
-    top: 64px;
-    left: 0;
-    bottom: 0;
-    overflow-y: auto;
-    z-index: 100;
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
-  }
-
-  .filter-panel-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .filter-panel h3 {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    color: var(--text);
-  }
-
-  .filter-panel h4 {
-    font-size: 0.9rem;
-    margin-bottom: 0.75rem;
-    color: var(--text-light);
-  }
-
-  .filter-section {
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 1rem;
-  }
-
-  .filter-section:last-child {
-    border-bottom: none;
-  }
-
-  select {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    background: var(--card-bg);
-    color: var(--text);
-  }
-
-  .checkbox-option {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .checkbox-option input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-  }
-
-  .apply-filters-btn,
-  .reset-filters-btn {
-    padding: 0.8rem;
-    border: none;
-    border-radius: 4px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-
-  .apply-filters-btn {
-    background: var(--accent);
-    color: white;
-  }
-
-  .apply-filters-btn:hover {
-    background: var(--accent-dark);
-  }
-
-  .reset-filters-btn {
-    background: var(--border);
-    color: var(--text);
-  }
-
-  .reset-filters-btn:hover {
-    background: var(--border-dark);
-  }
-
-  /* Blood Test Card Styles */
-  .blood-test-card {
-    background: var(--card-bg);
-    border: 1px solid black;
+    background: #fff;
     border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+    margin-bottom: 1rem;
   }
 
-  .test-rank {
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    width: 32px;
-    height: 32px;
+  .blood-test-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+
+  .add-to-basket, .toggle-biomarkers, .toggle-details {
     background: var(--accent);
     color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
     font-size: 0.9rem;
+  }
+
+  .add-to-basket:hover, .toggle-biomarkers:hover, .toggle-details:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+  }
+
+  .category-header {
+    text-align: center;
+    margin: 0;
+    padding: 1rem 0;
+  }
+
+  .category-header h2 {
+    font-size: 2rem;
+    color: var(--text);
+    margin: 0;
+    font-weight: 400;
+  }
+
+  .category-header p {
+    color: var(--text-light);
+    font-size: 1.1rem;
+    line-height: 1.4;
+    margin: 0.5rem 0 0 0;
   }
 
   .test-header {
@@ -5264,15 +2782,25 @@ body {
   }
 
   .provider-name {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--text);
+    font-size: 1.4rem;
+    color: black;
+    font-weight: 700;
+    line-height: 1.3;
   }
 
   .test-name {
     font-size: 1.1rem;
-    color: var(--text);
     margin: 0;
+    color: #333;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .test-name .provider-name {
+    font-weight: 700;
+    color: #333;
   }
 
   .test-price {
@@ -5287,52 +2815,47 @@ body {
   }
 
   .biomarkers-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     margin-bottom: 0.5rem;
   }
 
+  .biomarker-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
   .biomarker-info h4 {
-    font-size: 0.9rem;
-    color: var(--text-light);
+    color: black;
+    font-size: 1rem;
     margin: 0;
-  }
-
-  .toggle-biomarkers,
-  .toggle-details {
-    background: none;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    padding: 0.4rem 0.8rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .toggle-biomarkers:hover,
-  .toggle-details:hover {
-    background: var(--accent);
-    color: white;
   }
 
   .biomarkers-list {
     margin-top: 1rem;
+    transition: all 0.3s ease;
+    max-height: 1000px;
+    overflow: hidden;
+  }
+
+  .biomarkers-list.hidden {
+    max-height: 0;
+    margin-top: 0;
+    opacity: 0;
   }
 
   .biomarker-group {
     margin-bottom: 1rem;
+    opacity: 1;
+    transition: opacity 0.3s ease;
   }
 
-  .group-header {
-    font-size: 0.9rem;
-    color: var(--text);
-    margin-bottom: 0.5rem;
+  .biomarkers-list.hidden .biomarker-group {
+    opacity: 0;
   }
 
-  .biomarker-group ul {
-    list-style: none;
+  .biomarkers-list ul {
+    list-style-type: none;
     padding: 0;
     margin: 0;
     display: grid;
@@ -5340,52 +2863,30 @@ body {
     gap: 0.5rem;
   }
 
-  .biomarker-group li {
+  .biomarkers-list li {
+    color: black;
     font-size: 0.9rem;
-    color: var(--text-light);
+    padding-left: 1rem;
+    position: relative;
   }
 
-  .test-locations {
-    margin-bottom: 1rem;
-  }
-
-  .test-locations h4 {
-    font-size: 0.9rem;
-    color: var(--text);
-    margin-bottom: 0.5rem;
-  }
-
-  .test-locations ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .test-locations li {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    background: var(--border);
-    padding: 0.3rem 0.6rem;
-    border-radius: 4px;
-  }
-
-  .test-results {
-    margin-bottom: 1rem;
-  }
-
-  .test-results p {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    margin: 0;
+  .biomarkers-list li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
   }
 
   .additional-details {
     margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
+    padding: 1rem;
+    background: var(--background);
+    border-radius: 0;
+    transition: all 0.3s ease;
+  }
+
+  .additional-details.hidden {
+    display: none;
   }
 
   .detail-section {
@@ -5393,260 +2894,6 @@ body {
   }
 
   .detail-section:last-child {
-    margin-bottom: 0;
-  }
-
-  .detail-section h4 {
-    font-size: 0.9rem;
-    color: var(--text);
-    margin-bottom: 0.5rem;
-  }
-
-  .detail-section p,
-  .detail-section ul {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    margin: 0;
-  }
-
-  .detail-section ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  .detail-section li {
-    margin-bottom: 0.3rem;
-  }
-
-  .provider-link {
-    color: var(--accent);
-    text-decoration: none;
-  }
-
-  .provider-link:hover {
-    text-decoration: underline;
-  }
-
-  .add-to-basket {
-    position: absolute;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 4px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-
-  .add-to-basket:hover {
-    background: var(--accent-dark);
-  }
-
-  .hidden {
-    display: none;
-  }
-
-  /* Main Content Layout */
-  .main-content {
-    margin-left: 280px;
-    padding: 2rem;
-    min-height: calc(100vh - 64px);
-  }
-
-  .products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-  }
-
-  @media (max-width: 768px) {
-    .filter-panel {
-      transform: translateX(-100%);
-      transition: transform 0.3s ease;
-    }
-
-    .filter-panel.visible {
-      transform: translateX(0);
-    }
-
-    .main-content {
-      margin-left: 0;
-      padding: 1rem;
-    }
-
-    .products-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  /* Blood Tests Menu Styles */
-  .blood-tests-menu {
-    position: fixed;
-    top: 64px; /* Match header height */
-    left: 0;
-    width: 100%;
-    background: #fff;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-    transform: translateY(-10px);
-    opacity: 0;
-    pointer-events: none;
-    border-top: 1px solid var(--border);
-    display: none;
-  }
-
-  .blood-tests-menu.visible {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: auto;
-    display: block;
-  }
-
-  /* Adjust main content margin when menu is visible */
-  .blood-tests-menu.visible + .main-content {
-    margin-top: 120px; /* header height + menu height */
-  }
-
-  .blood-tests-menu .menu-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1rem 2rem;
-  }
-
-  .blood-tests-menu .menu-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    align-items: center;
-  }
-
-  .blood-tests-menu .menu-list a {
-    color: var(--text);
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 500;
-    padding: 0.5rem 0;
-    transition: color 0.2s ease;
-  }
-
-  .blood-tests-menu .menu-list a:hover {
-    color: var(--accent);
-  }
-
-  @media (max-width: 768px) {
-    .blood-tests-menu .menu-container {
-      padding: 1rem;
-    }
-    
-    .blood-tests-menu .menu-list {
-      gap: 1rem;
-    }
-    
-    .blood-tests-menu .menu-list a {
-      font-size: 0.9rem;
-    }
-  }
-
-  /* Mobile Menu Styles */
-  .mobile-menu {
-    position: fixed;
-    top: 64px;
-    left: 0;
-    width: 100%;
-    height: calc(100vh - 64px);
-    background: #fff;
-    z-index: 1000;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    display: none;
-    visibility: hidden;
-  }
-
-  .mobile-menu.visible {
-    transform: translateX(0);
-    display: block;
-    visibility: visible;
-  }
-
-  .mobile-menu-container {
-    display: flex;
-    height: 100%;
-  }
-
-  .mobile-menu-primary {
-    width: 100%;
-    padding: 1rem;
-    border-right: 1px solid var(--border);
-    overflow-y: auto;
-  }
-
-  .mobile-menu-secondary {
-    width: 100%;
-    padding: 1rem;
-    background: #f8f9fa;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-  }
-
-  .mobile-menu-secondary.visible {
-    transform: translateX(0);
-  }
-
-  .mobile-menu-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .mobile-menu-list li {
-    margin-bottom: 0.5rem;
-  }
-
-  .mobile-menu-list a {
-    display: block;
-    padding: 1rem;
-    color: var(--text);
-    text-decoration: none;
-    font-size: 1.1rem;
-    font-weight: 500;
-    border-radius: 8px;
-    transition: background-color 0.2s ease;
-  }
-
-  .mobile-menu-list a:hover {
-    background-color: var(--card-bg);
-  }
-
-  .mobile-menu-list a.has-submenu {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .mobile-menu-list a.has-submenu::after {
-    content: "›";
-    font-size: 1.5rem;
-    color: var(--text-light);
-  }
-
-  .mobile-menu-back {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    color: var(--text);
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 500;
-    margin-bottom: 1rem;
     cursor: pointer;
   }
 
@@ -6019,4 +3266,39 @@ body {
       margin-left: 0;
       padding: 1rem;
     }
+  }
+
+  /* Blood Tests Dropdown Menu Styles */
+  .blood-tests-menu {
+    position: absolute;
+    top: 64px; /* height of your header */
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    z-index: 2000;
+    padding: 1.5rem 0;
+    /* display: block; */
+  }
+
+  .blood-tests-menu .menu-list {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .blood-tests-menu .menu-list a {
+    color: #111;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .blood-tests-menu .menu-list a:hover {
+    background: #f5f5f5;
+    color: #2563eb;
   }

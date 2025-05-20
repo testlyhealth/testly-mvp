@@ -267,7 +267,7 @@ function createErrorContent() {
 
 // Function to initialize page elements
 async function initializePageElements(tests) {
-  console.log('initializePageElements called with', tests.length, 'tests');
+  console.log('Initializing page elements with', tests.length, 'tests');
   
   // Get the tests grid
   const testsGrid = $('.tests-grid');
@@ -275,14 +275,13 @@ async function initializePageElements(tests) {
     console.error('Tests grid not found');
     return;
   }
-  
-  // Update the grid with test cards
-  await updateTestGridContent(tests);
-  
-  // Setup filter panel with tests data and filter function
-  setupFilterPanel(tests, (filteredTests) => {
-    updateTestGridContent(filteredTests);
-  });
+
+  // Create cards using CardService
+  const cards = await cardService.createCards(tests);
+  testsGrid.innerHTML = cards;
+
+  // Initialize filter panel
+  setupFilterPanel(tests, (filteredTests) => updateTestGridContent(filteredTests));
 }
 
 // Export the main function

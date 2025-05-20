@@ -50,8 +50,13 @@ export default class Router {
       } else if (hash.startsWith('/category/')) {
         console.log('Handling category route:', hash);
         const categoryId = hash.split('/')[2];
-        const content = await displayCategoryProducts(categoryId);
-        await this.render(content);
+        if (categoryId === 'general-health') {
+          const content = await displayGeneralHealthPage();
+          await this.render(content);
+        } else {
+          const content = await displayCategoryProducts(categoryId);
+          await this.render(content);
+        }
       } else {
         // Find matching route
         const route = this.routes.find(r => r.path === hash);
