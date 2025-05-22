@@ -1498,14 +1498,13 @@ body {
   .login-btn i {
     background: transparent !important;
     font-size: 1.2rem;
-    color: var(--text);
-    /* Remove text stroke to eliminate grey outline */
-    -webkit-text-stroke: 0;
+    color: white;
+    -webkit-text-stroke: 1px var(--text);
   }
 
   .login-btn:hover i {
-    color: var(--accent);
-    -webkit-text-stroke: 0;
+    color: white;
+    -webkit-text-stroke: 1px var(--accent);
   }
 
   /* Tracking Banner */
