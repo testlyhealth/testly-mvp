@@ -61,31 +61,51 @@ function init() {
 function setupBloodTestsMenu() {
   const bloodTestsLink = document.querySelector('.blood-tests-link');
   const bloodTestsMenu = document.querySelector('.blood-tests-menu');
-  
+  const mobileMenu = document.querySelector('.mobile-menu');
+
   if (!bloodTestsLink || !bloodTestsMenu) return;
-  
+
+  // Helper: is mobile
+  function isMobile() {
+    return window.innerWidth <= 900;
+  }
+
   // Toggle menu on click and prevent navigation
   bloodTestsLink.addEventListener('click', (e) => {
-    e.preventDefault(); // Prevent navigation
+    e.preventDefault();
     e.stopPropagation();
+    if (isMobile()) {
+      // On mobile, open mobile menu instead
+      if (mobileMenu) {
+        mobileMenu.classList.add('visible');
+      }
+      bloodTestsMenu.classList.add('hidden');
+      return;
+    }
+    // On desktop, toggle blood tests menu
     bloodTestsMenu.classList.toggle('hidden');
+    // Hide mobile menu if open
+    if (mobileMenu) mobileMenu.classList.remove('visible');
   });
-  
-  // Close menu when clicking outside
+
+  // Close menu when clicking outside (desktop only)
   document.addEventListener('click', (e) => {
-    if (!bloodTestsMenu.contains(e.target) && !bloodTestsLink.contains(e.target)) {
+    if (!isMobile() && !bloodTestsMenu.contains(e.target) && !bloodTestsLink.contains(e.target)) {
       bloodTestsMenu.classList.add('hidden');
     }
   });
-  
-  // Close menu when mouse leaves
+
+  // Close menu when mouse leaves (desktop only)
   bloodTestsMenu.addEventListener('mouseleave', () => {
-    bloodTestsMenu.classList.add('hidden');
+    if (!isMobile()) {
+      bloodTestsMenu.classList.add('hidden');
+    }
   });
-  
+
   // Close menu when navigating to a new page
   window.addEventListener('hashchange', () => {
     bloodTestsMenu.classList.add('hidden');
+    if (mobileMenu) mobileMenu.classList.remove('visible');
   });
 }
 
@@ -96,33 +116,87 @@ function setupMobileMenu() {
   const mobileMenuBack = document.querySelector('.mobile-menu-back');
   const mobileMenuPrimary = document.querySelector('.mobile-menu-primary');
   const mobileMenuSecondary = document.querySelector('.mobile-menu-secondary');
-  
+  const bloodTestsMenu = document.querySelector('.blood-tests-menu');
+
   if (!burgerMenu || !mobileMenu) return;
-  
+
+  // Always hide mobile menu on load
+  mobileMenu.classList.add('hidden');
+  mobileMenu.classList.remove('visible');
+  if (mobileMenuPrimary && mobileMenuSecondary) {
+    mobileMenuPrimary.classList.remove('hidden');
+    mobileMenuSecondary.classList.remove('visible');
+  }
+
   // Toggle mobile menu
   burgerMenu.addEventListener('click', () => {
+    if (bloodTestsMenu) bloodTestsMenu.classList.add('hidden');
     mobileMenu.classList.toggle('visible');
+    mobileMenu.classList.toggle('hidden');
+    if (mobileMenu.classList.contains('visible')) {
+      mobileMenuPrimary.classList.remove('hidden');
+      mobileMenuSecondary.classList.remove('visible');
+    }
   });
-  
+
   // Handle back button
   if (mobileMenuBack && mobileMenuPrimary && mobileMenuSecondary) {
     mobileMenuBack.addEventListener('click', () => {
-      mobileMenuPrimary.style.display = 'block';
+      mobileMenuPrimary.classList.remove('hidden');
       mobileMenuSecondary.classList.remove('visible');
-  });
+    });
   }
-  
+
   // Handle submenu items
   const submenuItems = document.querySelectorAll('.has-submenu');
   submenuItems.forEach(item => {
     item.addEventListener('click', (e) => {
       e.preventDefault();
       if (mobileMenuPrimary && mobileMenuSecondary) {
-        mobileMenuPrimary.style.display = 'none';
+        mobileMenuPrimary.classList.add('hidden');
         mobileMenuSecondary.classList.add('visible');
       }
     });
   });
+
+  // Close mobile menu when any link in the mobile menu is clicked, except for .has-submenu
+  const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+  mobileMenuLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      if (!link.classList.contains('has-submenu')) {
+        mobileMenu.classList.remove('visible');
+        mobileMenu.classList.add('hidden');
+        if (mobileMenuPrimary && mobileMenuSecondary) {
+          mobileMenuPrimary.classList.remove('hidden');
+          mobileMenuSecondary.classList.remove('visible');
+        }
+      }
+      // else, let the submenu handler take over
+    });
+  });
+
+  // Hide mobile menu on navigation
+  window.addEventListener('hashchange', () => {
+    mobileMenu.classList.remove('visible');
+    mobileMenu.classList.add('hidden');
+    if (mobileMenuPrimary && mobileMenuSecondary) {
+      mobileMenuPrimary.classList.remove('hidden');
+      mobileMenuSecondary.classList.remove('visible');
+    }
+  });
+
+  // Also close mobile menu when logo is clicked
+  const logo = document.querySelector('.logo');
+  if (logo) {
+    logo.addEventListener('click', () => {
+      mobileMenu.classList.remove('visible');
+      mobileMenu.classList.add('hidden');
+      if (mobileMenuPrimary && mobileMenuSecondary) {
+        mobileMenuPrimary.classList.remove('hidden');
+        mobileMenuSecondary.classList.remove('visible');
+      }
+    });
+  }
 }
 
 // Initialize UI components
