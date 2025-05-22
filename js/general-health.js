@@ -171,7 +171,7 @@ async function createTestCardsHTML(tests) {
 
 // Function to update the test grid with new content
 async function updateTestGridContent(tests) {
-  const testsGrid = $('.tests-grid');
+  const testsGrid = $('.products-grid');
   if (!testsGrid) return;
 
   try {
@@ -249,7 +249,7 @@ function createPageStructure(filterPanel, testsGrid) {
         ${filterPanel}
       </aside>
       <div class="main-content">
-        <div class="tests-grid"></div>
+        <div class="products-grid"></div>
       </div>
     </div>
   `;
@@ -270,9 +270,9 @@ async function initializePageElements(tests) {
   console.log('Initializing page elements with', tests.length, 'tests');
   
   // Get the tests grid
-  const testsGrid = $('.tests-grid');
+  const testsGrid = $('.products-grid');
   if (!testsGrid) {
-    console.error('Tests grid not found');
+    console.error('Products grid not found');
     return;
   }
 

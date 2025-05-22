@@ -395,11 +395,8 @@ body {
   .products-grid {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 2rem;
     width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 1rem;
   }
   
   .product-card, .blood-test-card, .blog-card, .category-tile {
@@ -2704,11 +2701,8 @@ body {
   .tests-grid {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 2rem;
     width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 1rem;
   }
 
   .blood-test-card {
