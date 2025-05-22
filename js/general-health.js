@@ -291,23 +291,76 @@ function createErrorContent() {
   `;
 }
 
+// Function to inject the Filters button on mobile
+function injectMobileFiltersButton() {
+  if (window.innerWidth > 768) return;
+  const mainContent = document.querySelector('.main-content');
+  if (!mainContent) return;
+  // Prevent duplicate button
+  if (mainContent.querySelector('.filters-btn.mobile-only')) return;
+  const btn = document.createElement('button');
+  btn.className = 'filters-btn mobile-only';
+  btn.setAttribute('aria-label', 'Open filters');
+  btn.textContent = 'Filters';
+  mainContent.insertBefore(btn, mainContent.firstChild);
+
+  // Setup open/close logic for the mobile filter panel
+  const mobilePanel = document.querySelector('.mobile-filter-panel');
+  const closeBtn = document.querySelector('.close-mobile-filter');
+  const filterPanel = document.querySelector('.filter-panel');
+  const mobileContent = document.querySelector('.mobile-filter-content');
+
+  if (!mobilePanel || !closeBtn || !filterPanel || !mobileContent) return;
+
+  function openPanel() {
+    // Always select and clone the current filter panel content from the DOM
+    mobileContent.innerHTML = '';
+    const currentFilterPanelContent = document.querySelector('.filter-panel-content');
+    if (currentFilterPanelContent) {
+      const filterPanelContentClone = currentFilterPanelContent.cloneNode(true);
+      mobileContent.appendChild(filterPanelContentClone);
+    }
+    mobilePanel.classList.remove('hidden');
+    mobilePanel.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+  }
+  function closePanel() {
+    mobilePanel.classList.remove('visible');
+    mobilePanel.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  btn.addEventListener('click', () => {
+    if (mobilePanel.classList.contains('visible')) {
+      closePanel();
+    } else {
+      openPanel();
+    }
+  });
+  closeBtn.addEventListener('click', closePanel);
+  // Optional: close on overlay click
+  mobilePanel.addEventListener('click', (e) => {
+    if (e.target === mobilePanel) closePanel();
+  });
+}
+
 // Function to initialize page elements
 async function initializePageElements(tests) {
   console.log('Initializing page elements with', tests.length, 'tests');
-  
   // Get the tests grid
   const testsGrid = $('.products-grid');
   if (!testsGrid) {
     console.error('Products grid not found');
     return;
   }
-
   // Create cards using CardService
   const cards = await cardService.createCards(tests);
   testsGrid.innerHTML = cards;
-
-  // Initialize filter panel
-  setupFilterPanel(tests, (filteredTests) => updateTestGridContent(filteredTests));
+  // Initialize filter panel, and inject mobile button only after filter panel is rendered
+  setupFilterPanel(tests, (filteredTests) => {
+    updateTestGridContent(filteredTests);
+    injectMobileFiltersButton();
+  });
 }
 
 // Export the main function

@@ -211,5 +211,40 @@ function initializeUI() {
     }
 }
 
+// Mobile filter panel logic
+function setupMobileFilterPanel() {
+  const filtersBtn = document.querySelector('.filters-btn.mobile-only');
+  const mobilePanel = document.querySelector('.mobile-filter-panel');
+  const closeBtn = document.querySelector('.close-mobile-filter');
+  const filterPanel = document.querySelector('.filter-panel');
+  const mobileContent = document.querySelector('.mobile-filter-content');
+
+  if (!filtersBtn || !mobilePanel || !closeBtn || !filterPanel || !mobileContent) return;
+
+  function openPanel() {
+    // Move filter options into mobile panel
+    mobileContent.innerHTML = '';
+    mobileContent.appendChild(filterPanel.cloneNode(true));
+    mobilePanel.classList.remove('hidden');
+    mobilePanel.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+  }
+  function closePanel() {
+    mobilePanel.classList.remove('visible');
+    mobilePanel.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  filtersBtn.addEventListener('click', openPanel);
+  closeBtn.addEventListener('click', closePanel);
+
+  // Optional: close on overlay click
+  mobilePanel.addEventListener('click', (e) => {
+    if (e.target === mobilePanel) closePanel();
+  });
+}
+
+window.addEventListener('DOMContentLoaded', setupMobileFilterPanel);
+
 // Start the app
 init();

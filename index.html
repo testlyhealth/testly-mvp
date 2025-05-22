@@ -193,6 +193,11 @@
         <!-- Blog posts will be dynamically loaded -->
       </div>
     </div>
+
+    <div class="main-content">
+      <button class="filters-btn mobile-only" aria-label="Open filters">Filters</button>
+      <div class="products-grid"></div>
+    </div>
   </main>
 
   <!-- Pop-down panels (hidden for now) -->
@@ -203,6 +208,17 @@
   <aside id="basket-panel" class="side-panel hidden">
     <!-- Dynamic basket content will go here -->
   </aside>
+
+  <!-- Mobile Filter Panel -->
+  <div class="mobile-filter-panel hidden">
+    <div class="mobile-filter-header">
+      <span>Filters</span>
+      <button class="close-mobile-filter" aria-label="Close filters">&times;</button>
+    </div>
+    <div class="mobile-filter-content">
+      <!-- Filter options will be injected here -->
+    </div>
+  </div>
 
   <script type="module" src="js/main.js"></script>
   
