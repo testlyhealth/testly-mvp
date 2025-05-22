@@ -57,7 +57,7 @@ export class CardService {
                 ${Array.from(groupedBiomarkers.entries()).map(([group, biomarkers]) => `
                   <div class="biomarker-group">
                     <div class="group-header">
-                      <h4>${group}</h4>
+                      <h4>${group} (${biomarkers.length} tests)</h4>
                       <button class="toggle-biomarkers" aria-expanded="false">
                         <span class="toggle-icon">▼</span>
                       </button>
@@ -232,17 +232,22 @@ export class CardService {
         e.stopPropagation();
         
         const biomarkersSection = e.target.closest('.biomarkers-section');
+        const biomarkersList = biomarkersSection.querySelector('.biomarkers-list');
         const isExpanded = button.getAttribute('aria-expanded') === 'true';
         
-        // Toggle all biomarker items
-        biomarkersSection.querySelectorAll('.biomarker-items').forEach(items => {
-          items.classList.toggle('hidden', isExpanded);
-        });
+        // Toggle the biomarkers list visibility
+        biomarkersList.classList.toggle('hidden');
         
-        // Update all toggle buttons
-        biomarkersSection.querySelectorAll('.toggle-biomarkers').forEach(toggle => {
-          toggle.setAttribute('aria-expanded', !isExpanded);
-          toggle.innerHTML = `<span class="toggle-icon">${isExpanded ? '▼' : '▲'}</span>`;
+        // Toggle all biomarker items and their toggle buttons
+        biomarkersSection.querySelectorAll('.biomarker-group').forEach(group => {
+          const items = group.querySelector('.biomarker-items');
+          const toggle = group.querySelector('.toggle-biomarkers');
+          
+          if (items && toggle) {
+            items.classList.toggle('hidden', isExpanded);
+            toggle.setAttribute('aria-expanded', !isExpanded);
+            toggle.innerHTML = `<span class="toggle-icon">${isExpanded ? '▼' : '▲'}</span>`;
+          }
         });
         
         // Update the "Show all" button

@@ -188,15 +188,18 @@ async function updateTestGridContent(tests) {
 
 // Function to attach event listeners
 function attachEventListeners(tests) {
-  // Toggle biomarkers
+  // Toggle biomarkers (individual group)
   $all('.toggle-biomarkers').forEach(button => {
     button.addEventListener('click', (e) => {
-      const biomarkersList = e.target.closest('.biomarkers-section').querySelector('.biomarkers-list');
+      e.preventDefault();
+      e.stopPropagation();
+      // Only toggle the biomarker-items for this group
+      const group = button.closest('.biomarker-group');
+      const items = group.querySelector('.biomarker-items');
       const isExpanded = button.getAttribute('aria-expanded') === 'true';
-
-      biomarkersList.classList.toggle('hidden');
+      items.classList.toggle('hidden', isExpanded);
       button.setAttribute('aria-expanded', !isExpanded);
-      button.textContent = isExpanded ? 'Show' : 'Hide';
+      button.innerHTML = `<span class=\"toggle-icon\">${isExpanded ? '▼' : '▲'}</span>`;
     });
   });
 
@@ -237,6 +240,29 @@ function attachEventListeners(tests) {
         const event = new CustomEvent('addToBasket', { detail: { test } });
         document.dispatchEvent(event);
       }
+    });
+  });
+
+  // Toggle all biomarkers (Show all/Hide all)
+  $all('.toggle-all-biomarkers').forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const biomarkersSection = e.target.closest('.biomarkers-section');
+      const isExpanded = button.getAttribute('aria-expanded') === 'true';
+      // Toggle all biomarker items and their toggle buttons
+      biomarkersSection.querySelectorAll('.biomarker-group').forEach(group => {
+        const items = group.querySelector('.biomarker-items');
+        const toggle = group.querySelector('.toggle-biomarkers');
+        if (items && toggle) {
+          items.classList.toggle('hidden', isExpanded);
+          toggle.setAttribute('aria-expanded', !isExpanded);
+          toggle.innerHTML = `<span class="toggle-icon">${isExpanded ? '▼' : '▲'}</span>`;
+        }
+      });
+      // Update the "Show all" button
+      button.setAttribute('aria-expanded', !isExpanded);
+      button.textContent = isExpanded ? 'Show all' : 'Hide all';
     });
   });
 }

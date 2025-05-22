@@ -3038,12 +3038,15 @@ body {
     padding: 0.75rem 1rem;
     background-color: #f8f9fa;
     border-bottom: 1px solid var(--border);
+    cursor: pointer;
   }
 
   .group-header h4 {
     margin: 0;
     font-size: 1rem;
     font-weight: 600;
+    color: var(--text);
+    flex: 1;
   }
 
   .toggle-biomarkers {
@@ -3060,6 +3063,7 @@ body {
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    margin-left: 0.5rem;
   }
 
   .toggle-biomarkers:hover {
