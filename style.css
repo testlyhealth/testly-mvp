@@ -1489,15 +1489,23 @@ body {
     display: none;
   }
 
+  .login-btn {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
   .login-btn i {
+    background: transparent !important;
     font-size: 1.2rem;
-    color: white;
-    -webkit-text-stroke: 1px var(--text);
+    color: var(--text);
+    /* Remove text stroke to eliminate grey outline */
+    -webkit-text-stroke: 0;
   }
 
   .login-btn:hover i {
-    color: white;
-    -webkit-text-stroke: 1px var(--accent);
+    color: var(--accent);
+    -webkit-text-stroke: 0;
   }
 
   /* Tracking Banner */
