@@ -3678,12 +3678,12 @@ body {
   .general-health-title-section {
     width: 100%;
     text-align: center;
-    margin: 2.5rem 0 1.5rem 0;
+    margin: 2.5rem 0 2.5rem 0;
   }
 
   .general-health-title {
     font-size: 2.3rem;
-    font-weight: 400;
+    font-weight: 700; /* Make fully bold */
     color: var(--text);
     line-height: 1.2;
     display: inline-block;
@@ -3717,4 +3717,31 @@ body {
     font-size: 1.25rem;
     font-weight: 400;
     color: var(--text);
+  }
+
+  .general-health-subheading {
+    font-size: 1.05rem;
+    color: var(--text-light);
+    margin-top: 3.2rem;
+    margin-bottom: 0.1rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 768px) {
+    .general-health-title-section {
+      margin-top: 1.2rem;
+      margin-bottom: 2.5rem;
+    }
+  }
+
+  .general-health-subheading strong {
+    font-weight: 700;
+  }
+
+  .general-health-subheading .gh-em {
+    font-weight: 600;
   }
