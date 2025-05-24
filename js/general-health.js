@@ -189,28 +189,28 @@ async function updateTestGridContent(tests) {
 // Function to attach event listeners
 function attachEventListeners(tests) {
   // Toggle biomarkers (individual group)
-  $all('.toggle-biomarkers').forEach(button => {
-    button.addEventListener('click', (e) => {
+    $all('.toggle-biomarkers').forEach(button => {
+      button.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       // Only toggle the biomarker-items for this group
       const group = button.closest('.biomarker-group');
       const items = group.querySelector('.biomarker-items');
-      const isExpanded = button.getAttribute('aria-expanded') === 'true';
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
       items.classList.toggle('hidden', isExpanded);
-      button.setAttribute('aria-expanded', !isExpanded);
+        button.setAttribute('aria-expanded', !isExpanded);
       button.innerHTML = `<span class=\"toggle-icon\">${isExpanded ? '▼' : '▲'}</span>`;
     });
-  });
+    });
 
   // Group headers
-  $all('.group-header').forEach(header => {
-    header.addEventListener('click', (e) => {
+    $all('.group-header').forEach(header => {
+      header.addEventListener('click', (e) => {
       e.stopPropagation(); // Prevent event bubbling
       const biomarkerItems = header.nextElementSibling;
-      const isExpanded = !biomarkerItems.classList.contains('hidden');
-      
-      biomarkerItems.classList.toggle('hidden');
+        const isExpanded = !biomarkerItems.classList.contains('hidden');
+        
+        biomarkerItems.classList.toggle('hidden');
       header.setAttribute('aria-expanded', !isExpanded);
       
       // Update the header text to show expand/collapse state
@@ -220,13 +220,13 @@ function attachEventListeners(tests) {
   });
 
   // Toggle details
-  $all('.toggle-details').forEach(button => {
-    button.addEventListener('click', (e) => {
+    $all('.toggle-details').forEach(button => {
+      button.addEventListener('click', (e) => {
       const details = e.target.nextElementSibling;
-      const isExpanded = button.getAttribute('aria-expanded') === 'true';
-      
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
       details.classList.toggle('hidden');
-      button.setAttribute('aria-expanded', !isExpanded);
+        button.setAttribute('aria-expanded', !isExpanded);
       button.textContent = isExpanded ? 'Show Details' : 'Hide Details';
     });
   });
@@ -267,6 +267,17 @@ function attachEventListeners(tests) {
   });
 }
 
+// Function to create general health title
+function createGeneralHealthTitle() {
+  return `
+    <section class="general-health-title-section">
+      <h1 class="general-health-title">
+        Compare and book general health blood tests
+      </h1>
+    </section>
+  `;
+}
+
 // Function to create page structure
 function createPageStructure(filterPanel, testsGrid) {
   return `
@@ -275,6 +286,7 @@ function createPageStructure(filterPanel, testsGrid) {
         ${filterPanel}
       </aside>
       <div class="main-content">
+        ${createGeneralHealthTitle()}
         <div class="products-grid"></div>
       </div>
     </div>
@@ -302,7 +314,13 @@ function injectMobileFiltersButton(retryCount = 0) {
   btn.className = 'filters-btn mobile-only';
   btn.setAttribute('aria-label', 'Open filters');
   btn.textContent = 'Filters';
-  mainContent.insertBefore(btn, mainContent.firstChild);
+  // Insert button after the title section
+  const titleSection = mainContent.querySelector('.general-health-title-section');
+  if (titleSection && titleSection.nextSibling) {
+    mainContent.insertBefore(btn, titleSection.nextSibling);
+  } else {
+    mainContent.appendChild(btn);
+  }
   console.log('[injectMobileFiltersButton] Injected Filters button');
 
   // Setup open/close logic for the mobile filter panel

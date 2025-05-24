@@ -3667,3 +3667,41 @@ body {
       transform: none !important;
     }
   }
+
+  .general-health-title-section {
+    width: 100%;
+    text-align: center;
+    margin: 2.5rem 0 1.5rem 0;
+  }
+
+  .general-health-title {
+    font-size: 2.3rem;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.2;
+    display: inline-block;
+    margin: 0 auto;
+  }
+
+  .gh-underline {
+    position: relative;
+    display: inline-block;
+    z-index: 1;
+  }
+
+  .gh-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -4px;
+    height: 10px;
+    background: none;
+    z-index: -1;
+    width: 100%;
+    pointer-events: none;
+    /* Hand-drawn wavy underline using SVG as background */
+    background-image: url('data:image/svg+xml;utf8,<svg width="100%25" height="10" viewBox="0 0 100 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 7 Q 10 2, 20 7 T 40 7 T 60 7 T 80 7 T 100 7" stroke="%23000" stroke-width="2" fill="none"/></svg>');
+    background-repeat: repeat-x;
+    background-size: 100% 10px;
+  }
