@@ -3712,3 +3712,9 @@ body {
     background-repeat: repeat-x;
     background-size: 100% 10px;
   }
+
+  .gh-title-secondary {
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: var(--text);
+  }

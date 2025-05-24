@@ -272,7 +272,7 @@ function createGeneralHealthTitle() {
   return `
     <section class="general-health-title-section">
       <h1 class="general-health-title">
-        Compare and book general health blood tests
+        Compare and book blood tests
       </h1>
     </section>
   `;
