@@ -74,18 +74,15 @@ export function createFilterPanel(tests) {
 }
 
 // Function to setup filter panel functionality
-export function setupFilterPanel(tests, updateCallback) {
-  // First try to find the filter panel content
-  let filterPanel = $('.filter-panel-content');
-  
-  // If not found, try to find the filter panel and then its content
+export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
+  // Use the provided rootPanel, or default to querying the DOM
+  let filterPanel = rootPanel || $('.filter-panel-content');
   if (!filterPanel) {
     const filterPanelContainer = $('.filter-panel');
     if (filterPanelContainer) {
       filterPanel = filterPanelContainer.querySelector('.filter-panel-content');
     }
   }
-
   if (!filterPanel) {
     console.error('Filter panel not found. Available elements:', {
       filterPanelContent: $('.filter-panel-content'),
@@ -177,6 +174,7 @@ export function setupFilterPanel(tests, updateCallback) {
       return true;
     });
 
+    // Call the update callback with the filtered tests
     updateCallback(filteredTests);
   }
 
@@ -208,9 +206,7 @@ export function setupFilterPanel(tests, updateCallback) {
   providerCheckboxes.forEach(checkbox => {
     checkbox.addEventListener('change', () => {
       const allChecked = Array.from(providerCheckboxes).every(cb => cb.checked);
-      if (providerAll) {
-        providerAll.checked = allChecked;
-      }
+      providerAll.checked = allChecked;
       applyFilters();
     });
   });
@@ -219,80 +215,42 @@ export function setupFilterPanel(tests, updateCallback) {
   locationCheckboxes.forEach(checkbox => {
     checkbox.addEventListener('change', () => {
       const allChecked = Array.from(locationCheckboxes).every(cb => cb.checked);
-      if (locationAll) {
-        locationAll.checked = allChecked;
-      }
+      locationAll.checked = allChecked;
       applyFilters();
     });
   });
 
-  // Event listeners for price range
-  priceMin.addEventListener('input', () => {
-    let min = parseFloat(priceMin.value);
-    let max = parseFloat(priceMax.value);
-    
-    // Ensure min doesn't exceed max
-    if (min > max) {
-      min = max;
-      priceMin.value = max;
-    }
-    
-    priceMinValue.textContent = `£${min.toFixed(2)}`;
-    applyFilters();
-  });
-
-  priceMax.addEventListener('input', () => {
-    let min = parseFloat(priceMin.value);
-    let max = parseFloat(priceMax.value);
-    
-    // Ensure max doesn't go below min
-    if (max < min) {
-      max = min;
-      priceMax.value = min;
-    }
-    
-    priceMaxValue.textContent = `£${max.toFixed(2)}`;
-    applyFilters();
-  });
-
-  // Event listener for doctor's report
+  // Handle doctor's report checkbox
   if (doctorsReport) {
     doctorsReport.addEventListener('change', applyFilters);
   }
 
-  // Reset filters
+  // Handle reset filters button
   if (resetFiltersBtn) {
     resetFiltersBtn.addEventListener('click', () => {
       // Reset price range
-      const minPrice = Math.min(...tests.map(test => test.price));
-      const maxPrice = Math.max(...tests.map(test => test.price));
-      priceMin.value = minPrice;
-      priceMax.value = maxPrice;
-      priceMinValue.textContent = `£${minPrice.toFixed(2)}`;
-      priceMaxValue.textContent = `£${maxPrice.toFixed(2)}`;
+      priceMin.value = currentFilters.priceRange.min;
+      priceMax.value = currentFilters.priceRange.max;
+      priceMinValue.textContent = `£${currentFilters.priceRange.min.toFixed(2)}`;
+      priceMaxValue.textContent = `£${currentFilters.priceRange.max.toFixed(2)}`;
 
       // Reset provider checkboxes
-      if (providerAll) {
-        providerAll.checked = true;
-      }
+      providerAll.checked = true;
       providerCheckboxes.forEach(checkbox => {
         checkbox.checked = true;
-        checkbox.disabled = false;
+        checkbox.disabled = true;
       });
 
       // Reset location checkboxes
-      if (locationAll) {
-        locationAll.checked = true;
-      }
+      locationAll.checked = true;
       locationCheckboxes.forEach(checkbox => {
         checkbox.checked = true;
-        checkbox.disabled = false;
+        checkbox.disabled = true;
       });
 
-      // Reset other filters
-      if (doctorsReport) doctorsReport.checked = false;
+      // Reset doctor's report checkbox
+      doctorsReport.checked = false;
 
-      // Apply reset filters
       applyFilters();
     });
   }

@@ -57,7 +57,7 @@ async function getGroupedBiomarkers(biomarkers) {
 // Single source of truth for card creation
 async function createTestCard(test, index) {
   const groupedBiomarkers = await getGroupedBiomarkers(test.biomarkers);
-  const providerLogo = providerLogoMap[test.provider] || 'default-logo.png';
+  const providerLogo = providerLogoMap[test.provider] || `${test.provider.toLowerCase().replace(/ /g, ' ')}.png`;
   
   // Calculate total number of biomarkers
   const totalBiomarkers = test.biomarkers.length;
@@ -292,7 +292,7 @@ function createErrorContent() {
 }
 
 // Function to inject the Filters button on mobile
-function injectMobileFiltersButton() {
+function injectMobileFiltersButton(retryCount = 0) {
   if (window.innerWidth > 768) return;
   const mainContent = document.querySelector('.main-content');
   if (!mainContent) return;
@@ -303,28 +303,47 @@ function injectMobileFiltersButton() {
   btn.setAttribute('aria-label', 'Open filters');
   btn.textContent = 'Filters';
   mainContent.insertBefore(btn, mainContent.firstChild);
+  console.log('[injectMobileFiltersButton] Injected Filters button');
 
   // Setup open/close logic for the mobile filter panel
   const mobilePanel = document.querySelector('.mobile-filter-panel');
   const closeBtn = document.querySelector('.close-mobile-filter');
   const filterPanel = document.querySelector('.filter-panel');
   const mobileContent = document.querySelector('.mobile-filter-content');
+  if (!mobilePanel || !closeBtn || !mobileContent) {
+    console.log('[injectMobileFiltersButton] Missing mobilePanel, closeBtn, or mobileContent');
+    return;
+  }
+  if (!filterPanel) {
+    console.log('[injectMobileFiltersButton] .filter-panel not found, retryCount:', retryCount);
+    // Retry up to 10 times with a short delay
+    if (retryCount < 10) {
+      setTimeout(() => injectMobileFiltersButton(retryCount + 1), 100);
+    }
+    return;
+  }
+  console.log('[injectMobileFiltersButton] Found .filter-panel, setting up open/close logic');
 
-  if (!mobilePanel || !closeBtn || !filterPanel || !mobileContent) return;
+  // Store the original parent and next sibling of the filter panel
+  const originalParent = filterPanel.parentNode;
+  const originalNextSibling = filterPanel.nextSibling;
 
   function openPanel() {
-    // Always select and clone the current filter panel content from the DOM
-    mobileContent.innerHTML = '';
-    const currentFilterPanelContent = document.querySelector('.filter-panel-content');
-    if (currentFilterPanelContent) {
-      const filterPanelContentClone = currentFilterPanelContent.cloneNode(true);
-      mobileContent.appendChild(filterPanelContentClone);
-    }
+    console.log('[openPanel] Moving filterPanel into mobile overlay');
+    // Move the filter panel into the mobile overlay
+    mobileContent.appendChild(filterPanel);
     mobilePanel.classList.remove('hidden');
     mobilePanel.classList.add('visible');
     document.body.style.overflow = 'hidden';
   }
   function closePanel() {
+    console.log('[closePanel] Moving filterPanel back to original location');
+    // Move the filter panel back to its original location
+    if (originalNextSibling) {
+      originalParent.insertBefore(filterPanel, originalNextSibling);
+    } else {
+      originalParent.appendChild(filterPanel);
+    }
     mobilePanel.classList.remove('visible');
     mobilePanel.classList.add('hidden');
     document.body.style.overflow = '';
@@ -356,12 +375,41 @@ async function initializePageElements(tests) {
   // Create cards using CardService
   const cards = await cardService.createCards(tests);
   testsGrid.innerHTML = cards;
-  // Initialize filter panel, and inject mobile button only after filter panel is rendered
+  // Initialize filter panel
   setupFilterPanel(tests, (filteredTests) => {
     updateTestGridContent(filteredTests);
+  });
+  // Dispatch event after filter panel is rendered
+  setTimeout(() => {
+    document.dispatchEvent(new Event('filterPanelReady'));
+  }, 0);
+}
+
+// Listen for the filterPanelReady event to set up mobile filter logic
+if (!window._filterPanelReadyListenerAdded) {
+  document.addEventListener('filterPanelReady', () => {
     injectMobileFiltersButton();
   });
+  window._filterPanelReadyListenerAdded = true;
 }
+
+// SPA-safe: Use MutationObserver to watch for .filter-panel
+function observeFilterPanelForMobile() {
+  if (window.innerWidth > 768) return;
+  const observer = new MutationObserver((mutations, obs) => {
+    const filterPanel = document.querySelector('.filter-panel');
+    if (filterPanel) {
+      console.log('[MutationObserver] .filter-panel detected in DOM');
+      injectMobileFiltersButton();
+      obs.disconnect();
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+  console.log('[observeFilterPanelForMobile] Started observing for .filter-panel');
+}
+
+// Call the observer on script load (or after navigation)
+observeFilterPanelForMobile();
 
 // Export the main function
 export async function displayGeneralHealthPage() {
@@ -378,14 +426,13 @@ export async function displayGeneralHealthPage() {
     // Create and return the page structure
     const content = createPageStructure(filterPanel, null);
     
-    // Store tests data in a global variable for later use
-    window._generalHealthTests = tests;
+    // Store tests data in a global variable for later use (never delete)
+    window._allGeneralHealthTests = tests;
     
     // Add a custom event listener for when the content is rendered
     document.addEventListener('contentRendered', () => {
-      if (window._generalHealthTests) {
-        initializePageElements(window._generalHealthTests);
-        delete window._generalHealthTests;
+      if (window._allGeneralHealthTests) {
+        initializePageElements(window._allGeneralHealthTests);
       }
     }, { once: true });
     

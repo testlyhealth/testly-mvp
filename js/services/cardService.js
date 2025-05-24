@@ -12,7 +12,11 @@ export class CardService {
       'Superdrug': 'superdrug.png',
       'Bluecrest': 'bluecrest.png',
       'Thriva': 'thriva.png',
-      'Forth': 'forth.png'
+      'Forth': 'forth.png',
+      'Nuffield Health': 'nuffield.png',
+      'Lloyds Pharmacy': 'lloyds pharmacy.png',
+      'Selph': 'selph.png',
+      'Lola': 'lola.png'
     };
   }
 
@@ -24,7 +28,12 @@ export class CardService {
     } = options;
 
     // Get the provider logo filename
-    const providerLogo = this.providerLogoMap[test.provider] || `${test.provider}.png`;
+    let providerLogo = this.providerLogoMap[test.provider];
+    if (!providerLogo) {
+      // Fallback: try to match by lowercasing and replacing spaces
+      const normalized = test.provider.toLowerCase().replace(/ /g, ' ');
+      providerLogo = `${normalized}.png`;
+    }
     
     // Get grouped biomarkers
     const groupedBiomarkers = await this.getGroupedBiomarkers(test.biomarkers);
