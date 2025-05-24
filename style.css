@@ -3510,22 +3510,29 @@ body {
   @media (max-width: 768px) {
     .filters-btn.mobile-only {
       display: block;
-      width: 100%;
-      margin: 1rem 0 1.2rem 0;
-      background: var(--accent);
-      color: #fff;
-      border: none;
+      width: 21%;
+      min-width: 90px;
+      max-width: 150px;
+      height: 1.7rem;
+      margin: 1rem 0 1.2rem auto;
+      background: transparent !important;
+      color: #000 !important;
+      border: 2px solid #000 !important;
       border-radius: 999px;
-      padding: 0.7rem 0;
-      font-size: 1rem;
+      padding: 0.28rem 0;
+      font-size: 0.87rem;
       font-weight: 600;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: none;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+      float: right;
+      text-align: center;
     }
     .filters-btn.mobile-only:active,
     .filters-btn.mobile-only:hover {
-      background: var(--accent-hover);
+      background: #000 !important;
+      color: #fff !important;
+      border-color: #000 !important;
     }
   }
 
