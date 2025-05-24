@@ -3634,3 +3634,18 @@ body {
       z-index: 9999 !important;
     }
   }
+
+  @media (max-width: 768px) {
+    .mobile-filter-content .price-slider {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      margin: 0 auto 1rem auto;
+      padding: 0;
+    }
+    .mobile-filter-content .price-slider input[type="range"] {
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+  }

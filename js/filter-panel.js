@@ -255,6 +255,28 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     });
   }
 
+  // Add event listeners to update price display and prevent overlap
+  priceMin.addEventListener('input', () => {
+    let min = parseFloat(priceMin.value);
+    let max = parseFloat(priceMax.value);
+    if (min > max) {
+      min = max;
+      priceMin.value = min;
+    }
+    priceMinValue.textContent = `£${min.toFixed(2)}`;
+    applyFilters();
+  });
+  priceMax.addEventListener('input', () => {
+    let min = parseFloat(priceMin.value);
+    let max = parseFloat(priceMax.value);
+    if (max < min) {
+      max = min;
+      priceMax.value = max;
+    }
+    priceMaxValue.textContent = `£${max.toFixed(2)}`;
+    applyFilters();
+  });
+
   // Initial filter application
   applyFilters();
 } 
