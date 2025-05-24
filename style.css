@@ -3649,3 +3649,21 @@ body {
       box-sizing: border-box;
     }
   }
+
+  @media (max-width: 768px) {
+    .mobile-filter-content > .filter-panel {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      box-sizing: border-box !important;
+      margin: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      position: static !important;
+      overflow-x: hidden !important;
+      padding: 1.5rem 1rem !important;
+      background: #fff !important;
+      display: block !important;
+      transform: none !important;
+    }
+  }
