@@ -27,7 +27,7 @@ export function getHomePageContent() {
           <div class="box-text">
             <h2>Lose weight<br>with GLP-1s</h2>
           </div>
-          <button class="cta-button">Get started <span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="cta-button">Compare prices <span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         </div>
       </div>
       <div class="hero-box" style="background-color: #D3DED4;">
@@ -36,7 +36,7 @@ export function getHomePageContent() {
           <div class="box-text">
             <h2>Find the right<br>blood test<br>for you</h2>
           </div>
-          <button class="cta-button">Get started <span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="cta-button">Compare prices <span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         </div>
       </div>
     </section>
@@ -77,7 +77,7 @@ export function getHomePageContent() {
       <div class="banner-text" style="position:relative;z-index:2;text-align:left;max-width:500px;color:#fff;padding:2rem 0 2rem 4rem;margin:0;">
         <h2 style="color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.5);margin-bottom:0.5rem;">Is weight loss medication right for you?</h2>
         <p style="font-size:1.1rem;color:#fff;margin:0.3rem 0 1rem;text-shadow:0 2px 12px rgba(0,0,0,0.5);">Find out if you qualify for GLP-1 medication</p>
-        <button class="cta-button" style="margin-top:0.5rem;">Get started <span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="cta-button" style="margin-top:0.5rem;">Compare prices <span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
       </div>
     </div>
 
