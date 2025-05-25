@@ -30,13 +30,11 @@ export function getHomePageContent() {
           <button class="cta-button">Get started <span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         </div>
       </div>
-      <div class="hero-box">
-        <video class="hero-video" autoplay muted playsinline style="transform: scaleX(-1);outline:none;border:none;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;">
-          <source src="images/man-laugh.mp4" type="video/mp4">
-        </video>
+      <div class="hero-box" style="background-color: #D3DED4;">
+        <img src="images/blood-vials.jpg" alt="Blood vials" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:right;z-index:0;transform:scaleX(-1) translateX(-20%);">
         <div class="box-content">
           <div class="box-text">
-            <h2>Is testosterone<br>for you?</h2>
+            <h2>Find the right<br>blood test<br>for you</h2>
           </div>
           <button class="cta-button">Get started <span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         </div>
@@ -64,7 +62,7 @@ export function getHomePageContent() {
       <div class="hero-box small hair-box">
         <div class="box-content">
           <div class="box-text">
-            <h3>Regrow your hair</h3>
+            <h3>Is testosterone<br>for you?</h3>
           </div>
           <button class="cta-button" style="position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);margin:0;"><span class='arrow'><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         </div>

@@ -3504,7 +3504,26 @@ body {
 
   /* Mobile-only Filters button */
   .filters-btn.mobile-only {
-    display: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 21%;
+    min-width: 90px;
+    max-width: 150px;
+    height: 1.7rem;
+    margin: 1rem 0 1.2rem auto;
+    background: transparent !important;
+    color: #000 !important;
+    border: 2px solid #000 !important;
+    border-radius: 999px;
+    padding: 0.28rem 0;
+    font-size: 0.87rem;
+    font-weight: 600;
+    box-shadow: none;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    float: right;
+    text-align: center;
   }
 
   @media (max-width: 768px) {
