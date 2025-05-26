@@ -3821,3 +3821,28 @@ body {
     flex: 1 1 0;
     max-width: 48%;
   }
+
+  .mobile-filter-panel.hidden {
+    display: none !important;
+  }
+
+  .mobile-filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 1.5rem 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 1.2rem;
+    font-weight: 600;
+    background: #f8f8f8;
+  }
+
+  .close-mobile-filter {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--text);
+    cursor: pointer;
+    padding: 0.2rem 0.7rem;
+    line-height: 1;
+  }
