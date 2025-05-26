@@ -3337,8 +3337,9 @@ body {
     }
 
     .hero-grid-small {
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr !important;
       padding: 0 1rem 1rem;
+      display: grid !important;
     }
 
     .hero-box {
@@ -3763,4 +3764,92 @@ body {
 
   .general-health-subheading .gh-em {
     font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    .hero-grid-small {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    section.hero-grid-small {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      padding: 0 1rem 1rem !important;
+      gap: 1rem !important;
+      max-width: 1200px !important;
+      margin: 0 auto !important;
+      box-sizing: border-box !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+    section.hero-grid-small > .hero-box {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      float: none !important;
+      position: relative !important;
+      left: 0 !important;
+      right: 0 !important;
+      display: block !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+    section.hero-grid-small,
+    .hero-grid-small {
+      all: unset;
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      padding: 0 1rem 1rem !important;
+      gap: 0 !important; /* Remove grid gap */
+      max-width: 1200px !important;
+      margin: 0 auto !important;
+      box-sizing: border-box !important;
+    }
+    section.hero-grid-small > .hero-box,
+    .hero-grid-small > .hero-box {
+      all: unset;
+      display: block !important;
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      float: none !important;
+      position: relative !important;
+      left: 0 !important;
+      right: 0 !important;
+      margin: 0 !important; /* Remove all margin */
+      box-sizing: border-box !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 0 !important;
+      box-shadow: 0 2px 4px var(--card-shadow) !important;
+      padding: 0 !important;
+      background: #ECEAF8 !important;
+      overflow: hidden !important;
+    }
+    /* Add a slightly larger space only between boxes */
+    section.hero-grid-small > .hero-box:not(:last-child),
+    .hero-grid-small > .hero-box:not(:last-child) {
+      margin-bottom: 0.2rem !important;
+    }
+    /* Restore custom backgrounds for each box */
+    section.hero-grid-small > .hero-box.zepbound-box,
+    .hero-grid-small > .hero-box.zepbound-box {
+      background: #C9D6CC !important;
+    }
+    section.hero-grid-small > .hero-box.daily-rise-box,
+    .hero-grid-small > .hero-box.daily-rise-box {
+      background: #E1E4E7 !important;
+    }
+    section.hero-grid-small > .hero-box.hair-box,
+    .hero-grid-small > .hero-box.hair-box {
+      background: #BAC3D3 !important;
+    }
+    /* Add a small space above the first box */
+    section.hero-grid-small > .hero-box:first-child,
+    .hero-grid-small > .hero-box:first-child {
+      margin-top: 0.5rem !important;
+    }
   }
