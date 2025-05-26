@@ -2263,29 +2263,6 @@ body {
     margin-right: auto;
   }
 
-  .blood-test-card .add-to-basket {
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 24px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 600;
-    font-size: 0.9rem;
-    width: auto;
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    margin-top: 0;
-  }
-
-  .blood-test-card .add-to-basket:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-
   .blood-test-card .add-to-basket,
   .blood-test-card .toggle-details {
     padding: 8px 16px;
@@ -2295,22 +2272,23 @@ body {
     font-weight: 600;
     font-size: 0.9rem;
     width: auto;
-    position: absolute;
-    bottom: 20px;
+    margin-top: 1rem;
+    align-self: flex-end;
+    position: static;
   }
 
   .blood-test-card .add-to-basket {
     background: var(--accent);
     color: white;
     border: none;
-    right: 20px;
+    /* right: 20px; removed */
   }
 
   .blood-test-card .toggle-details {
     background: transparent;
     color: var(--accent);
     border: 2px solid var(--accent);
-    left: 20px;
+    /* left: 20px; removed */
   }
 
   .blood-test-card .add-to-basket:hover,
@@ -3852,4 +3830,22 @@ body {
     .hero-grid-small > .hero-box:first-child {
       margin-top: 0.5rem !important;
     }
+  }
+
+  .blood-test-card .card-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    gap: 1rem;
+  }
+
+  .blood-test-card .card-actions .toggle-details,
+  .blood-test-card .card-actions .add-to-basket {
+    margin-top: 0;
+    align-self: auto;
+    position: static;
+    min-width: 0;
+    flex: 1 1 0;
+    max-width: 48%;
   }

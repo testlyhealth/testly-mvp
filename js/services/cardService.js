@@ -58,7 +58,7 @@ export class CardService {
             <div class="biomarkers-section">
               <div class="biomarkers-header">
                 <div class="biomarker-info">
-                  <h4>Tests included: ${test["biomarker number"]}</h4>
+                  <h4>${test["biomarker number"]} biomarkers included</h4>
                   <button class="toggle-all-biomarkers" aria-expanded="false">Show all</button>
                 </div>
               </div>
@@ -91,34 +91,12 @@ export class CardService {
             <div class="test-results">
               <p>Results in ${test["Days till results returned"] || 'N/A'} days</p>
             </div>
-            <button class="toggle-details" aria-expanded="false">Details</button>
-            <div class="additional-details hidden">
-              <div class="detail-section">
-                <h4>Pricing Information</h4>
-                <p>${test["pricing information"] || 'N/A'}</p>
-              </div>
-              <div class="detail-section">
-                <h4>Doctor's Report</h4>
-                <p>${test["doctors report"] === "Yes" ? "Includes a doctor's report" : "No doctor's report included"}</p>
-              </div>
-              <div class="detail-section">
-                <h4>Lab Accreditations</h4>
-                <ul>
-                  ${labAccreditations.length > 0 ? labAccreditations.map(accreditation => `<li>${accreditation}</li>`).join('') : '<li>Not specified</li>'}
-                </ul>
-              </div>
-              <div class="detail-section">
-                <h4>Trustpilot Score</h4>
-                <p>${test["trust pilot score"] ? test["trust pilot score"] + '/5' : 'N/A'}</p>
-              </div>
-              <div class="detail-section">
-                <h4>Learn More</h4>
-                <a href="${test.link}" target="_blank" class="provider-link">Visit ${test.provider} website</a>
-              </div>
+            <div class="card-actions">
+              <button class="toggle-details" aria-expanded="false">Details</button>
+              <button class="add-to-basket" data-test-id="${test.test_name}">Add to Basket</button>
             </div>
           ` : ''}
         </div>
-        <button class="add-to-basket" data-test-id="${test.test_name}">Add to Basket</button>
       </div>
     `;
   }

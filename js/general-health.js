@@ -78,7 +78,7 @@ async function createTestCard(test, index) {
         <div class="biomarkers-section">
           <div class="biomarkers-header">
             <div class="biomarker-info">
-              <h4>Tests Included: ${totalBiomarkers}</h4>
+              <h4>${totalBiomarkers} biomarkers included</h4>
               <button class="toggle-all-biomarkers" aria-expanded="false">Show all</button>
             </div>
           </div>
@@ -105,23 +105,11 @@ async function createTestCard(test, index) {
         <div class="test-results">
           <p>Results in ${test['Days till results returned']} days</p>
         </div>
-        <button class="toggle-details" aria-expanded="false">Details</button>
-        <div class="additional-details hidden">
-          <div class="detail-section">
-            <h4>Doctor's Report</h4>
-            <p>${test['doctors report']}</p>
-          </div>
-          <div class="detail-section">
-            <h4>Lab Accreditations</h4>
-            <p>${test['lab accreditations'].join(', ')}</p>
-          </div>
-          <div class="detail-section">
-            <h4>Learn More</h4>
-            <a href="${test.link}" target="_blank" class="provider-link">Visit ${test.provider} website</a>
-          </div>
+        <div class="card-actions">
+          <button class="toggle-details" aria-expanded="false">Details</button>
+          <button class="add-to-basket" data-test-id="${test.test_name}">Add to Basket</button>
         </div>
       </div>
-      <button class="add-to-basket" data-test-id="${test.test_name}">Add to Basket</button>
     </div>
   `;
 }
