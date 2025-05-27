@@ -388,7 +388,7 @@ body {
   }
   
   .hidden {
-    display: none;
+    display: none !important;
   }
   
   /* Product Grid Styles */
@@ -3292,8 +3292,8 @@ body {
   }
 
   .blood-tests-menu .menu-list a:hover {
-    background: #f5f5f5;
-    color: #2563eb;
+    color: var(--text-light);
+    background: none;
   }
 
   @media (max-width: 900px) {
