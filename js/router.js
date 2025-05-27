@@ -12,6 +12,7 @@ export default class Router {
     this.mainContent = document.querySelector('main');
     this.init = this.init.bind(this);
     this.handleRoute = this.handleRoute.bind(this);
+    this._lastFullHash = null; // Track last full hash
   }
 
   init() {
@@ -23,7 +24,13 @@ export default class Router {
   }
 
   async handleRoute() {
-    const hash = window.location.hash.slice(1) || '/';
+    const fullHash = window.location.hash;
+    if (this._lastFullHash === fullHash) {
+      // No change, do nothing
+      return;
+    }
+    this._lastFullHash = fullHash;
+    const hash = fullHash.slice(1) || '/';
     console.log('Router handling route:', hash);
     
     // Show loading overlay
@@ -38,12 +45,12 @@ export default class Router {
       }
       
       // Handle other routes
-      if (hash === '/blood-tests') {
+      if (hash.startsWith('/blood-tests')) {
         console.log('Handling blood tests route');
         const content = await displayBloodTestsPage();
         await this.render(content);
         this.setupBloodTestsHandlers();
-      } else if (hash === '/general-health') {
+      } else if (hash.startsWith('/general-health')) {
         console.log('Handling general health route');
         const content = await displayGeneralHealthPage();
         console.log('General health content received, length:', content.length);

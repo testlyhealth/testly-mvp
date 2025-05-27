@@ -427,8 +427,26 @@ export async function displayGeneralHealthPage() {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const tests = await response.json();
-    
+    let tests = await response.json();
+
+    // --- NEW: Check for biomarkers param in URL hash ---
+    const hash = window.location.hash;
+    const match = hash.match(/[?&]biomarkers=([^&]+)/);
+    let selectedBiomarkers = [];
+    if (match) {
+      selectedBiomarkers = decodeURIComponent(match[1]).split(',').map(b => b.trim().toLowerCase());
+      if (selectedBiomarkers.length > 0) {
+        tests = tests.filter(test =>
+          test.biomarkers && test.biomarkers.some(biomarker =>
+            selectedBiomarkers.some(sel => biomarker.toLowerCase().includes(sel))
+          )
+        );
+        // Sort by price ascending
+        tests.sort((a, b) => a.price - b.price);
+      }
+    }
+    // --- END NEW ---
+
     // Create filter panel with tests data
     const filterPanel = createFilterPanel(tests);
     
