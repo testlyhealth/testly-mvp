@@ -95,6 +95,12 @@ export function createFilterPanel(tests) {
 
       <div class="filter-buttons">
         <button id="reset-filters" class="reset-filters-btn">Reset</button>
+        <button class="advanced-search-btn advanced-search-spacing">
+          <span>Advanced search</span>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
       </div>
     </div>
   `;
