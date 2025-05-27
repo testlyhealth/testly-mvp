@@ -10,6 +10,7 @@ class Store {
                 location: null,
                 resultsTime: null,
                 providers: [],
+                categories: [],
                 biomarkers: []
             },
             loading: false,
@@ -105,6 +106,7 @@ class Store {
                 location: null,
                 resultsTime: null,
                 providers: [],
+                categories: [],
                 biomarkers: []
             }
         });

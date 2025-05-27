@@ -10,6 +10,17 @@ export function createFilterPanel(tests) {
   const prices = tests.map(test => test.price);
   const minPrice = Math.min(...prices);
   const maxPrice = Math.max(...prices);
+
+  // Hardcoded categories
+  const categories = [
+    'General Health',
+    'Hormone Health',
+    'Heart Health',
+    'Performance',
+    'Thyroid',
+    'Fertility',
+    'Vitamins & Minerals'
+  ];
   
   return `
     <div class="filter-panel-content">
@@ -23,6 +34,22 @@ export function createFilterPanel(tests) {
         <div class="price-slider">
           <input type="range" id="price-min" min="${minPrice}" max="${maxPrice}" value="${minPrice}" step="1">
           <input type="range" id="price-max" min="${minPrice}" max="${maxPrice}" value="${maxPrice}" step="1">
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <h4>Category</h4>
+        <div class="provider-checkboxes">
+          <div class="checkbox-option">
+            <input type="checkbox" id="category-all">
+            <label for="category-all">All Categories</label>
+          </div>
+          ${categories.map(category => `
+            <div class="checkbox-option">
+              <input type="checkbox" id="category-${category.toLowerCase().replace(/\s+/g, '-')}" class="category-checkbox" value="${category}" ${category === 'General Health' ? 'checked' : ''}>
+              <label for="category-${category.toLowerCase().replace(/\s+/g, '-')}">${category}</label>
+            </div>
+          `).join('')}
         </div>
       </div>
 
@@ -99,6 +126,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     },
     providers: [],
     locations: [],
+    categories: [],
     doctorsReport: false
   };
 
@@ -126,6 +154,10 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   const locationAll = filterPanel.querySelector('#location-all');
   const locationCheckboxes = filterPanel.querySelectorAll('.location-checkbox');
 
+  // Category checkboxes
+  const categoryAll = filterPanel.querySelector('#category-all');
+  const categoryCheckboxes = filterPanel.querySelectorAll('.category-checkbox');
+
   // Other filter inputs
   const doctorsReport = filterPanel.querySelector('#doctors-report');
 
@@ -146,6 +178,9 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       locations: Array.from(locationCheckboxes)
         .filter(cb => cb.checked)
         .map(cb => cb.value),
+      categories: Array.from(categoryCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value),
       doctorsReport: doctorsReport.checked
     };
 
@@ -164,6 +199,13 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       // Location filter
       if (currentFilters.locations.length > 0 && !test["blood test location"].some(loc => currentFilters.locations.includes(loc))) {
         return false;
+      }
+
+      // Category filter - only apply if General Health is selected
+      if (currentFilters.categories.length > 0) {
+        if (!currentFilters.categories.includes('General Health')) {
+          return false;
+        }
       }
 
       // Doctor's report filter
@@ -202,6 +244,18 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     });
   }
 
+  // Handle "All Categories" checkbox
+  if (categoryAll) {
+    categoryAll.addEventListener('change', (e) => {
+      const isChecked = e.target.checked;
+      categoryCheckboxes.forEach(checkbox => {
+        checkbox.checked = isChecked;
+        checkbox.disabled = isChecked;
+      });
+      applyFilters();
+    });
+  }
+
   // Handle individual provider checkboxes
   providerCheckboxes.forEach(checkbox => {
     checkbox.addEventListener('change', () => {
@@ -216,6 +270,15 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     checkbox.addEventListener('change', () => {
       const allChecked = Array.from(locationCheckboxes).every(cb => cb.checked);
       locationAll.checked = allChecked;
+      applyFilters();
+    });
+  });
+
+  // Handle individual category checkboxes
+  categoryCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+      const allChecked = Array.from(categoryCheckboxes).every(cb => cb.checked);
+      categoryAll.checked = allChecked;
       applyFilters();
     });
   });
@@ -244,6 +307,13 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       // Reset location checkboxes
       locationAll.checked = true;
       locationCheckboxes.forEach(checkbox => {
+        checkbox.checked = true;
+        checkbox.disabled = true;
+      });
+
+      // Reset category checkboxes
+      categoryAll.checked = true;
+      categoryCheckboxes.forEach(checkbox => {
         checkbox.checked = true;
         checkbox.disabled = true;
       });
