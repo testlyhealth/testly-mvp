@@ -263,7 +263,7 @@ function createGeneralHealthTitle() {
         Compare and book blood tests
       </h1>
       <p class="general-health-subheading">
-        <strong>General health:</strong> Blood tests from accredited labs covering the health of your <strong class="gh-em">heart</strong>, <strong class="gh-em">liver</strong>, <strong class="gh-em">kidneys</strong>, <strong class="gh-em">cholesterol</strong>, <strong class="gh-em">vitamins</strong> and more.
+        Blood tests from accredited labs covering the health of your <strong class="gh-em">heart</strong>, <strong class="gh-em">liver</strong>, <strong class="gh-em">kidneys</strong>, <strong class="gh-em">cholesterol</strong>, <strong class="gh-em">vitamins</strong> and more.
       </p>
     </section>
   `;
