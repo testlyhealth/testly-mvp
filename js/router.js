@@ -3,6 +3,7 @@ import { displayBloodTestsPage } from './pages/blood-tests.js';
 import { displayCategoryProducts } from './products.js';
 import { getHomePageContent, initializeHomePage } from './pages/home.js';
 import { displayGeneralHealthPage } from './general-health.js';
+import { displayAdvancedSearchPage } from './pages/advanced-search.js';
 
 // Router class to handle SPA navigation
 export default class Router {
@@ -46,6 +47,10 @@ export default class Router {
         console.log('Handling general health route');
         const content = await displayGeneralHealthPage();
         console.log('General health content received, length:', content.length);
+        await this.render(content);
+      } else if (hash === '/advanced') {
+        console.log('Handling advanced search route');
+        const content = await displayAdvancedSearchPage();
         await this.render(content);
       } else if (hash.startsWith('/category/')) {
         console.log('Handling category route:', hash);

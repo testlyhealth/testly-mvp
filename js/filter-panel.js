@@ -355,4 +355,13 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
 
   // Initial filter application
   applyFilters();
+
+  // Attach advanced search button event listener after panel is in DOM
+  const advBtn = document.querySelector('.advanced-search-btn');
+  if (advBtn) {
+    advBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.hash = '#/advanced';
+    });
+  }
 } 

@@ -3253,7 +3253,7 @@ body {
 
   /* Blood Tests Dropdown Menu Styles */
   .blood-tests-menu {
-    position: absolute;
+    position: fixed;
     top: 64px; /* height of your header */
     left: 0;
     width: 100%;
@@ -3261,24 +3261,34 @@ body {
     border-bottom: 1px solid #eee;
     box-shadow: 0 4px 16px rgba(0,0,0,0.08);
     z-index: 2000;
-    padding: 1.5rem 0;
-    /* display: block; */
+    height: 64px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .blood-tests-menu .menu-list {
-    display: flex;
+    display: inline-flex;
     justify-content: center;
-    gap: 2rem;
+    align-items: center;
+    gap: 1.1rem;
+    margin: 0;
+    height: 100%;
   }
 
   .blood-tests-menu .menu-list a {
     color: #111;
     text-decoration: none;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 500;
-    padding: 0.5rem 1.5rem;
+    padding: 0.5rem 0.7rem;
     border-radius: 4px;
     transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    height: 100%;
   }
 
   .blood-tests-menu .menu-list a:hover {
