@@ -130,6 +130,19 @@ export default class Router {
     // Restore scroll position
     window.scrollTo(0, scrollPosition);
 
+    // Attach select all event listeners if on advanced search page
+    if (window.location.hash === '#/advanced') {
+      document.querySelectorAll('.select-all-checkbox').forEach(cb => {
+        cb.addEventListener('change', function() {
+          const group = this.getAttribute('data-group');
+          const checked = this.checked;
+          document.querySelectorAll('input[type="checkbox"][data-group="' + group + '"]:not(.select-all-checkbox):not(.advanced)').forEach(box => {
+            box.checked = checked;
+          });
+        });
+      });
+    }
+
     // Dispatch event to notify that content has been rendered
     document.dispatchEvent(new Event('contentRendered'));
   }

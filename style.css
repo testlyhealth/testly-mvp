@@ -732,7 +732,7 @@ body {
     display: block;
     width: 100%;
     background: #fff;
-    border-radius: 8px;
+    border-radius: 0;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     overflow: hidden;
@@ -2694,7 +2694,7 @@ body {
     display: block;
     width: 100%;
     background: #fff;
-    border-radius: 8px;
+    border-radius: 0;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     overflow: hidden;
@@ -2988,9 +2988,10 @@ body {
   }
 
   .provider-checkboxes .checkbox-option input[type="checkbox"] {
-    width: 14px;
-    height: 14px;
-    cursor: pointer;
+    accent-color: #2563eb;
+    width: 1.1em;
+    height: 1.1em;
+    margin: 0;
   }
 
   .provider-checkboxes .checkbox-option label {
@@ -3730,4 +3731,201 @@ body {
 
   .advanced-search-spacing {
     margin-top: 0.5rem;
+  }
+
+  /* Advanced Search Page Styles */
+  .advanced-search-page {
+    max-width: 1100px;
+    margin: 2.5rem auto;
+    padding: 2rem 1.5rem;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 6px 32px rgba(0,0,0,0.10);
+  }
+
+  .biomarker-groups-window {
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem 0.7rem;
+    justify-content: center;
+  }
+
+  .biomarker-group-block {
+    background: #fcfcfc;
+    border-radius: 0;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.13);
+    padding: 1rem 0.7rem 0.7rem 0.7rem;
+    min-width: 180px;
+    max-width: 22%;
+    flex: 1 1 22%;
+    margin-bottom: 0.2rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .biomarker-group-heading {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    letter-spacing: 0.01em;
+  }
+
+  .biomarker-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+  }
+
+  .biomarker-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text);
+    padding: 0.08rem 0.1rem;
+    border-radius: 6px;
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+
+  .biomarker-checkbox input[type="checkbox"] {
+    accent-color: #2563eb;
+    width: 1.1em;
+    height: 1.1em;
+    margin: 0;
+  }
+
+  .biomarker-checkbox.advanced {
+    color: var(--text-light);
+    font-weight: 400;
+  }
+
+  .biomarker-subheading {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0.7rem 0 0.2rem 0;
+    letter-spacing: 0.01em;
+    margin-left: 0;
+  }
+
+  @media (max-width: 900px) {
+    .advanced-search-page {
+      padding: 1rem 0.5rem;
+    }
+    .biomarker-groups-window {
+      padding: 1rem 0.5rem;
+      gap: 1.5rem 1rem;
+    }
+    .biomarker-group-block {
+      min-width: 180px;
+      max-width: 100%;
+      padding: 1rem 0.7rem;
+    }
+  }
+
+  /* Advanced Search Page Styles - Compact Layout */
+  .biomarker-groups-window {
+    gap: 1.2rem 0.7rem;
+    padding: 1.2rem 1.2rem;
+  }
+
+  .biomarker-group-block {
+    min-width: 180px;
+    max-width: 22%;
+    flex: 1 1 22%;
+    padding: 1rem 0.7rem 0.7rem 0.7rem;
+    margin-bottom: 0.2rem;
+  }
+
+  @media (min-width: 1100px) {
+    .biomarker-groups-window {
+      flex-wrap: wrap;
+    }
+    .biomarker-group-block {
+      max-width: 22%;
+      flex-basis: 22%;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .biomarker-groups-window {
+      gap: 1rem 0.5rem;
+      padding: 0.7rem 0.3rem;
+    }
+    .biomarker-group-block {
+      min-width: 140px;
+      max-width: 48%;
+      flex-basis: 48%;
+      padding: 0.7rem 0.4rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .biomarker-group-block {
+      max-width: 100%;
+      flex-basis: 100%;
+    }
+  }
+
+  .biomarker-checkbox:not(.select-all-inline):not(.advanced) {
+    margin-left: 1.5rem;
+  }
+
+  .info-icon {
+    display: inline-flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 13px;
+    height: 13px;
+    margin-left: 0.18em;
+    cursor: pointer;
+    position: relative;
+    vertical-align: baseline;
+  }
+
+  .info-icon svg {
+    display: block;
+    width: 13px;
+    height: 13px;
+  }
+
+  .info-icon[data-tooltip]:hover::after,
+  .info-icon[data-tooltip]:focus::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    top: 120%;
+    transform: translateX(-50%);
+    background: #222;
+    color: #fff;
+    padding: 0.45em 0.8em;
+    border-radius: 6px;
+    font-size: 0.92em;
+    white-space: pre-line;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+    min-width: 120px;
+    max-width: 260px;
+    pointer-events: none;
+  }
+
+  .info-icon[data-tooltip]:hover::before,
+  .info-icon[data-tooltip]:focus::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 110%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: #222 transparent transparent transparent;
+    z-index: 11;
   }
