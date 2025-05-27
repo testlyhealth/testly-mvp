@@ -3529,7 +3529,7 @@ body {
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100dvh; /* Use dynamic viewport height */
     background: #fff;
     z-index: 2000;
     box-shadow: 0 4px 24px rgba(0,0,0,0.12);
@@ -3555,6 +3555,9 @@ body {
     font-size: 1.2rem;
     font-weight: 600;
     background: #f8f8f8;
+    position: sticky;
+    top: 0;
+    z-index: 2;
   }
 
   .mobile-filter-content {
@@ -3562,8 +3565,9 @@ body {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 1.5rem;
-    height: calc(100vh - 60px); /* Subtract header height */
+    height: calc(100dvh - 60px); /* Use dynamic viewport height */
     position: relative;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 1.5rem); /* Add padding for devices with home indicator */
   }
 
   @media (max-width: 768px) {
@@ -3593,5 +3597,76 @@ body {
       padding: 0 !important;
       height: auto !important;
       overflow: visible !important;
+      padding-bottom: 1.5rem; /* Add padding at the bottom */
     }
+  }
+
+  .general-health-title-section {
+    width: 100%;
+    text-align: center;
+    margin: 2.5rem 0 2.5rem 0;
+  }
+
+  .general-health-title {
+    font-size: 2.3rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    display: inline-block;
+    margin: 0 auto;
+  }
+
+  .gh-underline {
+    position: relative;
+    display: inline-block;
+    z-index: 1;
+  }
+
+  .gh-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -4px;
+    height: 10px;
+    background: none;
+    z-index: -1;
+    width: 100%;
+    pointer-events: none;
+    background-image: url('data:image/svg+xml;utf8,<svg width="100%25" height="10" viewBox="0 0 100 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 7 Q 10 2, 20 7 T 40 7 T 60 7 T 80 7 T 100 7" stroke="%23000" stroke-width="2" fill="none"/></svg>');
+    background-repeat: repeat-x;
+    background-size: 100% 10px;
+  }
+
+  .gh-title-secondary {
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  .general-health-subheading {
+    font-size: 1.05rem;
+    color: var(--text-light);
+    margin-top: 3.2rem;
+    margin-bottom: 0.1rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 768px) {
+    .general-health-title-section {
+      margin-top: 1.2rem;
+      margin-bottom: 2.5rem;
+    }
+  }
+
+  .general-health-subheading strong {
+    font-weight: 700;
+  }
+
+  .general-health-subheading .gh-em {
+    font-weight: 600;
   }
