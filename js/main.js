@@ -221,30 +221,48 @@ function setupMobileFilterPanel() {
 
   if (!filtersBtn || !mobilePanel || !closeBtn || !filterPanel || !mobileContent) return;
 
+  // Remove any existing event listeners
+  const newFiltersBtn = filtersBtn.cloneNode(true);
+  filtersBtn.parentNode.replaceChild(newFiltersBtn, filtersBtn);
+  const newCloseBtn = closeBtn.cloneNode(true);
+  closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+
   function openPanel() {
-    // Move filter options into mobile panel
+    // Clone the filter panel to avoid DOM manipulation issues
+    const clonedPanel = filterPanel.cloneNode(true);
     mobileContent.innerHTML = '';
-    mobileContent.appendChild(filterPanel.cloneNode(true));
+    mobileContent.appendChild(clonedPanel);
+    
+    // Show the panel
     mobilePanel.classList.remove('hidden');
-    mobilePanel.classList.add('visible');
-    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => {
+      mobilePanel.classList.add('visible');
+      document.body.style.overflow = 'hidden';
+    });
   }
+
   function closePanel() {
     mobilePanel.classList.remove('visible');
-    mobilePanel.classList.add('hidden');
-    document.body.style.overflow = '';
+    setTimeout(() => {
+      mobilePanel.classList.add('hidden');
+      document.body.style.overflow = '';
+    }, 300); // Match transition duration
   }
 
-  filtersBtn.addEventListener('click', openPanel);
-  closeBtn.addEventListener('click', closePanel);
+  newFiltersBtn.addEventListener('click', openPanel);
+  newCloseBtn.addEventListener('click', closePanel);
 
-  // Optional: close on overlay click
+  // Close on overlay click
   mobilePanel.addEventListener('click', (e) => {
     if (e.target === mobilePanel) closePanel();
   });
 }
 
-window.addEventListener('DOMContentLoaded', setupMobileFilterPanel);
+// Only set up once
+if (!window._mobileFilterPanelSetup) {
+  window.addEventListener('DOMContentLoaded', setupMobileFilterPanel);
+  window._mobileFilterPanelSetup = true;
+}
 
 // Start the app
 init();
