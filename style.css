@@ -3529,7 +3529,7 @@ body {
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100%;
+    height: 100vh;
     background: #fff;
     z-index: 2000;
     box-shadow: 0 4px 24px rgba(0,0,0,0.12);
@@ -3562,16 +3562,8 @@ body {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 1.5rem;
-    height: calc(100% - 60px); /* Subtract header height */
-  }
-
-  @media (max-width: 768px) {
-    .filter-panel {
-      display: none !important;
-    }
-    .mobile-filter-panel {
-      display: flex;
-    }
+    height: calc(100vh - 60px); /* Subtract header height */
+    position: relative;
   }
 
   @media (max-width: 768px) {
@@ -3581,8 +3573,8 @@ body {
       top: 0 !important;
       right: 0 !important;
       bottom: 0 !important;
-      width: 100vw !important;
-      max-width: 100vw !important;
+      width: 100% !important;
+      max-width: 100% !important;
       min-width: 0 !important;
       height: auto !important;
       min-height: 0 !important;
@@ -3590,269 +3582,16 @@ body {
       border: none !important;
       z-index: 2 !important;
       background: #fff !important;
-      padding: 1.5rem 1rem !important;
+      padding: 0 !important;
       margin: 0 !important;
       overflow: visible !important;
       display: block !important;
       transform: none !important;
     }
-  }
 
-  @media (max-width: 768px) {
-    .page-container > .filter-panel {
-      display: none !important;
-    }
-    .mobile-filter-panel {
-      display: flex;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .mobile-filter-panel.visible,
-    .mobile-filter-content,
-    .mobile-filter-content .filter-panel {
-      display: block !important;
-      opacity: 1 !important;
-      visibility: visible !important;
-      height: auto !important;
-      max-height: none !important;
-      color: #000 !important;
-      background: #fff !important;
-      z-index: 9999 !important;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .mobile-filter-content .price-slider {
-      width: 100%;
-      max-width: 100%;
-      box-sizing: border-box;
-      margin: 0 auto 1rem auto;
-      padding: 0;
-    }
-    .mobile-filter-content .price-slider input[type="range"] {
-      width: 100%;
-      min-width: 0;
-      box-sizing: border-box;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .mobile-filter-content > .filter-panel {
-      width: 100% !important;
-      max-width: 100% !important;
-      min-width: 0 !important;
-      box-sizing: border-box !important;
-      margin: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      position: static !important;
-      overflow-x: hidden !important;
-      padding: 1.5rem 1rem !important;
-      background: #fff !important;
-      display: block !important;
-      transform: none !important;
-    }
-  }
-
-  .general-health-title-section {
-    width: 100%;
-    text-align: center;
-    margin: 2.5rem 0 2.5rem 0;
-  }
-
-  .general-health-title {
-    font-size: 2.3rem;
-    font-weight: 700; /* Make fully bold */
-    color: var(--text);
-    line-height: 1.2;
-    display: inline-block;
-    margin: 0 auto;
-  }
-
-  .gh-underline {
-    position: relative;
-    display: inline-block;
-    z-index: 1;
-  }
-
-  .gh-underline::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -4px;
-    height: 10px;
-    background: none;
-    z-index: -1;
-    width: 100%;
-    pointer-events: none;
-    /* Hand-drawn wavy underline using SVG as background */
-    background-image: url('data:image/svg+xml;utf8,<svg width="100%25" height="10" viewBox="0 0 100 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 7 Q 10 2, 20 7 T 40 7 T 60 7 T 80 7 T 100 7" stroke="%23000" stroke-width="2" fill="none"/></svg>');
-    background-repeat: repeat-x;
-    background-size: 100% 10px;
-  }
-
-  .gh-title-secondary {
-    font-size: 1.25rem;
-    font-weight: 400;
-    color: var(--text);
-  }
-
-  .general-health-subheading {
-    font-size: 1.05rem;
-    color: var(--text-light);
-    margin-top: 3.2rem;
-    margin-bottom: 0.1rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: left;
-    line-height: 1.5;
-  }
-
-  @media (max-width: 768px) {
-    .general-health-title-section {
-      margin-top: 1.2rem;
-      margin-bottom: 2.5rem;
-    }
-  }
-
-  .general-health-subheading strong {
-    font-weight: 700;
-  }
-
-  .general-health-subheading .gh-em {
-    font-weight: 600;
-  }
-
-  @media (max-width: 768px) {
-    .hero-grid-small {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  @media (max-width: 768px) {
-    section.hero-grid-small {
-      display: grid !important;
-      grid-template-columns: 1fr !important;
-      padding: 0 1rem 1rem !important;
-      gap: 1rem !important;
-      max-width: 1200px !important;
-      margin: 0 auto !important;
-      box-sizing: border-box !important;
-    }
-  }
-
-  @media (max-width: 768px) {
-    section.hero-grid-small > .hero-box {
-      width: 100% !important;
-      min-width: 0 !important;
-      max-width: 100% !important;
-      float: none !important;
-      position: relative !important;
-      left: 0 !important;
-      right: 0 !important;
-      display: block !important;
-    }
-  }
-
-  @media (max-width: 768px) {
-    section.hero-grid-small,
-    .hero-grid-small {
-      all: unset;
-      display: grid !important;
-      grid-template-columns: 1fr !important;
-      padding: 0 1rem 1rem !important;
-      gap: 0 !important; /* Remove grid gap */
-      max-width: 1200px !important;
-      margin: 0 auto !important;
-      box-sizing: border-box !important;
-    }
-    section.hero-grid-small > .hero-box,
-    .hero-grid-small > .hero-box {
-      all: unset;
-      display: block !important;
-      width: 100% !important;
-      min-width: 0 !important;
-      max-width: 100% !important;
-      float: none !important;
-      position: relative !important;
-      left: 0 !important;
-      right: 0 !important;
-      margin: 0 !important; /* Remove all margin */
-      box-sizing: border-box !important;
-      border: 1px solid var(--border) !important;
-      border-radius: 0 !important;
-      box-shadow: 0 2px 4px var(--card-shadow) !important;
+    .mobile-filter-content .filter-panel-content {
       padding: 0 !important;
-      background: #ECEAF8 !important;
-      overflow: hidden !important;
+      height: auto !important;
+      overflow: visible !important;
     }
-    /* Add a slightly larger space only between boxes */
-    section.hero-grid-small > .hero-box:not(:last-child),
-    .hero-grid-small > .hero-box:not(:last-child) {
-      margin-bottom: 0.2rem !important;
-    }
-    /* Restore custom backgrounds for each box */
-    section.hero-grid-small > .hero-box.zepbound-box,
-    .hero-grid-small > .hero-box.zepbound-box {
-      background: #C9D6CC !important;
-    }
-    section.hero-grid-small > .hero-box.daily-rise-box,
-    .hero-grid-small > .hero-box.daily-rise-box {
-      background: #E1E4E7 !important;
-    }
-    section.hero-grid-small > .hero-box.hair-box,
-    .hero-grid-small > .hero-box.hair-box {
-      background: #BAC3D3 !important;
-    }
-    /* Add a small space above the first box */
-    section.hero-grid-small > .hero-box:first-child,
-    .hero-grid-small > .hero-box:first-child {
-      margin-top: 0.5rem !important;
-    }
-  }
-
-  .blood-test-card .card-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 1rem;
-    gap: 1rem;
-  }
-
-  .blood-test-card .card-actions .toggle-details,
-  .blood-test-card .card-actions .add-to-basket {
-    margin-top: 0;
-    align-self: auto;
-    position: static;
-    min-width: 0;
-    flex: 1 1 0;
-    max-width: 48%;
-  }
-
-  .mobile-filter-panel.hidden {
-    display: none !important;
-  }
-
-  .mobile-filter-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.2rem 1.5rem 1rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-    font-size: 1.2rem;
-    font-weight: 600;
-    background: #f8f8f8;
-  }
-
-  .close-mobile-filter {
-    background: none;
-    border: none;
-    font-size: 2rem;
-    color: var(--text);
-    cursor: pointer;
-    padding: 0.2rem 0.7rem;
-    line-height: 1;
   }
