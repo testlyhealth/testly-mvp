@@ -4006,44 +4006,33 @@ body {
 
   /* Filter Tags Styles */
   .filter-tags {
-    display: none; /* Hide by default on desktop */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0 1.5rem;
+    padding: 0;
+    max-width: 1200px;
+    margin-left: 0;
+    margin-right: auto;
+    width: 100%;
   }
 
   @media (max-width: 768px) {
     .filter-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin: 1rem 0 1.5rem;
-      padding: 0;
-      width: 100%;
-      max-width: 100%;
-      box-sizing: border-box;
+      margin: 0.5rem 0;
+      padding: 0 1rem;
+      gap: 0.3rem;
     }
 
-    .main-content {
-      padding: 0 2rem;
+    .filter-tag {
+      font-size: 0.8rem;
+      padding: 0.3rem 0.6rem;
     }
 
-    .filters-btn.mobile-only {
-      display: block;
-      width: 21%;
-      min-width: 90px;
-      max-width: 150px;
-      height: 1.7rem;
-      margin: 1rem 0 1.2rem 0;
-      background: transparent !important;
-      color: #000 !important;
-      border: 2px solid #000 !important;
-      border-radius: 999px;
-      padding: 0.28rem 0;
-      font-size: 0.87rem;
-      font-weight: 600;
-      box-shadow: none;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s, border-color 0.2s;
-      float: right;
-      text-align: center;
+    .filter-tag .remove-tag {
+      width: 16px;
+      height: 16px;
+      font-size: 1rem;
     }
   }
 
@@ -4083,25 +4072,6 @@ body {
   .filter-tag .remove-tag:hover {
     background: #e0e0e0;
     color: #333;
-  }
-
-  @media (max-width: 768px) {
-    .filter-tags {
-      margin: 0.5rem 0;
-      padding: 0;
-      gap: 0.3rem;
-    }
-
-    .filter-tag {
-      font-size: 0.8rem;
-      padding: 0.3rem 0.6rem;
-    }
-
-    .filter-tag .remove-tag {
-      width: 16px;
-      height: 16px;
-      font-size: 1rem;
-    }
   }
 
   /* Ensure filter button only shows on mobile */

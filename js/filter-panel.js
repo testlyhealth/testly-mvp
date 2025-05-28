@@ -153,12 +153,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         // Fallback to main content if title section not found
         const mainContent = document.querySelector('.main-content');
         if (mainContent) {
-          const productsGrid = mainContent.querySelector('.products-grid');
-          if (productsGrid) {
-            mainContent.insertBefore(filterTagsContainer, productsGrid);
-          } else {
-            mainContent.insertBefore(filterTagsContainer, mainContent.firstChild);
-          }
+          mainContent.insertBefore(filterTagsContainer, mainContent.firstChild);
         }
       }
     }
