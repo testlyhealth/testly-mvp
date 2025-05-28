@@ -145,16 +145,11 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     if (filterBtn) {
       filterBtn.insertAdjacentElement('beforebegin', filterTagsContainer);
     } else {
-      // For desktop, insert after the general health title section
-      const titleSection = document.querySelector('.general-health-title-section');
-      if (titleSection) {
-        titleSection.insertAdjacentElement('afterend', filterTagsContainer);
-      } else {
-        // Fallback to main content if title section not found
-        const mainContent = document.querySelector('.main-content');
-        if (mainContent) {
-          mainContent.insertBefore(filterTagsContainer, mainContent.firstChild);
-        }
+      // For desktop, insert into main-content before products-grid
+      const mainContent = document.querySelector('.main-content');
+      if (mainContent) {
+        // Insert at the start of main-content
+        mainContent.insertBefore(filterTagsContainer, mainContent.firstChild);
       }
     }
   }
