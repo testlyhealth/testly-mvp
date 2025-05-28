@@ -4003,3 +4003,66 @@ body {
     background: var(--accent-hover);
     color: #fff;
   }
+
+  /* Filter Tags Styles */
+  .filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-right: 1rem;
+    align-items: center;
+  }
+
+  .filter-tag {
+    display: inline-flex;
+    align-items: center;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text);
+    gap: 0.5rem;
+  }
+
+  .filter-tag span {
+    white-space: nowrap;
+  }
+
+  .filter-tag .remove-tag {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.1rem;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+  }
+
+  .filter-tag .remove-tag:hover {
+    background: var(--border);
+  }
+
+  /* Mobile styles for filter tags */
+  @media (max-width: 768px) {
+    .filter-tags {
+      margin-right: 0.5rem;
+      gap: 0.3rem;
+    }
+
+    .filter-tag {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.4rem;
+    }
+
+    .filter-tag .remove-tag {
+      font-size: 1rem;
+      width: 14px;
+      height: 14px;
+    }
+  }

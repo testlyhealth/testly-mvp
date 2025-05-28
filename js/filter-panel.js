@@ -1,5 +1,14 @@
 import { $, $all } from './dom.js';
 
+// Add this helper function at the top of the file, after the imports
+function generateSafeId(text) {
+  return text.toLowerCase()
+    .replace(/[&]/g, 'and')  // Replace & with 'and'
+    .replace(/[^a-z0-9-]/g, '-')  // Replace other special chars with hyphens
+    .replace(/-+/g, '-')  // Replace multiple hyphens with single hyphen
+    .replace(/^-|-$/g, '');  // Remove leading/trailing hyphens
+}
+
 // Function to create the filter panel HTML
 export function createFilterPanel(tests) {
   // Get unique providers and locations
@@ -46,8 +55,8 @@ export function createFilterPanel(tests) {
           </div>
           ${categories.map(category => `
             <div class="checkbox-option">
-              <input type="checkbox" id="category-${category.toLowerCase().replace(/\s+/g, '-')}" class="category-checkbox" value="${category}" ${category === 'General Health' ? 'checked' : ''}>
-              <label for="category-${category.toLowerCase().replace(/\s+/g, '-')}">${category}</label>
+              <input type="checkbox" id="category-${generateSafeId(category)}" class="category-checkbox" value="${category}" ${category === 'General Health' ? 'checked' : ''}>
+              <label for="category-${generateSafeId(category)}">${category}</label>
             </div>
           `).join('')}
         </div>
@@ -125,6 +134,14 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     return;
   }
 
+  // Create filter tags container next to the filter button
+  const filterBtn = document.querySelector('.filters-btn');
+  if (filterBtn) {
+    const filterTagsContainer = document.createElement('div');
+    filterTagsContainer.className = 'filter-tags';
+    filterBtn.insertAdjacentElement('beforebegin', filterTagsContainer);
+  }
+
   let currentFilters = {
     priceRange: {
       min: Math.min(...tests.map(test => test.price)),
@@ -170,6 +187,120 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   // Reset filters button
   const resetFiltersBtn = filterPanel.querySelector('#reset-filters');
 
+  // Function to create filter tags HTML
+  function createFilterTags(filters) {
+    const tags = [];
+    
+    // Price range tag - always show it
+    tags.push(`
+      <div class="filter-tag" data-type="price">
+        <span>Price: £${filters.priceRange.min.toFixed(2)} - £${filters.priceRange.max.toFixed(2)}</span>
+        <button class="remove-tag" aria-label="Remove price filter">×</button>
+      </div>
+    `);
+
+    // Provider tags
+    if (filters.providers.length > 0) {
+      filters.providers.forEach(provider => {
+        tags.push(`
+          <div class="filter-tag" data-type="provider" data-value="${provider}">
+            <span>Provider: ${provider}</span>
+            <button class="remove-tag" aria-label="Remove provider filter">×</button>
+          </div>
+        `);
+      });
+    }
+
+    // Location tags
+    if (filters.locations.length > 0) {
+      filters.locations.forEach(location => {
+        tags.push(`
+          <div class="filter-tag" data-type="location" data-value="${location}">
+            <span>Location: ${location}</span>
+            <button class="remove-tag" aria-label="Remove location filter">×</button>
+          </div>
+        `);
+      });
+    }
+
+    // Category tags
+    if (filters.categories.length > 0) {
+      filters.categories.forEach(category => {
+        tags.push(`
+          <div class="filter-tag" data-type="category" data-value="${category}">
+            <span>Category: ${category}</span>
+            <button class="remove-tag" aria-label="Remove category filter">×</button>
+          </div>
+        `);
+      });
+    }
+
+    // Doctor's report tag
+    if (filters.doctorsReport) {
+      tags.push(`
+        <div class="filter-tag" data-type="doctorsReport">
+          <span>Doctor's Report</span>
+          <button class="remove-tag" aria-label="Remove doctor's report filter">×</button>
+        </div>
+      `);
+    }
+
+    return tags.join('');
+  }
+
+  // Function to update filter tags
+  function updateFilterTags(filters) {
+    const filterTagsContainer = document.querySelector('.filter-tags');
+    if (!filterTagsContainer) return;
+
+    const tagsHTML = createFilterTags(filters);
+    filterTagsContainer.innerHTML = tagsHTML;
+
+    // Add event listeners to remove buttons
+    filterTagsContainer.querySelectorAll('.remove-tag').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const tag = e.target.closest('.filter-tag');
+        const type = tag.dataset.type;
+        const value = tag.dataset.value;
+
+        switch (type) {
+          case 'price':
+            priceMin.value = Math.min(...tests.map(test => test.price));
+            priceMax.value = Math.max(...tests.map(test => test.price));
+            priceMinValue.textContent = `£${priceMin.value.toFixed(2)}`;
+            priceMaxValue.textContent = `£${priceMax.value.toFixed(2)}`;
+            break;
+          case 'provider':
+            const providerCheckbox = document.querySelector(`#provider-${value.toLowerCase().replace(/\s+/g, '-')}`);
+            if (providerCheckbox) {
+              providerCheckbox.checked = false;
+              providerAll.checked = false;
+            }
+            break;
+          case 'location':
+            const locationCheckbox = document.querySelector(`#location-${value.toLowerCase().replace(/\s+/g, '-')}`);
+            if (locationCheckbox) {
+              locationCheckbox.checked = false;
+              locationAll.checked = false;
+            }
+            break;
+          case 'category':
+            const categoryCheckbox = document.querySelector(`#category-${generateSafeId(value)}`);
+            if (categoryCheckbox) {
+              categoryCheckbox.checked = false;
+              categoryAll.checked = false;
+            }
+            break;
+          case 'doctorsReport':
+            doctorsReport.checked = false;
+            break;
+        }
+
+        applyFilters();
+      });
+    });
+  }
+
   // Function to apply filters
   function applyFilters() {
     // Update current filters
@@ -189,6 +320,9 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         .map(cb => cb.value),
       doctorsReport: doctorsReport.checked
     };
+
+    // Update filter tags
+    updateFilterTags(currentFilters);
 
     // Apply filters
     const filteredTests = tests.filter(test => {
@@ -340,6 +474,8 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       priceMin.value = min;
     }
     priceMinValue.textContent = `£${min.toFixed(2)}`;
+    currentFilters.priceRange.min = min;
+    updateFilterTags(currentFilters);
     applyFilters();
   });
   priceMax.addEventListener('input', () => {
@@ -350,6 +486,8 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       priceMax.value = max;
     }
     priceMaxValue.textContent = `£${max.toFixed(2)}`;
+    currentFilters.priceRange.max = max;
+    updateFilterTags(currentFilters);
     applyFilters();
   });
 
