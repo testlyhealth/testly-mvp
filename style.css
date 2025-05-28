@@ -3571,6 +3571,24 @@ body {
     z-index: 2;
   }
 
+  .close-mobile-filter {
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    color: var(--text);
+    cursor: pointer;
+    padding: 0.5rem;
+    line-height: 1;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .close-mobile-filter:hover {
+    color: var(--accent);
+  }
+
   .mobile-filter-content {
     flex: 1;
     overflow-y: auto;

@@ -361,6 +361,15 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   if (advBtn) {
     advBtn.addEventListener('click', (e) => {
       e.preventDefault();
+      // Close mobile filter panel if it's open
+      const mobilePanel = document.querySelector('.mobile-filter-panel');
+      if (mobilePanel && mobilePanel.classList.contains('visible')) {
+        mobilePanel.classList.remove('visible');
+        setTimeout(() => {
+          mobilePanel.classList.add('hidden');
+          document.body.style.overflow = '';
+        }, 300);
+      }
       window.location.hash = '#/advanced';
     });
   }
