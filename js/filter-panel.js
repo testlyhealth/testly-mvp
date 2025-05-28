@@ -134,12 +134,34 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     return;
   }
 
-  // Create filter tags container next to the filter button
-  const filterBtn = document.querySelector('.filters-btn');
-  if (filterBtn) {
-    const filterTagsContainer = document.createElement('div');
+  // Create filter tags container in the appropriate location
+  let filterTagsContainer = document.querySelector('.filter-tags');
+  if (!filterTagsContainer) {
+    filterTagsContainer = document.createElement('div');
     filterTagsContainer.className = 'filter-tags';
-    filterBtn.insertAdjacentElement('beforebegin', filterTagsContainer);
+    
+    // For mobile, insert before the filter button
+    const filterBtn = document.querySelector('.filters-btn.mobile-only');
+    if (filterBtn) {
+      filterBtn.insertAdjacentElement('beforebegin', filterTagsContainer);
+    } else {
+      // For desktop, insert after the general health title section
+      const titleSection = document.querySelector('.general-health-title-section');
+      if (titleSection) {
+        titleSection.insertAdjacentElement('afterend', filterTagsContainer);
+      } else {
+        // Fallback to main content if title section not found
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+          const productsGrid = mainContent.querySelector('.products-grid');
+          if (productsGrid) {
+            mainContent.insertBefore(filterTagsContainer, productsGrid);
+          } else {
+            mainContent.insertBefore(filterTagsContainer, mainContent.firstChild);
+          }
+        }
+      }
+    }
   }
 
   let currentFilters = {
@@ -152,6 +174,13 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     categories: [],
     doctorsReport: false
   };
+
+  // Initialize filter tags with current filters
+  if (filterTagsContainer) {
+    updateFilterTags(currentFilters);
+  } else {
+    console.error('Failed to create filter tags container');
+  }
 
   // Price range inputs
   const priceMin = filterPanel.querySelector('#price-min');
@@ -251,7 +280,10 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   // Function to update filter tags
   function updateFilterTags(filters) {
     const filterTagsContainer = document.querySelector('.filter-tags');
-    if (!filterTagsContainer) return;
+    if (!filterTagsContainer) {
+      console.warn('Filter tags container not found');
+      return;
+    }
 
     const tagsHTML = createFilterTags(filters);
     filterTagsContainer.innerHTML = tagsHTML;
@@ -271,14 +303,14 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
             priceMaxValue.textContent = `£${priceMax.value.toFixed(2)}`;
             break;
           case 'provider':
-            const providerCheckbox = document.querySelector(`#provider-${value.toLowerCase().replace(/\s+/g, '-')}`);
+            const providerCheckbox = document.querySelector(`#provider-${generateSafeId(value)}`);
             if (providerCheckbox) {
               providerCheckbox.checked = false;
               providerAll.checked = false;
             }
             break;
           case 'location':
-            const locationCheckbox = document.querySelector(`#location-${value.toLowerCase().replace(/\s+/g, '-')}`);
+            const locationCheckbox = document.querySelector(`#location-${generateSafeId(value)}`);
             if (locationCheckbox) {
               locationCheckbox.checked = false;
               locationAll.checked = false;
