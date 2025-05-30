@@ -280,8 +280,10 @@ function createPageStructure(filterPanel, testsGrid) {
         ${createGeneralHealthTitle()}
         <div class="filter-tags"></div>
         <div class="mobile-filter-buttons">
-          <button class="filters-btn mobile-only" aria-label="Open filters">Filters</button>
-          <button class="sort-btn mobile-only" aria-label="Sort results">Sort</button>
+          <div class="left-buttons">
+            <button class="filters-btn mobile-only" aria-label="Open filters">Filters</button>
+            <button class="sort-btn mobile-only" aria-label="Sort results">Sort: Price &#8593;</button>
+          </div>
           <button class="advanced-search-btn mobile-only" aria-label="Advanced search">Advanced search</button>
         </div>
         <div class="products-grid"></div>
