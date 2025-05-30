@@ -23,6 +23,11 @@ const providerLogoMap = {
   'Medichecks': 'medichecks.png'
 };
 
+// Store sort direction and test lists globally
+let sortAscending = true;
+let filteredTests = [];
+let currentTests = [];
+
 // Function to get grouped biomarkers
 async function getGroupedBiomarkers(biomarkers) {
   try {
@@ -157,17 +162,33 @@ async function createTestCardsHTML(tests) {
   return await cardService.createCards(tests);
 }
 
+// Function to sort tests by price
+function sortTests(tests, ascending = true) {
+  const sorted = [...tests].sort((a, b) => {
+    const priceA = typeof a.price === 'number' ? a.price : Number(String(a.price).replace(/[^\d.]/g, ''));
+    const priceB = typeof b.price === 'number' ? b.price : Number(String(b.price).replace(/[^\d.]/g, ''));
+    return ascending ? priceA - priceB : priceB - priceA;
+  });
+  return sorted;
+}
+
+// Function to update sort button text
+function updateSortButtonText(ascending) {
+  const sortBtn = document.querySelector('.sort-btn.mobile-only');
+  if (sortBtn) {
+    sortBtn.innerHTML = `Sort: Price ${ascending ? '&#8593;' : '&#8595;'}`;
+  }
+}
+
 // Function to update the test grid with new content
 async function updateTestGridContent(tests) {
   const testsGrid = $('.products-grid');
   if (!testsGrid) return;
-
   try {
     const newContent = await cardService.createCards(tests);
     testsGrid.innerHTML = newContent;
-    
-    // Reattach event listeners
-    attachEventListeners(tests);
+    currentTests = tests;
+    attachEventListeners();
   } catch (error) {
     console.error('Error creating cards:', error);
     testsGrid.innerHTML = '<div class="error-message">Error loading tests. Please try again later.</div>';
@@ -175,30 +196,45 @@ async function updateTestGridContent(tests) {
 }
 
 // Function to attach event listeners
-function attachEventListeners(tests) {
+function attachEventListeners() {
+  // Sort button
+  const sortBtn = document.querySelector('.sort-btn.mobile-only');
+  if (sortBtn) {
+    const newSortBtn = sortBtn.cloneNode(true);
+    sortBtn.parentNode.replaceChild(newSortBtn, sortBtn);
+    newSortBtn.addEventListener('click', () => {
+      sortAscending = !sortAscending;
+      const sorted = sortTests(filteredTests, sortAscending);
+      currentTests = sorted;
+      updateTestGridContent(currentTests);
+      updateSortButtonText(sortAscending);
+    });
+    updateSortButtonText(sortAscending);
+  }
+
   // Toggle biomarkers (individual group)
-    $all('.toggle-biomarkers').forEach(button => {
-      button.addEventListener('click', (e) => {
+  $all('.toggle-biomarkers').forEach(button => {
+    button.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       // Only toggle the biomarker-items for this group
       const group = button.closest('.biomarker-group');
       const items = group.querySelector('.biomarker-items');
-        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+      const isExpanded = button.getAttribute('aria-expanded') === 'true';
       items.classList.toggle('hidden', isExpanded);
-        button.setAttribute('aria-expanded', !isExpanded);
+      button.setAttribute('aria-expanded', !isExpanded);
       button.innerHTML = `<span class=\"toggle-icon\">${isExpanded ? '▼' : '▲'}</span>`;
     });
-    });
+  });
 
   // Group headers
-    $all('.group-header').forEach(header => {
-      header.addEventListener('click', (e) => {
+  $all('.group-header').forEach(header => {
+    header.addEventListener('click', (e) => {
       e.stopPropagation(); // Prevent event bubbling
       const biomarkerItems = header.nextElementSibling;
-        const isExpanded = !biomarkerItems.classList.contains('hidden');
-        
-        biomarkerItems.classList.toggle('hidden');
+      const isExpanded = !biomarkerItems.classList.contains('hidden');
+      
+      biomarkerItems.classList.toggle('hidden');
       header.setAttribute('aria-expanded', !isExpanded);
       
       // Update the header text to show expand/collapse state
@@ -208,13 +244,13 @@ function attachEventListeners(tests) {
   });
 
   // Toggle details
-    $all('.toggle-details').forEach(button => {
-      button.addEventListener('click', (e) => {
+  $all('.toggle-details').forEach(button => {
+    button.addEventListener('click', (e) => {
       const details = e.target.nextElementSibling;
-        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+      const isExpanded = button.getAttribute('aria-expanded') === 'true';
 
       details.classList.toggle('hidden');
-        button.setAttribute('aria-expanded', !isExpanded);
+      button.setAttribute('aria-expanded', !isExpanded);
       button.textContent = isExpanded ? 'Show Details' : 'Hide Details';
     });
   });
@@ -383,20 +419,22 @@ function injectMobileFiltersButton(retryCount = 0) {
 // Function to initialize page elements
 async function initializePageElements(tests) {
   console.log('Initializing page elements with', tests.length, 'tests');
-  // Get the tests grid
   const testsGrid = $('.products-grid');
   if (!testsGrid) {
     console.error('Products grid not found');
     return;
   }
-  // Create cards using CardService
-  const cards = await cardService.createCards(tests);
+  filteredTests = tests;
+  currentTests = sortTests(filteredTests, sortAscending);
+  const cards = await cardService.createCards(currentTests);
   testsGrid.innerHTML = cards;
-  // Initialize filter panel
-  setupFilterPanel(tests, (filteredTests) => {
-    updateTestGridContent(filteredTests);
+  setupFilterPanel(tests, (newFilteredTests) => {
+    filteredTests = newFilteredTests;
+    sortAscending = true; // Reset to ascending when filters change
+    updateSortButtonText(sortAscending);
+    currentTests = sortTests(filteredTests, sortAscending);
+    updateTestGridContent(currentTests);
   });
-  // Dispatch event after filter panel is rendered
   setTimeout(() => {
     document.dispatchEvent(new Event('filterPanelReady'));
   }, 0);

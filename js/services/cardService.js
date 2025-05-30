@@ -150,16 +150,12 @@ export class CardService {
 
   async createCards(tests, options = {}) {
     console.log('Creating cards...');
-    // Sort tests by price
-    const sortedTests = [...tests].sort((a, b) => a.price - b.price);
-    
-    // Create cards with ranking
+    // Use the order as passed in
     const cards = await Promise.all(
-      sortedTests.map((test, index) => 
+      tests.map((test, index) => 
         this.createCard(test, { ...options, rank: index + 1 })
       )
     );
-    
     return cards.join('');
   }
 
