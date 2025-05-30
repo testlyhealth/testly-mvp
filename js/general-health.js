@@ -281,6 +281,7 @@ function createPageStructure(filterPanel, testsGrid) {
         <div class="filter-tags"></div>
         <div class="mobile-filter-buttons">
           <button class="filters-btn mobile-only" aria-label="Open filters">Filters</button>
+          <button class="sort-btn mobile-only" aria-label="Sort results">Sort</button>
           <button class="advanced-search-btn mobile-only" aria-label="Advanced search">Advanced search</button>
         </div>
         <div class="products-grid"></div>
@@ -400,11 +401,46 @@ async function initializePageElements(tests) {
 }
 
 // Listen for the filterPanelReady event to set up mobile filter logic
-if (!window._filterPanelReadyListenerAdded) {
+if (!window._mobileFilterPanelSetup) {
   document.addEventListener('filterPanelReady', () => {
-    injectMobileFiltersButton();
+    // Always attach to the correct Filters button
+    const filtersBtn = document.querySelector('.filters-btn.mobile-only');
+    const mobilePanel = document.querySelector('.mobile-filter-panel');
+    const closeBtn = document.querySelector('.close-mobile-filter');
+    const filterPanel = document.querySelector('.filter-panel');
+    const mobileContent = document.querySelector('.mobile-filter-content');
+    if (!filtersBtn || !mobilePanel || !closeBtn || !filterPanel || !mobileContent) return;
+
+    // Remove previous event listeners by cloning
+    const newFiltersBtn = filtersBtn.cloneNode(true);
+    filtersBtn.parentNode.replaceChild(newFiltersBtn, filtersBtn);
+    const newCloseBtn = closeBtn.cloneNode(true);
+    closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+
+    function openPanel() {
+      mobileContent.appendChild(filterPanel);
+      mobilePanel.classList.remove('hidden');
+      mobilePanel.classList.add('visible');
+      document.body.style.overflow = 'hidden';
+    }
+    function closePanel() {
+      mobilePanel.classList.remove('visible');
+      mobilePanel.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+    newFiltersBtn.addEventListener('click', () => {
+      if (mobilePanel.classList.contains('visible')) {
+        closePanel();
+      } else {
+        openPanel();
+      }
+    });
+    newCloseBtn.addEventListener('click', closePanel);
+    mobilePanel.addEventListener('click', (e) => {
+      if (e.target === mobilePanel) closePanel();
+    });
   });
-  window._filterPanelReadyListenerAdded = true;
+  window._mobileFilterPanelSetup = true;
 }
 
 // SPA-safe: Use MutationObserver to watch for .filter-panel
