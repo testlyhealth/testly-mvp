@@ -4246,3 +4246,13 @@ body {
       border: 1px solid #000 !important;
     }
   }
+
+  @media (max-width: 768px) {
+    .mobile-filter-buttons .filters-btn.mobile-only,
+    .mobile-filter-buttons .sort-btn.mobile-only {
+      border: 1px solid #000 !important;
+    }
+    .mobile-filter-buttons .advanced-search-btn.mobile-only {
+      border: 2px solid #000 !important;
+    }
+  }
