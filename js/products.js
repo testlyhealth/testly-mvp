@@ -102,6 +102,11 @@ export async function displayCategoryProducts(categoryId) {
         </div>
         <div class="main-content">
           ${categoryHeader}
+          <div class="filter-tags"></div>
+          <div class="mobile-filter-buttons">
+            <button class="filters-btn mobile-only" aria-label="Open filters">Filters</button>
+            <button class="advanced-search-btn mobile-only" aria-label="Advanced search">Advanced search</button>
+          </div>
           <div class="products-grid" id="tests-grid"></div>
         </div>
       `;

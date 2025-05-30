@@ -278,6 +278,11 @@ function createPageStructure(filterPanel, testsGrid) {
       </aside>
       <div class="main-content">
         ${createGeneralHealthTitle()}
+        <div class="filter-tags"></div>
+        <div class="mobile-filter-buttons">
+          <button class="filters-btn mobile-only" aria-label="Open filters">Filters</button>
+          <button class="advanced-search-btn mobile-only" aria-label="Advanced search">Advanced search</button>
+        </div>
         <div class="products-grid"></div>
       </div>
     </div>

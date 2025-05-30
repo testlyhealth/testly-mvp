@@ -140,15 +140,14 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     filterTagsContainer = document.createElement('div');
     filterTagsContainer.className = 'filter-tags';
     
-    // For mobile, insert before the filter button
-    const filterBtn = document.querySelector('.filters-btn.mobile-only');
-    if (filterBtn) {
-      filterBtn.insertAdjacentElement('beforebegin', filterTagsContainer);
-    } else {
-      // For desktop, insert into main-content before products-grid
-      const mainContent = document.querySelector('.main-content');
-      if (mainContent) {
-        // Insert at the start of main-content
+    // Insert into main-content before the mobile filter buttons
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+      const mobileFilterButtons = mainContent.querySelector('.mobile-filter-buttons');
+      if (mobileFilterButtons) {
+        mainContent.insertBefore(filterTagsContainer, mobileFilterButtons);
+      } else {
+        // If no mobile filter buttons, insert at the start of main-content
         mainContent.insertBefore(filterTagsContainer, mainContent.firstChild);
       }
     }
@@ -518,6 +517,8 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
 
   // Attach advanced search button event listener after panel is in DOM
   const advBtn = document.querySelector('.advanced-search-btn');
+  const mobileAdvBtn = document.querySelector('.advanced-search-btn.mobile-only');
+  
   if (advBtn) {
     advBtn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -530,6 +531,13 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
           document.body.style.overflow = '';
         }, 300);
       }
+      window.location.hash = '#/advanced';
+    });
+  }
+
+  if (mobileAdvBtn) {
+    mobileAdvBtn.addEventListener('click', (e) => {
+      e.preventDefault();
       window.location.hash = '#/advanced';
     });
   }
