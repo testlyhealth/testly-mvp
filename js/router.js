@@ -65,7 +65,7 @@ export default class Router {
         console.log('Handling about route');
         const content = await displayAboutPage();
         this.render(content);
-      } else if (hash === '#/admin') {
+      } else if (hash === '/admin') {
         console.log('Handling admin route');
         const content = await displayAdminPage();
         this.render(content);
