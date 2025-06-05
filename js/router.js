@@ -64,11 +64,13 @@ export default class Router {
       } else if (hash === '/about') {
         console.log('Handling about route');
         const content = await displayAboutPage();
-        this.render(content);
+        await this.render(content);
       } else if (hash === '/admin') {
         console.log('Handling admin route');
         const content = await displayAdminPage();
-        this.render(content);
+        await this.render(content);
+        // Initialize admin page after render is complete
+        await new Promise(resolve => setTimeout(resolve, 100));
         initializeAdminPage();
       } else if (hash.startsWith('/category/')) {
         console.log('Handling category route:', hash);

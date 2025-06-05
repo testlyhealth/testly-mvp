@@ -7,7 +7,7 @@ export async function displayAdminPage() {
     const { data: { session } } = await supabase.auth.getSession();
     
     if (!session) {
-        return `
+        const html = `
             <section class="admin-section">
                 <div class="admin-content">
                     <h1>Admin Access</h1>
@@ -21,6 +21,11 @@ export async function displayAdminPage() {
                 </div>
             </section>
         `;
+        
+        // Set up event handlers after a short delay to ensure DOM is ready
+        setTimeout(setupAuthHandlers, 100);
+        
+        return html;
     }
 
     // Check if user's email is authorized
@@ -111,22 +116,50 @@ export async function displayAdminPage() {
 
 // Initialize the admin page
 export function initializeAdminPage() {
-    setupAuthHandlers();
+    console.log('Admin page initialization started');
+    // Use a more reliable way to ensure DOM is ready
+    const checkForButton = () => {
+        const googleLoginBtn = document.getElementById('googleLoginBtn');
+        if (googleLoginBtn) {
+            console.log('Google login button found, setting up handlers');
+            setupAuthHandlers();
+        } else {
+            console.log('Google login button not found, retrying...');
+            setTimeout(checkForButton, 100);
+        }
+    };
+    
+    // Start checking for the button
+    checkForButton();
 }
 
 // Setup authentication handlers
 function setupAuthHandlers() {
+    console.log('Setting up auth handlers...');
     const googleLoginBtn = document.getElementById('googleLoginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
 
     if (googleLoginBtn) {
-        googleLoginBtn.addEventListener('click', async () => {
+        console.log('Adding click handler to Google login button');
+        // Remove any existing click handlers
+        const newButton = googleLoginBtn.cloneNode(true);
+        googleLoginBtn.parentNode.replaceChild(newButton, googleLoginBtn);
+        
+        newButton.addEventListener('click', async () => {
             try {
+                console.log('Google login button clicked');
+                console.log('Current URL:', window.location.href);
+                console.log('Origin:', window.location.origin);
+                console.log('Pathname:', window.location.pathname);
+                
+                const redirectTo = `${window.location.origin}${window.location.pathname}#/admin`;
+                console.log('Redirect URL:', redirectTo);
+                
                 console.log('Attempting Google sign in...');
                 const { data, error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        redirectTo: `${window.location.origin}${window.location.pathname}#/admin`,
+                        redirectTo: redirectTo,
                         queryParams: {
                             access_type: 'offline',
                             prompt: 'consent',
@@ -147,6 +180,8 @@ function setupAuthHandlers() {
                 showError('Failed to sign in with Google. Please try again.');
             }
         });
+    } else {
+        console.error('Google login button not found in the DOM');
     }
 
     if (logoutBtn) {
