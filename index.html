@@ -6,6 +6,7 @@
   <title>Testly – Health Made Simple</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"></script>
 </head>
 <body>
   <!-- Header bar -->
@@ -285,58 +286,6 @@
       </div>
     </div>
   </footer>
-
-  <!-- Firebase SDK -->
-  <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
-    import { 
-      getAuth, 
-      GoogleAuthProvider, 
-      signInWithPopup,
-      signInWithEmailAndPassword,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyBmPdj-KnRdFosy-Z5tNATGcaF1OZyusyY",
-      authDomain: "testly-health-5f1ae.firebaseapp.com",
-      projectId: "testly-health-5f1ae",
-      storageBucket: "testly-health-5f1ae.firebasestorage.app",
-      messagingSenderId: "506666008093",
-      appId: "1:506666008093:web:6f38b04d6d8928c40f50f4",
-      measurementId: "G-L7N7DD13RV"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const auth = getAuth(app);
-    const googleProvider = new GoogleAuthProvider();
-
-    // Configure auth for local development
-    auth.useDeviceLanguage();
-    auth.settings.appVerificationDisabledForTesting = true; // Enable this for local testing
-
-    // Make auth and provider available globally
-    window.firebaseAuth = auth;
-    window.firebaseGoogleProvider = googleProvider;
-    window.firebaseSignInWithPopup = signInWithPopup;
-    window.firebaseSignInWithEmailAndPassword = signInWithEmailAndPassword;
-    window.firebaseSignOut = signOut;
-
-    // Log initialization
-    console.log('Firebase initialized with config:', {
-      authDomain: firebaseConfig.authDomain,
-      currentDomain: window.location.hostname,
-      currentOrigin: window.location.origin
-    });
-
-    // Dispatch event when Firebase is ready
-    window.dispatchEvent(new Event('firebaseReady'));
-  </script>
 
   <!-- Dynamic content initialization -->
   <script type="module">

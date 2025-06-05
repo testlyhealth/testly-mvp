@@ -1,6 +1,6 @@
 import { supabase } from '../api/supabase.js';
 
-const AUTHORIZED_EMAILS = ['charles.djannor.hand@gmail.com']; // Add your co-founder's email here
+const AUTHORIZED_EMAILS = ['charles.djannor.hand@gmail.com', 'adamhopkinsonhill@gmail.com']; // Add your co-founder's email here
 
 export async function displayAdminPage() {
     // Check if user is authenticated
@@ -112,9 +112,6 @@ export async function displayAdminPage() {
 // Initialize the admin page
 export function initializeAdminPage() {
     setupAuthHandlers();
-    loadProviders();
-    loadCategories();
-    setupFormHandler();
 }
 
 // Setup authentication handlers
@@ -125,16 +122,29 @@ function setupAuthHandlers() {
     if (googleLoginBtn) {
         googleLoginBtn.addEventListener('click', async () => {
             try {
-                const { error } = await supabase.auth.signInWithOAuth({
+                console.log('Attempting Google sign in...');
+                const { data, error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        redirectTo: window.location.href
+                        redirectTo: `${window.location.origin}${window.location.pathname}#/admin`,
+                        queryParams: {
+                            access_type: 'offline',
+                            prompt: 'consent',
+                        },
+                        skipBrowserRedirect: false
                     }
                 });
-                if (error) throw error;
+                
+                if (error) {
+                    console.error('Google sign in error:', error);
+                    showError('Failed to sign in with Google: ' + error.message);
+                    throw error;
+                }
+                
+                console.log('Google sign in response:', data);
             } catch (error) {
-                console.error('Error signing in with Google:', error);
-                showError('Failed to sign in with Google');
+                console.error('Error in Google sign in:', error);
+                showError('Failed to sign in with Google. Please try again.');
             }
         });
     }
@@ -153,102 +163,17 @@ function setupAuthHandlers() {
     }
 }
 
-// Load providers from Supabase
-async function loadProviders() {
-    try {
-        const { data: providers, error } = await supabase
-            .from('providers')
-            .select('id, name')
-            .order('name');
-            
-        if (error) throw error;
-        
-        const providerSelect = document.getElementById('provider');
-        providers.forEach(provider => {
-            const option = document.createElement('option');
-            option.value = provider.id;
-            option.textContent = provider.name;
-            providerSelect.appendChild(option);
-        });
-    } catch (error) {
-        console.error('Error loading providers:', error);
-        showError('Failed to load providers');
-    }
-}
-
-// Load categories from Supabase
-async function loadCategories() {
-    try {
-        const { data: categories, error } = await supabase
-            .from('categories')
-            .select('id, name')
-            .order('name');
-            
-        if (error) throw error;
-        
-        const categorySelect = document.getElementById('category');
-        categories.forEach(category => {
-            const option = document.createElement('option');
-            option.value = category.id;
-            option.textContent = category.name;
-            categorySelect.appendChild(option);
-        });
-    } catch (error) {
-        console.error('Error loading categories:', error);
-        showError('Failed to load categories');
-    }
-}
-
-// Handle form submission
-function setupFormHandler() {
-    const form = document.getElementById('addBloodTestForm');
-    if (form) {
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = new FormData(form);
-            const biomarkers = formData.get('biomarkers').split(',').map(b => b.trim());
-            
-            try {
-                const { data, error } = await supabase
-                    .from('products')
-                    .insert([{
-                        name: formData.get('testName'),
-                        provider_id: formData.get('provider'),
-                        category_id: formData.get('category'),
-                        price: parseFloat(formData.get('price')),
-                        description: formData.get('description'),
-                        biomarkers: biomarkers,
-                        turnaround_time: parseInt(formData.get('turnaroundTime')),
-                        sample_type: formData.get('sampleType')
-                    }]);
-                    
-                if (error) throw error;
-                
-                showSuccess('Blood test added successfully!');
-                form.reset();
-            } catch (error) {
-                console.error('Error adding blood test:', error);
-                showError('Failed to add blood test');
-            }
-        });
-    }
-}
-
-// Show success message
-function showSuccess(message) {
-    const alert = document.createElement('div');
-    alert.className = 'alert success';
-    alert.textContent = message;
-    document.querySelector('.admin-content').prepend(alert);
-    setTimeout(() => alert.remove(), 3000);
-}
-
 // Show error message
 function showError(message) {
+    const adminContent = document.querySelector('.admin-content');
+    if (!adminContent) {
+        console.error('Error:', message);
+        return;
+    }
+    
     const alert = document.createElement('div');
     alert.className = 'alert error';
     alert.textContent = message;
-    document.querySelector('.admin-content').prepend(alert);
+    adminContent.prepend(alert);
     setTimeout(() => alert.remove(), 3000);
 } 
