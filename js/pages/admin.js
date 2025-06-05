@@ -1,10 +1,55 @@
 import { supabase } from '../api/supabase.js';
 
+const AUTHORIZED_EMAILS = ['charles.djannor.hand@gmail.com']; // Add your co-founder's email here
+
 export async function displayAdminPage() {
+    // Check if user is authenticated
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+        return `
+            <section class="admin-section">
+                <div class="admin-content">
+                    <h1>Admin Access</h1>
+                    <div class="admin-login-container">
+                        <p>Please sign in with your Google account to access the admin dashboard.</p>
+                        <button id="googleLoginBtn" class="google-login-btn">
+                            <img src="https://www.google.com/favicon.ico" alt="Google" class="google-icon">
+                            Sign in with Google
+                        </button>
+                    </div>
+                </div>
+            </section>
+        `;
+    }
+
+    // Check if user's email is authorized
+    const userEmail = session.user.email;
+    if (!AUTHORIZED_EMAILS.includes(userEmail)) {
+        return `
+            <section class="admin-section">
+                <div class="admin-content">
+                    <h1>Access Denied</h1>
+                    <div class="admin-login-container">
+                        <p>You do not have permission to access the admin dashboard.</p>
+                        <button id="logoutBtn" class="logout-btn">Sign Out</button>
+                    </div>
+                </div>
+            </section>
+        `;
+    }
+
+    // User is authenticated and authorized, show admin dashboard
     return `
         <section class="admin-section">
             <div class="admin-content">
-                <h1>Admin Dashboard</h1>
+                <div class="admin-header">
+                    <h1>Admin Dashboard</h1>
+                    <div class="admin-user-info">
+                        <span>Welcome, ${userEmail}</span>
+                        <button id="logoutBtn" class="logout-btn">Sign Out</button>
+                    </div>
+                </div>
                 <div class="admin-form-container">
                     <h2>Add New Blood Test</h2>
                     <form id="addBloodTestForm" class="admin-form">
@@ -66,9 +111,46 @@ export async function displayAdminPage() {
 
 // Initialize the admin page
 export function initializeAdminPage() {
+    setupAuthHandlers();
     loadProviders();
     loadCategories();
     setupFormHandler();
+}
+
+// Setup authentication handlers
+function setupAuthHandlers() {
+    const googleLoginBtn = document.getElementById('googleLoginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (googleLoginBtn) {
+        googleLoginBtn.addEventListener('click', async () => {
+            try {
+                const { error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.href
+                    }
+                });
+                if (error) throw error;
+            } catch (error) {
+                console.error('Error signing in with Google:', error);
+                showError('Failed to sign in with Google');
+            }
+        });
+    }
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+                window.location.reload();
+            } catch (error) {
+                console.error('Error signing out:', error);
+                showError('Failed to sign out');
+            }
+        });
+    }
 }
 
 // Load providers from Supabase

@@ -4696,3 +4696,88 @@ body {
         font-size: 1.25rem;
     }
   }
+
+  /* Admin Login Styles */
+  .admin-login-container {
+    text-align: center;
+    padding: 2rem;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .admin-login-container p {
+    margin-bottom: 1.5rem;
+    color: #666;
+  }
+
+  .google-login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .google-login-btn:hover {
+    background: #f5f5f5;
+  }
+
+  .google-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+  }
+
+  .admin-user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .admin-user-info span {
+    color: #666;
+  }
+
+  .logout-btn {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .logout-btn:hover {
+    background: #e9ecef;
+    color: #333;
+  }
+
+  @media (max-width: 768px) {
+    .admin-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .admin-user-info {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+  }
