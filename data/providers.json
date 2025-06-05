@@ -127,7 +127,7 @@
 },
 {
    "provider": "Medichecks",
-   "test_name": "Ultimate performance bloo test",
+   "test_name": "Ultimate performance blood test",
    "price": 199,
    "pricing information":"Additional £35 for having blood taken at a clinic and £59 to have a nurse/phlebotamist come to your house to take the blood. Interest free payments are available.",
    "description": "Are you looking to transform your body through diet and exercise and track your progress along the way? Our Ultimate Blood Test is designed for those who want to take their health and fitness to the next level — whether you're an athlete, biohacker, or simply someone who's serious about optimising their health. With this test, you can gain deep insights into your body's performance and make informed decisions to fine-tune your diet and fitness routine, all while monitoring your progress.",
@@ -1043,6 +1043,7 @@
     "lab accreditations": [],
     "link": "https://www.numan.com/lps/gbr/blood-test/complete-health-check"
   },
+
   {
     "test_name": "General Health Check",
     "provider": "Medichecks",

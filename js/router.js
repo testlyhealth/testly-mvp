@@ -4,6 +4,8 @@ import { displayCategoryProducts } from './products.js';
 import { getHomePageContent, initializeHomePage } from './pages/home.js';
 import { displayGeneralHealthPage } from './general-health.js';
 import { displayAdvancedSearchPage } from './pages/advanced-search.js';
+import { displayAboutPage } from './pages/about.js';
+import { displayAdminPage, initializeAdminPage } from './pages/admin.js';
 
 // Router class to handle SPA navigation
 export default class Router {
@@ -59,6 +61,15 @@ export default class Router {
         console.log('Handling advanced search route');
         const content = await displayAdvancedSearchPage();
         await this.render(content);
+      } else if (hash === '/about') {
+        console.log('Handling about route');
+        const content = await displayAboutPage();
+        this.render(content);
+      } else if (hash === '#/admin') {
+        console.log('Handling admin route');
+        const content = await displayAdminPage();
+        this.render(content);
+        initializeAdminPage();
       } else if (hash.startsWith('/category/')) {
         console.log('Handling category route:', hash);
         const categoryId = hash.split('/')[2];
@@ -134,8 +145,12 @@ export default class Router {
     // Add visible class for transition in
     this.mainContent.classList.add('visible');
     
-    // Restore scroll position
-    window.scrollTo(0, scrollPosition);
+    // Reset scroll position for about page, otherwise restore previous position
+    if (window.location.hash === '#/about') {
+      window.scrollTo(0, 0);
+    } else {
+      window.scrollTo(0, scrollPosition);
+    }
 
     // Attach select all event listeners if on advanced search page
     if (window.location.hash === '#/advanced') {
