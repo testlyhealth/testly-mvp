@@ -1,13 +1,120 @@
 import { supabase } from '../api/supabase.js';
 
-const AUTHORIZED_EMAILS = ['charles.djannor.hand@gmail.com', 'adamhopkinsonhill@gmail.com']; // Add your co-founder's email here
+const AUTHORIZED_EMAILS = ['charles.djannor.hand@gmail.com', 'adamhopkinsonhill@gmail.com'];
+
+// Fetch table structure from Supabase
+async function fetchTableStructure() {
+    try {
+        // Get all tables in the public schema using Supabase's built-in function
+        const { data: tables, error } = await supabase
+            .rpc('get_tables');
+
+        if (error) throw error;
+
+        // For each table, get its columns
+        const tableStructures = {};
+        for (const table of tables) {
+            const { data: columns, error: columnError } = await supabase
+                .rpc('get_table_columns', { tbl_name: table.table_name });
+
+            if (columnError) throw columnError;
+            tableStructures[table.table_name] = columns;
+        }
+
+        return tableStructures;
+    } catch (error) {
+        console.error('Error fetching table structure:', error);
+        throw error;
+    }
+}
+
+// Generate form HTML based on table structure
+function generateFormHTML(tableName, columns) {
+    const formGroups = columns
+        .filter(col => col.column_name !== 'id' && col.column_name !== 'created_at' && col.column_name !== 'updated_at')
+        .map(col => {
+            const isRequired = col.is_nullable === 'NO' && !col.column_default;
+            const inputType = getInputType(col.data_type);
+            
+            return `
+                <div class="form-group">
+                    <label for="${col.column_name}">${formatColumnName(col.column_name)}</label>
+                    ${generateInputElement(col.column_name, inputType, isRequired)}
+                </div>
+            `;
+        })
+        .join('');
+
+    return `
+        <div class="admin-form-container">
+            <h2>Add New ${formatTableName(tableName)}</h2>
+            <form id="addItemForm" class="admin-form" data-table="${tableName}">
+                ${formGroups}
+                <button type="submit" class="submit-btn">Add ${formatTableName(tableName)}</button>
+            </form>
+        </div>
+    `;
+}
+
+// Helper function to format table name
+function formatTableName(name) {
+    return name
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+// Helper function to format column name
+function formatColumnName(name) {
+    return name
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+// Helper function to determine input type based on data type
+function getInputType(dataType) {
+    switch (dataType) {
+        case 'integer':
+        case 'bigint':
+        case 'smallint':
+            return 'number';
+        case 'numeric':
+        case 'decimal':
+        case 'real':
+        case 'double precision':
+            return 'number';
+        case 'boolean':
+            return 'checkbox';
+        case 'date':
+            return 'date';
+        case 'timestamp':
+        case 'timestamp with time zone':
+            return 'datetime-local';
+        case 'text':
+        case 'character varying':
+        default:
+            return 'text';
+    }
+}
+
+// Helper function to generate input element
+function generateInputElement(name, type, required) {
+    const requiredAttr = required ? 'required' : '';
+    
+    if (type === 'textarea') {
+        return `<textarea id="${name}" name="${name}" rows="4" ${requiredAttr}></textarea>`;
+    }
+    
+    return `<input type="${type}" id="${name}" name="${name}" ${requiredAttr}>`;
+}
 
 export async function displayAdminPage() {
     // Check if user is authenticated
     const { data: { session } } = await supabase.auth.getSession();
     
     if (!session) {
-        const html = `
+        return `
             <section class="admin-section">
                 <div class="admin-content">
                     <h1>Admin Access</h1>
@@ -21,11 +128,6 @@ export async function displayAdminPage() {
                 </div>
             </section>
         `;
-        
-        // Set up event handlers after a short delay to ensure DOM is ready
-        setTimeout(setupAuthHandlers, 100);
-        
-        return html;
     }
 
     // Check if user's email is authorized
@@ -44,144 +146,95 @@ export async function displayAdminPage() {
         `;
     }
 
-    // User is authenticated and authorized, show admin dashboard
-    return `
-        <section class="admin-section">
-            <div class="admin-content">
-                <div class="admin-header">
-                    <h1>Admin Dashboard</h1>
-                    <div class="admin-user-info">
-                        <span>Welcome, ${userEmail}</span>
-                        <button id="logoutBtn" class="logout-btn">Sign Out</button>
+    try {
+        // Fetch table structure
+        const tableStructures = await fetchTableStructure();
+        
+        // Generate table selection dropdown
+        const tableOptions = Object.keys(tableStructures)
+            .map(tableName => `<option value="${tableName}">${formatTableName(tableName)}</option>`)
+            .join('');
+
+        // User is authenticated and authorized, show admin dashboard
+        return `
+            <section class="admin-section">
+                <div class="admin-content">
+                    <div class="admin-header">
+                        <h1>Admin Dashboard</h1>
+                        <div class="admin-user-info">
+                            <span>Welcome, ${userEmail}</span>
+                            <button id="logoutBtn" class="logout-btn">Sign Out</button>
+                        </div>
                     </div>
+                    
+                    <div class="table-selector">
+                        <label for="tableSelect">Select Table:</label>
+                        <select id="tableSelect" class="table-select">
+                            <option value="">Select a table</option>
+                            ${tableOptions}
+                        </select>
+                    </div>
+                    
+                    <div id="formContainer"></div>
                 </div>
-                <div class="admin-form-container">
-                    <h2>Add New Blood Test</h2>
-                    <form id="addBloodTestForm" class="admin-form">
-                        <div class="form-group">
-                            <label for="testName">Test Name</label>
-                            <input type="text" id="testName" name="testName" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="provider">Provider</label>
-                            <select id="provider" name="provider" required>
-                                <option value="">Select Provider</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="category">Category</label>
-                            <select id="category" name="category" required>
-                                <option value="">Select Category</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="price">Price (£)</label>
-                            <input type="number" id="price" name="price" step="0.01" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="description">Description</label>
-                            <textarea id="description" name="description" rows="4" required></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="biomarkers">Biomarkers (comma-separated)</label>
-                            <input type="text" id="biomarkers" name="biomarkers" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="turnaroundTime">Turnaround Time (days)</label>
-                            <input type="number" id="turnaroundTime" name="turnaroundTime" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="sampleType">Sample Type</label>
-                            <select id="sampleType" name="sampleType" required>
-                                <option value="blood">Blood</option>
-                                <option value="saliva">Saliva</option>
-                                <option value="urine">Urine</option>
-                            </select>
-                        </div>
-                        
-                        <button type="submit" class="submit-btn">Add Blood Test</button>
-                    </form>
+            </section>
+        `;
+    } catch (error) {
+        console.error('Error setting up admin page:', error);
+        return `
+            <section class="admin-section">
+                <div class="admin-content">
+                    <h1>Error</h1>
+                    <p>Failed to load admin dashboard. Please try again later.</p>
                 </div>
-            </div>
-        </section>
-    `;
+            </section>
+        `;
+    }
 }
 
 // Initialize the admin page
 export function initializeAdminPage() {
     console.log('Admin page initialization started');
-    // Use a more reliable way to ensure DOM is ready
-    const checkForButton = () => {
-        const googleLoginBtn = document.getElementById('googleLoginBtn');
-        if (googleLoginBtn) {
-            console.log('Google login button found, setting up handlers');
-            setupAuthHandlers();
+    const checkForElements = () => {
+        const tableSelect = document.getElementById('tableSelect');
+        if (tableSelect) {
+            console.log('Table select found, setting up handlers');
+            setupAdminHandlers();
         } else {
-            console.log('Google login button not found, retrying...');
-            setTimeout(checkForButton, 100);
+            console.log('Table select not found, retrying...');
+            setTimeout(checkForElements, 100);
         }
     };
     
-    // Start checking for the button
-    checkForButton();
+    checkForElements();
 }
 
-// Setup authentication handlers
-function setupAuthHandlers() {
-    console.log('Setting up auth handlers...');
-    const googleLoginBtn = document.getElementById('googleLoginBtn');
+// Setup admin handlers
+function setupAdminHandlers() {
+    const tableSelect = document.getElementById('tableSelect');
+    const formContainer = document.getElementById('formContainer');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    if (googleLoginBtn) {
-        console.log('Adding click handler to Google login button');
-        // Remove any existing click handlers
-        const newButton = googleLoginBtn.cloneNode(true);
-        googleLoginBtn.parentNode.replaceChild(newButton, googleLoginBtn);
-        
-        newButton.addEventListener('click', async () => {
-            try {
-                console.log('Google login button clicked');
-                console.log('Current URL:', window.location.href);
-                console.log('Origin:', window.location.origin);
-                console.log('Pathname:', window.location.pathname);
-                
-                const redirectTo = `${window.location.origin}${window.location.pathname}#/admin`;
-                console.log('Redirect URL:', redirectTo);
-                
-                console.log('Attempting Google sign in...');
-                const { data, error } = await supabase.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: {
-                        redirectTo: redirectTo,
-                        queryParams: {
-                            access_type: 'offline',
-                            prompt: 'consent',
-                        },
-                        skipBrowserRedirect: false
-                    }
-                });
-                
-                if (error) {
-                    console.error('Google sign in error:', error);
-                    showError('Failed to sign in with Google: ' + error.message);
-                    throw error;
+    if (tableSelect) {
+        tableSelect.addEventListener('change', async (e) => {
+            const tableName = e.target.value;
+            if (tableName) {
+                try {
+                    const { data: columns, error } = await supabase
+                        .rpc('get_table_columns', { tbl_name: tableName });
+
+                    if (error) throw error;
+                    
+                    formContainer.innerHTML = generateFormHTML(tableName, columns);
+                    setupFormHandler(tableName);
+                } catch (error) {
+                    console.error('Error loading table structure:', error);
+                    showError('Failed to load table structure');
                 }
-                
-                console.log('Google sign in response:', data);
-            } catch (error) {
-                console.error('Error in Google sign in:', error);
-                showError('Failed to sign in with Google. Please try again.');
+            } else {
+                formContainer.innerHTML = '';
             }
         });
-    } else {
-        console.error('Google login button not found in the DOM');
     }
 
     if (logoutBtn) {
@@ -198,6 +251,37 @@ function setupAuthHandlers() {
     }
 }
 
+// Setup form submission handler
+function setupFormHandler(tableName) {
+    const form = document.getElementById('addItemForm');
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const data = {};
+            
+            for (const [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            
+            try {
+                const { error } = await supabase
+                    .from(tableName)
+                    .insert([data]);
+                
+                if (error) throw error;
+                
+                showSuccess(`Successfully added new ${formatTableName(tableName)}`);
+                form.reset();
+            } catch (error) {
+                console.error('Error inserting data:', error);
+                showError(`Failed to add ${formatTableName(tableName)}: ${error.message}`);
+            }
+        });
+    }
+}
+
 // Show error message
 function showError(message) {
     const adminContent = document.querySelector('.admin-content');
@@ -208,6 +292,21 @@ function showError(message) {
     
     const alert = document.createElement('div');
     alert.className = 'alert error';
+    alert.textContent = message;
+    adminContent.prepend(alert);
+    setTimeout(() => alert.remove(), 3000);
+}
+
+// Show success message
+function showSuccess(message) {
+    const adminContent = document.querySelector('.admin-content');
+    if (!adminContent) {
+        console.log('Success:', message);
+        return;
+    }
+    
+    const alert = document.createElement('div');
+    alert.className = 'alert success';
     alert.textContent = message;
     adminContent.prepend(alert);
     setTimeout(() => alert.remove(), 3000);
