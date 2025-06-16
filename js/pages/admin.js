@@ -1,5 +1,4 @@
 import { supabase } from '../api/supabase.js';
-import Papa from 'papaparse';
 
 const AUTHORIZED_EMAILS = ['charles.djannor.hand@gmail.com', 'adamhopkinsonhill@gmail.com'];
 
