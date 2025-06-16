@@ -39,11 +39,13 @@ export async function displayAdminPage() {
         `;
     }
 
-    // If logged in and authorized, show success message only
+    // If logged in and authorized, show upload UI
     return `
         <section class="admin-section">
             <div class="admin-content">
-                <h1>logged in successfully</h1>
+                <h1>Upload Blood Test CSV</h1>
+                <input type="file" id="csvUpload" accept=".csv" />
+                <div id="csvFileName" style="margin-top:1rem;color:#007bff;"></div>
             </div>
         </section>
     `;
@@ -63,6 +65,19 @@ export function initializeAdminPage() {
         logoutBtn.addEventListener('click', async () => {
             await supabase.auth.signOut();
             window.location.reload();
+        });
+    }
+    // Attach CSV upload handler
+    const csvInput = document.getElementById('csvUpload');
+    const fileNameDiv = document.getElementById('csvFileName');
+    if (csvInput && fileNameDiv) {
+        csvInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                fileNameDiv.textContent = `Loaded file: ${file.name}`;
+            } else {
+                fileNameDiv.textContent = '';
+            }
         });
     }
 } 
