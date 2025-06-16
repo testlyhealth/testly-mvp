@@ -272,9 +272,14 @@ if (!window._mobileFilterPanelSetup) {
 init();
 
 window.addEventListener('DOMContentLoaded', async () => {
+  // Check for OAuth code or access_token in URL (fresh login)
+  const hasOAuthParams = window.location.search.includes('code=') || window.location.hash.includes('access_token=');
   const { data: { session } } = await supabase.auth.getSession();
-  // If user is signed in and not already on /#/admin, redirect them
-  if (session && (!window.location.hash || window.location.hash === '#/')) {
+  if (session && hasOAuthParams) {
     window.location.hash = '#/admin';
+    // Optionally, clean up the URL (remove ?code=...)
+    if (window.history.replaceState) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
   }
 });
