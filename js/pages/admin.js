@@ -125,6 +125,77 @@ export function initializeAdminPage() {
                             previewDiv.innerHTML = html;
                         }
                         fileNameDiv.parentNode.appendChild(previewDiv);
+
+                        // --- Validation ---
+                        const validationDiv = document.getElementById('csvValidation') || document.createElement('div');
+                        validationDiv.id = 'csvValidation';
+                        validationDiv.style.marginTop = '2rem';
+                        let errors = [];
+                        let missingBiomarkers = new Set();
+                        let missingCategories = new Set();
+                        let missingAccreditations = new Set();
+                        let missingMethods = new Set();
+                        let missingProviders = new Set();
+                        data.forEach((row, idx) => {
+                            // Providers
+                            if (row.provider_name && !referenceData.providers.includes(row.provider_name)) {
+                                missingProviders.add(row.provider_name);
+                            }
+                            // Biomarkers
+                            if (row.biomarkers) {
+                                row.biomarkers.split(',').map(x => x.trim()).forEach(bio => {
+                                    if (bio && !referenceData.biomarkers.includes(bio)) {
+                                        missingBiomarkers.add(bio);
+                                    }
+                                });
+                            }
+                            // Categories
+                            if (row.product_categories) {
+                                row.product_categories.split(',').map(x => x.trim()).forEach(cat => {
+                                    if (cat && !referenceData.productCategories.includes(cat)) {
+                                        missingCategories.add(cat);
+                                    }
+                                });
+                            }
+                            // Accreditations
+                            if (row.lab_accreditations) {
+                                row.lab_accreditations.split(',').map(x => x.trim()).forEach(acc => {
+                                    if (acc && !referenceData.labAccreditations.includes(acc)) {
+                                        missingAccreditations.add(acc);
+                                    }
+                                });
+                            }
+                            // Blood taking methods
+                            if (row.blood_taking_methods) {
+                                row.blood_taking_methods.split(',').map(x => x.trim()).forEach(method => {
+                                    if (method && !referenceData.bloodTakingMethods.includes(method)) {
+                                        missingMethods.add(method);
+                                    }
+                                });
+                            }
+                        });
+                        let report = '';
+                        if (missingProviders.size > 0) {
+                            report += `<div style='color:#b00;'><strong>Unknown providers:</strong> ${Array.from(missingProviders).join(', ')}</div>`;
+                        }
+                        if (missingBiomarkers.size > 0) {
+                            report += `<div style='color:#b00;'><strong>Missing biomarkers:</strong> ${Array.from(missingBiomarkers).join(', ')}</div>`;
+                        }
+                        if (missingCategories.size > 0) {
+                            report += `<div style='color:#b00;'><strong>Missing product categories:</strong> ${Array.from(missingCategories).join(', ')}</div>`;
+                        }
+                        if (missingAccreditations.size > 0) {
+                            report += `<div style='color:#b00;'><strong>Missing lab accreditations:</strong> ${Array.from(missingAccreditations).join(', ')}</div>`;
+                        }
+                        if (missingMethods.size > 0) {
+                            report += `<div style='color:#b00;'><strong>Missing blood taking methods:</strong> ${Array.from(missingMethods).join(', ')}</div>`;
+                        }
+                        if (!report) {
+                            report = `<div style='color:#080;'><strong>No errors found. Ready to upload!</strong></div>`;
+                        }
+                        validationDiv.innerHTML = `<h4>Validation Report</h4>${report}`;
+                        fileNameDiv.parentNode.appendChild(validationDiv);
+                        // --- End Validation ---
                     },
                     error: function(err) {
                         const previewDiv = document.getElementById('csvPreview') || document.createElement('div');
@@ -138,6 +209,8 @@ export function initializeAdminPage() {
                 fileNameDiv.textContent = '';
                 const previewDiv = document.getElementById('csvPreview');
                 if (previewDiv) previewDiv.remove();
+                const validationDiv = document.getElementById('csvValidation');
+                if (validationDiv) validationDiv.remove();
             }
         });
     }
