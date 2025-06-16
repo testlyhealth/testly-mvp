@@ -9,6 +9,7 @@ import { LandingPage } from './components/landing-page.js';
 import { initUserDropdown } from './user-dropdown.js';
 import Router from './router.js';
 import store from './store.js';
+import { supabase } from './api/supabase.js';
 
 // Define routes
 const routes = [
@@ -269,3 +270,11 @@ if (!window._mobileFilterPanelSetup) {
 
 // Start the app
 init();
+
+window.addEventListener('DOMContentLoaded', async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  // If user is signed in and not already on /#/admin, redirect them
+  if (session && (!window.location.hash || window.location.hash === '#/')) {
+    window.location.hash = '#/admin';
+  }
+});
