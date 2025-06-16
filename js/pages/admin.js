@@ -1,4 +1,5 @@
 import { supabase } from '../api/supabase.js';
+import Papa from 'papaparse';
 
 const AUTHORIZED_EMAILS = ['charles.djannor.hand@gmail.com', 'adamhopkinsonhill@gmail.com'];
 
@@ -75,8 +76,41 @@ export function initializeAdminPage() {
             const file = e.target.files[0];
             if (file) {
                 fileNameDiv.textContent = `Loaded file: ${file.name}`;
+                // Parse CSV using PapaParse
+                Papa.parse(file, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        const data = results.data;
+                        // Show preview of first 5 rows
+                        const previewDiv = document.getElementById('csvPreview') || document.createElement('div');
+                        previewDiv.id = 'csvPreview';
+                        previewDiv.style.marginTop = '1rem';
+                        if (data.length === 0) {
+                            previewDiv.textContent = 'No data found in CSV.';
+                        } else {
+                            let html = '<strong>CSV Preview (first 5 rows):</strong><br><table style="border-collapse:collapse;margin-top:0.5rem;">';
+                            html += '<tr>' + Object.keys(data[0]).map(key => `<th style=\"border:1px solid #ccc;padding:2px 6px;\">${key}</th>`).join('') + '</tr>';
+                            data.slice(0, 5).forEach(row => {
+                                html += '<tr>' + Object.values(row).map(val => `<td style=\"border:1px solid #ccc;padding:2px 6px;\">${val}</td>`).join('') + '</tr>';
+                            });
+                            html += '</table>';
+                            previewDiv.innerHTML = html;
+                        }
+                        fileNameDiv.parentNode.appendChild(previewDiv);
+                    },
+                    error: function(err) {
+                        const previewDiv = document.getElementById('csvPreview') || document.createElement('div');
+                        previewDiv.id = 'csvPreview';
+                        previewDiv.style.marginTop = '1rem';
+                        previewDiv.textContent = 'Error parsing CSV: ' + err.message;
+                        fileNameDiv.parentNode.appendChild(previewDiv);
+                    }
+                });
             } else {
                 fileNameDiv.textContent = '';
+                const previewDiv = document.getElementById('csvPreview');
+                if (previewDiv) previewDiv.remove();
             }
         });
     }
