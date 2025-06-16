@@ -44,8 +44,8 @@ export async function displayAdminPage() {
         <section class="admin-section">
             <div class="admin-content">
                 <h1>Admin Page</h1>
-                <div style="margin-bottom:0.25rem;font-size:1.1rem;">Welcome ${session.user.user_metadata.full_name || session.user.email}</div>
-                <div style="margin-top:4rem;"><h2>Upload Blood Test CSV</h2>
+                <div style="margin-bottom:0;font-size:1.1rem;">Welcome ${session.user.user_metadata.full_name || session.user.email}</div>
+                <div style="margin-top:4rem;"><h3>Upload Blood Test CSV</h3>
                 <input type="file" id="csvUpload" accept=".csv" />
                 <div id="csvFileName" style="margin-top:1rem;color:#007bff;"></div></div>
             </div>
