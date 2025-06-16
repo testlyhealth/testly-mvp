@@ -175,6 +175,7 @@ export function initializeAdminPage() {
                             }
                         });
                         let report = '';
+                        let validationPassed = false;
                         if (missingProviders.size > 0) {
                             report += `<div style='color:#b00;'><strong>Unknown providers:</strong> ${Array.from(missingProviders).join(', ')}</div>`;
                         }
@@ -192,10 +193,38 @@ export function initializeAdminPage() {
                         }
                         if (!report) {
                             report = `<div style='color:#080;'><strong>No errors found. Ready to upload!</strong></div>`;
+                            validationPassed = true;
                         }
                         validationDiv.innerHTML = `<h4>Validation Report</h4>${report}`;
                         fileNameDiv.parentNode.appendChild(validationDiv);
-                        // --- End Validation ---
+
+                        // --- Upload Button ---
+                        let uploadBtn = document.getElementById('uploadToSupabaseBtn');
+                        if (!uploadBtn) {
+                            uploadBtn = document.createElement('button');
+                            uploadBtn.id = 'uploadToSupabaseBtn';
+                            uploadBtn.textContent = 'Upload to Supabase';
+                            uploadBtn.style.marginTop = '1.5rem';
+                            uploadBtn.style.padding = '0.75rem 1.5rem';
+                            uploadBtn.style.fontSize = '1rem';
+                            uploadBtn.style.borderRadius = '4px';
+                            uploadBtn.style.border = 'none';
+                            uploadBtn.style.background = '#888';
+                            uploadBtn.style.color = '#fff';
+                            uploadBtn.style.cursor = 'not-allowed';
+                            uploadBtn.disabled = true;
+                            validationDiv.parentNode.appendChild(uploadBtn);
+                        }
+                        if (validationPassed) {
+                            uploadBtn.disabled = false;
+                            uploadBtn.style.background = '#007bff';
+                            uploadBtn.style.cursor = 'pointer';
+                        } else {
+                            uploadBtn.disabled = true;
+                            uploadBtn.style.background = '#888';
+                            uploadBtn.style.cursor = 'not-allowed';
+                        }
+                        // --- End Upload Button ---
                     },
                     error: function(err) {
                         const previewDiv = document.getElementById('csvPreview') || document.createElement('div');
