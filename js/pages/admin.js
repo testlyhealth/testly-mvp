@@ -2,6 +2,32 @@ import { supabase } from '../api/supabase.js';
 
 const AUTHORIZED_EMAILS = ['charles.djannor.hand@gmail.com', 'adamhopkinsonhill@gmail.com'];
 
+let referenceData = {
+    biomarkers: [],
+    productCategories: [],
+    labAccreditations: [],
+    bloodTakingMethods: [],
+    providers: []
+};
+
+async function fetchReferenceData() {
+    // Fetch all reference data from Supabase
+    const [biomarkersRes, categoriesRes, accreditationsRes, methodsRes, providersRes] = await Promise.all([
+        supabase.from('biomarkers').select('name'),
+        supabase.from('product_categories').select('name'),
+        supabase.from('lab_accreditations').select('name'),
+        supabase.from('blood_taking_methods').select('name'),
+        supabase.from('providers').select('name')
+    ]);
+    referenceData.biomarkers = (biomarkersRes.data || []).map(x => x.name);
+    referenceData.productCategories = (categoriesRes.data || []).map(x => x.name);
+    referenceData.labAccreditations = (accreditationsRes.data || []).map(x => x.name);
+    referenceData.bloodTakingMethods = (methodsRes.data || []).map(x => x.name);
+    referenceData.providers = (providersRes.data || []).map(x => x.name);
+    // Log for debugging
+    console.log('Reference Data:', referenceData);
+}
+
 export async function displayAdminPage() {
     // Check if user is authenticated
     const { data: { session } } = await supabase.auth.getSession();
@@ -115,4 +141,5 @@ export function initializeAdminPage() {
             }
         });
     }
+    fetchReferenceData();
 } 
