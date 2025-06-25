@@ -266,10 +266,18 @@ export function initializeAdminPage() {
                             uploadBtn.disabled = false;
                             uploadBtn.style.background = '#007bff';
                             uploadBtn.style.cursor = 'pointer';
+                            // Add click handler for confirmation popup
+                            uploadBtn.onclick = function() {
+                                if (confirm('Are you sure you want to upload to Supabase?')) {
+                                    // TODO: Implement actual upload logic here
+                                    alert('Upload functionality will be implemented next!');
+                                }
+                            };
                         } else {
                             uploadBtn.disabled = true;
                             uploadBtn.style.background = '#888';
                             uploadBtn.style.cursor = 'not-allowed';
+                            uploadBtn.onclick = null;
                         }
                         // --- End Upload Button ---
                     },
