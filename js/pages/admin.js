@@ -131,12 +131,14 @@ export function initializeAdminPage() {
                         validationDiv.id = 'csvValidation';
                         validationDiv.style.marginTop = '2rem';
                         let errors = [];
+                        let warnings = [];
                         let missingBiomarkers = new Set();
                         let missingCategories = new Set();
                         let missingAccreditations = new Set();
                         let missingMethods = new Set();
                         let missingProviders = new Set();
                         let invalidRows = [];
+                        let warningRows = [];
                         data.forEach((row, idx) => {
                             // Providers
                             if (row.provider_name && !referenceData.providers.includes(row.provider_name)) {
@@ -179,11 +181,16 @@ export function initializeAdminPage() {
                             const max = row.results_returned_time_max;
                             const days = row.results_returned_time_days;
                             let rowErrors = [];
-                            if (min === undefined || min === "" || isNaN(Number(min))) {
-                                rowErrors.push('results_returned_time_min is missing or not a number');
+                            let rowWarnings = [];
+                            if (min === undefined || min === "") {
+                                rowWarnings.push('results_returned_time_min is empty');
+                            } else if (isNaN(Number(min))) {
+                                rowErrors.push('results_returned_time_min is not a number');
                             }
-                            if (max === undefined || max === "" || isNaN(Number(max))) {
-                                rowErrors.push('results_returned_time_max is missing or not a number');
+                            if (max === undefined || max === "") {
+                                rowWarnings.push('results_returned_time_max is empty');
+                            } else if (isNaN(Number(max))) {
+                                rowErrors.push('results_returned_time_max is not a number');
                             }
                             if (days === undefined || days === "" || isNaN(Number(days))) {
                                 rowErrors.push('results_returned_time_days is missing or not a number');
@@ -193,6 +200,9 @@ export function initializeAdminPage() {
                             }
                             if (rowErrors.length > 0) {
                                 invalidRows.push({ row: idx + 2, errors: rowErrors }); // +2 for header and 0-index
+                            }
+                            if (rowWarnings.length > 0) {
+                                warningRows.push({ row: idx + 2, warnings: rowWarnings }); // +2 for header and 0-index
                             }
                         });
                         let report = '';
@@ -219,8 +229,17 @@ export function initializeAdminPage() {
                             });
                             report += `</ul></div>`;
                         }
+                        if (warningRows.length > 0) {
+                            report += `<div style='color:#f90;'><strong>Rows with empty results_returned_time fields (will be uploaded):</strong><ul style='margin:0.5rem 0 0 1.5rem;'>`;
+                            warningRows.forEach(r => {
+                                report += `<li>Row ${r.row}: ${r.warnings.join('; ')}</li>`;
+                            });
+                            report += `</ul></div>`;
+                        }
                         if (!report) {
                             report = `<div style='color:#080;'><strong>No errors found. Ready to upload!</strong></div>`;
+                            validationPassed = true;
+                        } else if (invalidRows.length === 0) {
                             validationPassed = true;
                         }
                         validationDiv.innerHTML = `<h4>Validation Report</h4>${report}`;
