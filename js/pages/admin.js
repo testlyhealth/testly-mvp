@@ -176,27 +176,56 @@ export function initializeAdminPage() {
                                     }
                                 });
                             }
-                            // New fields validation
+                            // New results returned time logic
                             const min = row.results_returned_time_min;
                             const max = row.results_returned_time_max;
                             const days = row.results_returned_time_days;
                             let rowErrors = [];
                             let rowWarnings = [];
-                            if (min === undefined || min === "") {
-                                rowWarnings.push('results_returned_time_min is empty');
-                            } else if (isNaN(Number(min))) {
-                                rowErrors.push('results_returned_time_min is not a number');
-                            }
-                            if (max === undefined || max === "") {
-                                rowWarnings.push('results_returned_time_max is empty');
-                            } else if (isNaN(Number(max))) {
-                                rowErrors.push('results_returned_time_max is not a number');
-                            }
-                            if (days === undefined || days === "" || isNaN(Number(days))) {
-                                rowErrors.push('results_returned_time_days is missing or not a number');
-                            }
-                            if (!isNaN(Number(min)) && !isNaN(Number(max)) && Number(min) > Number(max)) {
-                                rowErrors.push('results_returned_time_min is greater than results_returned_time_max');
+                            const hasDays = days !== undefined && days !== "";
+                            const hasMin = min !== undefined && min !== "";
+                            const hasMax = max !== undefined && max !== "";
+                            const daysNum = Number(days);
+                            const minNum = Number(min);
+                            const maxNum = Number(max);
+                            // Check for valid combinations
+                            if (!hasDays && !hasMin && !hasMax) {
+                                rowErrors.push('Must provide either results_returned_time_days or both results_returned_time_min and results_returned_time_max');
+                            } else if (hasDays && (!hasMin && !hasMax)) {
+                                if (isNaN(daysNum)) {
+                                    rowErrors.push('results_returned_time_days is not a number');
+                                }
+                            } else if (!hasDays && (hasMin || hasMax)) {
+                                if (!hasMin || !hasMax) {
+                                    rowErrors.push('Both results_returned_time_min and results_returned_time_max must be provided together');
+                                } else {
+                                    if (isNaN(minNum)) {
+                                        rowErrors.push('results_returned_time_min is not a number');
+                                    }
+                                    if (isNaN(maxNum)) {
+                                        rowErrors.push('results_returned_time_max is not a number');
+                                    }
+                                    if (!isNaN(minNum) && !isNaN(maxNum) && minNum > maxNum) {
+                                        rowErrors.push('results_returned_time_min is greater than results_returned_time_max');
+                                    }
+                                }
+                            } else if (hasDays && hasMin && hasMax) {
+                                // Both systems filled: warn but allow
+                                if (isNaN(daysNum)) {
+                                    rowErrors.push('results_returned_time_days is not a number');
+                                }
+                                if (isNaN(minNum)) {
+                                    rowErrors.push('results_returned_time_min is not a number');
+                                }
+                                if (isNaN(maxNum)) {
+                                    rowErrors.push('results_returned_time_max is not a number');
+                                }
+                                if (!isNaN(minNum) && !isNaN(maxNum) && minNum > maxNum) {
+                                    rowErrors.push('results_returned_time_min is greater than results_returned_time_max');
+                                }
+                                if (rowErrors.length === 0) {
+                                    rowWarnings.push('Both results_returned_time_days and min/max are filled; only one system is usually needed');
+                                }
                             }
                             if (rowErrors.length > 0) {
                                 invalidRows.push({ row: idx + 2, errors: rowErrors }); // +2 for header and 0-index
@@ -230,7 +259,7 @@ export function initializeAdminPage() {
                             report += `</ul></div>`;
                         }
                         if (warningRows.length > 0) {
-                            report += `<div style='color:#f90;'><strong>Rows with empty results_returned_time fields (will be uploaded):</strong><ul style='margin:0.5rem 0 0 1.5rem;'>`;
+                            report += `<div style='color:#f90;'><strong>Rows with results_returned_time warnings (will be uploaded):</strong><ul style='margin:0.5rem 0 0 1.5rem;'>`;
                             warningRows.forEach(r => {
                                 report += `<li>Row ${r.row}: ${r.warnings.join('; ')}</li>`;
                             });
