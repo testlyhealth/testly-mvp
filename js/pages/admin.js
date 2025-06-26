@@ -240,7 +240,10 @@ export function initializeAdminPage() {
                             report += `<div style='color:#b00;'><strong>Unknown providers:</strong> ${Array.from(missingProviders).join(', ')}</div>`;
                         }
                         if (missingBiomarkers.size > 0) {
-                            report += `<div style='color:#b00;'><strong>Missing biomarkers:</strong> ${Array.from(missingBiomarkers).join(', ')}</div>`;
+                            const biomarkerList = Array.from(missingBiomarkers)
+                                .map((bio, idx) => `<div style="margin-left:1.5rem;">${idx + 1}. ${bio}</div>`)
+                                .join('');
+                            report += `<div style='color:#b00;'><strong>Missing biomarkers:</strong><br>${biomarkerList}</div>`;
                         }
                         if (missingCategories.size > 0) {
                             report += `<div style='color:#b00;'><strong>Missing product categories:</strong> ${Array.from(missingCategories).join(', ')}</div>`;
