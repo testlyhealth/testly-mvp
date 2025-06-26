@@ -295,11 +295,28 @@ export function initializeAdminPage() {
                             uploadBtn.disabled = false;
                             uploadBtn.style.background = '#007bff';
                             uploadBtn.style.cursor = 'pointer';
-                            // Add click handler for confirmation popup
-                            uploadBtn.onclick = function() {
+                            // Add click handler for confirmation popup and upload logic
+                            uploadBtn.onclick = async function() {
                                 if (confirm('Are you sure you want to upload to Supabase?')) {
-                                    // TODO: Implement actual upload logic here
-                                    alert('Upload functionality will be implemented next!');
+                                    uploadBtn.disabled = true;
+                                    uploadBtn.textContent = 'Uploading...';
+                                    try {
+                                        // Use the last parsed CSV data
+                                        const parsedData = window._lastParsedCsvData;
+                                        const { data, error } = await supabase.rpc('bulk_insert_blood_tests', { tests: parsedData });
+                                        if (error) {
+                                            alert('Upload failed: ' + error.message);
+                                            uploadBtn.disabled = false;
+                                            uploadBtn.textContent = 'Upload to Supabase';
+                                        } else {
+                                            alert(`Upload complete! ${data.inserted} tests added.`);
+                                            uploadBtn.textContent = 'Upload to Supabase';
+                                        }
+                                    } catch (err) {
+                                        alert('Unexpected error: ' + err.message);
+                                        uploadBtn.disabled = false;
+                                        uploadBtn.textContent = 'Upload to Supabase';
+                                    }
                                 }
                             };
                         } else {
@@ -309,6 +326,9 @@ export function initializeAdminPage() {
                             uploadBtn.onclick = null;
                         }
                         // --- End Upload Button ---
+
+                        // Store the last parsed CSV data globally for upload
+                        window._lastParsedCsvData = data;
                     },
                     error: function(err) {
                         const previewDiv = document.getElementById('csvPreview') || document.createElement('div');
