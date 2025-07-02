@@ -1,4 +1,5 @@
 import { $, $all } from './dom.js';
+import { supabase } from './api/supabase.js';
 
 // Add this helper function at the top of the file, after the imports
 function generateSafeId(text) {
@@ -10,27 +11,54 @@ function generateSafeId(text) {
 }
 
 // Function to create the filter panel HTML
-export function createFilterPanel(tests) {
-  // Get unique providers and locations
-  const providers = [...new Set(tests.map(test => test.provider))];
-  const locations = [...new Set(tests.flatMap(test => test["blood test location"]))];
-  
+export async function createFilterPanel(tests) {
   // Get price range
   const prices = tests.map(test => test.price);
   const minPrice = Math.min(...prices);
   const maxPrice = Math.max(...prices);
 
-  // Hardcoded categories
-  const categories = [
-    'General Health',
-    'Hormone Health',
-    'Heart Health',
-    'Performance',
-    'Thyroid',
-    'Fertility',
-    'Vitamins & Minerals'
-  ];
+  // Fetch categories from Supabase
+  let categories = [];
+  try {
+    const { data, error } = await supabase.from('blood_test_categories').select('*').order('name');
+    if (error) throw error;
+    categories = data.map(cat => cat.name);
+  } catch (e) {
+    // Fallback to hardcoded if fetch fails
+    categories = [
+      'General Health',
+      'Hormone Health',
+      'Heart Health',
+      'Performance',
+      'Thyroid',
+      'Fertility',
+      'Vitamins & Minerals'
+    ];
+  }
   
+  // Fetch providers from Supabase
+  let providers = [];
+  try {
+    const { data, error } = await supabase.from('providers').select('*').order('name');
+    if (error) throw error;
+    providers = data.map(p => p.name);
+    console.log('Supabase providers:', providers);
+  } catch (e) {
+    // Fallback to unique providers from tests if fetch fails
+    providers = [...new Set(tests.map(test => test.provider))];
+    console.log('Fallback providers:', providers);
+  }
+  
+  // Check for a filter query parameter in the URL
+  let selectedCategory = null;
+  try {
+    const urlHash = window.location.hash;
+    const filterMatch = urlHash.match(/[?&]filter=([^&]+)/);
+    if (filterMatch) {
+      selectedCategory = decodeURIComponent(filterMatch[1]);
+    }
+  } catch (e) {}
+
   return `
     <div class="filter-panel-content">
       <h3>Filter Results</h3>
@@ -50,12 +78,12 @@ export function createFilterPanel(tests) {
         <h4>Category</h4>
         <div class="provider-checkboxes">
           <div class="checkbox-option">
-            <input type="checkbox" id="category-all">
+            <input type="checkbox" id="category-all" ${selectedCategory ? '' : 'checked'}>
             <label for="category-all">All Categories</label>
           </div>
           ${categories.map(category => `
             <div class="checkbox-option">
-              <input type="checkbox" id="category-${generateSafeId(category)}" class="category-checkbox" value="${category}" ${category === 'General Health' ? 'checked' : ''}>
+              <input type="checkbox" id="category-${generateSafeId(category)}" class="category-checkbox" value="${category}" ${(selectedCategory ? (category === selectedCategory ? 'checked' : '') : (category === 'General Health' ? 'checked' : ''))}>
               <label for="category-${generateSafeId(category)}">${category}</label>
             </div>
           `).join('')}
@@ -72,33 +100,9 @@ export function createFilterPanel(tests) {
           ${providers.map(provider => `
             <div class="checkbox-option">
               <input type="checkbox" id="provider-${provider.toLowerCase().replace(/\s+/g, '-')}" class="provider-checkbox" value="${provider}">
-              <label for="provider-${provider.toLowerCase().replace(/\s+/g, '-')}">${provider}</label>
+              <label for="provider-${provider.toLowerCase().replace(/\s+/g, '-')}" >${provider}</label>
             </div>
           `).join('')}
-        </div>
-      </div>
-
-      <div class="filter-section">
-        <h4>Locations</h4>
-        <div class="provider-checkboxes">
-          <div class="checkbox-option">
-            <input type="checkbox" id="location-all" checked>
-            <label for="location-all">All Locations</label>
-          </div>
-          ${locations.map(location => `
-            <div class="checkbox-option">
-              <input type="checkbox" id="location-${location.toLowerCase().replace(/\s+/g, '-')}" class="location-checkbox" value="${location}">
-              <label for="location-${location.toLowerCase().replace(/\s+/g, '-')}">${location}</label>
-            </div>
-          `).join('')}
-      </div>
-      </div>
-
-      <div class="filter-section">
-        <h4>Additional Options</h4>
-        <div class="checkbox-option">
-          <input type="checkbox" id="doctors-report">
-          <label for="doctors-report">Doctor's report included</label>
         </div>
       </div>
 
@@ -191,10 +195,6 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   const providerAll = filterPanel.querySelector('#provider-all');
   const providerCheckboxes = filterPanel.querySelectorAll('.provider-checkbox');
 
-  // Location checkboxes
-  const locationAll = filterPanel.querySelector('#location-all');
-  const locationCheckboxes = filterPanel.querySelectorAll('.location-checkbox');
-
   // Category checkboxes
   const categoryAll = filterPanel.querySelector('#category-all');
   const categoryCheckboxes = filterPanel.querySelectorAll('.category-checkbox');
@@ -224,18 +224,6 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
           <div class="filter-tag" data-type="provider" data-value="${provider}">
             <span>Provider: ${provider}</span>
             <button class="remove-tag" aria-label="Remove provider filter">×</button>
-          </div>
-        `);
-      });
-    }
-
-    // Location tags
-    if (filters.locations.length > 0) {
-      filters.locations.forEach(location => {
-        tags.push(`
-          <div class="filter-tag" data-type="location" data-value="${location}">
-            <span>Location: ${location}</span>
-            <button class="remove-tag" aria-label="Remove location filter">×</button>
           </div>
         `);
       });
@@ -298,13 +286,6 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
               providerAll.checked = false;
             }
             break;
-          case 'location':
-            const locationCheckbox = document.querySelector(`#location-${generateSafeId(value)}`);
-            if (locationCheckbox) {
-              locationCheckbox.checked = false;
-              locationAll.checked = false;
-            }
-            break;
           case 'category':
             const categoryCheckbox = document.querySelector(`#category-${generateSafeId(value)}`);
             if (categoryCheckbox) {
@@ -323,7 +304,8 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   }
 
   // Function to apply filters
-  function applyFilters() {
+  async function applyFilters() {
+    console.log('applyFilters called', currentFilters);
     // Update current filters
     currentFilters = {
       priceRange: {
@@ -333,49 +315,74 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       providers: Array.from(providerCheckboxes)
         .filter(cb => cb.checked)
         .map(cb => cb.value),
-      locations: Array.from(locationCheckboxes)
-        .filter(cb => cb.checked)
-        .map(cb => cb.value),
+      locations: [],
       categories: Array.from(categoryCheckboxes)
         .filter(cb => cb.checked)
         .map(cb => cb.value),
-      doctorsReport: doctorsReport.checked
+      doctorsReport: doctorsReport ? doctorsReport.checked : false
     };
 
     // Update filter tags
     updateFilterTags(currentFilters);
 
-    // Apply filters
-    const filteredTests = tests.filter(test => {
+    let filteredTests = tests;
+
+    // If categories are selected, fetch matching tests from Supabase
+    if (currentFilters.categories.length > 0) {
+      // 1. Get all category IDs
+      const { data: catRows, error: catError } = await supabase
+        .from('blood_test_categories')
+        .select('id, name')
+        .in('name', currentFilters.categories);
+      if (!catError && catRows && catRows.length > 0) {
+        const categoryIds = catRows.map(row => row.id);
+        // 2. Get all test IDs for these categories
+        const { data: linkRows, error: linkError } = await supabase
+          .from('blood_test_category_link_table')
+          .select('provider_blood_test_id')
+          .in('blood_test_category_id', categoryIds);
+        if (!linkError && linkRows && linkRows.length > 0) {
+          const testIds = [...new Set(linkRows.map(row => row.provider_blood_test_id))];
+          // 3. Get all blood tests with those IDs
+          const { data: supaTests, error: testError } = await supabase
+            .from('provider_blood_tests')
+            .select('*, provider:providers(name)')
+            .in('id', testIds);
+          if (!testError && supaTests) {
+            filteredTests = supaTests;
+          } else {
+            filteredTests = [];
+          }
+        } else {
+          filteredTests = [];
+        }
+      } else {
+        filteredTests = [];
+      }
+    } else {
+      // No category filter, use all tests
+      filteredTests = tests;
+    }
+
+    // Apply price and provider filters
+    filteredTests = filteredTests.filter(test => {
       // Price range filter
       if (test.price < currentFilters.priceRange.min || test.price > currentFilters.priceRange.max) {
         return false;
       }
-
       // Provider filter
-      if (currentFilters.providers.length > 0 && !currentFilters.providers.includes(test.provider)) {
+      if (currentFilters.providers.length > 0 && !currentFilters.providers.includes(test.provider?.name || test.provider)) {
         return false;
       }
-
-      // Location filter
-      if (currentFilters.locations.length > 0 && !test["blood test location"].some(loc => currentFilters.locations.includes(loc))) {
-        return false;
-      }
-
-      // Category filter - only apply if General Health is selected
-      if (currentFilters.categories.length > 0) {
-        if (!currentFilters.categories.includes('General Health')) {
-          return false;
-        }
-      }
-
       // Doctor's report filter
       if (currentFilters.doctorsReport && test["doctors report"] !== "Yes") {
         return false;
       }
-
       return true;
     });
+
+    // Sort by price ascending
+    filteredTests.sort((a, b) => a.price - b.price);
 
     // Call the update callback with the filtered tests
     updateCallback(filteredTests);
@@ -389,19 +396,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         checkbox.checked = isChecked;
         checkbox.disabled = isChecked;
       });
-      applyFilters();
-    });
-  }
-
-  // Handle "All Locations" checkbox
-  if (locationAll) {
-    locationAll.addEventListener('change', (e) => {
-      const isChecked = e.target.checked;
-      locationCheckboxes.forEach(checkbox => {
-        checkbox.checked = isChecked;
-        checkbox.disabled = isChecked;
-      });
-      applyFilters();
+      applyFilters().catch(console.error);
     });
   }
 
@@ -413,7 +408,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         checkbox.checked = isChecked;
         checkbox.disabled = isChecked;
       });
-      applyFilters();
+      applyFilters().catch(console.error);
     });
   }
 
@@ -422,16 +417,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     checkbox.addEventListener('change', () => {
       const allChecked = Array.from(providerCheckboxes).every(cb => cb.checked);
       providerAll.checked = allChecked;
-      applyFilters();
-    });
-  });
-
-  // Handle individual location checkboxes
-  locationCheckboxes.forEach(checkbox => {
-    checkbox.addEventListener('change', () => {
-      const allChecked = Array.from(locationCheckboxes).every(cb => cb.checked);
-      locationAll.checked = allChecked;
-      applyFilters();
+      applyFilters().catch(console.error);
     });
   });
 
@@ -440,13 +426,13 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     checkbox.addEventListener('change', () => {
       const allChecked = Array.from(categoryCheckboxes).every(cb => cb.checked);
       categoryAll.checked = allChecked;
-      applyFilters();
+      applyFilters().catch(console.error);
     });
   });
 
   // Handle doctor's report checkbox
   if (doctorsReport) {
-    doctorsReport.addEventListener('change', applyFilters);
+    doctorsReport.addEventListener('change', () => applyFilters().catch(console.error));
   }
 
   // Handle reset filters button
@@ -465,13 +451,6 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         checkbox.disabled = true;
       });
 
-      // Reset location checkboxes
-      locationAll.checked = true;
-      locationCheckboxes.forEach(checkbox => {
-        checkbox.checked = true;
-        checkbox.disabled = true;
-      });
-
       // Reset category checkboxes
       categoryAll.checked = true;
       categoryCheckboxes.forEach(checkbox => {
@@ -482,7 +461,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       // Reset doctor's report checkbox
       doctorsReport.checked = false;
 
-      applyFilters();
+      applyFilters().catch(console.error);
     });
   }
 
@@ -497,7 +476,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     priceMinValue.textContent = `£${min.toFixed(2)}`;
     currentFilters.priceRange.min = min;
     updateFilterTags(currentFilters);
-    applyFilters();
+    applyFilters().catch(console.error);
   });
   priceMax.addEventListener('input', () => {
     let min = parseFloat(priceMin.value);
@@ -509,11 +488,11 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     priceMaxValue.textContent = `£${max.toFixed(2)}`;
     currentFilters.priceRange.max = max;
     updateFilterTags(currentFilters);
-    applyFilters();
+    applyFilters().catch(console.error);
   });
 
   // Initial filter application
-  applyFilters();
+  applyFilters().catch(console.error);
 
   // Attach advanced search button event listener after panel is in DOM
   const advBtn = document.querySelector('.advanced-search-btn');

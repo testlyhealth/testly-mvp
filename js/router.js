@@ -75,13 +75,9 @@ export default class Router {
       } else if (hash.startsWith('/category/')) {
         console.log('Handling category route:', hash);
         const categoryId = hash.split('/')[2];
-        if (categoryId === 'general-health') {
-          const content = await displayGeneralHealthPage();
-          await this.render(content);
-        } else {
-          const content = await displayCategoryProducts(categoryId);
-          await this.render(content);
-        }
+        // For now, render the general health page for all categories
+        const content = await displayGeneralHealthPage();
+        await this.render(content);
       } else {
         // Find matching route
         const route = this.routes.find(r => r.path === hash);

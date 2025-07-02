@@ -3,6 +3,7 @@ import { CardService } from './services/cardService.js';
 import { createFilterPanel, setupFilterPanel } from './filter-panel.js';
 import { basket } from './basket.js';
 import { getUrl } from './config.js';
+import { supabase } from './api/supabase.js';
 
 // Initialize card service
 const cardService = new CardService();
@@ -504,38 +505,74 @@ observeFilterPanelForMobile();
 // Export the main function
 export async function displayGeneralHealthPage() {
   try {
-    const response = await fetch(getUrl('data/providers.json'));
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    // --- Check for category filter in URL hash ---
+    const hash = window.location.hash;
+    let selectedCategory = null;
+    const filterMatch = hash.match(/[?&]filter=([^&]+)/);
+    if (filterMatch) {
+      selectedCategory = decodeURIComponent(filterMatch[1]);
     }
-    let tests = await response.json();
+
+    let tests = [];
+    if (selectedCategory) {
+      // 1. Get the category id
+      const { data: catRows, error: catError } = await supabase
+        .from('blood_test_categories')
+        .select('id')
+        .eq('name', selectedCategory);
+      if (catError) throw catError;
+      const categoryId = catRows[0]?.id;
+      if (categoryId) {
+        // 2. Get all provider_blood_test_id for this category
+        const { data: linkRows, error: linkError } = await supabase
+          .from('blood_test_category_link_table')
+          .select('provider_blood_test_id')
+          .eq('blood_test_category_id', categoryId);
+        if (linkError) throw linkError;
+        const testIds = linkRows.map(row => row.provider_blood_test_id);
+        if (testIds.length > 0) {
+          // 3. Get all blood tests with those ids, including provider name
+          const { data: testRows, error: testError } = await supabase
+            .from('provider_blood_tests')
+            .select('*, provider:providers(name)')
+            .in('id', testIds);
+          if (testError) throw testError;
+          tests = testRows;
+        }
+      }
+    } else {
+      // No category filter, fetch all tests with provider name
+      const { data: allTests, error } = await supabase.from('provider_blood_tests').select('*, provider:providers(name)');
+      if (error) throw error;
+      tests = allTests;
+    }
 
     // --- NEW: Check for biomarkers param in URL hash ---
-    const hash = window.location.hash;
     const match = hash.match(/[?&]biomarkers=([^&]+)/);
     let selectedBiomarkers = [];
+    let filteredTests = tests;
     if (match) {
       selectedBiomarkers = decodeURIComponent(match[1]).split(',').map(b => b.trim().toLowerCase());
       if (selectedBiomarkers.length > 0) {
-        tests = tests.filter(test =>
-          test.biomarkers && test.biomarkers.some(biomarker =>
+        filteredTests = tests.filter(test =>
+          test.testsIncluded && test.testsIncluded.some(biomarker =>
             selectedBiomarkers.some(sel => biomarker.toLowerCase().includes(sel))
           )
         );
         // Sort by price ascending
-        tests.sort((a, b) => a.price - b.price);
+        filteredTests.sort((a, b) => a.price - b.price);
       }
     }
     // --- END NEW ---
 
     // Create filter panel with tests data
-    const filterPanel = createFilterPanel(tests);
+    const filterPanel = await createFilterPanel(filteredTests);
     
     // Create and return the page structure
     const content = createPageStructure(filterPanel, null);
     
     // Store tests data in a global variable for later use (never delete)
-    window._allGeneralHealthTests = tests;
+    window._allGeneralHealthTests = filteredTests;
     
     // Add a custom event listener for when the content is rendered
     document.addEventListener('contentRendered', () => {

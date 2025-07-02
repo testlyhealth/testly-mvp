@@ -16,7 +16,8 @@ export class CardService {
       'Nuffield Health': 'nuffield.png',
       'Lloyds Pharmacy': 'lloyds pharmacy.png',
       'Selph': 'selph.png',
-      'Lola': 'lola.png'
+      'Lola': 'lola.png',
+      'Randox': 'randox.png'
     };
   }
 
@@ -27,13 +28,15 @@ export class CardService {
       showDetails = true
     } = options;
 
-    // Get the provider logo filename
-    let providerLogo = this.providerLogoMap[test.provider];
+    // Get the provider name (handle both string and object)
+    const providerName = (test.provider?.name || test.provider || '').trim();
+    let providerLogo = this.providerLogoMap[providerName];
+    // Fallback: try to match by lowercasing and removing spaces/dashes
     if (!providerLogo) {
-      // Fallback: try to match by lowercasing and replacing spaces
-      const normalized = test.provider.toLowerCase().replace(/ /g, ' ');
+      const normalized = providerName.toLowerCase().replace(/ |-/g, '');
       providerLogo = `${normalized}.png`;
     }
+    console.log('Provider:', providerName, 'Logo:', providerLogo);
     
     // Get grouped biomarkers
     const groupedBiomarkers = await this.getGroupedBiomarkers(test.biomarkers);
@@ -47,9 +50,9 @@ export class CardService {
         ${showRank ? `<div class="test-rank">${options.rank}</div>` : ''}
         <div class="test-header">
           <div class="provider-info">
-            <img src="images/logos/${providerLogo}" alt="${test.provider} logo" class="provider-logo">
+            <img src="images/logos/${providerLogo}" alt="${providerName} logo" class="provider-logo">
           </div>
-          <h3 class="test-name"><span class="provider-name">${test.provider}</span> - ${test.test_name}</h3>
+          <h3 class="test-name"><span class="provider-name">${providerName}</span> - ${test.test_name}</h3>
         </div>
         <p>${test.description}</p>
         <div class="test-details">

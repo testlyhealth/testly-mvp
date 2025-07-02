@@ -215,7 +215,7 @@ export function renderNewBloodTestsMenu() {
       rightCol.innerHTML = renderCategoriesList(cachedCategories);
       return;
     }
-    supabase.from('blood_test_category').select('*').order('name').then(({ data, error }) => {
+    supabase.from('blood_test_categories').select('*').order('name').then(({ data, error }) => {
       if (error) {
         rightCol.innerHTML = '<div style="color:red;">Failed to load categories</div>';
         return;
@@ -279,13 +279,13 @@ function renderCategoriesList(categories) {
     sorted.slice(i * perCol, (i + 1) * perCol)
   );
   // Render as columns with even smaller black bullet points, and animated hover/focus
-  return `<div style="display: flex; gap: 2rem;">
+  return `<div style=\"display: flex; gap: 2rem;\">
     ${columns
       .map(
-        col => `<ul style="list-style:none;padding:0;margin:0;">
+        col => `<ul style=\"list-style:none;padding:0;margin:0;\">
           ${col
             .map(
-              cat => `<li style=\"display:flex;align-items:center;\"><span style=\"display:inline-block;width:4px;height:4px;background:#111;border-radius:50%;margin-right:0.75em;\"></span><a href=\"#/category/${cat.slug || cat.id}\" class=\"menu-category-link\">${cat.name}</a></li>`
+              cat => `<li style=\"display:flex;align-items:center;\"><span style=\"display:inline-block;width:4px;height:4px;background:#111;border-radius:50%;margin-right:0.75em;\"></span><a href=\"#/category/${encodeURIComponent(cat.slug || cat.name)}?filter=${encodeURIComponent(cat.name)}\" class=\"menu-category-link\">${cat.name}</a></li>`
             )
             .join('')}
         </ul>`
