@@ -811,18 +811,18 @@ body {
   }
   
   .test-name {
-    font-size: 1.1rem;
-    margin: 0;
-    color: #333;
-    flex: 1;
+    font-size: 1.2rem;
+    font-weight: 400;
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    align-items: baseline;
+    gap: 0.4rem;
   }
   
   .test-name .provider-name {
     font-weight: 700;
     color: #333;
+    font-size: 1.2rem;
+    line-height: 1.2;
   }
   
   .test-price {
@@ -2773,18 +2773,18 @@ body {
   }
 
   .test-name {
-    font-size: 1.1rem;
-    margin: 0;
-    color: #333;
-    flex: 1;
+    font-size: 1.2rem;
+    font-weight: 400;
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    align-items: baseline;
+    gap: 0.4rem;
   }
 
   .test-name .provider-name {
     font-weight: 700;
     color: #333;
+    font-size: 1.2rem;
+    line-height: 1.2;
   }
 
   .test-price {

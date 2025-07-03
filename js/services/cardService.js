@@ -52,7 +52,7 @@ export class CardService {
           <div class="provider-info">
             <img src="images/logos/${providerLogo}" alt="${providerName} logo" class="provider-logo">
           </div>
-          <h3 class="test-name"><span class="provider-name">${providerName}</span> - ${test.test_name}</h3>
+          <h3 class="test-name"><span class="provider-name">${providerName}</span> - ${test.name}</h3>
         </div>
         <p>${test.description}</p>
         <div class="test-details">
@@ -96,7 +96,7 @@ export class CardService {
             </div>
             <div class="card-actions">
               <button class="toggle-details" aria-expanded="false">Details</button>
-              <button class="add-to-basket" data-test-id="${test.test_name}">Add to Basket</button>
+              <button class="add-to-basket" data-test-id="${test.name}">Add to Basket</button>
             </div>
           ` : ''}
         </div>
@@ -178,7 +178,7 @@ export class CardService {
     $all('.add-to-basket').forEach(button => {
       button.addEventListener('click', (e) => {
         const testId = e.target.dataset.testId;
-        const test = tests.find(t => t.test_name === testId);
+        const test = tests.find(t => t.name === testId);
         if (test) {
           // Dispatch a custom event that can be handled by the basket service
           const event = new CustomEvent('addToBasket', { detail: { test } });

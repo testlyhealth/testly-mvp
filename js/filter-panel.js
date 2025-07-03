@@ -119,24 +119,40 @@ export async function createFilterPanel(tests) {
   `;
 }
 
+// Track last min/max price for robust slider reset
+let lastMinPrice = null;
+let lastMaxPrice = null;
+
 // Function to setup filter panel functionality
 export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
-  // Use the provided rootPanel, or default to querying the DOM
-  let filterPanel = rootPanel || $('.filter-panel-content');
+  // Always re-query the latest filter panel content from the DOM
+  let filterPanel = rootPanel || document.querySelector('.filter-panel-content');
   if (!filterPanel) {
-    const filterPanelContainer = $('.filter-panel');
+    const filterPanelContainer = document.querySelector('.filter-panel');
     if (filterPanelContainer) {
       filterPanel = filterPanelContainer.querySelector('.filter-panel-content');
     }
   }
   if (!filterPanel) {
     console.error('Filter panel not found. Available elements:', {
-      filterPanelContent: $('.filter-panel-content'),
-      filterPanel: $('.filter-panel'),
-      mainContent: $('.main-content')
+      filterPanelContent: document.querySelector('.filter-panel-content'),
+      filterPanel: document.querySelector('.filter-panel'),
+      mainContent: document.querySelector('.main-content')
     });
     return;
   }
+
+  // Always re-query the latest DOM elements for controls
+  const priceMin = filterPanel.querySelector('#price-min');
+  const priceMax = filterPanel.querySelector('#price-max');
+  const priceMinValue = filterPanel.querySelector('#price-min-value');
+  const priceMaxValue = filterPanel.querySelector('#price-max-value');
+  const providerAll = filterPanel.querySelector('#provider-all');
+  const providerCheckboxes = filterPanel.querySelectorAll('.provider-checkbox');
+  const categoryAll = filterPanel.querySelector('#category-all');
+  const categoryCheckboxes = filterPanel.querySelectorAll('.category-checkbox');
+  const doctorsReport = filterPanel.querySelector('#doctors-report');
+  const resetFiltersBtn = filterPanel.querySelector('#reset-filters');
 
   // Create filter tags container in the appropriate location
   let filterTagsContainer = document.querySelector('.filter-tags');
@@ -174,36 +190,6 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   } else {
     console.error('Failed to create filter tags container');
   }
-
-  // Price range inputs
-  const priceMin = filterPanel.querySelector('#price-min');
-  const priceMax = filterPanel.querySelector('#price-max');
-  const priceMinValue = filterPanel.querySelector('#price-min-value');
-  const priceMaxValue = filterPanel.querySelector('#price-max-value');
-
-  if (!priceMin || !priceMax || !priceMinValue || !priceMaxValue) {
-    console.error('Price range elements not found in filter panel:', {
-      priceMin: !!priceMin,
-      priceMax: !!priceMax,
-      priceMinValue: !!priceMinValue,
-      priceMaxValue: !!priceMaxValue
-    });
-    return;
-  }
-
-  // Provider checkboxes
-  const providerAll = filterPanel.querySelector('#provider-all');
-  const providerCheckboxes = filterPanel.querySelectorAll('.provider-checkbox');
-
-  // Category checkboxes
-  const categoryAll = filterPanel.querySelector('#category-all');
-  const categoryCheckboxes = filterPanel.querySelectorAll('.category-checkbox');
-
-  // Other filter inputs
-  const doctorsReport = filterPanel.querySelector('#doctors-report');
-
-  // Reset filters button
-  const resetFiltersBtn = filterPanel.querySelector('#reset-filters');
 
   // Function to create filter tags HTML
   function createFilterTags(filters) {
@@ -326,6 +312,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     updateFilterTags(currentFilters);
 
     let filteredTests = tests;
+    let availableTests = tests;
 
     // If categories are selected, fetch matching tests from Supabase
     if (currentFilters.categories.length > 0) {
@@ -349,23 +336,60 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
             .select('*, provider:providers(name)')
             .in('id', testIds);
           if (!testError && supaTests) {
+            availableTests = supaTests;
             filteredTests = supaTests;
           } else {
+            availableTests = [];
             filteredTests = [];
           }
         } else {
+          availableTests = [];
           filteredTests = [];
         }
       } else {
+        availableTests = [];
         filteredTests = [];
       }
     } else {
       // No category filter, use all tests
+      availableTests = tests;
       filteredTests = tests;
     }
 
-    // Apply price and provider filters
-    filteredTests = filteredTests.filter(test => {
+    // --- Update price slider range and values based on availableTests (not filtered) ---
+    if (availableTests.length > 0) {
+      const newMin = Math.min(...availableTests.map(t => t.price));
+      const newMax = Math.max(...availableTests.map(t => t.price));
+      priceMin.min = newMin;
+      priceMin.max = newMax;
+      priceMax.min = newMin;
+      priceMax.max = newMax;
+
+      // Only reset slider values if the available min/max has changed
+      if (lastMinPrice !== newMin || lastMaxPrice !== newMax) {
+        priceMin.value = newMin;
+        priceMax.value = newMax;
+        currentFilters.priceRange.min = newMin;
+        currentFilters.priceRange.max = newMax;
+      }
+      lastMinPrice = newMin;
+      lastMaxPrice = newMax;
+
+      priceMinValue.textContent = `£${parseFloat(priceMin.value).toFixed(2)}`;
+      priceMaxValue.textContent = `£${parseFloat(priceMax.value).toFixed(2)}`;
+
+      // --- DEBUG LOGGING ---
+      console.log('[applyFilters] newMin:', newMin, 'newMax:', newMax);
+      console.log('[applyFilters] priceMin.value:', priceMin.value, 'priceMax.value:', priceMax.value);
+      console.log('[applyFilters] priceMin DOM:', priceMin, 'priceMax DOM:', priceMax);
+      console.log('[applyFilters] priceMin attributes:', priceMin.getAttribute('min'), priceMin.getAttribute('max'), priceMin.getAttribute('value'));
+      console.log('[applyFilters] priceMax attributes:', priceMax.getAttribute('min'), priceMax.getAttribute('max'), priceMax.getAttribute('value'));
+      // --- END DEBUG LOGGING ---
+    }
+    // --- End price slider update ---
+
+    // Now apply price and provider filters to availableTests
+    filteredTests = availableTests.filter(test => {
       // Price range filter
       if (test.price < currentFilters.priceRange.min || test.price > currentFilters.priceRange.max) {
         return false;
