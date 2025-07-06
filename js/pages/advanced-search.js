@@ -107,30 +107,49 @@ export async function displayAdvancedSearchPage() {
     html += '<div class="error">Failed to load biomarker groupings.</div>';
   }
 
-  html += `</div>
-    <button class="advanced-search-btn search-btn" type="button" id="advanced-search-btn">Search</button>
-    </section>`;
+  html += `</div></section>`;
+
+  // After rendering, create and append the floating button to the end of <body>
+  setTimeout(() => {
+    // Remove any existing floating button
+    const oldFab = document.getElementById('advanced-search-btn');
+    if (oldFab && oldFab.parentNode) oldFab.parentNode.removeChild(oldFab);
+
+    // Create the floating button
+    const fab = document.createElement('button');
+    fab.className = 'advanced-search-btn advanced-search-fab';
+    fab.type = 'button';
+    fab.id = 'advanced-search-btn';
+    fab.textContent = 'Search';
+
+    // Add the click event
+    fab.addEventListener('click', () => {
+      const checked = Array.from(document.querySelectorAll('.biomarker-checkbox input[type="checkbox"]:checked'));
+      const selected = checked.map(cb => cb.value).filter(Boolean);
+      if (selected.length === 0) {
+        alert('Please select at least one biomarker.');
+        return;
+      }
+      const params = encodeURIComponent(selected.join(','));
+      window.location.hash = `#/general-health?biomarkers=${params}`;
+    });
+
+    document.body.appendChild(fab);
+  }, 0);
+
+  // Remove the floating button when navigating away from advanced search
+  function removeAdvancedSearchFab() {
+    const fab = document.getElementById('advanced-search-btn');
+    if (fab && fab.parentNode) fab.parentNode.removeChild(fab);
+  }
+  window.addEventListener('hashchange', () => {
+    if (!window.location.hash.startsWith('#/advanced-search')) {
+      removeAdvancedSearchFab();
+    }
+  });
 
   // Attach event listeners after content is rendered
   document.addEventListener('contentRendered', function attachEventListeners() {
-    // Search button functionality
-    const searchBtn = document.getElementById('advanced-search-btn');
-    if (searchBtn) {
-      searchBtn.addEventListener('click', () => {
-        console.log('Search button clicked');
-        // Collect all checked biomarker values
-        const checked = Array.from(document.querySelectorAll('.biomarker-checkbox input[type="checkbox"]:checked'));
-        const selected = checked.map(cb => cb.value).filter(Boolean);
-        if (selected.length === 0) {
-          alert('Please select at least one biomarker.');
-          return;
-        }
-        // Encode and navigate
-        const params = encodeURIComponent(selected.join(','));
-        window.location.hash = `#/general-health?biomarkers=${params}`;
-      });
-    }
-
     // Select All functionality for each section (regular/advanced) in each group
     const selectAllCheckboxes = document.querySelectorAll('.select-all-checkbox');
     selectAllCheckboxes.forEach(selectAllCheckbox => {

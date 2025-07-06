@@ -4879,3 +4879,37 @@ body {
     color: #0c0;
     border: 1px solid #cfc;
   }
+
+  /* Floating Advanced Search Button */
+  .advanced-search-fab {
+    position: fixed;
+    right: 2.2rem;
+    bottom: 2.2rem;
+    z-index: 1000;
+    padding: 1.1rem 2.5rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: var(--accent, #2563eb);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.13);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .advanced-search-fab:hover {
+    background: var(--accent-hover, #1741a6);
+    color: #fff;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+  }
+  @media (max-width: 600px) {
+    .advanced-search-fab {
+      right: 1rem;
+      bottom: 1rem;
+      padding: 0.9rem 1.5rem;
+      font-size: 1rem;
+    }
+  }
