@@ -641,13 +641,15 @@ async function fetchAndEnrichTests({ category = null, provider = null } = {}) {
     if (biomarkerError) throw biomarkerError;
     biomarkers = biomarkerRows;
   }
-  // 3. Attach grouped biomarkers to each test
+  // 3. Attach grouped biomarkers and flat biomarker names to each test
   tests.forEach(test => {
     const links = biomarkerLinks.filter(link => link.provider_blood_test_id === test.id);
     const grouped = {};
+    const biomarkerNames = [];
     links.forEach(link => {
       const biomarker = biomarkers.find(b => b.id === link.biomarker_id);
       if (!biomarker) return;
+      biomarkerNames.push(biomarker.name);
       if (Array.isArray(biomarker.group_links) && biomarker.group_links.length > 0) {
         biomarker.group_links.forEach(gl => {
           const groupName = gl.grouping?.name || 'Other';
@@ -661,6 +663,7 @@ async function fetchAndEnrichTests({ category = null, provider = null } = {}) {
     });
     test.grouped_biomarkers = grouped;
     test.biomarker_count = links.length;
+    test.biomarker_names = biomarkerNames;
   });
   return tests;
 }
@@ -668,24 +671,38 @@ async function fetchAndEnrichTests({ category = null, provider = null } = {}) {
 // Export the main function
 export async function displayGeneralHealthPage() {
   try {
-    // --- Check for category filter in URL hash ---
+    // --- Parse biomarkers from URL hash ---
     const hash = window.location.hash;
     let selectedCategory = null;
+    let selectedBiomarkers = [];
     const filterMatch = hash.match(/[?&]filter=([^&]+)/);
+    const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
     if (filterMatch) {
       selectedCategory = decodeURIComponent(filterMatch[1]);
     }
-    // --- Optionally, parse provider filter from hash or UI ---
-    // (Add logic here if you want provider filtering from URL)
-    // Fetch and enrich tests
-    const tests = await fetchAndEnrichTests({ category: selectedCategory });
-    console.log('Fetched and enriched tests:', tests);
+    if (biomarkerMatch) {
+      selectedBiomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean);
+    }
+
+    // --- Fetch and enrich tests ---
+    let tests;
+    if (selectedBiomarkers.length > 0) {
+      // Fetch all tests (no category/provider filter)
+      tests = await fetchAndEnrichTests({});
+      // Filter to only those that include ALL selected biomarkers (case-insensitive)
+      tests = tests.filter(test =>
+        selectedBiomarkers.every(biomarker =>
+          (test.biomarker_names || []).some(name => name && name.toLowerCase() === biomarker.toLowerCase())
+        )
+      );
+    } else {
+      tests = await fetchAndEnrichTests({ category: selectedCategory });
+    }
+    window._allGeneralHealthTests = tests;
     // Create filter panel with tests data
     const filterPanel = await createFilterPanel(tests);
     // Create and return the page structure
     const content = createPageStructure(filterPanel, null);
-    // Store tests data in a global variable for later use (never delete)
-    window._allGeneralHealthTests = tests;
     // Add a custom event listener for when the content is rendered
     document.addEventListener('contentRendered', () => {
       if (window._allGeneralHealthTests) {

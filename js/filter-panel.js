@@ -194,7 +194,6 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   // Function to create filter tags HTML
   function createFilterTags(filters) {
     const tags = [];
-    
     // Price range tag - always show it
     tags.push(`
       <div class="filter-tag" data-type="price">
@@ -202,7 +201,6 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         <button class="remove-tag" aria-label="Remove price filter">×</button>
       </div>
     `);
-
     // Provider tags
     if (filters.providers.length > 0) {
       filters.providers.forEach(provider => {
@@ -214,7 +212,6 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         `);
       });
     }
-
     // Category tags
     if (filters.categories.length > 0) {
       filters.categories.forEach(category => {
@@ -226,7 +223,6 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         `);
       });
     }
-
     // Doctor's report tag
     if (filters.doctorsReport) {
       tags.push(`
@@ -236,7 +232,20 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         </div>
       `);
     }
-
+    // --- Biomarker tags from URL ---
+    const hash = window.location.hash;
+    const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
+    if (biomarkerMatch) {
+      const selectedBiomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean);
+      selectedBiomarkers.forEach(biomarker => {
+        tags.push(`
+          <div class="filter-tag" data-type="biomarker" data-value="${biomarker}">
+            <span>${biomarker}</span>
+            <button class="remove-tag" aria-label="Remove biomarker">×</button>
+          </div>
+        `);
+      });
+    }
     return tags.join('');
   }
 
@@ -247,17 +256,14 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       console.warn('Filter tags container not found');
       return;
     }
-
     const tagsHTML = createFilterTags(filters);
     filterTagsContainer.innerHTML = tagsHTML;
-
     // Add event listeners to remove buttons
     filterTagsContainer.querySelectorAll('.remove-tag').forEach(button => {
       button.addEventListener('click', (e) => {
         const tag = e.target.closest('.filter-tag');
         const type = tag.dataset.type;
         const value = tag.dataset.value;
-
         switch (type) {
           case 'price':
             priceMin.value = Math.min(...tests.map(test => test.price));
@@ -282,8 +288,23 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
           case 'doctorsReport':
             doctorsReport.checked = false;
             break;
+          case 'biomarker':
+            // Remove biomarker from URL and rerun search
+            const hash = window.location.hash;
+            const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
+            if (biomarkerMatch) {
+              let selectedBiomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean);
+              selectedBiomarkers = selectedBiomarkers.filter(b => b !== value);
+              if (selectedBiomarkers.length === 0) {
+                // Remove biomarkers param entirely
+                window.location.hash = '#/general-health';
+              } else {
+                window.location.hash = `#/general-health?biomarkers=${encodeURIComponent(selectedBiomarkers.join(','))}`;
+              }
+              return; // Don't call applyFilters, let navigation handle it
+            }
+            break;
         }
-
         applyFilters();
       });
     });
