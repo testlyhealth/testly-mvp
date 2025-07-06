@@ -436,21 +436,45 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     });
   }
 
-  // Handle individual provider checkboxes
-  providerCheckboxes.forEach(checkbox => {
-    checkbox.addEventListener('change', () => {
-      const allChecked = Array.from(providerCheckboxes).every(cb => cb.checked);
-      providerAll.checked = allChecked;
-      applyFilters().catch(console.error);
-    });
-  });
-
   // Handle individual category checkboxes
   categoryCheckboxes.forEach(checkbox => {
     checkbox.addEventListener('change', () => {
       const allChecked = Array.from(categoryCheckboxes).every(cb => cb.checked);
       categoryAll.checked = allChecked;
-      applyFilters().catch(console.error);
+      // On category change, call the async updateCallback with the new filter state
+      const selectedCategories = Array.from(categoryCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
+      updateCallback({
+        categories: selectedCategories,
+        providers: Array.from(providerCheckboxes).filter(cb => cb.checked).map(cb => cb.value),
+        priceRange: {
+          min: parseFloat(priceMin.value),
+          max: parseFloat(priceMax.value)
+        },
+        doctorsReport: doctorsReport ? doctorsReport.checked : false
+      });
+    });
+  });
+
+  // Handle individual provider checkboxes
+  providerCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+      const allChecked = Array.from(providerCheckboxes).every(cb => cb.checked);
+      providerAll.checked = allChecked;
+      // On provider change, call the async updateCallback with the new filter state
+      const selectedProviders = Array.from(providerCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
+      updateCallback({
+        categories: Array.from(categoryCheckboxes).filter(cb => cb.checked).map(cb => cb.value),
+        providers: selectedProviders,
+        priceRange: {
+          min: parseFloat(priceMin.value),
+          max: parseFloat(priceMax.value)
+        },
+        doctorsReport: doctorsReport ? doctorsReport.checked : false
+      });
     });
   });
 

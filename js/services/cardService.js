@@ -31,22 +31,42 @@ export class CardService {
     // Get the provider name (handle both string and object)
     const providerName = (test.provider?.name || test.provider || '').trim();
     let providerLogo = this.providerLogoMap[providerName];
-    // Fallback: try to match by lowercasing and removing spaces/dashes
     if (!providerLogo) {
       const normalized = providerName.toLowerCase().replace(/ |-/g, '');
       providerLogo = `${normalized}.png`;
     }
-    console.log('Provider:', providerName, 'Logo:', providerLogo);
-    
-    // Get grouped biomarkers
-    const groupedBiomarkers = await this.getGroupedBiomarkers(test.biomarkers);
-
+    // Group biomarkers by group name from Supabase structure
+    const groupMap = new Map();
+    if (Array.isArray(test.test_biomarkers)) {
+      test.test_biomarkers.forEach(link => {
+        const biomarker = link.biomarker;
+        if (!biomarker) return;
+        // Each biomarker may have multiple group_links
+        if (Array.isArray(biomarker.group_links) && biomarker.group_links.length > 0) {
+          biomarker.group_links.forEach(gl => {
+            const groupName = gl.grouping?.name || 'Other';
+            if (!groupMap.has(groupName)) groupMap.set(groupName, []);
+            groupMap.get(groupName).push(biomarker.name);
+          });
+        } else {
+          // No group, put in 'Other'
+          if (!groupMap.has('Other')) groupMap.set('Other', []);
+          groupMap.get('Other').push(biomarker.name);
+        }
+      });
+    }
     // Defensive: ensure these are arrays
     const bloodTestLocations = Array.isArray(test["blood test location"]) ? test["blood test location"] : [];
     const labAccreditations = Array.isArray(test["lab accreditations"]) ? test["lab accreditations"] : [];
 
+    // Debug log for grouped_biomarkers (only if there are issues)
+    if (!test.grouped_biomarkers || Object.keys(test.grouped_biomarkers).length === 0) {
+      console.log('WARNING: No grouped biomarkers for', test.name);
+    }
+    const biomarkerCount = test.biomarker_count || 0;
+
     return `
-      <div class="product-card blood-test-card" data-test-id="${test.test_name}">
+      <div class="product-card blood-test-card" data-test-id="${test.name}">
         ${showRank ? `<div class="test-rank">${options.rank}</div>` : ''}
         <div class="test-header">
           <div class="provider-info">
@@ -61,12 +81,12 @@ export class CardService {
             <div class="biomarkers-section">
               <div class="biomarkers-header">
                 <div class="biomarker-info">
-                  <h4>${test["biomarker number"]} biomarkers included</h4>
+                  <h4>${biomarkerCount} biomarkers included</h4>
                   <button class="toggle-all-biomarkers" aria-expanded="false">Show all</button>
                 </div>
               </div>
               <div class="biomarkers-list">
-                ${Array.from(groupedBiomarkers.entries()).map(([group, biomarkers]) => `
+                ${Object.entries(test.grouped_biomarkers || {}).map(([group, biomarkers]) => `
                   <div class="biomarker-group">
                     <div class="group-header">
                       <h4>${group} (${biomarkers.length} tests)</h4>
