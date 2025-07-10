@@ -2094,16 +2094,20 @@ body {
   }
 
   /* Category headings in filter panel */
+  .filter-panel h3, .filter-panel h4 {
+    font-weight: bold;
+  }
+
   .filter-panel h3 {
     font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 700;
     color: var(--text);
     margin-bottom: 0.5rem;
   }
 
   .filter-panel h4 {
     font-size: 0.85rem;
-    font-weight: 500;
+    font-weight: 700;
     color: var(--text);
     margin-bottom: 0.3rem;
   }
