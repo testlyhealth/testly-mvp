@@ -4974,3 +4974,15 @@ body {
     justify-content: flex-end;
     align-items: center;
   }
+
+  .keycap-number {
+    letter-spacing: -0.25em;
+  }
+
+  .toggle-biomarkers .toggle-icon {
+    transition: transform 0.2s ease;
+    display: inline-block;
+  }
+  .toggle-biomarkers[aria-expanded="true"] .toggle-icon {
+    transform: rotate(180deg);
+  }

@@ -99,7 +99,13 @@ export class CardService {
             <div class="biomarkers-section">
               <div class="biomarkers-header">
                 <div class="biomarker-info">
-                  <h4>${biomarkerCount} biomarkers included</h4>
+                  <h4>Biomarkers tested: <span class="keycap-number">${(() => {
+                    const toKeyCap = n => String(n).split('').map(d => {
+                      const map = {'0':'0️⃣','1':'1️⃣','2':'2️⃣','3':'3️⃣','4':'4️⃣','5':'5️⃣','6':'6️⃣','7':'7️⃣','8':'8️⃣','9':'9️⃣'};
+                      return map[d] || d;
+                    }).join('');
+                    return toKeyCap(biomarkerCount);
+                  })()}</span></h4>
                   <button class="toggle-all-biomarkers" aria-expanded="false">Show all</button>
                 </div>
               </div>
@@ -277,11 +283,25 @@ export class CardService {
       toggleButton.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        
         const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
         biomarkerItems.classList.toggle('hidden');
         toggleButton.setAttribute('aria-expanded', !isExpanded);
-        toggleButton.innerHTML = `<span class="toggle-icon">${isExpanded ? '▼' : '▲'}</span>`;
+        // Do NOT swap the arrow character; let CSS handle rotation
+      });
+    });
+
+    // Add event listeners to group headers so clicking the header also toggles the group and arrow
+    $all('.biomarker-group .group-header').forEach(header => {
+      header.addEventListener('click', (e) => {
+        // Prevent double toggling if the button itself was clicked
+        if (e.target.closest('.toggle-biomarkers')) return;
+        const group = header.closest('.biomarker-group');
+        const biomarkerItems = group.querySelector('.biomarker-items');
+        const toggleButton = group.querySelector('.toggle-biomarkers');
+        const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
+        biomarkerItems.classList.toggle('hidden');
+        toggleButton.setAttribute('aria-expanded', !isExpanded);
+        // Do NOT swap the arrow character; let CSS handle rotation
       });
     });
 
@@ -306,7 +326,7 @@ export class CardService {
           if (items && toggle) {
             items.classList.toggle('hidden', isExpanded);
             toggle.setAttribute('aria-expanded', !isExpanded);
-            toggle.innerHTML = `<span class="toggle-icon">${isExpanded ? '▼' : '▲'}</span>`;
+            // Do NOT swap the arrow character; let CSS handle rotation
           }
         });
         

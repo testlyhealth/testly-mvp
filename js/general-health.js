@@ -226,7 +226,7 @@ function attachEventListeners() {
       const isExpanded = button.getAttribute('aria-expanded') === 'true';
       items.classList.toggle('hidden', isExpanded);
       button.setAttribute('aria-expanded', !isExpanded);
-      button.innerHTML = `<span class=\"toggle-icon\">${isExpanded ? '▼' : '▲'}</span>`;
+      // Do NOT set innerHTML or change the arrow here; let CSS handle rotation
     });
   });
 
@@ -234,15 +234,13 @@ function attachEventListeners() {
   $all('.group-header').forEach(header => {
     header.addEventListener('click', (e) => {
       e.stopPropagation(); // Prevent event bubbling
-      const biomarkerItems = header.nextElementSibling;
-      const isExpanded = !biomarkerItems.classList.contains('hidden');
-      
+      const group = header.closest('.biomarker-group');
+      const biomarkerItems = group.querySelector('.biomarker-items');
+      const toggleButton = group.querySelector('.toggle-biomarkers');
+      const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
       biomarkerItems.classList.toggle('hidden');
-      header.setAttribute('aria-expanded', !isExpanded);
-      
-      // Update the header text to show expand/collapse state
-      const headerText = header.textContent.split(' (')[0];
-      header.textContent = `${headerText} (${biomarkerItems.querySelectorAll('li').length} tests) ${isExpanded ? '▼' : '▶'}`;
+      toggleButton.setAttribute('aria-expanded', !isExpanded);
+      // Do NOT swap the arrow character; let CSS handle rotation
     });
   });
 
@@ -284,7 +282,7 @@ function attachEventListeners() {
         if (items && toggle) {
           items.classList.toggle('hidden', isExpanded);
           toggle.setAttribute('aria-expanded', !isExpanded);
-          toggle.innerHTML = `<span class="toggle-icon">${isExpanded ? '▼' : '▲'}</span>`;
+          // Do NOT swap the arrow character; let CSS handle rotation
         }
       });
       // Update the "Show all" button
