@@ -4946,3 +4946,31 @@ body {
   .advanced-search-page {
     padding-top: 7.5rem; /* enough for both the search bar and heading */
   }
+
+  .book-test-btn {
+    background: var(--accent, #2563eb);
+    color: #fff;
+    border: none;
+    border-radius: 24px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: inline-block;
+    transition: background 0.2s, color 0.2s;
+    text-decoration: none;
+  }
+  .book-test-btn:hover {
+    background: var(--accent-hover, #1741a6);
+    color: #fff;
+    text-decoration: none;
+  }
+  .card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    justify-content: flex-end;
+    align-items: center;
+  }

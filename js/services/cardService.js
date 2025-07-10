@@ -65,6 +65,24 @@ export class CardService {
     }
     const biomarkerCount = test.biomarker_count || 0;
 
+    // Remove duplicate biomarkers across groups (show in first group only)
+    if (test.grouped_biomarkers && typeof test.grouped_biomarkers === 'object') {
+      const seen = new Set();
+      for (const group of Object.keys(test.grouped_biomarkers)) {
+        test.grouped_biomarkers[group] = test.grouped_biomarkers[group].filter(b => {
+          if (seen.has(b)) return false;
+          seen.add(b);
+          return true;
+        });
+      }
+      // Remove groups with zero biomarkers
+      for (const group of Object.keys(test.grouped_biomarkers)) {
+        if (test.grouped_biomarkers[group].length === 0) {
+          delete test.grouped_biomarkers[group];
+        }
+      }
+    }
+
     return `
       <div class="product-card blood-test-card" data-test-id="${test.name}">
         ${showRank ? `<div class="test-rank">${options.rank}</div>` : ''}
@@ -115,8 +133,7 @@ export class CardService {
               <p>Results in ${test["Days till results returned"] || 'N/A'} days</p>
             </div>
             <div class="card-actions">
-              <button class="toggle-details" aria-expanded="false">Details</button>
-              <button class="add-to-basket" data-test-id="${test.name}">Add to Basket</button>
+              <a class="book-test-btn" href="${test.url || '#'}" target="_blank" rel="noopener noreferrer" data-test-id="${test.name}">Book test</a>
             </div>
           ` : ''}
         </div>
