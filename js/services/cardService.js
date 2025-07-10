@@ -140,13 +140,34 @@ export class CardService {
                     : '<span>Not specified</span>'}
                 </div>
               </div>
-              <div style="margin-top: 0.7em;"><span style="font-weight:bold;">Results returned in:</span> ${
-                test.results_returned_time_days
-                  ? test.results_returned_time_days + ' days'
-                  : (test.results_returned_time_min && test.results_returned_time_max
-                      ? test.results_returned_time_min + ' - ' + test.results_returned_time_max + ' days'
-                      : 'N/A days')
-              }</div>
+              <div style="margin-top: 0.7em;"><span style="font-weight:bold;">Results returned in:</span> ${(() => {
+                const toKeyCap = n => String(n).split('').map(d => {
+                  const map = {'0':'0️⃣','1':'1️⃣','2':'2️⃣','3':'3️⃣','4':'4️⃣','5':'5️⃣','6':'6️⃣','7':'7️⃣','8':'8️⃣','9':'9️⃣'};
+                  return map[d] || d;
+                }).join('');
+                if (test.results_returned_time_days) {
+                  return toKeyCap(test.results_returned_time_days) + ' days';
+                } else if (test.results_returned_time_min && test.results_returned_time_max) {
+                  return toKeyCap(test.results_returned_time_min) + ' - ' + toKeyCap(test.results_returned_time_max) + ' days';
+                } else {
+                  return 'N/A days';
+                }
+              })()}
+              </div>
+              <div style="margin-top: 1em;"><span style="font-weight:bold;">Doctors report:</span> ${test.doctors_report ? '✅' : '❌'}</div>
+              <div style="margin-top: 1em;"><span style="font-weight:bold;">Trust pilot score:</span> ${(() => {
+                const score = Number(test.trustpilot_score);
+                if (isNaN(score)) return '<span>Not available</span>';
+                const fullStars = Math.floor(score);
+                const halfStar = score - fullStars >= 0.5 ? 1 : 0;
+                const emptyStars = 5 - fullStars - halfStar;
+                let stars = '';
+                for (let i = 0; i < fullStars; i++) stars += '★';
+                if (halfStar) stars += '⯨';
+                for (let i = 0; i < emptyStars; i++) stars += '☆';
+                return `<span title="${score.toFixed(2)}">${stars}</span>`;
+              })()}
+              </div>
             </div>
             <div class="card-actions">
               <a class="book-test-btn" href="${test.url || '#'}" target="_blank" rel="noopener noreferrer" data-test-id="${test.name}">Book test</a>
