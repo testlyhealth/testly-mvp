@@ -124,13 +124,29 @@ export class CardService {
           ` : ''}
           ${showDetails ? `
             <div class="test-locations">
-              <h4>Available at:</h4>
-              <ul>
-                ${bloodTestLocations.length > 0 ? bloodTestLocations.map(location => `<li>${location}</li>`).join('') : '<li>Not specified</li>'}
-              </ul>
-            </div>
-            <div class="test-results">
-              <p>Results in ${test["Days till results returned"] || 'N/A'} days</p>
+              <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.5em;">
+                <h4 style="margin: 0; font-weight: bold;">Blood taking method:</h4>
+                <div style="display: flex; align-items: center; gap: 0.3em; margin-left: 0.5em;">
+                  ${Array.isArray(test.blood_taking_methods) && test.blood_taking_methods.length > 0
+                    ? test.blood_taking_methods.map(method => {
+                        const emojiMap = {
+                          'Home test': '🏠',
+                          'Clinic visit': '🏥',
+                          'Phlebotomist to home': '🧑🏼‍⚕️',
+                          'Self arrange': '🙋🏼'
+                        };
+                        return `<span style=\"font-size:1.3em;\" title=\"${method}\">${emojiMap[method] || method}</span>`;
+                      }).join('')
+                    : '<span>Not specified</span>'}
+                </div>
+              </div>
+              <div style="margin-top: 0.7em;"><span style="font-weight:bold;">Results returned in:</span> ${
+                test.results_returned_time_days
+                  ? test.results_returned_time_days + ' days'
+                  : (test.results_returned_time_min && test.results_returned_time_max
+                      ? test.results_returned_time_min + ' - ' + test.results_returned_time_max + ' days'
+                      : 'N/A days')
+              }</div>
             </div>
             <div class="card-actions">
               <a class="book-test-btn" href="${test.url || '#'}" target="_blank" rel="noopener noreferrer" data-test-id="${test.name}">Book test</a>

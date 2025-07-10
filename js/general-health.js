@@ -624,6 +624,8 @@ async function fetchAndEnrichTests({ category = null, provider = null } = {}) {
   let biomarkerLinks = [];
   let biomarkerIds = [];
   let biomarkers = [];
+  let methodLinks = [];
+  let allMethods = [];
   if (testIds.length > 0) {
     const { data: links, error: linkError } = await supabase
       .from('biomarker_link_table')
@@ -632,6 +634,21 @@ async function fetchAndEnrichTests({ category = null, provider = null } = {}) {
     if (linkError) throw linkError;
     biomarkerLinks = links;
     biomarkerIds = [...new Set(links.map(l => l.biomarker_id))];
+
+    // Fetch blood taking method links
+    const { data: methodLinkRows, error: methodLinkError } = await supabase
+      .from('blood_taking_method_link_table')
+      .select('provider_blood_test_id, blood_taking_method_id')
+      .in('provider_blood_test_id', testIds);
+    if (methodLinkError) throw methodLinkError;
+    methodLinks = methodLinkRows;
+
+    // Fetch all blood taking methods
+    const { data: methodRows, error: methodError } = await supabase
+      .from('blood_taking_methods')
+      .select('id, name');
+    if (methodError) throw methodError;
+    allMethods = methodRows;
   }
   if (biomarkerIds.length > 0) {
     const { data: biomarkerRows, error: biomarkerError } = await supabase
@@ -641,7 +658,7 @@ async function fetchAndEnrichTests({ category = null, provider = null } = {}) {
     if (biomarkerError) throw biomarkerError;
     biomarkers = biomarkerRows;
   }
-  // 3. Attach grouped biomarkers and flat biomarker names to each test
+  // 3. Attach grouped biomarkers, flat biomarker names, and blood taking methods to each test
   tests.forEach(test => {
     const links = biomarkerLinks.filter(link => link.provider_blood_test_id === test.id);
     const grouped = {};
@@ -664,6 +681,9 @@ async function fetchAndEnrichTests({ category = null, provider = null } = {}) {
     test.grouped_biomarkers = grouped;
     test.biomarker_count = links.length;
     test.biomarker_names = biomarkerNames;
+    // Attach blood taking methods
+    const methodIds = methodLinks.filter(l => l.provider_blood_test_id === test.id).map(l => l.blood_taking_method_id);
+    test.blood_taking_methods = allMethods.filter(m => methodIds.includes(m.id)).map(m => m.name);
   });
   return tests;
 }
