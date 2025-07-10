@@ -148,6 +148,60 @@ export async function displayAdvancedSearchPage() {
     }
   });
 
+  // After rendering, create and append the floating search bar to the end of <body>
+  setTimeout(() => {
+    // Remove any existing floating search bar
+    const oldBar = document.getElementById('biomarker-search-bar');
+    if (oldBar && oldBar.parentNode) oldBar.parentNode.removeChild(oldBar);
+
+    // Create the floating search bar
+    const bar = document.createElement('div');
+    bar.className = 'biomarker-search-bar';
+    bar.id = 'biomarker-search-bar';
+    bar.innerHTML = '<input type="text" id="biomarker-search-box" placeholder="Find a biomarker or group...">';
+    document.body.appendChild(bar);
+
+    // --- Biomarker search functionality ---
+    const searchBox = document.getElementById('biomarker-search-box');
+    if (searchBox) {
+      searchBox.addEventListener('input', function() {
+        document.querySelectorAll('.biomarker-group-block, .biomarker-checkbox, .biomarker-group-heading').forEach(el => {
+          el.classList.remove('biomarker-search-highlight');
+        });
+        const value = searchBox.value.trim().toLowerCase();
+        if (!value) return;
+        let firstMatch = null;
+        document.querySelectorAll('.biomarker-group-block').forEach(groupBlock => {
+          const heading = groupBlock.querySelector('.biomarker-group-heading');
+          if (heading && heading.textContent.toLowerCase().includes(value)) {
+            heading.classList.add('biomarker-search-highlight');
+            if (!firstMatch) firstMatch = heading;
+          }
+          groupBlock.querySelectorAll('.biomarker-checkbox').forEach(label => {
+            if (label.textContent.toLowerCase().includes(value)) {
+              label.classList.add('biomarker-search-highlight');
+              if (!firstMatch) firstMatch = label;
+            }
+          });
+        });
+        if (firstMatch) {
+          firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      });
+    }
+  }, 0);
+
+  // Remove the floating search bar when navigating away from advanced search
+  function removeAdvancedSearchBar() {
+    const bar = document.getElementById('biomarker-search-bar');
+    if (bar && bar.parentNode) bar.parentNode.removeChild(bar);
+  }
+  window.addEventListener('hashchange', () => {
+    if (!window.location.hash.startsWith('#/advanced-search')) {
+      removeAdvancedSearchBar();
+    }
+  });
+
   // Attach event listeners after content is rendered
   document.addEventListener('contentRendered', function attachEventListeners() {
     // Select All functionality for each section (regular/advanced) in each group

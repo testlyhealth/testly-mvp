@@ -4026,7 +4026,7 @@ body {
 
   .advanced-search-page {
     position: relative;
-    padding-bottom: 5.5rem;
+    padding-bottom: 7.5rem; /* enough for both the search bar and heading */
   }
 
   .search-btn {
@@ -4912,4 +4912,37 @@ body {
       padding: 0.9rem 1.5rem;
       font-size: 1rem;
     }
+  }
+
+  /* Highlight for biomarker search matches */
+  .biomarker-search-highlight {
+    background: #fff8b3 !important;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+
+  .biomarker-search-bar {
+    position: fixed;
+    top: 64px; /* adjust if you have a header, otherwise use 0 */
+    left: 0;
+    width: 100vw;
+    z-index: 3000;
+    background: #fff;
+    padding: 0.7rem 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-bottom: 1.5px solid #eee;
+  }
+
+  #biomarker-search-box {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    border: 1.5px solid #ddd;
+    outline: none;
+    background: #fff;
+  }
+
+  .advanced-search-page {
+    padding-top: 7.5rem; /* enough for both the search bar and heading */
   }
