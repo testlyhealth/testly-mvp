@@ -4862,6 +4862,132 @@ body {
     }
   }
 
+  /* Compare Page Styles */
+  .compare-hero {
+    background: white;
+    color: black;
+    text-align: center;
+    padding: 2rem 2rem;
+  }
+
+  .compare-hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .compare-hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+  }
+
+  .compare-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    line-height: 1.4;
+  }
+
+  .compare-content-section {
+    padding: 1rem 2rem 2rem;
+  }
+
+  .compare-content {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .compare-tile {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 0.75rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .compare-tile:first-child {
+    background: #D1DED4;
+  }
+
+  .compare-tile:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .tile-content h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+  }
+
+  .tile-content p {
+    font-size: 1rem;
+    line-height: 1.4;
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .compare-btn {
+    display: inline-block !important;
+    background: var(--accent);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+    border: 2px solid var(--accent);
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .compare-tile:first-child .compare-btn {
+    background: white !important;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+  }
+
+  .compare-btn:hover {
+    background: var(--accent-hover);
+  }
+
+  @media (max-width: 768px) {
+    .compare-hero h1 {
+      font-size: 2.5rem;
+    }
+    
+    .compare-subtitle {
+      font-size: 1.1rem;
+    }
+    
+    .compare-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    
+    .compare-tile {
+      padding: 2rem;
+    }
+    
+    .tile-content h3 {
+      font-size: 1.3rem;
+    }
+    
+    .tile-content p {
+      font-size: 1rem;
+    }
+  }
+
   .mission-values {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));

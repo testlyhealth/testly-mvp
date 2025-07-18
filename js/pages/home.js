@@ -702,14 +702,14 @@ function setupCategoryCards() {
 
 // Setup CTA button navigation
 function setupCTAButtons() {
-  const primaryCTA = document.querySelector('.primary-cta-button');
+  const primaryCTAs = document.querySelectorAll('.primary-cta-button');
   const secondaryCTA = document.querySelector('.secondary-cta-button');
   
-  if (primaryCTA) {
+  primaryCTAs.forEach(primaryCTA => {
     primaryCTA.addEventListener('click', () => {
-            window.location.hash = '#/blood-tests';
-        });
-    }
+      window.location.hash = '#/compare';
+    });
+  });
   
   if (secondaryCTA) {
     secondaryCTA.addEventListener('click', () => {
