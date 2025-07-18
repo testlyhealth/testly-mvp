@@ -40,7 +40,7 @@ export async function displayComparePage() {
             </div>
           </div>
 
-          <div class="compare-tile option-checkup" onclick="window.location.hash='#/category/general-health'">
+          <div class="compare-tile option-checkup" onclick="window.location.hash='#/general-health?filter=General%20health'">
             <div class="tile-content">
               <h3>
                 <span class="tile-icon-inline">

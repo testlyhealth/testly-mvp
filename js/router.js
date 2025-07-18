@@ -6,12 +6,17 @@ import { displayGeneralHealthPage } from './general-health.js';
 import { displayAdvancedSearchPage } from './pages/advanced-search.js';
 import { displayAboutPage } from './pages/about.js';
 import { displayContactPage, initializeContactPage } from './pages/contact.js';
+import { supabase } from './api/supabase.js';
 import { displayPrivacyPage } from './pages/privacy.js';
 import { displayCookiesPage } from './pages/cookies.js';
 import { displayDisclaimerPage } from './pages/disclaimer.js';
 import { displayAffiliatePage } from './pages/affiliate.js';
 import { displayComparePage } from './pages/compare.js';
 import { displayCategorySelectPage } from './pages/category-select.js';
+import { displayBloodTestCategoriesPage } from './pages/blood-test-categories.js';
+import { displayBloodTestSearchOptionsPage } from './pages/blood-test-search-options.js';
+import { displayBloodTestRequestPage, initializeBloodTestRequestPage } from './pages/blood-test-request.js';
+import { displayComingSoonPage } from './pages/coming-soon.js';
 import { displayAdminPage, initializeAdminPage } from './pages/admin.js';
 
 // Router class to handle SPA navigation
@@ -102,6 +107,26 @@ export default class Router {
       } else if (hash === '/category-select') {
         console.log('Handling category select route');
         const content = await displayCategorySelectPage();
+        await this.render(content);
+      } else if (hash === '/blood-test-categories') {
+        console.log('Handling blood test categories route');
+        const content = await displayBloodTestCategoriesPage();
+        await this.render(content);
+      } else if (hash === '/blood-test-search-options') {
+        console.log('Handling blood test search options route');
+        const content = await displayBloodTestSearchOptionsPage();
+        await this.render(content);
+      } else if (hash === '/blood-test-request') {
+        console.log('Handling blood test request route');
+        const content = await displayBloodTestRequestPage();
+        await this.render(content);
+        // Initialize the form after render
+        await new Promise(resolve => setTimeout(resolve, 100));
+        initializeBloodTestRequestPage();
+      } else if (hash.startsWith('/coming-soon/')) {
+        console.log('Handling coming soon route');
+        const categoryName = decodeURIComponent(hash.split('/')[2]);
+        const content = await displayComingSoonPage(categoryName);
         await this.render(content);
       } else if (hash === '/admin') {
         console.log('Handling admin route');

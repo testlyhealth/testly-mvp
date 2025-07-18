@@ -21,8 +21,18 @@ export async function displayCategorySelectPage() {
       const optionClass = getOptionClass(index);
       const icon = getCategoryIcon(category, index);
       
+      // Special handling for Blood tests and Other categories
+      let targetRoute;
+      if (category === 'Blood tests') {
+        targetRoute = '#/blood-test-search-options';
+      } else if (category === 'Other') {
+        targetRoute = '#/blood-test-request';
+      } else {
+        targetRoute = `#/coming-soon/${encodeURIComponent(category)}`;
+      }
+      
       return `
-        <div class="compare-tile ${optionClass}" onclick="window.location.hash='#/category/${encodeURIComponent(category)}'">
+        <div class="compare-tile ${optionClass}" onclick="window.location.hash='${targetRoute}'">
           <div class="tile-content">
             <h3>${category}</h3>
           </div>

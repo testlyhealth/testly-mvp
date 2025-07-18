@@ -559,6 +559,7 @@ async function fetchAndEnrichTests({ category = null, provider = null } = {}) {
   let tests = [];
   // 1. Fetch tests (with provider info, filtered by category/provider if needed)
   if (category) {
+    console.log('Looking for category in database:', category);
     const { data: catRows, error: catError } = await supabase
       .from('blood_test_categories')
       .select('id')
@@ -697,6 +698,7 @@ export async function displayGeneralHealthPage() {
     const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
     if (filterMatch) {
       selectedCategory = decodeURIComponent(filterMatch[1]);
+      console.log('Selected category from URL:', selectedCategory);
     }
     if (biomarkerMatch) {
       selectedBiomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean);
