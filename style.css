@@ -2639,7 +2639,8 @@ body {
   .categories-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
+    column-gap: 2rem;
+    row-gap: 4rem;
     margin-bottom: 3rem;
   }
 
@@ -3913,6 +3914,28 @@ body {
     .biomarker-group-block {
         max-width: 100%;
         flex-basis: 100%;
+    }
+  }
+
+  .advanced-search-page .back-button-container.bottom-left {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    z-index: 9999;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+
+  @media (max-width: 768px) {
+    .advanced-search-page .back-button-container.bottom-left {
+      bottom: 1rem;
+      left: 1rem;
+    }
+
+    .advanced-search-page .back-button {
+      font-size: 0.85rem;
+      padding: 0.4rem 0.8rem;
     }
   }
 
@@ -5622,6 +5645,43 @@ body {
     }
   }
 
+  /* Floating Back Button */
+  .advanced-back-fab {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    z-index: 1000;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background: white;
+    color: #333;
+    border: 2px solid #e5e7eb;
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .advanced-back-fab:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  }
+
+  @media (max-width: 600px) {
+    .advanced-back-fab {
+      left: 1rem;
+      bottom: 1rem;
+      padding: 0.7rem 1.2rem;
+      font-size: 0.9rem;
+    }
+  }
+
   /* Highlight for biomarker search matches */
   .biomarker-search-highlight {
     background: #fff8b3 !important;
@@ -5936,7 +5996,8 @@ body {
   .categories-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    column-gap: 1rem;
+    row-gap: 3rem;
     margin-top: 3rem;
     max-width: 900px;
     margin-left: auto;

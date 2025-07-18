@@ -107,15 +107,19 @@ export async function displayAdvancedSearchPage() {
     html += '<div class="error">Failed to load biomarker groupings.</div>';
   }
 
-  html += `</div></section>`;
+  html += `</div>
+  </section>`;
 
-  // After rendering, create and append the floating button to the end of <body>
+  // After rendering, create and append the floating buttons to the end of <body>
   setTimeout(() => {
-    // Remove any existing floating button
+    // Remove any existing floating buttons
     const oldFab = document.getElementById('advanced-search-btn');
     if (oldFab && oldFab.parentNode) oldFab.parentNode.removeChild(oldFab);
+    
+    const oldBackBtn = document.getElementById('advanced-back-btn');
+    if (oldBackBtn && oldBackBtn.parentNode) oldBackBtn.parentNode.removeChild(oldBackBtn);
 
-    // Create the floating button
+    // Create the floating search button
     const fab = document.createElement('button');
     fab.className = 'advanced-search-btn advanced-search-fab';
     fab.type = 'button';
@@ -134,13 +138,34 @@ export async function displayAdvancedSearchPage() {
       window.location.hash = `#/general-health?biomarkers=${params}`;
     });
 
+    // Create the floating back button
+    const backBtn = document.createElement('button');
+    backBtn.className = 'back-button advanced-back-fab';
+    backBtn.type = 'button';
+    backBtn.id = 'advanced-back-btn';
+    backBtn.innerHTML = `
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Back
+    `;
+
+    // Add the click event
+    backBtn.addEventListener('click', () => {
+      window.history.back();
+    });
+
     document.body.appendChild(fab);
+    document.body.appendChild(backBtn);
   }, 0);
 
-  // Remove the floating button when navigating away from advanced search
+  // Remove the floating buttons when navigating away from advanced search
   function removeAdvancedSearchFab() {
     const fab = document.getElementById('advanced-search-btn');
     if (fab && fab.parentNode) fab.parentNode.removeChild(fab);
+    
+    const backBtn = document.getElementById('advanced-back-btn');
+    if (backBtn && backBtn.parentNode) backBtn.parentNode.removeChild(backBtn);
   }
   window.addEventListener('hashchange', () => {
     if (!window.location.hash.startsWith('#/advanced')) {
