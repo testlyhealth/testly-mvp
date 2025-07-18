@@ -14,7 +14,11 @@ export async function displayComparePage() {
             <div class="tile-content">
               <h3>1. I know what I want</h3>
               <p><em>"I already have a specific test or treatment in mind."</em></p>
-              <a href="#/advanced" class="compare-btn">Search Now</a>
+              <a href="#/advanced" class="compare-btn">Search Now
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4.16666 10H15.8333M15.8333 10L10.8333 5M15.8333 10L10.8333 15" stroke="currentColor" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
             </div>
           </div>
 
@@ -22,7 +26,11 @@ export async function displayComparePage() {
             <div class="tile-content">
               <h3>2. I have a health concern</h3>
               <p><em>"I have symptoms or a goal but I'm not sure which test or treatment is right."</em></p>
-              <a href="#/advanced" class="compare-btn">Find My Options</a>
+              <a href="#/advanced" class="compare-btn">Find My Options
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4.16666 10H15.8333M15.8333 10L10.8333 5M15.8333 10L10.8333 15" stroke="currentColor" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
             </div>
           </div>
 
@@ -30,7 +38,11 @@ export async function displayComparePage() {
             <div class="tile-content">
               <h3>3. I want a general health check</h3>
               <p><em>"I'm looking for a complete health MOT or wellness package."</em></p>
-              <a href="#/category/general-health" class="compare-btn">See Top Tests</a>
+              <a href="#/category/general-health" class="compare-btn">See Top Tests
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4.16666 10H15.8333M15.8333 10L10.8333 5M15.8333 10L10.8333 15" stroke="currentColor" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
             </div>
           </div>
 
@@ -38,7 +50,11 @@ export async function displayComparePage() {
             <div class="tile-content">
               <h3>4. I'm just browsing</h3>
               <p><em>"I want to explore what's out there before deciding."</em></p>
-              <a href="#/" class="compare-btn">Browse Categories</a>
+              <a href="#/" class="compare-btn">Browse Categories
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4.16666 10H15.8333M15.8333 10L10.8333 5M15.8333 10L10.8333 15" stroke="currentColor" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
             </div>
           </div>
         </div>
