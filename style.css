@@ -3078,9 +3078,19 @@ body {
   }
 
   .biomarker-items {
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 1.5rem 0.75rem 2rem;
     margin: 0;
     list-style: none;
+  }
+
+  .biomarker-items li:before {
+    content: "•";
+    color: #2563eb !important; /* fallback to a visible blue */
+    font-weight: bold;
+    display: inline-block;
+    width: 1.2em;
+    margin-left: -1.2em;
+    position: static !important;
   }
 
   .biomarker-items.hidden {
@@ -3091,15 +3101,6 @@ body {
     padding: 0.25rem 0;
     font-size: 0.875rem;
     color: var(--text-secondary);
-  }
-
-  .biomarker-items li:before {
-    content: "•";
-    color: var(--primary);
-    font-weight: bold;
-    display: inline-block;
-    width: 1em;
-    margin-left: -1em;
   }
 
   .toggle-all-biomarkers {
@@ -3142,32 +3143,6 @@ body {
     margin: 0;
     font-size: 0.95rem;
     font-weight: 600;
-  }
-
-  .biomarker-items {
-    padding: 0.5rem 0.75rem;
-    margin: 0;
-    list-style: none;
-  }
-
-  .biomarker-items.hidden {
-    display: none;
-  }
-
-  .biomarker-items li {
-    font-size: 0.9rem;
-    padding: 0.25rem 0;
-    margin: 0;
-    color: #555;
-  }
-
-  .biomarker-items li:before {
-    content: "•";
-    color: #999;
-    font-weight: bold;
-    display: inline-block;
-    width: 0.75rem;
-    margin-left: -0.75rem;
   }
 
   .toggle-biomarkers {
@@ -4930,7 +4905,7 @@ body {
     top: 64px; /* adjust if you have a header, otherwise use 0 */
     left: 0;
     width: 100vw;
-    z-index: 3000;
+    z-index: 1500;
     background: #fff;
     padding: 0.7rem 0;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);

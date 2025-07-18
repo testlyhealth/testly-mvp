@@ -183,7 +183,7 @@ export function renderNewBloodTestsMenu() {
   `;
 
   bloodTestsMenu.querySelector('.adv-search').onclick = () => {
-    window.location.hash = '#/advanced-search';
+    window.location.hash = '#/advanced';
     bloodTestsMenu.classList.add('hidden');
   };
 

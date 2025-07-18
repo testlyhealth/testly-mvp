@@ -143,7 +143,7 @@ export async function displayAdvancedSearchPage() {
     if (fab && fab.parentNode) fab.parentNode.removeChild(fab);
   }
   window.addEventListener('hashchange', () => {
-    if (!window.location.hash.startsWith('#/advanced-search')) {
+    if (!window.location.hash.startsWith('#/advanced')) {
       removeAdvancedSearchFab();
     }
   });
@@ -197,7 +197,7 @@ export async function displayAdvancedSearchPage() {
     if (bar && bar.parentNode) bar.parentNode.removeChild(bar);
   }
   window.addEventListener('hashchange', () => {
-    if (!window.location.hash.startsWith('#/advanced-search')) {
+    if (!window.location.hash.startsWith('#/advanced')) {
       removeAdvancedSearchBar();
     }
   });
