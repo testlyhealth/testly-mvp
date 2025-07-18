@@ -4923,17 +4923,6 @@ body {
     overflow: hidden;
   }
 
-  .compare-tile::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: #e5e7eb;
-    transition: background 0.3s ease;
-  }
-
   .tile-icon {
     position: absolute;
     top: 1rem;
@@ -4948,8 +4937,13 @@ body {
     transition: all 0.3s ease;
   }
 
-  .option-specific::before {
-    background: #3b82f6;
+  .option-specific {
+    border: 2px solid #3b82f6;
+    transition: background-color 0.3s ease;
+  }
+
+  .option-specific:hover {
+    background: rgba(59, 130, 246, 0.05);
   }
 
   .option-specific .tile-icon {
@@ -4957,8 +4951,13 @@ body {
     color: #3b82f6;
   }
 
-  .option-concern::before {
-    background: #ef4444;
+  .option-concern {
+    border: 2px solid #ef4444;
+    transition: background-color 0.3s ease;
+  }
+
+  .option-concern:hover {
+    background: rgba(239, 68, 68, 0.05);
   }
 
   .option-concern .tile-icon {
@@ -4966,8 +4965,13 @@ body {
     color: #ef4444;
   }
 
-  .option-checkup::before {
-    background: #10b981;
+  .option-checkup {
+    border: 2px solid #10b981;
+    transition: background-color 0.3s ease;
+  }
+
+  .option-checkup:hover {
+    background: rgba(16, 185, 129, 0.05);
   }
 
   .option-checkup .tile-icon {
@@ -4975,8 +4979,13 @@ body {
     color: #10b981;
   }
 
-  .option-browse::before {
-    background: #8b5cf6;
+  .option-browse {
+    border: 2px solid #8b5cf6;
+    transition: background-color 0.3s ease;
+  }
+
+  .option-browse:hover {
+    background: rgba(139, 92, 246, 0.05);
   }
 
   .option-browse .tile-icon {
@@ -4986,6 +4995,10 @@ body {
 
   .compare-tile:first-child {
     background: rgba(255, 255, 255, 0.95);
+  }
+
+  .compare-tile:first-child.option-specific:hover {
+    background: rgba(59, 130, 246, 0.05) !important;
   }
 
   .compare-tile:hover {
@@ -5020,17 +5033,17 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0.4rem;
-    background: linear-gradient(135deg, #2563eb, #4f46e5);
-    color: white;
+    background: transparent;
+    color: #2563eb;
     padding: 0.6rem 1.2rem;
-    border: none;
+    border: 2px solid #2563eb;
     border-radius: 6px;
     text-decoration: none;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+    box-shadow: none;
     width: 180px;
     visibility: visible !important;
     opacity: 1 !important;
@@ -5038,14 +5051,16 @@ body {
   }
 
   .compare-tile:first-child .compare-btn {
-    background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
-    color: white;
-    border: none;
+    background: transparent !important;
+    color: #2563eb;
+    border: 2px solid #2563eb;
   }
 
   .compare-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(37, 99, 235, 0.4);
+    background: #2563eb;
+    color: white;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
   }
 
   .compare-btn svg {
