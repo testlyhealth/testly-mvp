@@ -4880,6 +4880,45 @@ body {
   .compare-hero-content {
     max-width: 800px;
     margin: 0 auto;
+    position: relative;
+  }
+
+  .back-button-container {
+  position: relative;
+  margin: 2rem 0 1rem 1rem;
+  z-index: 9999;
+}
+
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    color: #2563eb;
+    padding: 0.5rem 1rem;
+    border: 2px solid #2563eb;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: none;
+  }
+
+  .back-button:hover {
+    background: #2563eb;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  }
+
+  .back-button svg {
+    transition: transform 0.3s ease;
+  }
+
+  .back-button:hover svg {
+    transform: translateX(-4px);
   }
 
   .compare-hero h1 {
@@ -4903,12 +4942,40 @@ body {
     margin: 0 auto;
   }
 
+  /* Category selection page specific styling */
+.category-select-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-top: 1rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Center text specifically for category select page tiles */
+.category-select-grid .tile-content {
+  text-align: center;
+  align-items: center;
+}
+
+.category-select-grid .tile-content h3 {
+  text-align: center;
+}
+
+  @media (max-width: 768px) {
+    .category-select-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+  }
+
   .compare-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
     margin-top: 1rem;
-    max-width: 600px;
+    max-width: 480px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -4917,24 +4984,21 @@ body {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    padding: 0.6rem;
+    padding: 1.1rem 1.2rem 0.8rem 1.2rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     position: relative;
     overflow: hidden;
+    cursor: pointer;
+    min-width: 0;
   }
 
-  .tile-icon {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6b7280;
-    transition: all 0.3s ease;
+  @media (max-width: 600px) {
+    .compare-grid {
+      max-width: 98vw;
+    }
+    .compare-tile {
+      padding: 1rem 0.5rem 0.7rem 0.5rem;
+    }
   }
 
   .option-specific {
@@ -5010,6 +5074,9 @@ body {
     display: flex;
     flex-direction: column;
     height: 100%;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: left;
   }
 
   .tile-content h3 {
@@ -5078,6 +5145,13 @@ body {
     
     .compare-subtitle {
       font-size: 1.1rem;
+    }
+    
+    .back-button-container {
+      position: fixed;
+      bottom: 1rem;
+      left: 1rem;
+      margin-bottom: 0;
     }
     
     .compare-grid {
@@ -6493,4 +6567,51 @@ body {
     .affiliate-header h2 {
       font-size: 1.5rem;
     }
+  }
+
+  /* Inline icon backgrounds for compare page tiles */
+  .option-specific .tile-icon-inline {
+    background: #dbeafe;
+    color: #3b82f6;
+    border-radius: 8px;
+    padding: 0.25rem 0.35rem;
+    margin-right: 0.7rem;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+  }
+  .option-concern .tile-icon-inline {
+    background: #fee2e2;
+    color: #ef4444;
+    border-radius: 8px;
+    padding: 0.25rem 0.35rem;
+    margin-right: 0.7rem;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+  }
+  .option-checkup .tile-icon-inline {
+    background: #d1fae5;
+    color: #10b981;
+    border-radius: 8px;
+    padding: 0.25rem 0.35rem;
+    margin-right: 0.7rem;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+  }
+  .option-browse .tile-icon-inline {
+    background: #ede9fe;
+    color: #8b5cf6;
+    border-radius: 8px;
+    padding: 0.25rem 0.35rem;
+    margin-right: 0.7rem;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+  }
+
+  /* Ensure SVG inherits color from parent */
+  .tile-icon-inline svg {
+    color: inherit;
   }

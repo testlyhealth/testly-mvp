@@ -11,6 +11,7 @@ import { displayCookiesPage } from './pages/cookies.js';
 import { displayDisclaimerPage } from './pages/disclaimer.js';
 import { displayAffiliatePage } from './pages/affiliate.js';
 import { displayComparePage } from './pages/compare.js';
+import { displayCategorySelectPage } from './pages/category-select.js';
 import { displayAdminPage, initializeAdminPage } from './pages/admin.js';
 
 // Router class to handle SPA navigation
@@ -97,6 +98,10 @@ export default class Router {
       } else if (hash === '/compare') {
         console.log('Handling compare route');
         const content = await displayComparePage();
+        await this.render(content);
+      } else if (hash === '/category-select') {
+        console.log('Handling category select route');
+        const content = await displayCategorySelectPage();
         await this.render(content);
       } else if (hash === '/admin') {
         console.log('Handling admin route');
