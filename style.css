@@ -4562,8 +4562,8 @@ body {
 
   /* Privacy Policy Page Styles */
   .privacy-hero {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: white;
+    background: transparent;
+    color: black;
     text-align: center;
     padding: 2rem 2rem;
   }
@@ -4576,11 +4576,12 @@ body {
   .privacy-hero h1 {
     font-size: 3rem;
     margin-bottom: 1rem;
+    color: black;
   }
 
   .privacy-subtitle {
     font-size: 1.3rem;
-    opacity: 0.9;
+    color: black;
   }
 
   .privacy-content-section {
@@ -4600,7 +4601,7 @@ body {
   }
 
   .privacy-header {
-    text-align: center;
+    text-align: left;
     margin-bottom: 2rem;
     padding-bottom: 2rem;
     border-bottom: 2px solid #f0f0f0;
@@ -4677,8 +4678,8 @@ body {
 
   /* Cookie Policy Page Styles */
   .cookies-hero {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: white;
+    background: transparent;
+    color: black;
     text-align: center;
     padding: 2rem 2rem;
   }
@@ -4691,11 +4692,12 @@ body {
   .cookies-hero h1 {
     font-size: 3rem;
     margin-bottom: 1rem;
+    color: black;
   }
 
   .cookies-subtitle {
     font-size: 1.3rem;
-    opacity: 0.9;
+    color: black;
   }
 
   .cookies-content-section {
@@ -4715,7 +4717,7 @@ body {
   }
 
   .cookies-header {
-    text-align: center;
+    text-align: left;
     margin-bottom: 2rem;
     padding-bottom: 2rem;
     border-bottom: 2px solid #f0f0f0;
@@ -4787,8 +4789,8 @@ body {
 
   /* Disclaimer Page Styles */
   .disclaimer-hero {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: white;
+    background: transparent;
+    color: black;
     text-align: center;
     padding: 2rem 2rem;
   }
@@ -4801,11 +4803,12 @@ body {
   .disclaimer-hero h1 {
     font-size: 3rem;
     margin-bottom: 1rem;
+    color: black;
   }
 
   .disclaimer-subtitle {
     font-size: 1.3rem;
-    opacity: 0.9;
+    color: black;
   }
 
   .disclaimer-content-section {
@@ -4825,7 +4828,7 @@ body {
   }
 
   .disclaimer-header {
-    text-align: center;
+    text-align: left;
     margin-bottom: 2rem;
     padding-bottom: 2rem;
     border-bottom: 2px solid #f0f0f0;
@@ -4882,12 +4885,12 @@ body {
   .compare-hero h1 {
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
-    color: white;
+    color: black;
   }
 
   .compare-subtitle {
     font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.9);
+    color: black;
     line-height: 1.4;
   }
 
@@ -4950,6 +4953,7 @@ body {
   .compare-btn {
     display: inline-flex !important;
     align-items: center;
+    justify-content: center;
     gap: 0.4rem;
     background: linear-gradient(135deg, #2563eb, #4f46e5);
     color: white;
@@ -4962,7 +4966,7 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
-    max-width: fit-content;
+    width: 180px;
     visibility: visible !important;
     opacity: 1 !important;
     margin-left: auto;
@@ -6286,5 +6290,127 @@ body {
     
     .category-card {
       min-height: 320px;
+    }
+  }
+
+  /* Affiliate Page Styles */
+  .affiliate-hero {
+    background: transparent;
+    color: black;
+    text-align: center;
+    padding: 4rem 2rem;
+    margin-top: 0;
+  }
+
+  .affiliate-hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .affiliate-hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: black;
+  }
+
+  .affiliate-subtitle {
+    font-size: 1.2rem;
+    color: black;
+    line-height: 1.4;
+  }
+
+  .affiliate-content-section {
+    padding: 3rem 2rem;
+  }
+
+  .affiliate-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .affiliate-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+  }
+
+  .affiliate-header {
+    text-align: left;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    padding-top: 0.5rem;
+    border-bottom: 2px solid #f0f0f0;
+  }
+
+  .affiliate-header h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+
+  .affiliate-intro {
+    background: transparent;
+    padding: 0;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+
+  .affiliate-intro p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: 0;
+    color: black;
+  }
+
+  .affiliate-section {
+    margin-bottom: 2rem;
+  }
+
+  .affiliate-section h3 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+
+  .affiliate-section p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .affiliate-section ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .affiliate-section li {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+  }
+
+  .affiliate-section a {
+    color: #2563eb;
+    text-decoration: none;
+  }
+
+  .affiliate-section a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .affiliate-hero h1 {
+      font-size: 2rem;
+    }
+    
+    .affiliate-subtitle {
+      font-size: 1rem;
+    }
+    
+    .affiliate-container {
+      padding: 1rem;
+    }
+    
+    .affiliate-header h2 {
+      font-size: 1.5rem;
     }
   }

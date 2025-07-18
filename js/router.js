@@ -9,6 +9,7 @@ import { displayContactPage, initializeContactPage } from './pages/contact.js';
 import { displayPrivacyPage } from './pages/privacy.js';
 import { displayCookiesPage } from './pages/cookies.js';
 import { displayDisclaimerPage } from './pages/disclaimer.js';
+import { displayAffiliatePage } from './pages/affiliate.js';
 import { displayComparePage } from './pages/compare.js';
 import { displayAdminPage, initializeAdminPage } from './pages/admin.js';
 
@@ -88,6 +89,10 @@ export default class Router {
       } else if (hash === '/disclaimer') {
         console.log('Handling disclaimer route');
         const content = await displayDisclaimerPage();
+        await this.render(content);
+      } else if (hash === '/affiliate') {
+        console.log('Handling affiliate route');
+        const content = await displayAffiliatePage();
         await this.render(content);
       } else if (hash === '/compare') {
         console.log('Handling compare route');
