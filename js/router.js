@@ -5,6 +5,10 @@ import { getHomePageContent, initializeHomePage } from './pages/home.js';
 import { displayGeneralHealthPage } from './general-health.js';
 import { displayAdvancedSearchPage } from './pages/advanced-search.js';
 import { displayAboutPage } from './pages/about.js';
+import { displayContactPage, initializeContactPage } from './pages/contact.js';
+import { displayPrivacyPage } from './pages/privacy.js';
+import { displayCookiesPage } from './pages/cookies.js';
+import { displayDisclaimerPage } from './pages/disclaimer.js';
 import { displayAdminPage, initializeAdminPage } from './pages/admin.js';
 
 // Router class to handle SPA navigation
@@ -64,6 +68,25 @@ export default class Router {
       } else if (hash === '/about') {
         console.log('Handling about route');
         const content = await displayAboutPage();
+        await this.render(content);
+      } else if (hash === '/contact') {
+        console.log('Handling contact route');
+        const content = await displayContactPage();
+        await this.render(content);
+        // Initialize contact page after render is complete
+        await new Promise(resolve => setTimeout(resolve, 100));
+        initializeContactPage();
+      } else if (hash === '/privacy') {
+        console.log('Handling privacy route');
+        const content = await displayPrivacyPage();
+        await this.render(content);
+      } else if (hash === '/cookies') {
+        console.log('Handling cookies route');
+        const content = await displayCookiesPage();
+        await this.render(content);
+      } else if (hash === '/disclaimer') {
+        console.log('Handling disclaimer route');
+        const content = await displayDisclaimerPage();
         await this.render(content);
       } else if (hash === '/admin') {
         console.log('Handling admin route');

@@ -17,30 +17,7 @@ export async function displayAboutPage() {
       </div>
     </section>
 
-    <section class="about-mission">
-      <div class="about-content">
-        <h2>Our Mission</h2>
-        <p>To simplify healthcare by providing clear, accessible, and trustworthy information and services that empower people to make informed decisions about their health.</p>
-        
-        <div class="mission-values">
-          <div class="value-card">
-            <i class="fas fa-heart"></i>
-            <h3>Patient-Centered</h3>
-            <p>Everything we do is designed with the patient's needs and understanding in mind.</p>
-          </div>
-          <div class="value-card">
-            <i class="fas fa-shield-alt"></i>
-            <h3>Trust & Safety</h3>
-            <p>We maintain the highest standards of medical accuracy and data security.</p>
-          </div>
-          <div class="value-card">
-            <i class="fas fa-lightbulb"></i>
-            <h3>Innovation</h3>
-            <p>We continuously improve our platform to better serve our users' needs.</p>
-          </div>
-        </div>
-      </div>
-    </section>
+
 
     <section class="about-team">
       <div class="about-content">
@@ -48,14 +25,14 @@ export async function displayAboutPage() {
         <div class="founders-grid">
           <div class="founder-card">
             <div class="founder-image">
-              <img src="images/charles-winter.jpg" alt="Dr Charles Winter" />
+              <img src="images/Charles.png" alt="Dr Charles Winter" />
             </div>
             <h3>Dr Charles Winter</h3>
             <p>NHS Doctor & Health Tech Innovator</p>
           </div>
           <div class="founder-card">
             <div class="founder-image">
-              <img src="images/adam-hill.jpg" alt="Dr Adam Hill" />
+              <img src="images/Adam.png" alt="Dr Adam Hill" />
             </div>
             <h3>Dr Adam Hill</h3>
             <p>NHS Doctor & Digital Health Expert</p>
@@ -64,15 +41,6 @@ export async function displayAboutPage() {
       </div>
     </section>
 
-    <section class="about-cta">
-      <div class="about-content">
-        <h2>Ready to Take Control of Your Health?</h2>
-        <p>Start your journey with Testly today</p>
-        <div class="cta-buttons">
-          <a href="#/blood-tests" class="cta-button">Compare Blood Tests</a>
-          <a href="#/contact" class="cta-button secondary">Contact Us</a>
-        </div>
-      </div>
-    </section>
+
   `;
 } 
