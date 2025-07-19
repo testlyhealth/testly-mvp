@@ -5840,7 +5840,7 @@ body {
     border-radius: 30px;
     padding: 2rem;
     width: 350px;
-    min-height: 400px;
+    height: 500px;
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
     z-index: 10;
     display: flex;
