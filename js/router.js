@@ -18,7 +18,6 @@ import { displayBloodTestSearchOptionsPage } from './pages/blood-test-search-opt
 import { displayBloodTestRequestPage, initializeBloodTestRequestPage } from './pages/blood-test-request.js';
 import { displayComingSoonPage } from './pages/coming-soon.js';
 import { displayAdminPage, initializeAdminPage } from './pages/admin.js';
-import { displaySearchResultsPage, initializeSearchResultsPage } from './pages/search-results.js';
 
 // Router class to handle SPA navigation
 export default class Router {
@@ -164,13 +163,6 @@ export default class Router {
         // Initialize admin page after render is complete
         await new Promise(resolve => setTimeout(resolve, 100));
         initializeAdminPage();
-      } else if (hash.startsWith('/search-results')) {
-        console.log('Handling search results route');
-        const content = await displaySearchResultsPage();
-        await this.render(content);
-        // Initialize search results page after render is complete
-        await new Promise(resolve => setTimeout(resolve, 100));
-        initializeSearchResultsPage();
       } else if (hash.startsWith('/category/')) {
         console.log('Handling category route:', hash);
         const categoryId = hash.split('/')[2];
