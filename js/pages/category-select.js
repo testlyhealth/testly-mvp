@@ -14,9 +14,15 @@ export async function displayCategorySelectPage() {
 
     // Extract category names and filter to only show Weight loss, Blood tests, and Other
     const categoryNames = categories.map(cat => cat.name);
-    const filteredCategories = categoryNames.filter(cat => 
-      cat === 'Weight loss' || cat === 'Blood tests'
-    );
+    const filteredCategories = [];
+    
+    // Add categories in specific order: Blood tests first, Weight loss second, Other last
+    if (categoryNames.includes('Blood tests')) {
+      filteredCategories.push('Blood tests');
+    }
+    if (categoryNames.includes('Weight loss')) {
+      filteredCategories.push('Weight loss');
+    }
     filteredCategories.push('Other');
 
     // Generate category tiles
@@ -38,6 +44,9 @@ export async function displayCategorySelectPage() {
         <div class="compare-tile ${optionClass}" onclick="window.location.hash='${targetRoute}'">
           <div class="tile-content">
             <h3>${category}</h3>
+            ${category === 'Blood tests' ? '<p><em>- compare trusted UK blood test providers</em></p>' : ''}
+            ${category === 'Weight loss' ? '<p><em>- find leading UK clinics and treatments</em></p>' : ''}
+            ${category === 'Other' ? '<p><em>- can\'t find your category? Request it here</em></p>' : ''}
           </div>
         </div>
       `;

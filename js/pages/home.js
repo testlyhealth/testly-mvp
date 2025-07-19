@@ -10,38 +10,18 @@ const cardService = new CardService();
 // Static homepage content
 export function getHomePageContent() {
     return `
-    <!-- Hero Section -->
+        <!-- Hero Section -->
     <section class="hero-section">
       <div class="hero-container">
         <div class="hero-content">
           <h1 class="hero-title">
-            The simple way to find<br>
-            <span class="hero-highlight">trusted health tests and treatments</span>
-        </h1>
-          <div class="hero-explainer-section">
-            <div class="explainer-left">
-              <p class="explainer-intro">Testly compares trusted UK providers for:</p>
-            </div>
-            <div class="explainer-right">
-              <div class="services-grid">
-                <div class="services-column">
-                  <div class="service-item">✅ Weight loss treatments</div>
-                  <div class="service-item">✅ Blood tests</div>
-                  <div class="service-item">✅ ADHD assessments</div>
-                </div>
-                <div class="services-column">
-                  <div class="service-item">✅ Fertility clinics</div>
-                  <div class="service-item">✅ Hormone clinics</div>
-                  <div class="service-item">✅ Gut health tests</div>
-                </div>
-                <div class="services-column">
-                  <div class="service-item">✅ Scans</div>
-                  <div class="service-item">✅ Supplements</div>
-                  <div class="service-item">✅ And more</div>
-                </div>
-              </div>
-            </div>
-          </div>
+            Take control of your health
+          </h1>
+          <p class="hero-subtitle">
+            Compare <span class="rolling-text" id="rolling-text">blood tests</span><br>
+            Find your solution
+          </p>
+ 
           <div class="hero-cta">
             <button class="primary-cta-button">
               Compare now
@@ -52,64 +32,127 @@ export function getHomePageContent() {
             <p class="cta-note">Free comparison • No booking fees • Trusted providers</p>
           </div>
         </div>
-
+      </div>
+      
+      <div class="hero-side-box">
+        <div class="side-box-content">
+          <h3>Quick Search</h3>
+          <div class="search-tabs">
+            <button class="tab-button active">Test / Treatment</button>
+            <button class="tab-button">Problem</button>
+          </div>
+          <div class="search-form">
+            <!-- Blood tests form -->
+            <div class="form-content blood-tests-form">
+              <div class="form-group">
+                <label>Select a test or treatment *</label>
+                <select class="product-category-select">
+                  <option value="">Select a product category...</option>
+                  <option value="blood-tests">Blood tests</option>
+                  <option value="weight-loss">Weight loss</option>
+                  <option value="coming-soon">Others coming soon</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>What category do you need? *</label>
+                <select class="category-select">
+                  <option value="">Select a category...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Any specific biomarkers you need?</label>
+                <div class="biomarker-search-container">
+                  <input type="text" class="biomarker-search-input" placeholder="Start typing a biomarker...">
+                  <div class="biomarker-dropdown" style="display: none;">
+                    <!-- Results will be populated here -->
+                  </div>
+                </div>
+              </div>
+              <button class="search-button">
+                Search
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+            
+            <!-- Problem form -->
+            <div class="form-content problem-form" style="display: none;">
+              <div class="form-group">
+                <label>What's your symptom or health aim?</label>
+                <select class="symptom-select">
+                  <option value="">Choose an option</option>
+                  <option value="fatigue">Fatigue</option>
+                  <option value="weight-gain">Weight gain</option>
+                  <option value="low-energy">Low energy</option>
+                  <option value="sleep-issues">Sleep issues</option>
+                  <option value="digestive-problems">Digestive problems</option>
+                  <option value="hormonal-imbalance">Hormonal imbalance</option>
+                  <option value="stress-anxiety">Stress & anxiety</option>
+                  <option value="immune-support">Immune support</option>
+                  <option value="general-wellness">General wellness</option>
+                </select>
+              </div>
+              <div class="form-group" style="visibility: hidden;">
+                <label>Placeholder</label>
+                <select>
+                  <option value="">Placeholder</option>
+                </select>
+              </div>
+              <div class="form-group" style="visibility: hidden;">
+                <label>Placeholder</label>
+                <input type="text" placeholder="Placeholder">
+              </div>
+              <button class="search-button">
+                Find Solutions
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Quick Categories Section -->
-    <section class="categories-section">
+    <!-- Get Started Section -->
+    <section class="get-started-section">
       <div class="container">
-        <h2 class="section-title">What are you looking for?</h2>
-        <div class="categories-grid">
-          <div class="category-card" data-category="weight-loss">
-            <div class="category-image">
-              <img src="images/weight-loss.jpg" alt="Weight loss">
+        <h2 class="get-started-title">Right, let's get<br>you sorted...</h2>
+        
+        <div class="option-cards">
+          <div class="option-card">
+            <div class="card-icon search-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
             </div>
-            <div class="category-content">
-              <div class="category-text">
-                <h3>Weight loss</h3>
-              </div>
-              <button class="get-started-btn">
-                Get started
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-            </div>
+            <h3 class="option-title">I know what I want</h3>
+            <p class="option-description">You have a specific test or treatment in mind. Let's find the best provider for you.</p>
           </div>
           
-          <div class="category-card" data-category="blood-tests">
-            <div class="category-image">
-              <img src="images/blood-vials.jpg" alt="Blood tests">
+          <div class="option-card">
+            <div class="card-icon question-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
             </div>
-            <div class="category-content">
-              <div class="category-text">
-                <h3>Blood tests</h3>
-              </div>
-              <button class="get-started-btn">
-                Get started
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-            </div>
+            <h3 class="option-title">Help me with my symptoms</h3>
+            <p class="option-description">Not sure what you need? Tell us your symptoms and we'll guide you to the right solution.</p>
           </div>
           
-          <div class="category-card" data-category="more">
-            <div class="category-image">
-              <img src="images/options.jpg" alt="More services">
+          <div class="option-card">
+            <div class="card-icon glasses-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+              </svg>
             </div>
-            <div class="category-content">
-              <div class="category-text">
-                <h3>More services</h3>
-              </div>
-              <button class="get-started-btn">
-                Coming soon
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-            </div>
+            <h3 class="option-title">I'm just browsing</h3>
+            <p class="option-description">Explore our range of health tests and treatments to see what's available.</p>
           </div>
         </div>
       </div>
@@ -287,6 +330,8 @@ export function initializeHomePage() {
   setupNavigationHandlers();
   setupCategoryCards();
   setupCTAButtons();
+  setupRollingText();
+  setupSearchTabs();
 }
 
 // Load featured blood tests from database
@@ -742,4 +787,233 @@ function setupCTAButtons() {
 // Setup navigation handlers
 function setupNavigationHandlers() {
   // Add any additional navigation setup here
+}
+
+// Setup rolling text animation
+function setupRollingText() {
+  const rollingTextElement = document.getElementById('rolling-text');
+  if (!rollingTextElement) return;
+
+  const textOptions = [
+    'blood tests',
+    'weight loss treatments',
+    'ADHD assessments',
+    'fertility treatments',
+    'hormone clinics',
+    'supplements'
+  ];
+
+  let currentIndex = 1; // Start at second option (weight loss treatments)
+
+  function updateText() {
+    rollingTextElement.style.opacity = '0';
+    
+    setTimeout(() => {
+      rollingTextElement.textContent = textOptions[currentIndex];
+      rollingTextElement.style.opacity = '1';
+      currentIndex = (currentIndex + 1) % textOptions.length;
+    }, 300);
+  }
+
+  // Start the cycle after 3 seconds (so it doesn't immediately change from the initial "blood tests")
+  setTimeout(() => {
+    // Update text every 3 seconds
+    setInterval(updateText, 3000);
+  }, 3000);
+}
+
+// Setup search tab switching functionality
+function setupSearchTabs() {
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const bloodTestsForm = document.querySelector('.blood-tests-form');
+  const problemForm = document.querySelector('.problem-form');
+  
+  // Load blood test categories when page loads
+  loadBloodTestCategories();
+  
+  // Setup biomarker search functionality
+  setupBiomarkerSearch();
+  
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      // Remove active class from all buttons
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      
+      // Add active class to clicked button
+      button.classList.add('active');
+      
+      // Show/hide appropriate form
+      if (button.textContent === 'Test / Treatment') {
+        bloodTestsForm.style.display = 'block';
+        problemForm.style.display = 'none';
+      } else if (button.textContent === 'Problem') {
+        bloodTestsForm.style.display = 'none';
+        problemForm.style.display = 'block';
+      }
+    });
+  });
+}
+
+// Load blood test categories from database
+async function loadBloodTestCategories() {
+  try {
+    const { data, error } = await supabase
+      .from('blood_test_categories')
+      .select('name')
+      .order('name');
+    
+    if (error) {
+      console.error('Error fetching blood test categories:', error);
+      return;
+    }
+    
+    const categorySelect = document.querySelector('.category-select');
+    if (categorySelect && data) {
+      // Clear existing options except the first one
+      categorySelect.innerHTML = '<option value="">Select a category...</option>';
+      
+      // Add "All" option at the beginning
+      const allOption = document.createElement('option');
+      allOption.value = 'all';
+      allOption.textContent = 'All';
+      categorySelect.appendChild(allOption);
+      
+      // Add categories from database
+      data.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category.name;
+        option.textContent = category.name;
+        categorySelect.appendChild(option);
+      });
+    }
+  } catch (error) {
+    console.error('Error loading blood test categories:', error);
+  }
+}
+
+// Setup biomarker search functionality
+function setupBiomarkerSearch() {
+  const biomarkerInput = document.querySelector('.biomarker-search-input');
+  const biomarkerDropdown = document.querySelector('.biomarker-dropdown');
+  
+  if (!biomarkerInput || !biomarkerDropdown) return;
+  
+  let searchTimeout;
+  let selectedIndex = -1;
+  
+  biomarkerInput.addEventListener('input', (e) => {
+    const query = e.target.value.trim();
+    
+    // Clear previous timeout
+    clearTimeout(searchTimeout);
+    
+    if (query.length < 2) {
+      biomarkerDropdown.style.display = 'none';
+      return;
+    }
+    
+    // Debounce the search
+    searchTimeout = setTimeout(() => {
+      searchBiomarkers(query);
+    }, 300);
+  });
+  
+  biomarkerInput.addEventListener('keydown', (e) => {
+    const options = biomarkerDropdown.querySelectorAll('.biomarker-option');
+    
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        selectedIndex = Math.min(selectedIndex + 1, options.length - 1);
+        updateSelection(options);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        selectedIndex = Math.max(selectedIndex - 1, -1);
+        updateSelection(options);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (selectedIndex >= 0 && options[selectedIndex]) {
+          selectBiomarker(options[selectedIndex]);
+        }
+        break;
+      case 'Escape':
+        biomarkerDropdown.style.display = 'none';
+        selectedIndex = -1;
+        break;
+    }
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!biomarkerInput.contains(e.target) && !biomarkerDropdown.contains(e.target)) {
+      biomarkerDropdown.style.display = 'none';
+      selectedIndex = -1;
+    }
+  });
+}
+
+// Search biomarkers function
+async function searchBiomarkers(query) {
+  try {
+    const { data, error } = await supabase
+      .from('biomarkers')
+      .select('name')
+      .ilike('name', `%${query}%`)
+      .order('name')
+      .limit(20);
+    
+    if (error) {
+      console.error('Error fetching biomarkers:', error);
+      return;
+    }
+    
+    const biomarkerNames = data.map(item => item.name);
+    displayBiomarkerResults(biomarkerNames);
+  } catch (error) {
+    console.error('Error searching biomarkers:', error);
+  }
+}
+
+// Display biomarker search results
+function displayBiomarkerResults(biomarkers) {
+  const biomarkerDropdown = document.querySelector('.biomarker-dropdown');
+  
+  if (biomarkers.length === 0) {
+    biomarkerDropdown.innerHTML = '<div class="biomarker-option">No biomarkers found</div>';
+  } else {
+    biomarkerDropdown.innerHTML = biomarkers
+      .map(biomarker => `<div class="biomarker-option" data-value="${biomarker}">${biomarker}</div>`)
+      .join('');
+    
+    // Add click event listeners
+    biomarkerDropdown.querySelectorAll('.biomarker-option').forEach(option => {
+      option.addEventListener('click', () => selectBiomarker(option));
+    });
+  }
+  
+  biomarkerDropdown.style.display = 'block';
+}
+
+// Select a biomarker
+function selectBiomarker(option) {
+  const biomarkerInput = document.querySelector('.biomarker-search-input');
+  const biomarkerDropdown = document.querySelector('.biomarker-dropdown');
+  
+  biomarkerInput.value = option.dataset.value;
+  biomarkerDropdown.style.display = 'none';
+  biomarkerInput.focus();
+}
+
+// Update selection in dropdown
+function updateSelection(options) {
+  options.forEach((option, index) => {
+    if (index === selectedIndex) {
+      option.classList.add('selected');
+      option.scrollIntoView({ block: 'nearest' });
+    } else {
+      option.classList.remove('selected');
+    }
+  });
 } 
