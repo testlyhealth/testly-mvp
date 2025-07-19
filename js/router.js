@@ -18,6 +18,7 @@ import { displayBloodTestSearchOptionsPage } from './pages/blood-test-search-opt
 import { displayBloodTestRequestPage, initializeBloodTestRequestPage } from './pages/blood-test-request.js';
 import { displayComingSoonPage } from './pages/coming-soon.js';
 import { displayAdminPage, initializeAdminPage } from './pages/admin.js';
+import { displaySearchResultsPage, initializeSearchResultsPage } from './pages/search-results.js';
 
 // Router class to handle SPA navigation
 export default class Router {
@@ -61,6 +62,34 @@ export default class Router {
       // Handle other routes
       if (hash.startsWith('/blood-tests')) {
         console.log('Handling blood tests route');
+        
+        // Check if showAll parameter is present
+        const urlParams = new URLSearchParams(hash.split('?')[1] || '');
+        const showAll = urlParams.get('showAll');
+        
+                  if (showAll === 'true') {
+            // Redirect directly to general health with all categories
+            const allCategories = [
+              'General health', 'Female health and hormones', 'Male health and hormones', 'General hormone health',
+              'Thyroid health', 'Heart and metabolic health', 'Vitamins and minerals', 'Sports and nutrition',
+              'Toxicology', 'Fertility', 'Infectious diseases', 'Autoimmunity and inflammation',
+              'Genetics', 'Haematology', 'Allergies'
+            ];
+          
+          const searchParams = new URLSearchParams();
+          searchParams.set('filter', allCategories.join(','));
+          
+          // Preserve any other parameters (like biomarkers)
+          const biomarker1 = urlParams.get('biomarkers');
+          if (biomarker1) {
+            searchParams.set('biomarkers', biomarker1);
+          }
+          
+          const url = `#/general-health${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+          window.location.hash = url;
+          return; // Exit early since we're redirecting
+        }
+        
         const content = await displayBloodTestsPage();
         await this.render(content);
         this.setupBloodTestsHandlers();
@@ -135,6 +164,13 @@ export default class Router {
         // Initialize admin page after render is complete
         await new Promise(resolve => setTimeout(resolve, 100));
         initializeAdminPage();
+      } else if (hash.startsWith('/search-results')) {
+        console.log('Handling search results route');
+        const content = await displaySearchResultsPage();
+        await this.render(content);
+        // Initialize search results page after render is complete
+        await new Promise(resolve => setTimeout(resolve, 100));
+        initializeSearchResultsPage();
       } else if (hash.startsWith('/category/')) {
         console.log('Handling category route:', hash);
         const categoryId = hash.split('/')[2];

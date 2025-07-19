@@ -191,6 +191,30 @@ async function updateTestGridContent(tests) {
     const newContent = await cardService.createCards(enriched);
     testsGrid.innerHTML = newContent;
     currentTests = enriched;
+    
+    // Update filter tags with results count
+    const filterTagsContainer = document.querySelector('.filter-tags');
+    if (filterTagsContainer) {
+      const filterTagsList = filterTagsContainer.querySelector('.filter-tags-list');
+      if (filterTagsList) {
+        // Get current filter tags HTML
+        const currentTags = filterTagsList.innerHTML;
+        // Create results count HTML
+        const resultsCountHTML = `
+          <div class="results-count">
+            <span>${enriched.length} result${enriched.length !== 1 ? 's' : ''}</span>
+          </div>
+        `;
+        // Update the container
+        filterTagsContainer.innerHTML = `
+          <div class="filter-tags-list">
+            ${currentTags}
+          </div>
+          ${resultsCountHTML}
+        `;
+      }
+    }
+    
     attachEventListeners();
   } catch (error) {
     console.error('Error creating cards:', error);
@@ -430,7 +454,9 @@ async function initializePageElements(tests) {
   const cards = await cardService.createCards(currentTests);
   testsGrid.innerHTML = cards;
   setupFilterPanel(tests, async (filterState) => {
+    console.log('=== DEBUG: Filter Panel Callback ===');
     console.log('Filter panel callback called with:', filterState);
+    console.log('Initial tests passed to filter panel:', tests.length);
     
     // Handle both filter state objects and filtered test arrays
     if (Array.isArray(filterState)) {
@@ -447,9 +473,21 @@ async function initializePageElements(tests) {
       
       console.log('Fetching tests for categories:', selectedCategories, 'providers:', selectedProviders);
       
+      // Get current biomarker filter from URL
+      const hash = window.location.hash;
+      const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
+      const selectedBiomarkers = biomarkerMatch ? 
+        decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean) : [];
+      
+      console.log('Current biomarker filter:', selectedBiomarkers);
+      
       // Fetch and enrich tests based on the filter state
       // For now, handle multiple categories by fetching each one and combining results
       let allEnrichedTests = [];
+      
+      console.log('=== DEBUG: Filter Panel Fetching ===');
+      console.log('Selected categories:', selectedCategories);
+      console.log('Selected providers:', selectedProviders);
       
       if (selectedCategories.length > 0) {
         for (const category of selectedCategories) {
@@ -469,22 +507,67 @@ async function initializePageElements(tests) {
           }
         });
         allEnrichedTests = uniqueTests;
+        console.log('Fetched tests for categories:', allEnrichedTests.length);
       } else {
         // No categories selected, fetch all tests
         allEnrichedTests = await fetchAndEnrichTests({ 
           category: null,
           provider: selectedProviders.length > 0 ? selectedProviders[0] : null 
         });
+        console.log('Fetched all tests:', allEnrichedTests.length);
+      }
+      
+      // Apply biomarker filtering if biomarkers are selected
+      if (selectedBiomarkers.length > 0) {
+        console.log('Applying biomarker filter to', allEnrichedTests.length, 'tests');
+        console.log('Looking for biomarkers:', selectedBiomarkers);
+        
+        allEnrichedTests = allEnrichedTests.filter(test => {
+          const testBiomarkers = test.biomarker_names || [];
+          console.log(`Test "${test.name}" has biomarkers:`, testBiomarkers);
+          
+          const hasAllBiomarkers = selectedBiomarkers.every(searchBiomarker => {
+            // Normalize the search biomarker (replace + with space, lowercase)
+            const normalizedSearch = searchBiomarker.toLowerCase().replace(/\+/g, ' ');
+            
+            // Check if any test biomarker matches (case insensitive, handle + vs space)
+            const hasMatch = testBiomarkers.some(testBiomarker => {
+              if (!testBiomarker) return false;
+              const normalizedTest = testBiomarker.toLowerCase().replace(/\+/g, ' ');
+              return normalizedTest === normalizedSearch;
+            });
+            
+            if (!hasMatch) {
+              console.log(`  Missing biomarker: "${searchBiomarker}" (normalized: "${normalizedSearch}")`);
+            }
+            return hasMatch;
+          });
+          
+          if (!hasAllBiomarkers) {
+            console.log(`Filtering out test "${test.name}" - missing biomarkers. Test has:`, testBiomarkers, 'Looking for:', selectedBiomarkers);
+          }
+          return hasAllBiomarkers;
+        });
+        console.log('After biomarker filtering:', allEnrichedTests.length, 'tests remaining');
+      } else {
+        console.log('No biomarker filter applied');
       }
       
       const enriched = allEnrichedTests;
       
-      console.log('Enriched tests:', enriched);
+      console.log('Final enriched tests:', enriched.length);
       
       filteredTests = enriched;
       sortAscending = true;
       updateSortButtonText(sortAscending);
       currentTests = sortTests(filteredTests, sortAscending);
+      
+      // Update the global tests to match what we're displaying
+      window._allGeneralHealthTests = enriched;
+      console.log('=== DEBUG: Filter Panel Callback Update ===');
+      console.log('Updated window._allGeneralHealthTests to', enriched.length, 'tests');
+      console.log('Test names:', enriched.map(t => t.name));
+      
       updateTestGridContent(currentTests);
     }
   });
@@ -559,45 +642,62 @@ async function fetchAndEnrichTests({ category = null, provider = null } = {}) {
   let tests = [];
   // 1. Fetch tests (with provider info, filtered by category/provider if needed)
   if (category) {
-    console.log('Looking for category in database:', category);
-    const { data: catRows, error: catError } = await supabase
-      .from('blood_test_categories')
-      .select('id')
-      .eq('name', category);
-    if (catError) {
-      console.error('Error fetching category:', catError);
-      throw catError;
+    // Handle multiple categories (comma-separated)
+    const categories = category.split(',').map(cat => cat.trim());
+    console.log('Looking for categories in database:', categories);
+    
+    let allTestIds = [];
+    
+    // Fetch tests for each category
+    for (const singleCategory of categories) {
+      console.log('Looking for category:', singleCategory);
+      const { data: catRows, error: catError } = await supabase
+        .from('blood_test_categories')
+        .select('id')
+        .eq('name', singleCategory);
+      if (catError) {
+        console.error('Error fetching category:', catError);
+        throw catError;
+      }
+      console.log('Category found:', singleCategory, 'ID:', catRows[0]?.id, 'Rows:', catRows.length);
+      const categoryId = catRows[0]?.id;
+      if (categoryId) {
+        const { data: linkRows, error: linkError } = await supabase
+          .from('blood_test_category_link_table')
+          .select('provider_blood_test_id')
+          .eq('blood_test_category_id', categoryId);
+        if (linkError) {
+          console.error('Error fetching link rows:', linkError);
+          throw linkError;
+        }
+        const testIds = linkRows.map(row => row.provider_blood_test_id);
+        console.log('Tests found for category', singleCategory, ':', testIds.length);
+        allTestIds = [...allTestIds, ...testIds];
+      }
     }
-    const categoryId = catRows[0]?.id;
-    if (categoryId) {
-      const { data: linkRows, error: linkError } = await supabase
-        .from('blood_test_category_link_table')
-        .select('provider_blood_test_id')
-        .eq('blood_test_category_id', categoryId);
-      if (linkError) {
-        console.error('Error fetching link rows:', linkError);
-        throw linkError;
-      }
-      const testIds = linkRows.map(row => row.provider_blood_test_id);
-      if (testIds.length > 0) {
-        let query = supabase.from('provider_blood_tests').select('*, provider:providers(name)').in('id', testIds);
-        if (provider) {
-          // Get provider ID from name
-          const { data: providerRows, error: providerError } = await supabase
-            .from('providers')
-            .select('id')
-            .eq('name', provider);
-          if (!providerError && providerRows && providerRows.length > 0) {
-            query = query.eq('provider_id', providerRows[0].id);
-          }
+    
+    // Remove duplicates
+    allTestIds = [...new Set(allTestIds)];
+    console.log('Total unique test IDs found:', allTestIds.length);
+    
+    if (allTestIds.length > 0) {
+      let query = supabase.from('provider_blood_tests').select('*, provider:providers(name)').in('id', allTestIds);
+      if (provider) {
+        // Get provider ID from name
+        const { data: providerRows, error: providerError } = await supabase
+          .from('providers')
+          .select('id')
+          .eq('name', provider);
+        if (!providerError && providerRows && providerRows.length > 0) {
+          query = query.eq('provider_id', providerRows[0].id);
         }
-        const { data: testRows, error: testError } = await query;
-        if (testError) {
-          console.error('Error fetching tests:', testError);
-          throw testError;
-        }
-        tests = testRows;
       }
+      const { data: testRows, error: testError } = await query;
+      if (testError) {
+        console.error('Error fetching tests:', testError);
+        throw testError;
+      }
+      tests = testRows;
     }
   } else {
     let query = supabase.from('provider_blood_tests').select('*, provider:providers(name)');
@@ -698,27 +798,75 @@ export async function displayGeneralHealthPage() {
     const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
     if (filterMatch) {
       selectedCategory = decodeURIComponent(filterMatch[1]);
+      // Fix the category name - replace + with space
+      selectedCategory = selectedCategory.replace(/\+/g, ' ');
       console.log('Selected category from URL:', selectedCategory);
     }
     if (biomarkerMatch) {
       selectedBiomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean);
+      console.log('Selected biomarkers from URL:', selectedBiomarkers);
     }
+    
+    console.log('=== DEBUG: URL Parameters ===');
+    console.log('Full hash:', hash);
+    console.log('Selected category:', selectedCategory);
+    console.log('Selected biomarkers:', selectedBiomarkers);
 
     // --- Fetch and enrich tests ---
     let tests;
+    console.log('=== DEBUG: Fetch Strategy ===');
     if (selectedBiomarkers.length > 0) {
-      // Fetch all tests (no category/provider filter)
-      tests = await fetchAndEnrichTests({});
-      // Filter to only those that include ALL selected biomarkers (case-insensitive)
-      tests = tests.filter(test =>
-        selectedBiomarkers.every(biomarker =>
-          (test.biomarker_names || []).some(name => name && name.toLowerCase() === biomarker.toLowerCase())
-        )
-      );
+      console.log('Biomarkers detected, checking if category also selected...');
+      // If both category and biomarkers are selected, fetch from category first, then filter by biomarkers
+      if (selectedCategory) {
+        console.log('Both category and biomarkers selected. Fetching from category:', selectedCategory);
+        tests = await fetchAndEnrichTests({ category: selectedCategory });
+        console.log('Tests fetched from category:', tests.length);
+        console.log('Sample test biomarker names:', tests.slice(0, 2).map(t => t.biomarker_names));
+        
+        // Filter to only those that include ALL selected biomarkers (case-insensitive)
+        const beforeFilter = tests.length;
+        tests = tests.filter(test => {
+          const hasAllBiomarkers = selectedBiomarkers.every(biomarker =>
+            (test.biomarker_names || []).some(name => name && name.toLowerCase() === biomarker.toLowerCase())
+          );
+          if (!hasAllBiomarkers) {
+            console.log(`Filtering out test "${test.name}" - missing biomarkers. Test has:`, test.biomarker_names, 'Looking for:', selectedBiomarkers);
+          }
+          return hasAllBiomarkers;
+        });
+        console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after biomarker filtering`);
+        console.log('Remaining tests:', tests.map(t => ({ name: t.name, biomarkers: t.biomarker_names, count: t.biomarker_count })));
+      } else {
+        console.log('Only biomarkers selected, fetching all tests');
+        // Only biomarkers selected, fetch all tests and filter by biomarkers
+        tests = await fetchAndEnrichTests({});
+        console.log('All tests fetched:', tests.length);
+        
+        // Filter to only those that include ALL selected biomarkers (case-insensitive)
+        const beforeFilter = tests.length;
+        tests = tests.filter(test => {
+          const hasAllBiomarkers = selectedBiomarkers.every(biomarker =>
+            (test.biomarker_names || []).some(name => name && name.toLowerCase() === biomarker.toLowerCase())
+          );
+          if (!hasAllBiomarkers) {
+            console.log(`Filtering out test "${test.name}" - missing biomarkers. Test has:`, test.biomarker_names, 'Looking for:', selectedBiomarkers);
+          }
+          return hasAllBiomarkers;
+        });
+        console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after biomarker filtering`);
+        console.log('Remaining tests:', tests.map(t => ({ name: t.name, biomarkers: t.biomarker_names, count: t.biomarker_count })));
+      }
     } else {
+      console.log('No biomarkers selected, fetching from category:', selectedCategory);
       tests = await fetchAndEnrichTests({ category: selectedCategory });
+      console.log('Tests fetched:', tests.length);
     }
     window._allGeneralHealthTests = tests;
+    console.log('=== DEBUG: Setting Global Tests ===');
+    console.log('Setting window._allGeneralHealthTests to', tests.length, 'tests');
+    console.log('Test names:', tests.map(t => t.name));
+    
     // Create filter panel with tests data
     const filterPanel = await createFilterPanel(tests);
     // Create and return the page structure
