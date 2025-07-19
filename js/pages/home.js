@@ -15,7 +15,7 @@ export function getHomePageContent() {
       <div class="hero-container">
         <div class="hero-content">
           <h1 class="hero-title">
-            Take control of your health
+            Health comparison<br><span style="color: white; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">made simple</span>
           </h1>
           <p class="hero-subtitle">
             Compare <span class="rolling-text" id="rolling-text">blood tests</span><br>
