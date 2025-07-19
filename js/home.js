@@ -261,10 +261,11 @@ export function displayHomePage() {
     }, 500);
   }
 
-  // Initial update
+  // Start with the second phrase immediately, then cycle
+  currentIndex = 1; // Start with "weight loss treatments"
   updateDynamicText();
   // Set up the interval for subsequent updates
-  window.dynamicTextInterval = setInterval(updateDynamicText, 3000);
+  window.dynamicTextInterval = setInterval(updateDynamicText, 2000);
   console.log('Interval set:', window.dynamicTextInterval);
 
   // Set video playback rate and stop after one play for the weight loss banner
@@ -358,6 +359,8 @@ export function setupDynamicTextAnimation() {
     }, 500);
   }
 
+  // Start with the second phrase immediately, then cycle
+  currentIndex = 1; // Start with "weight loss treatments"
   updateDynamicText();
-  window.dynamicTextInterval = setInterval(updateDynamicText, 3000);
+  window.dynamicTextInterval = setInterval(updateDynamicText, 2000);
 }

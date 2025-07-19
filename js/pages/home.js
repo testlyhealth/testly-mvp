@@ -12,25 +12,23 @@ export function getHomePageContent() {
     return `
         <!-- Hero Section -->
     <section class="hero-section">
-      <div class="hero-container">
-        <div class="hero-content">
-          <h1 class="hero-title">
-            <span style="color: #1E88E5;">Health</span> comparison<br>made simple
-          </h1>
-          <p class="hero-subtitle">
-            Compare <span class="rolling-text" id="rolling-text">blood tests</span><br>
-            Find your solution
-          </p>
- 
-          <div class="hero-cta">
-            <button class="primary-cta-button">
-              Compare now
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-            <p class="cta-note">Free comparison • No booking fees • Trusted providers</p>
-          </div>
+      <div class="hero-content">
+        <h1 class="hero-title">
+          <span style="color: #1E88E5;">Health</span> comparison<br>made simple
+        </h1>
+        <p class="hero-subtitle">
+          Compare <span class="rolling-text" id="rolling-text">blood tests</span><br>
+          Find your solution
+        </p>
+
+        <div class="hero-cta">
+          <button class="primary-cta-button">
+            Compare now
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <p class="cta-note">Free comparison • No booking fees • Trusted providers</p>
         </div>
       </div>
       
@@ -141,6 +139,7 @@ export function getHomePageContent() {
             </div>
             <h3 class="option-title">I know what I want</h3>
             <p class="option-description">You have a specific test or treatment in mind. Let's find the best provider for you.</p>
+            <button class="option-card-btn">Get Started</button>
           </div>
           
           <div class="option-card">
@@ -153,6 +152,7 @@ export function getHomePageContent() {
             </div>
             <h3 class="option-title">Help me with my symptoms</h3>
             <p class="option-description">Not sure what you need? Tell us your symptoms and we'll guide you to the right solution.</p>
+            <button class="option-card-btn">Get Help</button>
           </div>
           
           <div class="option-card">
@@ -164,6 +164,7 @@ export function getHomePageContent() {
             </div>
             <h3 class="option-title">I'm just browsing</h3>
             <p class="option-description">Explore our range of health tests and treatments to see what's available.</p>
+            <button class="option-card-btn">Browse</button>
           </div>
         </div>
       </div>
@@ -774,6 +775,27 @@ function setupCategoryCards() {
       }
     });
   });
+  
+  // Setup option card buttons
+  const optionCardButtons = document.querySelectorAll('.option-card-btn');
+  optionCardButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent card click event
+      const card = button.closest('.option-card');
+      const title = card.querySelector('.option-title')?.textContent;
+      
+      if (title === 'I know what I want') {
+        // Navigate to search results page
+        window.location.hash = '#/search-results';
+      } else if (title === 'Help me with my symptoms') {
+        // Navigate to compare page for symptom-based guidance
+        window.location.hash = '#/compare';
+      } else if (title === 'I\'m just browsing') {
+        // Navigate to blood tests page to browse all tests
+        window.location.hash = '#/blood-tests';
+      }
+    });
+  });
 }
 
 // Setup CTA button navigation
@@ -826,11 +848,8 @@ function setupRollingText() {
     }, 300);
   }
 
-  // Start the cycle after 3 seconds (so it doesn't immediately change from the initial "blood tests")
-  setTimeout(() => {
-    // Update text every 3 seconds
-    setInterval(updateText, 3000);
-  }, 3000);
+  // Start the cycle immediately with 2 second intervals
+  setInterval(updateText, 2000);
 }
 
 // Setup search tab switching functionality

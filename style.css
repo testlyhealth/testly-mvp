@@ -5856,15 +5856,17 @@ body {
 
   /* Hero Section */
   .hero-section {
-    padding: 2rem 2rem 8rem;
+    padding: 4rem 4rem 8rem;
     background: transparent;
     position: relative;
     overflow: visible;
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
   .hero-side-box {
     position: absolute;
-    top: 80%;
+    top: 100%;
     right: 6rem;
     transform: translateY(-50%);
     background: white;
@@ -6072,44 +6074,7 @@ body {
     transform: translateY(-1px);
   }
 
-  .hero-container {
-    background: #DFDFDF;
-    border-radius: 40px;
-    padding: 4rem 3rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-  }
 
-  .hero-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('/images/blood-vials.jpg');
-    background-size: 200%;
-    background-position: 40% 40%;
-    background-repeat: no-repeat;
-    opacity: 0.05;
-    z-index: 1;
-    border-radius: 40px;
-  }
-  
-  .hero-container::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(30, 136, 229, 0.15);
-    z-index: 2;
-    border-radius: 40px;
-  }
 
   .hero-content {
     z-index: 3;
@@ -6120,6 +6085,7 @@ body {
     flex-direction: column;
     align-items: flex-start;
     max-width: 100%;
+    padding: 0;
   }
 
   .hero-title {
@@ -6127,7 +6093,7 @@ body {
     font-weight: 900;
     line-height: 1.1;
     margin-bottom: 1rem;
-    color: #2E2E2E;
+    color: #2d3748;
     text-align: left;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
@@ -6281,7 +6247,7 @@ body {
 
   /* Get Started Section */
   .get-started-section {
-    padding: 15rem 0 6rem;
+    padding: 25rem 0 6rem;
     background: white;
   }
 
@@ -6304,11 +6270,14 @@ body {
   .option-card {
     background: white;
     border-radius: 25px;
-    padding: 3rem 2rem;
+    padding: 2rem;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     cursor: pointer;
     position: relative;
+    min-height: 380px;
+    display: flex;
+    flex-direction: column;
   }
 
   .card-icon {
@@ -6350,6 +6319,29 @@ body {
     color: #64748b;
     line-height: 1.6;
     margin: 0;
+    flex-grow: 1;
+  }
+  
+  .option-card-btn {
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: auto;
+    align-self: flex-end;
+    margin-right: 0;
+    margin-bottom: 0;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  }
+  
+  .option-card-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
   }
 
   .section-title {
@@ -6780,10 +6772,9 @@ body {
 
   /* Responsive Design */
   @media (max-width: 1024px) {
-    .hero-container {
+    .hero-section {
       max-width: 700px;
-      padding: 3rem 2rem;
-      border-radius: 30px;
+      padding: 3rem 2rem 8rem;
     }
 
     .hero-side-box {
@@ -6967,9 +6958,8 @@ body {
   }
 
   @media (max-width: 480px) {
-    .hero-container {
-      padding: 1.5rem 1rem;
-      border-radius: 20px;
+    .hero-section {
+      padding: 1.5rem 1rem 8rem;
       margin: 0 0.5rem;
     }
 
