@@ -182,7 +182,7 @@ export function getHomePageContent() {
     <section class="featured-section">
       <div class="container">
         <h2 class="section-title">Popular blood tests</h2>
-        <p class="section-subtitle">Our top blood tests starting from £33</p>
+        <p class="section-subtitle">Our top blood tests starting from <strong>£33</strong></p>
         <div class="featured-grid">
           <div class="featured-card">
             <div class="card-content">

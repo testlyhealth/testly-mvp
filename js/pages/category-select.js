@@ -12,13 +12,16 @@ export async function displayCategorySelectPage() {
       throw error;
     }
 
-    // Extract category names and add "Other" option
+    // Extract category names and filter to only show Weight loss, Blood tests, and Other
     const categoryNames = categories.map(cat => cat.name);
-    categoryNames.push('Other');
+    const filteredCategories = categoryNames.filter(cat => 
+      cat === 'Weight loss' || cat === 'Blood tests'
+    );
+    filteredCategories.push('Other');
 
     // Generate category tiles
-    const categoryTiles = categoryNames.map((category, index) => {
-      const optionClass = getOptionClass(index);
+    const categoryTiles = filteredCategories.map((category, index) => {
+      const optionClass = getCategoryOptionClass(category);
       const icon = getCategoryIcon(category, index);
       
       // Special handling for Blood tests and Other categories
@@ -102,6 +105,20 @@ export async function displayCategorySelectPage() {
 function getOptionClass(index) {
   const classes = ['option-specific', 'option-concern', 'option-checkup', 'option-browse'];
   return classes[index % classes.length];
+}
+
+function getCategoryOptionClass(category) {
+  // Assign specific colors based on category names
+  if (category === 'Blood tests') {
+    return 'option-concern'; // Red outline
+  } else if (category === 'Weight loss') {
+    return 'option-specific'; // Blue outline
+  } else if (category === 'Other') {
+    return 'option-checkup'; // Green outline
+  } else {
+    // Fallback to default pattern
+    return 'option-browse';
+  }
 }
 
 function getCategoryIcon(category, index) {

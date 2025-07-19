@@ -20,7 +20,7 @@ export async function displayComparePage() {
                 </span>
                 I know what I want
               </h3>
-              <p><em>"I already have a specific test or treatment in mind."</em></p>
+              <p><em>- let me pick myself</em></p>
             </div>
           </div>
 
@@ -36,7 +36,7 @@ export async function displayComparePage() {
                 </span>
                 I have a health concern
               </h3>
-              <p><em>"I have symptoms or a goal but don't know the option I need."</em></p>
+              <p><em>- but I don't know what option I need</em></p>
             </div>
           </div>
 
@@ -49,9 +49,9 @@ export async function displayComparePage() {
                     <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </span>
-                I want a general health check
+                Check my general health
               </h3>
-              <p><em>"I'm looking for a complete health MOT or wellness package."</em></p>
+              <p><em>- I'm focusing on prevention</em></p>
             </div>
           </div>
 
@@ -67,7 +67,7 @@ export async function displayComparePage() {
                 </span>
                 I'm just browsing
               </h3>
-              <p><em>"I want to explore what's out there before deciding."</em></p>
+              <p><em>- I want to explore before deciding</em></p>
             </div>
           </div>
         </div>
