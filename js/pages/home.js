@@ -15,7 +15,7 @@ export function getHomePageContent() {
       <div class="hero-container">
         <div class="hero-content">
           <h1 class="hero-title">
-            The simple way to choose<br>
+            The simple way to find<br>
             <span class="hero-highlight">trusted health tests and treatments</span>
         </h1>
           <div class="hero-explainer-section">
@@ -68,7 +68,6 @@ export function getHomePageContent() {
             <div class="category-content">
               <div class="category-text">
                 <h3>Weight loss</h3>
-                <p>Effective treatments and support programs</p>
               </div>
               <button class="get-started-btn">
                 Get started
@@ -86,7 +85,6 @@ export function getHomePageContent() {
             <div class="category-content">
               <div class="category-text">
                 <h3>Blood tests</h3>
-                <p>Comprehensive health screening and monitoring</p>
               </div>
               <button class="get-started-btn">
                 Get started
@@ -96,60 +94,6 @@ export function getHomePageContent() {
               </button>
             </div>
           </div>
-          
-          <div class="category-card" data-category="fertility">
-            <div class="category-image">
-              <img src="images/fertility.jpg" alt="Fertility">
-            </div>
-            <div class="category-content">
-              <div class="category-text">
-                <h3>Fertility</h3>
-                <p>Fertility testing and treatment options</p>
-              </div>
-              <button class="get-started-btn">
-                Get started
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-          
-          <div class="category-card" data-category="adhd">
-            <div class="category-image">
-              <img src="images/ADHD.jpg" alt="ADHD">
-            </div>
-            <div class="category-content">
-              <div class="category-text">
-                <h3>ADHD</h3>
-                <p>Assessment and treatment for ADHD</p>
-              </div>
-              <button class="get-started-btn">
-                Get started
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-          
-          <div class="category-card" data-category="scans">
-            <div class="category-image">
-              <img src="images/mri.jpg" alt="Scans">
-            </div>
-            <div class="category-content">
-              <div class="category-text">
-                <h3>Scans</h3>
-                <p>MRI, CT and diagnostic imaging services</p>
-              </div>
-              <button class="get-started-btn">
-                Get started
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-        </div>
-      </div>
           
           <div class="category-card" data-category="more">
             <div class="category-image">
@@ -158,10 +102,9 @@ export function getHomePageContent() {
             <div class="category-content">
               <div class="category-text">
                 <h3>More services</h3>
-                <p>Explore additional health and wellness options</p>
               </div>
               <button class="get-started-btn">
-                Get started
+                Coming soon
                 <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -203,8 +146,8 @@ export function getHomePageContent() {
               <div class="trust-feature">
                 <div class="feature-icon">✓</div>
                 <div class="feature-text">
-                  <h4>No AI</h4>
-                  <p>All medical content written by doctors</p>
+                  <h4>Doctor-led</h4>
+                  <p>Services and content written and chosen by doctors</p>
                 </div>
           </div>
               <div class="trust-feature">
@@ -239,6 +182,7 @@ export function getHomePageContent() {
     <section class="featured-section">
       <div class="container">
         <h2 class="section-title">Popular blood tests</h2>
+        <p class="section-subtitle">Our top blood tests starting from £33</p>
         <div class="featured-grid">
           <div class="featured-card">
             <div class="card-content">
@@ -326,7 +270,7 @@ export function getHomePageContent() {
         </div>
         <div class="featured-cta">
           <button class="secondary-cta-button">
-            View All Blood Tests
+            View all blood tests
             <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -477,12 +421,31 @@ function updateFirstCard(testData) {
     placeholderLogo.innerHTML = `<img src="images/logos/${logoFileName}" alt="${providerName} logo" style="width: 100%; height: 100%; object-fit: contain;">`;
   }
 
-  // Update View Test button link
+  // Set background logo image on the card
+  if (testData.providers?.name) {
+    const providerName = testData.providers.name;
+    const logoFileName = providerName.toLowerCase().replace(/ /g, ' ') + '.png';
+    firstCard.style.setProperty('--background-logo', `url('images/logos/${logoFileName}')`);
+  }
+
+  // Update View Test button link and add arrow
   const viewTestBtn = firstCard.querySelector('.view-test-btn');
-  if (viewTestBtn && testData.url) {
-    viewTestBtn.onclick = () => {
-      window.open(testData.url, '_blank');
-    };
+  if (viewTestBtn) {
+    // Add arrow icon if not already present
+    if (!viewTestBtn.querySelector('svg')) {
+      viewTestBtn.innerHTML = `
+        View test
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      `;
+    }
+    
+    if (testData.url) {
+      viewTestBtn.onclick = () => {
+        window.open(testData.url, '_blank');
+      };
+    }
   }
 }
 
@@ -544,12 +507,31 @@ function updateSecondCard(testData) {
     placeholderLogo.innerHTML = `<img src="images/logos/${logoFileName}" alt="${providerName} logo" style="width: 100%; height: 100%; object-fit: contain;">`;
   }
 
-  // Update View Test button link
+  // Set background logo image on the card
+  if (testData.providers?.name) {
+    const providerName = testData.providers.name;
+    const logoFileName = providerName.toLowerCase().replace(/ /g, ' ') + '.png';
+    secondCard.style.setProperty('--background-logo', `url('images/logos/${logoFileName}')`);
+  }
+
+  // Update View Test button link and add arrow
   const viewTestBtn = secondCard.querySelector('.view-test-btn');
-  if (viewTestBtn && testData.url) {
-    viewTestBtn.onclick = () => {
-      window.open(testData.url, '_blank');
-    };
+  if (viewTestBtn) {
+    // Add arrow icon if not already present
+    if (!viewTestBtn.querySelector('svg')) {
+      viewTestBtn.innerHTML = `
+        View test
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      `;
+    }
+    
+    if (testData.url) {
+      viewTestBtn.onclick = () => {
+        window.open(testData.url, '_blank');
+      };
+    }
   }
 }
 
@@ -611,12 +593,31 @@ function updateThirdCard(testData) {
     placeholderLogo.innerHTML = `<img src="images/logos/${logoFileName}" alt="${providerName} logo" style="width: 100%; height: 100%; object-fit: contain;">`;
   }
 
-  // Update View Test button link
+  // Set background logo image on the card
+  if (testData.providers?.name) {
+    const providerName = testData.providers.name;
+    const logoFileName = providerName.toLowerCase().replace(/ /g, ' ') + '.png';
+    thirdCard.style.setProperty('--background-logo', `url('images/logos/${logoFileName}')`);
+  }
+
+  // Update View Test button link and add arrow
   const viewTestBtn = thirdCard.querySelector('.view-test-btn');
-  if (viewTestBtn && testData.url) {
-    viewTestBtn.onclick = () => {
-      window.open(testData.url, '_blank');
-    };
+  if (viewTestBtn) {
+    // Add arrow icon if not already present
+    if (!viewTestBtn.querySelector('svg')) {
+      viewTestBtn.innerHTML = `
+        View test
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      `;
+    }
+    
+    if (testData.url) {
+      viewTestBtn.onclick = () => {
+        window.open(testData.url, '_blank');
+      };
+    }
   }
 }
 
@@ -678,12 +679,31 @@ function updateFourthCard(testData) {
     placeholderLogo.innerHTML = `<img src="images/logos/${logoFileName}" alt="${providerName} logo" style="width: 100%; height: 100%; object-fit: contain;">`;
   }
 
-  // Update View Test button link
+  // Set background logo image on the card
+  if (testData.providers?.name) {
+    const providerName = testData.providers.name;
+    const logoFileName = providerName.toLowerCase().replace(/ /g, ' ') + '.png';
+    fourthCard.style.setProperty('--background-logo', `url('images/logos/${logoFileName}')`);
+  }
+
+  // Update View Test button link and add arrow
   const viewTestBtn = fourthCard.querySelector('.view-test-btn');
-  if (viewTestBtn && testData.url) {
-    viewTestBtn.onclick = () => {
-      window.open(testData.url, '_blank');
-    };
+  if (viewTestBtn) {
+    // Add arrow icon if not already present
+    if (!viewTestBtn.querySelector('svg')) {
+      viewTestBtn.innerHTML = `
+        View test
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      `;
+    }
+    
+    if (testData.url) {
+      viewTestBtn.onclick = () => {
+        window.open(testData.url, '_blank');
+      };
+    }
   }
 }
 

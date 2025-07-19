@@ -2646,7 +2646,6 @@ body {
 
   .category-card {
     background: #fff;
-    border-radius: 12px;
     padding: 2rem;
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -5989,15 +5988,24 @@ body {
     font-size: 2.5rem;
     font-weight: 700;
     text-align: center;
-    margin-bottom: 4.5rem;
+    margin-bottom: 1rem;
     color: var(--text);
+  }
+
+  .section-subtitle {
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 4rem;
+    color: var(--text-light);
+    line-height: 1.5;
   }
 
   .categories-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    column-gap: 1rem;
-    row-gap: 3rem;
+    column-gap: 2rem;
+    row-gap: 4rem;
     margin-top: 3rem;
     max-width: 900px;
     margin-left: auto;
@@ -6006,8 +6014,8 @@ body {
 
   .category-card {
     background: white;
-    border-radius: 8px;
     overflow: hidden;
+    border-radius: 4px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     cursor: pointer;
@@ -6071,30 +6079,33 @@ body {
 
   .category-content {
     position: absolute;
-    bottom: 1rem;
-    left: 1rem;
-    right: 1rem;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 2;
-    padding: 1rem 1.25rem;
-    background: rgba(255, 255, 255, 0.95);
-    height: 33%;
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0.7) 100%);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    border-radius: 6px;
+    justify-content: flex-end;
+    align-items: flex-end;
   }
 
-  .category-card[data-category="blood-tests"] .category-content {
-    background: white;
+  .category-text {
+    margin-bottom: 0.5rem;
   }
+
+
 
   .category-content h3 {
     font-family: 'Segoe UI', sans-serif;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1e293b;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: white;
     margin: 0 0 0.25rem 0;
     letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
   .category-content p {
@@ -6106,10 +6117,9 @@ body {
   }
 
   .category-text {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    align-items: center;
   }
 
   .get-started-btn {
@@ -6117,9 +6127,9 @@ body {
     color: white;
     border: none;
     border-radius: 6px;
-    padding: 0.5rem 1rem;
-    font-size: 0.8rem;
-    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
@@ -6127,7 +6137,6 @@ body {
     gap: 0.4rem;
     width: fit-content;
     flex-shrink: 0;
-    align-self: flex-start;
   }
 
   .get-started-btn:hover {
@@ -6230,11 +6239,20 @@ body {
 
   .featured-card {
     background: white;
-    border-radius: 12px;
+    border-radius: 6px;
     padding: 1.5rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     border: 1px solid #f1f5f9;
+    position: relative;
+    overflow: hidden;
+  }
+
+
+
+  .featured-card .card-content {
+    position: relative;
+    z-index: 3;
   }
 
   .featured-card:hover {
@@ -6315,7 +6333,7 @@ body {
   .biomarker-count {
     font-size: 0.85rem;
     color: #64748b;
-    font-weight: 500;
+    font-weight: 700;
     text-align: left;
   }
 
@@ -6337,6 +6355,10 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
   }
 
   .view-test-btn:hover {
