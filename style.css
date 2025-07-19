@@ -5856,7 +5856,7 @@ body {
 
   /* Hero Section */
   .hero-section {
-    padding: 4rem 4rem 8rem;
+    padding: 4rem 4rem 12rem;
     background: transparent;
     position: relative;
     overflow: visible;
@@ -6257,7 +6257,7 @@ body {
     color: #2d3748;
     text-align: left;
     line-height: 1.2;
-    margin-bottom: 4rem;
+    margin-bottom: 6rem;
   }
 
   .option-cards {
