@@ -130,18 +130,7 @@ export function getHomePageContent() {
         <h2 class="get-started-title">Let's get started...</h2>
         
         <div class="option-cards">
-          <div class="option-card">
-            <div class="card-icon search-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
-                <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <h3 class="option-title">I know what I want</h3>
-            <p class="option-description">You have a specific test or treatment in mind. Let's find the best provider for you.</p>
-          </div>
-          
-          <div class="option-card">
+          <div class="option-card selected">
             <div class="card-icon question-icon">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
@@ -151,6 +140,12 @@ export function getHomePageContent() {
             </div>
             <h3 class="option-title">Help me with my symptoms</h3>
             <p class="option-description">Not sure what you need? Tell us your symptoms and we'll guide you to the right solution.</p>
+            <button class="option-card-btn" onclick="window.location.hash = '#/help'">
+              Get help
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
           </div>
           
           <div class="option-card">
@@ -162,6 +157,41 @@ export function getHomePageContent() {
             </div>
             <h3 class="option-title">I'm just browsing</h3>
             <p class="option-description">Explore our range of health tests and treatments to see what's available.</p>
+            <button class="option-card-btn" onclick="window.location.hash = '#/browse'">
+              Browse
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="option-card">
+            <div class="card-icon search-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="option-title">I know what I want</h3>
+            <p class="option-description">You have a specific test or treatment in mind. Let's find the best provider for you.</p>
+            <button class="option-card-btn" onclick="window.location.hash = '#/advanced-search'">
+              Search
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- New Floating Section -->
+    <section class="floating-section">
+      <div class="container">
+        <div class="floating-square">
+          <div class="square-content">
+            <h2>Talk to a doctor</h2>
+            <p>Virtual consultations with healthcare professionals <strong>Coming Soon</strong></p>
           </div>
         </div>
       </div>
@@ -341,6 +371,7 @@ export function initializeHomePage() {
   setupCTAButtons();
   setupRollingText();
   setupSearchTabs();
+  setupOptionCardSelection();
 }
 
 // Load featured blood tests from database
@@ -1295,5 +1326,29 @@ function updateSelection(options) {
     } else {
       option.classList.remove('selected');
     }
+  });
+}
+
+// Setup dynamic selection for option cards
+function setupOptionCardSelection() {
+  const optionCards = document.querySelectorAll('.option-card');
+  let lastHoveredCard = optionCards[0]; // Start with the first card as default
+  
+  optionCards.forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      // Remove selected class from all cards
+      optionCards.forEach(c => c.classList.remove('selected'));
+      // Add selected class to hovered card
+      card.classList.add('selected');
+      // Update the last hovered card
+      lastHoveredCard = card;
+    });
+    
+    card.addEventListener('mouseleave', () => {
+      // Remove selected class from all cards
+      optionCards.forEach(c => c.classList.remove('selected'));
+      // Add selected class back to the last hovered card
+      lastHoveredCard.classList.add('selected');
+    });
   });
 } 

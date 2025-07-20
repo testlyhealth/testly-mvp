@@ -3,7 +3,9 @@ import { displayBloodTestsPage } from './pages/blood-tests.js';
 import { displayCategoryProducts } from './products.js';
 import { getHomePageContent, initializeHomePage } from './pages/home.js';
 import { displayGeneralHealthPage } from './general-health.js';
-import { displayAdvancedSearchPage } from './pages/advanced-search.js';
+import { getAdvancedSearchPageContent, initializeAdvancedSearchPage } from './pages/advanced-search.js';
+import { getBrowsePageContent, initializeBrowsePage } from './pages/browse.js';
+import { getHelpPageContent, initializeHelpPage } from './pages/help.js';
 import { displayAboutPage } from './pages/about.js';
 import { displayContactPage, initializeContactPage } from './pages/contact.js';
 import { supabase } from './api/supabase.js';
@@ -97,10 +99,21 @@ export default class Router {
         const content = await displayGeneralHealthPage();
         console.log('General health content received, length:', content.length);
         await this.render(content);
-      } else if (hash === '/advanced') {
+      } else if (hash === '/advanced-search') {
         console.log('Handling advanced search route');
-        const content = await displayAdvancedSearchPage();
+        const content = getAdvancedSearchPageContent();
         await this.render(content);
+        initializeAdvancedSearchPage();
+      } else if (hash === '/browse') {
+        console.log('Handling browse route');
+        const content = getBrowsePageContent();
+        await this.render(content);
+        initializeBrowsePage();
+      } else if (hash === '/help') {
+        console.log('Handling help route');
+        const content = getHelpPageContent();
+        await this.render(content);
+        initializeHelpPage();
       } else if (hash === '/about') {
         console.log('Handling about route');
         const content = await displayAboutPage();
