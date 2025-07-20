@@ -127,18 +127,18 @@ export function getHomePageContent() {
     <!-- Get Started Section -->
     <section class="get-started-section">
       <div class="container">
-        <h2 class="get-started-title">Let's get started...</h2>
+        <h2 class="get-started-title">Let's get started.<br>What do you need?</h2>
         
         <div class="option-cards">
           <div class="option-card selected">
-            <div class="card-icon question-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <div class="card-icon question-icon" style="background: #FFB74D;">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: white;">
                 <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <h3 class="option-title">Help me with my symptoms</h3>
+            <h3 class="option-title"><span style="color: #1E88E5;">Help</span> with my symptoms</h3>
             <p class="option-description">Not sure what you need? Tell us your symptoms and we'll guide you to the right solution.</p>
             <button class="option-card-btn" onclick="window.location.hash = '#/help'">
               Get help
@@ -149,13 +149,13 @@ export function getHomePageContent() {
           </div>
           
           <div class="option-card">
-            <div class="card-icon glasses-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <div class="card-icon glasses-icon" style="background: #CE93D8;">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: white;">
                 <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="2"/>
                 <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
               </svg>
             </div>
-            <h3 class="option-title">I'm just browsing</h3>
+            <h3 class="option-title">I'm just <span style="color: #1E88E5;">browsing</span></h3>
             <p class="option-description">Explore our range of health tests and treatments to see what's available.</p>
             <button class="option-card-btn" onclick="window.location.hash = '#/browse'">
               Browse
@@ -166,13 +166,13 @@ export function getHomePageContent() {
           </div>
           
           <div class="option-card">
-            <div class="card-icon search-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <div class="card-icon search-icon" style="background: #81C784;">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: white;">
                 <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
                 <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <h3 class="option-title">I know what I want</h3>
+            <h3 class="option-title">I <span style="color: #1E88E5;">know</span> what I want</h3>
             <p class="option-description">You have a specific test or treatment in mind. Let's find the best provider for you.</p>
             <button class="option-card-btn" onclick="window.location.hash = '#/advanced-search'">
               Search
@@ -191,7 +191,10 @@ export function getHomePageContent() {
         <div class="floating-square">
           <div class="square-content">
             <h2>Talk to a doctor</h2>
-            <p>Virtual consultations with healthcare professionals <strong>Coming Soon</strong></p>
+            <p>Virtual consultations with healthcare professionals <strong>Coming soon</strong></p>
+          </div>
+          <div class="doctor-explanation">
+            <p>We have consultations with a doctor on the way that will allow you to discuss your health problems and what services out there might work for you.</p>
           </div>
         </div>
       </div>
