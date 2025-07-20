@@ -19,6 +19,7 @@ import { displayBloodTestCategoriesPage } from './pages/blood-test-categories.js
 import { displayBloodTestSearchOptionsPage } from './pages/blood-test-search-options.js';
 import { displayBloodTestRequestPage, initializeBloodTestRequestPage } from './pages/blood-test-request.js';
 import { displayComingSoonPage } from './pages/coming-soon.js';
+import { displayWeightLossPage, initializeWeightLossPage } from './pages/weight-loss.js';
 import { displayAdminPage, initializeAdminPage } from './pages/admin.js';
 
 // Router class to handle SPA navigation
@@ -164,6 +165,11 @@ export default class Router {
         // Initialize the form after render
         await new Promise(resolve => setTimeout(resolve, 100));
         initializeBloodTestRequestPage();
+      } else if (hash === '/weight-loss') {
+        console.log('Handling weight loss route');
+        const content = await displayWeightLossPage();
+        await this.render(content);
+        initializeWeightLossPage();
       } else if (hash.startsWith('/coming-soon/')) {
         console.log('Handling coming soon route');
         const categoryName = decodeURIComponent(hash.split('/')[2]);

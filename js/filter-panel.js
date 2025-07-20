@@ -94,7 +94,7 @@ export async function createFilterPanel(tests) {
 
       <div class="filter-section">
         <div class="filter-section-header">
-          <h4>Category</h4>
+          <h4>Categories</h4>
           <button class="filter-toggle-btn" aria-expanded="false" aria-controls="category-options">
             <span class="toggle-icon">▼</span>
           </button>
@@ -111,6 +111,24 @@ export async function createFilterPanel(tests) {
                 <label for="category-${generateSafeId(category)}">${category}</label>
               </div>
             `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-section-header">
+          <h4>Biomarkers</h4>
+          <button class="filter-toggle-btn" aria-expanded="false" aria-controls="biomarker-options">
+            <span class="toggle-icon">▼</span>
+          </button>
+        </div>
+        <div class="filter-section-content" id="biomarker-options" style="display: none;">
+          <div class="provider-checkboxes">
+            <div class="checkbox-option">
+              <input type="checkbox" id="biomarker-all" checked>
+              <label for="biomarker-all">All Biomarkers</label>
+            </div>
+            <!-- Biomarker options will be populated dynamically -->
           </div>
         </div>
       </div>
@@ -138,15 +156,7 @@ export async function createFilterPanel(tests) {
         </div>
       </div>
 
-      <div class="filter-buttons">
-        <button id="reset-filters" class="reset-filters-btn">Reset</button>
-        <button class="advanced-search-btn advanced-search-spacing">
-          <span>Advanced search</span>
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 9h8m0 0l-3-3m3 3l-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
+
     </div>
   `;
 }

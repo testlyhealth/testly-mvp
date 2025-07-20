@@ -726,7 +726,7 @@ body {
     display: block;
     width: 100%;
     background: #fff;
-    border-radius: 0;
+    border-radius: 25px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     overflow: hidden;
@@ -2808,7 +2808,7 @@ body {
     display: block;
     width: 100%;
     background: #fff;
-    border-radius: 0;
+    border-radius: 25px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     overflow: hidden;
@@ -3371,7 +3371,7 @@ body {
   }
 
   .products-grid .blood-test-card p {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
   }
 
   .products-grid .provider-logo {
@@ -6079,9 +6079,12 @@ body {
     background: white;
     border-radius: 30px;
     padding: 2rem;
-    width: 350px;
+    width: 400px;
     height: 600px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: 
+      0 5px 15px rgba(30, 136, 229, 0.08),
+      0 10px 30px rgba(30, 136, 229, 0.12),
+      0 15px 40px rgba(30, 136, 229, 0.18);
     z-index: 10;
     display: flex;
     flex-direction: column;
@@ -6129,9 +6132,11 @@ body {
   }
 
   .tab-button.active {
-    background: #1E88E5;
-    color: white;
+    background: transparent;
+    color: #1E88E5;
     border-color: #1E88E5;
+    border-width: 3px;
+    font-weight: 700;
   }
 
   .tab-button:hover:not(.active) {
@@ -6198,6 +6203,14 @@ body {
     transition: border-color 0.2s ease;
     background: white;
     cursor: pointer;
+  }
+
+  .product-category-select {
+    background: white !important;
+  }
+  
+  .product-category-select option {
+    background: white !important;
   }
 
   .form-group select:focus {

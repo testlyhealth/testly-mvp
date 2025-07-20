@@ -17,8 +17,7 @@ export function getHomePageContent() {
           <span style="color: #1E88E5;">Health</span> comparison<br>made simple
         </h1>
         <p class="hero-subtitle">
-          Compare <span class="rolling-text" id="rolling-text">blood tests</span><br>
-          Find your solution
+          Compare <span class="rolling-text" id="rolling-text">blood tests</span>
         </p>
 
         <div class="hero-cta">
@@ -34,7 +33,7 @@ export function getHomePageContent() {
       
       <div class="hero-side-box">
         <div class="side-box-content">
-          <h3>Quick Search</h3>
+          <h3>Find your solution</h3>
           <div class="search-tabs">
             <button class="tab-button active">Test / Treatment</button>
             <button class="tab-button">Problem</button>
@@ -174,7 +173,7 @@ export function getHomePageContent() {
             </div>
             <h3 class="option-title">I <span style="color: #1E88E5;">know</span> what I want</h3>
             <p class="option-description">You have a specific test or treatment in mind. Let's find the best provider for you.</p>
-            <button class="option-card-btn" onclick="window.location.hash = '#/advanced-search'">
+            <button class="option-card-btn" onclick="scrollToQuickSearch()">
               Search
               <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -279,90 +278,14 @@ export function getHomePageContent() {
       <div class="container">
         <h2 class="section-title">Popular blood tests</h2>
         <p class="section-subtitle">Our top blood tests starting from <strong>£33</strong></p>
-        <div class="featured-grid">
-          <div class="featured-card">
-            <div class="card-content">
-              <div class="card-header">
-                <div class="provider-logo">
-                  <div class="placeholder-logo"></div>
-                </div>
-                <div class="provider-info">
-                  <h3 class="provider-name">Provider Name</h3>
-                  <h4 class="test-name">Blood Test Name</h4>
-                </div>
-              </div>
-              <div class="card-details">
-                <div class="test-info">
-                  <span class="biomarker-count">15 biomarkers</span>
-                  <span class="test-price">£45</span>
-                </div>
-                <button class="view-test-btn">View Test</button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="featured-card">
-            <div class="card-content">
-              <div class="card-header">
-                <div class="provider-logo">
-                  <div class="placeholder-logo"></div>
-                </div>
-                <div class="provider-info">
-                  <h3 class="provider-name">Provider Name</h3>
-                  <h4 class="test-name">Blood Test Name</h4>
-                </div>
-              </div>
-              <div class="card-details">
-                <div class="test-info">
-                  <span class="biomarker-count">15 biomarkers</span>
-                  <span class="test-price">£45</span>
-                </div>
-                <button class="view-test-btn">View Test</button>
-              </div>
-      </div>
-    </div>
-
-          <div class="featured-card">
-            <div class="card-content">
-              <div class="card-header">
-                <div class="provider-logo">
-                  <div class="placeholder-logo"></div>
-                </div>
-                <div class="provider-info">
-                  <h3 class="provider-name">Provider Name</h3>
-                  <h4 class="test-name">Blood Test Name</h4>
-                </div>
-              </div>
-              <div class="card-details">
-                <div class="test-info">
-                  <span class="biomarker-count">15 biomarkers</span>
-                  <span class="test-price">£45</span>
-                </div>
-                <button class="view-test-btn">View Test</button>
-              </div>
-      </div>
-      </div>
-          
-          <div class="featured-card">
-            <div class="card-content">
-              <div class="card-header">
-                <div class="provider-logo">
-                  <div class="placeholder-logo"></div>
-                </div>
-                <div class="provider-info">
-                  <h3 class="provider-name">Provider Name</h3>
-                  <h4 class="test-name">Blood Test Name</h4>
-                </div>
-              </div>
-              <div class="card-details">
-                <div class="test-info">
-                  <span class="biomarker-count">15 biomarkers</span>
-                  <span class="test-price">£45</span>
-                </div>
-                <button class="view-test-btn">View Test</button>
-              </div>
-            </div>
-          </div>
+        <div class="featured-grid" id="featured-blood-tests-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; padding: 2rem;">
+          <style>
+            #featured-blood-tests-grid .blood-test-card {
+              border-radius: 25px;
+              overflow: hidden;
+            }
+          </style>
+          <!-- Blood test cards will be populated here dynamically -->
         </div>
         <div class="featured-cta">
           <button class="secondary-cta-button">
@@ -386,13 +309,16 @@ export function initializeHomePage() {
   setupRollingText();
   setupSearchTabs();
   setupOptionCardSelection();
+  
+  // Make scrollToQuickSearch function globally available
+  window.scrollToQuickSearch = scrollToQuickSearch;
 }
 
 // Load featured blood tests from database
 async function loadFeaturedBloodTest() {
   try {
-    // Fetch all four tests in parallel
-    const [test1Result, test2Result, test3Result, test4Result] = await Promise.all([
+    // Fetch the three specified tests in parallel
+    const [test1Result, test2Result, test3Result] = await Promise.all([
       supabase
         .from('provider_blood_tests')
         .select(`
@@ -421,42 +347,56 @@ async function loadFeaturedBloodTest() {
             name
           )
         `)
-        .eq('id', 4)
-        .single(),
-      supabase
-        .from('provider_blood_tests')
-        .select(`
-          *,
-          providers:provider_id (
-            name
-          )
-        `)
         .eq('id', 152)
         .single()
     ]);
 
-    if (test1Result.error) {
-      console.error('Error fetching first blood test:', test1Result.error);
-    } else if (test1Result.data) {
-      updateFirstCard(test1Result.data);
-    }
+    // Collect all successful test data
+    const tests = [];
+    const results = [test1Result, test2Result, test3Result];
+    
+    results.forEach((result, index) => {
+      if (result.error) {
+        console.error(`Error fetching blood test ${index + 1}:`, result.error);
+      } else if (result.data) {
+        // Convert database format to CardService format
+        const testData = {
+          name: result.data.name,
+          provider: result.data.providers?.name || 'Unknown Provider',
+          price: result.data.price || 0,
+          biomarkers: result.data.biomarkers ? result.data.biomarkers.split(',').map(b => b.trim()) : [],
+          url: result.data.url || '#',
+          logo: result.data.logo_url || '',
+          description: result.data.description || '',
+          blood_taking_method: result.data.blood_taking_method || 'Finger prick',
+          results_returned: result.data.results_returned || '2 days',
+          doctors_report: result.data.doctors_report ? 'Yes' : 'No',
+          trustpilot_score: result.data.trustpilot_score || 4.5,
+          biomarker_count: result.data.biomarker_number || 0,
+          grouped_biomarkers: {
+            "General Health": result.data.biomarkers ? result.data.biomarkers.split(',').map(b => b.trim()) : []
+          }
+        };
+        tests.push(testData);
+      }
+    });
 
-    if (test2Result.error) {
-      console.error('Error fetching second blood test:', test2Result.error);
-    } else if (test2Result.data) {
-      updateSecondCard(test2Result.data);
-    }
+    // Create blood test cards using CardService
+    if (tests.length > 0) {
+      const bloodTestCards = await Promise.all(
+        tests.map(async (test, index) => {
+          return await cardService.createCard(test, { rank: index + 1 });
+        })
+      );
 
-    if (test3Result.error) {
-      console.error('Error fetching third blood test:', test3Result.error);
-    } else if (test3Result.data) {
-      updateThirdCard(test3Result.data);
-    }
-
-    if (test4Result.error) {
-      console.error('Error fetching fourth blood test:', test4Result.error);
-    } else if (test4Result.data) {
-      updateFourthCard(test4Result.data);
+      // Update the featured grid with the new cards
+      const featuredGrid = document.getElementById('featured-blood-tests-grid');
+      if (featuredGrid) {
+        featuredGrid.innerHTML = bloodTestCards.join('');
+        
+        // Setup event handlers for the new cards
+        cardService.setupCardEventHandlers(tests);
+      }
     }
   } catch (error) {
     console.error('Error loading featured blood tests:', error);
@@ -1035,7 +975,13 @@ function setupRollingText() {
           }
           
           // Navigate to category page with search parameters
-          if (category === 'all') {
+          if (productCategory === 'weight-loss') {
+            // Redirect to weight loss page
+            window.location.hash = '#/weight-loss';
+          } else if (productCategory === 'coming-soon') {
+            // Redirect to blood test request page
+            window.location.hash = '#/blood-test-request';
+          } else if (category === 'all') {
             // If "All" is selected, go to blood tests page with all categories parameter
             searchParams.set('showAll', 'true');
             const url = `#/blood-tests${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
@@ -1365,4 +1311,25 @@ function setupOptionCardSelection() {
       lastHoveredCard.classList.add('selected');
     });
   });
+}
+
+// Function to scroll to quick search and add animation
+function scrollToQuickSearch() {
+  const heroSideBox = document.querySelector('.hero-side-box');
+  if (heroSideBox) {
+    // Scroll to the quick search box
+    heroSideBox.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'center' 
+    });
+    
+    // Add blue outline animation
+    heroSideBox.style.transition = 'box-shadow 0.3s ease-in-out';
+    heroSideBox.style.boxShadow = '0 0 0 3px #1E88E5, 0 4px 12px rgba(30, 136, 229, 0.3)';
+    
+    // Remove the animation after 2 seconds
+    setTimeout(() => {
+      heroSideBox.style.boxShadow = '';
+    }, 2000);
+  }
 } 

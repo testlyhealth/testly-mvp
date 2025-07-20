@@ -2,8 +2,9 @@ import { $ } from './dom.js';
 import { $all } from './dom.js';
 import { categories } from './data.js';
 import { blogPosts } from './blog-data.js';
+import { CardService } from './services/cardService.js';
 
-export function displayHomePage() {
+export async function displayHomePage() {
   console.log('displayHomePage running');
   // Try .product-grid, fallback to <main>
   let mainContent = document.querySelector('.product-grid') || document.querySelector('main');
@@ -111,94 +112,130 @@ export function displayHomePage() {
   // Add the 4 cheapest products section
   const cheapestProducts = [
     {
+      name: "General health blood test",
       provider: "London Health Company",
-      test_name: "General health blood test",
       price: 33,
-      biomarkers: 15,
+      biomarkers: ["Liver function", "Kidney function", "Cholesterol", "Diabetes", "Thyroid", "Iron", "Vitamins", "Inflammation"],
+      url: "https://londonhealthcompany.co.uk/products/general-health-blood-test-15",
       logo: "images/logos/london health company.png",
-      link: "https://londonhealthcompany.co.uk/products/general-health-blood-test-15"
+      description: "Comprehensive health check covering liver, kidney, cholesterol, diabetes, thyroid, iron, vitamins and inflammation markers.",
+      blood_taking_method: "Finger prick",
+      results_returned: "2 days",
+      doctors_report: "Yes",
+      trustpilot_score: 4.8
     },
     {
+      name: "Core blood test",
       provider: "Numan",
-      test_name: "Core blood test",
       price: 78.40,
-      biomarkers: 16,
+      biomarkers: ["Liver function", "Kidney function", "Cholesterol", "Diabetes", "Thyroid", "Iron", "Vitamins", "Inflammation", "Hormones"],
+      url: "https://www.numan.com/lps/gbr/blood-test/core-health-check",
       logo: "images/logos/numan.png",
-      link: "https://www.numan.com/lps/gbr/blood-test/core-health-check"
+      description: "Essential health markers including liver, kidney, cholesterol, diabetes, thyroid, iron, vitamins, inflammation and hormones.",
+      blood_taking_method: "Finger prick",
+      results_returned: "3 days",
+      doctors_report: "Yes",
+      trustpilot_score: 4.6
     },
     {
+      name: "Health and lifestyle blood test",
       provider: "Medichecks",
-      test_name: "Health and lifestyle blood test",
       price: 89,
-      biomarkers: 19,
+      biomarkers: ["Liver function", "Kidney function", "Cholesterol", "Diabetes", "Thyroid", "Iron", "Vitamins", "Inflammation", "Hormones", "Cardiovascular"],
+      url: "https://www.medichecks.com/products/health-and-lifestyle-check-blood-test",
       logo: "images/logos/medichecks.png",
-      link: "https://www.medichecks.com/products/health-and-lifestyle-check-blood-test"
+      description: "Comprehensive health and lifestyle assessment covering all major health markers and cardiovascular risk factors.",
+      blood_taking_method: "Finger prick",
+      results_returned: "2 days",
+      doctors_report: "Yes",
+      trustpilot_score: 4.7
     },
     {
+      name: "General health profile",
       provider: "London Medical Laboratory",
-      test_name: "General health profile",
       price: 89,
-      biomarkers: 19,
+      biomarkers: ["Liver function", "Kidney function", "Cholesterol", "Diabetes", "Thyroid", "Iron", "Vitamins", "Inflammation", "Hormones", "Cardiovascular"],
+      url: "https://www.londonmedicallaboratory.com/product/general-health",
       logo: "images/logos/london medical laboratory.png",
-      link: "https://www.londonmedicallaboratory.com/product/general-health"
+      description: "Complete general health profile with comprehensive biomarker analysis and professional interpretation.",
+      blood_taking_method: "Finger prick",
+      results_returned: "2 days",
+      doctors_report: "Yes",
+      trustpilot_score: 4.5
     },
-    // Additional 4 placeholder products
     {
+      name: "Essential blood test",
       provider: "Superdrug",
-      test_name: "Essential blood test",
       price: 99,
-      biomarkers: 12,
+      biomarkers: ["Liver function", "Kidney function", "Cholesterol", "Diabetes", "Thyroid", "Iron"],
+      url: "https://www.superdrug.com/health-services/blood-tests/essential",
       logo: "images/logos/superdrug.png",
-      link: "https://www.superdrug.com/health-services/blood-tests/essential"
+      description: "Essential health markers for basic health screening and monitoring.",
+      blood_taking_method: "Finger prick",
+      results_returned: "3 days",
+      doctors_report: "No",
+      trustpilot_score: 4.3
     },
     {
+      name: "Wellness check",
       provider: "Bluecrest",
-      test_name: "Wellness check",
       price: 120,
-      biomarkers: 18,
+      biomarkers: ["Liver function", "Kidney function", "Cholesterol", "Diabetes", "Thyroid", "Iron", "Vitamins", "Inflammation", "Hormones", "Cardiovascular", "Bone health"],
+      url: "https://www.bluecrestwellness.com/blood-tests/wellness-check",
       logo: "images/logos/bluecrest.png",
-      link: "https://www.bluecrestwellness.com/blood-tests/wellness-check"
+      description: "Comprehensive wellness check including bone health markers and advanced cardiovascular screening.",
+      blood_taking_method: "Finger prick",
+      results_returned: "4 days",
+      doctors_report: "Yes",
+      trustpilot_score: 4.4
     },
     {
+      name: "Baseline blood test",
       provider: "Thriva",
-      test_name: "Baseline blood test",
       price: 110,
-      biomarkers: 14,
+      biomarkers: ["Liver function", "Kidney function", "Cholesterol", "Diabetes", "Thyroid", "Iron", "Vitamins", "Inflammation"],
+      url: "https://thriva.co/products/baseline-blood-test",
       logo: "images/logos/thriva.png",
-      link: "https://thriva.co/products/baseline-blood-test"
+      description: "Baseline health assessment with comprehensive biomarker analysis and lifestyle recommendations.",
+      blood_taking_method: "Finger prick",
+      results_returned: "2 days",
+      doctors_report: "Yes",
+      trustpilot_score: 4.6
     },
     {
+      name: "Vitality blood test",
       provider: "Forth",
-      test_name: "Vitality blood test",
       price: 105,
-      biomarkers: 17,
+      biomarkers: ["Liver function", "Kidney function", "Cholesterol", "Diabetes", "Thyroid", "Iron", "Vitamins", "Inflammation", "Hormones", "Cardiovascular"],
+      url: "https://www.forthwithlife.co.uk/blood-tests/vitality",
       logo: "images/logos/forth.png",
-      link: "https://www.forthwithlife.co.uk/blood-tests/vitality"
+      description: "Vitality assessment focusing on energy, hormones and cardiovascular health markers.",
+      blood_taking_method: "Finger prick",
+      results_returned: "3 days",
+      doctors_report: "Yes",
+      trustpilot_score: 4.5
     }
   ];
 
+  // Create blood test cards using CardService
+  const cardService = new CardService();
+  const bloodTestCards = await Promise.all(
+    cheapestProducts.map(async (product, index) => {
+      // Convert to the format expected by CardService
+      const testData = {
+        ...product,
+        grouped_biomarkers: {
+          "General Health": product.biomarkers
+        }
+      };
+      return await cardService.createCard(testData, { rank: index + 1 });
+    })
+  );
+
   const cheapestSection = `
     <section class="cheapest-products-section">
-      <div class="cheapest-products-grid cheapest-products-scroll">
-        ${cheapestProducts.map(product => `
-          <div class="cheapest-product-card">
-            <div class="cheapest-product-content">
-              <div class="cheapest-product-provider">${product.provider}</div>
-              <h3>${product.test_name}</h3>
-              <img src="${product.logo}" alt="${product.provider} logo" class="cheapest-product-logo" />
-              <div class="cheapest-product-biomarkers">${product.biomarkers} biomarkers</div>
-              <div class="cheapest-product-price">£${product.price.toFixed(2)}</div>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-      <div class="cheapest-products-actions-row cheapest-products-scroll">
-        ${cheapestProducts.map(product => `
-          <div class="cheapest-product-actions">
-            <a href="${product.link}" class="cheapest-btn get-started" target="_blank">Get started</a>
-            <a href="${product.link}" class="cheapest-btn learn-more" target="_blank">Learn more</a>
-          </div>
-        `).join('')}
+      <div class="cheapest-products-grid cheapest-products-scroll" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; padding: 2rem;">
+        ${bloodTestCards.join('')}
       </div>
     </section>
   `;
