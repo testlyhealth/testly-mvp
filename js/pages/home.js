@@ -191,10 +191,8 @@ export function getHomePageContent() {
         <div class="floating-square">
           <div class="square-content">
             <h2>Talk to a doctor</h2>
-            <p>Virtual consultations with healthcare professionals <strong>Coming soon</strong></p>
-          </div>
-          <div class="doctor-explanation">
-            <p>We have consultations with a doctor on the way that will allow you to discuss your health problems and what services out there might work for you.</p>
+            <p>Discuss your symptoms or health goals with one of our doctors and find a solution that works for you</p>
+            <button class="waiting-list-btn">Join our waiting list</button>
           </div>
         </div>
       </div>
