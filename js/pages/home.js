@@ -248,14 +248,27 @@ export function getHomePageContent() {
           </div>
         </div>
       </div>
-            <div class="trust-cta">
-              <button class="primary-cta-button">
-                Compare now
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- New Banner Section -->
+    <section class="new-banner-section">
+      <div class="container">
+        <div class="new-banner-content">
+          <div class="banner-text">
+            <h2>Ready to take control of your health?</h2>
+            <p>Join thousands of people who are already making informed health decisions with Testly</p>
+          </div>
+          <div class="banner-actions">
+            <button class="banner-cta-button">
+              Get started today
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
           </div>
         </div>
       </div>
