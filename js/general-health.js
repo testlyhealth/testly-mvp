@@ -188,7 +188,14 @@ async function updateTestGridContent(tests) {
   try {
     // Always use the enriched objects for rendering
     const enriched = tests.map(f => (window._allGeneralHealthTests || []).find(t => t.id === f.id) || f);
-    const newContent = await cardService.createCards(enriched);
+    
+    // Create cards with selection state - first card is selected by default
+    const cardsWithSelection = enriched.map((test, index) => ({
+      ...test,
+      isSelected: index === 0 // First card is selected by default
+    }));
+    
+    const newContent = await cardService.createCards(cardsWithSelection);
     testsGrid.innerHTML = newContent;
     currentTests = enriched;
     
@@ -224,6 +231,46 @@ async function updateTestGridContent(tests) {
 
 // Function to attach event listeners
 function attachEventListeners() {
+  let lastHoveredCard = null;
+  let hasInteracted = false;
+  
+  // Ensure first card is selected by default
+  const firstCard = document.querySelector('.blood-test-card');
+  if (firstCard && !firstCard.classList.contains('selected')) {
+    firstCard.classList.add('selected');
+    lastHoveredCard = firstCard;
+  }
+  
+  // Card hover and selection
+  $all('.blood-test-card').forEach(card => {
+    card.addEventListener('mouseenter', (e) => {
+      hasInteracted = true;
+      
+      // Remove selection from all cards
+      $all('.blood-test-card').forEach(c => c.classList.remove('selected'));
+      
+      // Add selection to hovered card
+      card.classList.add('selected');
+      lastHoveredCard = card;
+    });
+    
+    card.addEventListener('click', (e) => {
+      // Don't trigger selection if clicking on buttons or interactive elements
+      if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.toggle-biomarkers') || e.target.closest('.toggle-all-biomarkers')) {
+        return;
+      }
+      
+      hasInteracted = true;
+      
+      // Remove selection from all cards
+      $all('.blood-test-card').forEach(c => c.classList.remove('selected'));
+      
+      // Add selection to clicked card
+      card.classList.add('selected');
+      lastHoveredCard = card;
+    });
+  });
+
   // Sort button
   const sortBtn = document.querySelector('.sort-btn.mobile-only');
   if (sortBtn) {
@@ -311,7 +358,6 @@ function attachEventListeners() {
       });
       // Update the "Show all" button
       button.setAttribute('aria-expanded', !isExpanded);
-      button.textContent = isExpanded ? 'Show all' : 'Hide all';
     });
   });
 }

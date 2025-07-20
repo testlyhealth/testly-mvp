@@ -84,7 +84,7 @@ export class CardService {
     }
 
     return `
-      <div class="product-card blood-test-card" data-test-id="${test.name}">
+      <div class="product-card blood-test-card ${options.isSelected ? 'selected' : ''}" data-test-id="${test.name}">
         ${showRank ? `<div class="test-rank">${options.rank}</div>` : ''}
         <div class="test-header">
           <div class="provider-info">
@@ -92,92 +92,84 @@ export class CardService {
           </div>
           <h3 class="test-name">${test.name}</h3>
         </div>
-        <div class="provider-mini-title">${providerName}</div>
+        <div class="provider-mini-title">${providerName}:</div>
+        <div class="trustpilot-score">
+          ${(() => {
+            const score = Number(test.trustpilot_score);
+            if (isNaN(score)) return '<span>Not available</span>';
+            const fullStars = Math.floor(score);
+            const halfStar = score - fullStars >= 0.5 ? 1 : 0;
+            const emptyStars = 5 - fullStars - halfStar;
+            let stars = '';
+            for (let i = 0; i < fullStars; i++) stars += '★';
+            if (halfStar) stars += '⯨';
+            for (let i = 0; i < emptyStars; i++) stars += '☆';
+            return `<span title="Trustpilot score: ${score.toFixed(2)}">${stars}</span>`;
+          })()}
+        </div>
         <div class="test-price">£${test.price}</div>
-        ${showBiomarkers ? `
-          <div class="biomarkers-section">
-            <div class="biomarkers-header">
-              <div class="biomarker-info">
-                <h4>Biomarkers tested: <span class="keycap-number">${(() => {
-                  const toKeyCap = n => String(n).split('').map(d => {
-                    const map = {'0':'0️⃣','1':'1️⃣','2':'2️⃣','3':'3️⃣','4':'4️⃣','5':'5️⃣','6':'6️⃣','7':'7️⃣','8':'8️⃣','9':'9️⃣'};
-                    return map[d] || d;
-                  }).join('');
-                  return toKeyCap(biomarkerCount);
-                })()}</span></h4>
-                <button class="toggle-all-biomarkers" aria-expanded="false">Show all</button>
-              </div>
+        <p>"${test.description}"</p>
+        <div class="test-locations">
+          <div style="margin-bottom: 0.7em;"><span style="color: #333; font-size: 0.9rem;">• Results returned in ${(() => {
+            if (test.results_returned_time_days) {
+              return test.results_returned_time_days + ' days';
+            } else if (test.results_returned_time_min && test.results_returned_time_max) {
+              return test.results_returned_time_min + ' - ' + test.results_returned_time_max + ' days';
+            } else {
+              return 'N/A days';
+            }
+          })()}</span>
+          </div>
+          <div style="margin-bottom: 0.7em;"><span style="color: #333; font-size: 0.9rem;">• Doctors report</span> ${test.doctors_report ? '✅' : '❌'}</div>
+          <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.5em;">
+            <span style="margin: 0; color: #333; font-size: 0.9rem;">• Blood taking method:</span>
+            <div style="display: flex; align-items: center; gap: 0.3em; margin-left: 1.5em;">
+              ${Array.isArray(test.blood_taking_methods) && test.blood_taking_methods.length > 0
+                ? test.blood_taking_methods.map(method => {
+                    const emojiMap = {
+                      'Home test': '🏠',
+                      'Clinic visit': '🏥',
+                      'Phlebotomist to home': '🧑🏼‍⚕️',
+                      'Self arrange': '🙋🏼'
+                    };
+                    return `<span style=\"font-size:1.3em;\" title=\"${method}\">${emojiMap[method] || method}</span>`;
+                  }).join('')
+                : '<span>Not specified</span>'}
             </div>
-            <div class="biomarkers-list">
-              ${Object.entries(test.grouped_biomarkers || {}).map(([group, biomarkers]) => `
-                <div class="biomarker-group">
-                  <div class="group-header">
-                    <h4>${group} (${biomarkers.length} tests)</h4>
-                    <button class="toggle-biomarkers" aria-expanded="false">
-                      <span class="toggle-icon">▼</span>
-                    </button>
-                  </div>
-                  <ul class="biomarker-items hidden">
-                    ${biomarkers.map(biomarker => `
-                      <li>${biomarker}</li>
-                    `).join('')}
-                  </ul>
+          </div>
+        </div>
+        ${showBiomarkers ? `
+          <div style="background-color: #E8F4FD; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem;">
+            <div class="biomarkers-section">
+              <div class="biomarkers-header" style="text-align: center;">
+                <div class="biomarker-info" style="text-align: center; display: flex; justify-content: center;">
+                  <h4 class="toggle-all-biomarkers" aria-expanded="false" style="color: #2d3748; margin: 0; text-decoration: underline; cursor: pointer; user-select: none; outline: none; border: none; background: none; padding: 0;">${biomarkerCount} biomarkers tested</h4>
                 </div>
-              `).join('')}
+              </div>
+              <div class="biomarkers-list">
+                ${Object.entries(test.grouped_biomarkers || {}).map(([group, biomarkers]) => `
+                  <div class="biomarker-group">
+                    <div class="group-header" style="background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                      <h4 style="color: #333; margin: 0;">${group}</h4>
+                      <button class="toggle-biomarkers" aria-expanded="false" style="color: #333; background: transparent; border: none; font-size: 1rem;">
+                        <span class="toggle-icon">▼</span>
+                      </button>
+                    </div>
+                    <ul class="biomarker-items hidden" style="color: #333;">
+                      ${biomarkers.map(biomarker => `
+                        <li style="color: #333; padding-left: 1.5rem;">${biomarker}</li>
+                      `).join('')}
+                    </ul>
+                  </div>
+                `).join('')}
+              </div>
             </div>
           </div>
         ` : ''}
-        <p>"${test.description}"</p>
         <div class="test-details">
           ${showDetails ? `
-            <div class="test-locations">
-              <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.5em;">
-                <h4 style="margin: 0; font-weight: bold;">Blood taking method:</h4>
-                <div style="display: flex; align-items: center; gap: 0.3em; margin-left: 0.5em;">
-                  ${Array.isArray(test.blood_taking_methods) && test.blood_taking_methods.length > 0
-                    ? test.blood_taking_methods.map(method => {
-                        const emojiMap = {
-                          'Home test': '🏠',
-                          'Clinic visit': '🏥',
-                          'Phlebotomist to home': '🧑🏼‍⚕️',
-                          'Self arrange': '🙋🏼'
-                        };
-                        return `<span style=\"font-size:1.3em;\" title=\"${method}\">${emojiMap[method] || method}</span>`;
-                      }).join('')
-                    : '<span>Not specified</span>'}
-                </div>
-              </div>
-              <div style="margin-top: 0.7em;"><span style="font-weight:bold;">Results returned in:</span> ${(() => {
-                const toKeyCap = n => String(n).split('').map(d => {
-                  const map = {'0':'0️⃣','1':'1️⃣','2':'2️⃣','3':'3️⃣','4':'4️⃣','5':'5️⃣','6':'6️⃣','7':'7️⃣','8':'8️⃣','9':'9️⃣'};
-                  return map[d] || d;
-                }).join('');
-                if (test.results_returned_time_days) {
-                  return toKeyCap(test.results_returned_time_days) + ' days';
-                } else if (test.results_returned_time_min && test.results_returned_time_max) {
-                  return toKeyCap(test.results_returned_time_min) + ' - ' + toKeyCap(test.results_returned_time_max) + ' days';
-                } else {
-                  return 'N/A days';
-                }
-              })()}
-              </div>
-              <div style="margin-top: 1em;"><span style="font-weight:bold;">Doctors report:</span> ${test.doctors_report ? '✅' : '❌'}</div>
-              <div style="margin-top: 1em;"><span style="font-weight:bold;">Trust pilot score:</span> ${(() => {
-                const score = Number(test.trustpilot_score);
-                if (isNaN(score)) return '<span>Not available</span>';
-                const fullStars = Math.floor(score);
-                const halfStar = score - fullStars >= 0.5 ? 1 : 0;
-                const emptyStars = 5 - fullStars - halfStar;
-                let stars = '';
-                for (let i = 0; i < fullStars; i++) stars += '★';
-                if (halfStar) stars += '⯨';
-                for (let i = 0; i < emptyStars; i++) stars += '☆';
-                return `<span title="${score.toFixed(2)}">${stars}</span>`;
-              })()}
-              </div>
-            </div>
             <div class="card-actions">
-              <a class="book-test-btn" href="${test.url || '#'}" target="_blank" rel="noopener noreferrer" data-test-id="${test.name}">Book test</a>
+              <a class="book-test-btn" href="${test.url || '#'}" target="_blank" rel="noopener noreferrer" data-test-id="${test.name}" style="background-color: #1E88E5; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; text-decoration: none; display: inline-block; font-weight: 600; text-align: center; transition: background-color 0.2s;">Book test</a>
             </div>
           ` : ''}
         </div>
@@ -333,7 +325,6 @@ export class CardService {
         
         // Update the "Show all" button
         button.setAttribute('aria-expanded', !isExpanded);
-        button.textContent = isExpanded ? 'Show all' : 'Hide all';
       });
     });
 

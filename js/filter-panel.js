@@ -558,9 +558,20 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         filteredTests = [];
       }
     } else {
-      // No category filter, use all tests
-      availableTests = tests;
-      filteredTests = tests;
+      // No category filter (All Categories selected), fetch ALL tests from database
+      console.log('All Categories selected, fetching all tests from database');
+      const { data: allTests, error } = await supabase
+        .from('provider_blood_tests')
+        .select('*, provider:providers(name)');
+      if (!error && allTests) {
+        availableTests = allTests;
+        filteredTests = allTests;
+        console.log('Fetched all tests from database:', allTests.length);
+      } else {
+        console.error('Error fetching all tests:', error);
+        availableTests = tests; // Fallback to original tests
+        filteredTests = tests;
+      }
     }
 
     // --- Update price slider range and values based on availableTests (not filtered) ---
