@@ -319,13 +319,15 @@ function attachEventListeners() {
 // Function to create general health title
 function createGeneralHealthTitle() {
   return `
-    <section class="general-health-title-section">
-      <h1 class="general-health-title">
-        Compare and book blood tests
-      </h1>
-      <p class="general-health-subheading">
-        Blood tests from accredited labs covering the health of your <strong class="gh-em">heart</strong>, <strong class="gh-em">liver</strong>, <strong class="gh-em">kidneys</strong>, <strong class="gh-em">cholesterol</strong>, <strong class="gh-em">vitamins</strong> and more.
-      </p>
+    <section class="general-health-hero">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          Compare <span style="color: #1E88E5;">blood tests</span>
+        </h1>
+        <p class="hero-subtitle">
+          Blood tests from accredited labs covering the health of your <strong class="gh-em">heart</strong>, <strong class="gh-em">liver</strong>, <strong class="gh-em">kidneys</strong>, <strong class="gh-em">cholesterol</strong>, <strong class="gh-em">vitamins</strong> and more.
+        </p>
+      </div>
     </section>
   `;
 }
@@ -334,20 +336,22 @@ function createGeneralHealthTitle() {
 function createPageStructure(filterPanel, testsGrid) {
   return `
     <div class="page-container">
-      <aside class="filter-panel">
-        ${filterPanel}
-      </aside>
-      <div class="main-content">
-        ${createGeneralHealthTitle()}
-        <div class="filter-tags"></div>
-        <div class="mobile-filter-buttons">
-          <div class="left-buttons">
-            <button class="filters-btn mobile-only" aria-label="Open filters">Filters</button>
-            <button class="sort-btn mobile-only" aria-label="Sort results">Sort: Price &#8593;</button>
+      ${createGeneralHealthTitle()}
+      <div class="results-container"><aside class="filter-panel">
+          <div class="filter-panel-content">
+            ${filterPanel}
           </div>
-          <button class="advanced-search-btn mobile-only" aria-label="Advanced search">Advanced search</button>
+        </aside><div class="main-content">
+          <div class="filter-tags"></div>
+          <div class="mobile-filter-buttons">
+            <div class="left-buttons">
+              <button class="filters-btn mobile-only" aria-label="Open filters">Filters</button>
+              <button class="sort-btn mobile-only" aria-label="Sort results">Sort: Price &#8593;</button>
+            </div>
+            <button class="advanced-search-btn mobile-only" aria-label="Advanced search">Advanced search</button>
+          </div>
+          <div class="products-grid"></div>
         </div>
-        <div class="products-grid"></div>
       </div>
     </div>
   `;

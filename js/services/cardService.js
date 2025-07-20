@@ -90,44 +90,45 @@ export class CardService {
           <div class="provider-info">
             <img src="images/logos/${providerLogo}" alt="${providerName} logo" class="provider-logo">
           </div>
-          <h3 class="test-name"><span class="provider-name">${providerName}</span> - ${test.name}</h3>
+          <h3 class="test-name">${test.name}</h3>
         </div>
-        <p>${test.description}</p>
-        <div class="test-details">
-          <div class="test-price">£${test.price}</div>
-          ${showBiomarkers ? `
-            <div class="biomarkers-section">
-              <div class="biomarkers-header">
-                <div class="biomarker-info">
-                  <h4>Biomarkers tested: <span class="keycap-number">${(() => {
-                    const toKeyCap = n => String(n).split('').map(d => {
-                      const map = {'0':'0️⃣','1':'1️⃣','2':'2️⃣','3':'3️⃣','4':'4️⃣','5':'5️⃣','6':'6️⃣','7':'7️⃣','8':'8️⃣','9':'9️⃣'};
-                      return map[d] || d;
-                    }).join('');
-                    return toKeyCap(biomarkerCount);
-                  })()}</span></h4>
-                  <button class="toggle-all-biomarkers" aria-expanded="false">Show all</button>
-                </div>
-              </div>
-              <div class="biomarkers-list">
-                ${Object.entries(test.grouped_biomarkers || {}).map(([group, biomarkers]) => `
-                  <div class="biomarker-group">
-                    <div class="group-header">
-                      <h4>${group} (${biomarkers.length} tests)</h4>
-                      <button class="toggle-biomarkers" aria-expanded="false">
-                        <span class="toggle-icon">▼</span>
-                      </button>
-                    </div>
-                    <ul class="biomarker-items hidden">
-                      ${biomarkers.map(biomarker => `
-                        <li>${biomarker}</li>
-                      `).join('')}
-                    </ul>
-                  </div>
-                `).join('')}
+        <div class="provider-mini-title">${providerName}</div>
+        <div class="test-price">£${test.price}</div>
+        ${showBiomarkers ? `
+          <div class="biomarkers-section">
+            <div class="biomarkers-header">
+              <div class="biomarker-info">
+                <h4>Biomarkers tested: <span class="keycap-number">${(() => {
+                  const toKeyCap = n => String(n).split('').map(d => {
+                    const map = {'0':'0️⃣','1':'1️⃣','2':'2️⃣','3':'3️⃣','4':'4️⃣','5':'5️⃣','6':'6️⃣','7':'7️⃣','8':'8️⃣','9':'9️⃣'};
+                    return map[d] || d;
+                  }).join('');
+                  return toKeyCap(biomarkerCount);
+                })()}</span></h4>
+                <button class="toggle-all-biomarkers" aria-expanded="false">Show all</button>
               </div>
             </div>
-          ` : ''}
+            <div class="biomarkers-list">
+              ${Object.entries(test.grouped_biomarkers || {}).map(([group, biomarkers]) => `
+                <div class="biomarker-group">
+                  <div class="group-header">
+                    <h4>${group} (${biomarkers.length} tests)</h4>
+                    <button class="toggle-biomarkers" aria-expanded="false">
+                      <span class="toggle-icon">▼</span>
+                    </button>
+                  </div>
+                  <ul class="biomarker-items hidden">
+                    ${biomarkers.map(biomarker => `
+                      <li>${biomarker}</li>
+                    `).join('')}
+                  </ul>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+        <p>"${test.description}"</p>
+        <div class="test-details">
           ${showDetails ? `
             <div class="test-locations">
               <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.5em;">

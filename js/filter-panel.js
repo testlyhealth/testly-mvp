@@ -73,48 +73,68 @@ export async function createFilterPanel(tests) {
 
   return `
     <div class="filter-panel-content">
-      <h3>Filter Results</h3>
       
       <div class="filter-section">
-        <h4>Price</h4>
-        <div class="price-range">
-          <span id="price-min-value">£${minPrice.toFixed(2)}</span> - <span id="price-max-value">£${maxPrice.toFixed(2)}</span>
+        <div class="filter-section-header">
+          <h4>Price</h4>
+          <button class="filter-toggle-btn" aria-expanded="false" aria-controls="price-options">
+            <span class="toggle-icon">▼</span>
+          </button>
         </div>
-        <div class="price-slider">
-          <input type="range" id="price-min" min="${minPrice}" max="${maxPrice}" value="${minPrice}" step="1">
-          <input type="range" id="price-max" min="${minPrice}" max="${maxPrice}" value="${maxPrice}" step="1">
+        <div class="filter-section-content" id="price-options" style="display: none;">
+          <div class="price-range">
+            <span id="price-min-value">£${minPrice.toFixed(2)}</span> - <span id="price-max-value">£${maxPrice.toFixed(2)}</span>
+          </div>
+          <div class="price-slider">
+            <input type="range" id="price-min" min="${minPrice}" max="${maxPrice}" value="${minPrice}" step="1">
+            <input type="range" id="price-max" min="${minPrice}" max="${maxPrice}" value="${maxPrice}" step="1">
+          </div>
         </div>
       </div>
 
       <div class="filter-section">
-        <h4>Category</h4>
-        <div class="provider-checkboxes">
-          <div class="checkbox-option">
-            <input type="checkbox" id="category-all" ${allCategoriesSelected || !selectedCategory ? 'checked' : ''}>
-            <label for="category-all">All Categories</label>
-          </div>
-          ${categories.map(category => `
+        <div class="filter-section-header">
+          <h4>Category</h4>
+          <button class="filter-toggle-btn" aria-expanded="false" aria-controls="category-options">
+            <span class="toggle-icon">▼</span>
+          </button>
+        </div>
+        <div class="filter-section-content" id="category-options" style="display: none;">
+          <div class="provider-checkboxes">
             <div class="checkbox-option">
-              <input type="checkbox" id="category-${generateSafeId(category)}" class="category-checkbox" value="${category}" ${(selectedCategory && !allCategoriesSelected ? (selectedCategory === category ? 'checked' : '') : (!selectedCategory ? (category === 'General health' ? 'checked' : '') : ''))}>
-              <label for="category-${generateSafeId(category)}">${category}</label>
+              <input type="checkbox" id="category-all" ${allCategoriesSelected || !selectedCategory ? 'checked' : ''}>
+              <label for="category-all">All Categories</label>
             </div>
-          `).join('')}
+            ${categories.map(category => `
+              <div class="checkbox-option">
+                <input type="checkbox" id="category-${generateSafeId(category)}" class="category-checkbox" value="${category}" ${(selectedCategory && !allCategoriesSelected ? (selectedCategory === category ? 'checked' : '') : (!selectedCategory ? (category === 'General health' ? 'checked' : '') : ''))}>
+                <label for="category-${generateSafeId(category)}">${category}</label>
+              </div>
+            `).join('')}
+          </div>
         </div>
       </div>
 
       <div class="filter-section">
-        <h4>Providers</h4>
-        <div class="provider-checkboxes">
-          <div class="checkbox-option">
-            <input type="checkbox" id="provider-all" checked>
-            <label for="provider-all">All Providers</label>
-          </div>
-          ${providers.map(provider => `
+        <div class="filter-section-header">
+          <h4>Providers</h4>
+          <button class="filter-toggle-btn" aria-expanded="false" aria-controls="provider-options">
+            <span class="toggle-icon">▼</span>
+          </button>
+        </div>
+        <div class="filter-section-content" id="provider-options" style="display: none;">
+          <div class="provider-checkboxes">
             <div class="checkbox-option">
-              <input type="checkbox" id="provider-${provider.toLowerCase().replace(/\s+/g, '-')}" class="provider-checkbox" value="${provider}">
-              <label for="provider-${provider.toLowerCase().replace(/\s+/g, '-')}" >${provider}</label>
+              <input type="checkbox" id="provider-all" checked>
+              <label for="provider-all">All Providers</label>
             </div>
-          `).join('')}
+            ${providers.map(provider => `
+              <div class="checkbox-option">
+                <input type="checkbox" id="provider-${provider.toLowerCase().replace(/\s+/g, '-')}" class="provider-checkbox" value="${provider}">
+                <label for="provider-${provider.toLowerCase().replace(/\s+/g, '-')}" >${provider}</label>
+              </div>
+            `).join('')}
+          </div>
         </div>
       </div>
 
@@ -165,6 +185,56 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   const categoryCheckboxes = filterPanel.querySelectorAll('.category-checkbox');
   const doctorsReport = filterPanel.querySelector('#doctors-report');
   const resetFiltersBtn = filterPanel.querySelector('#reset-filters');
+
+  // Setup toggle functionality for collapsible sections
+  const toggleButtons = filterPanel.querySelectorAll('.filter-toggle-btn');
+  const filterHeaders = filterPanel.querySelectorAll('.filter-section-header');
+  
+  // Function to toggle section
+  function toggleSection(button) {
+    const isExpanded = button.getAttribute('aria-expanded') === 'true';
+    const targetId = button.getAttribute('aria-controls');
+    const targetContent = filterPanel.querySelector(`#${targetId}`);
+    const toggleIcon = button.querySelector('.toggle-icon');
+    
+    if (targetContent) {
+      if (isExpanded) {
+        // Collapse
+        targetContent.style.display = 'none';
+        button.setAttribute('aria-expanded', 'false');
+        toggleIcon.textContent = '▼';
+      } else {
+        // Expand
+        targetContent.style.display = 'block';
+        button.setAttribute('aria-expanded', 'true');
+        toggleIcon.textContent = '▲';
+      }
+    }
+  }
+  
+  // Add click handlers to toggle buttons
+  toggleButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleSection(button);
+    });
+  });
+  
+  // Add click handlers to filter headers
+  filterHeaders.forEach(header => {
+    header.addEventListener('click', (e) => {
+      // Don't trigger if clicking on the toggle button itself
+      if (e.target.closest('.filter-toggle-btn')) {
+        return;
+      }
+      e.preventDefault();
+      const button = header.querySelector('.filter-toggle-btn');
+      if (button) {
+        toggleSection(button);
+      }
+    });
+  });
 
   // Create filter tags container in the appropriate location
   let filterTagsContainer = document.querySelector('.filter-tags');
