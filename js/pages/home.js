@@ -12,6 +12,8 @@ export function getHomePageContent() {
     return `
         <!-- Hero Section -->
     <section class="hero-section">
+      <div class="hero-bg-color-banner"></div>
+      <div class="hero-bg-banner"></div>
       <div class="hero-content">
         <h1 class="hero-title">
           <span style="color: #1E88E5;">Health</span> comparison<br>made simple
