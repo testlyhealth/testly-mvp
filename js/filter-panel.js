@@ -281,6 +281,19 @@ export async function createFilterPanel(tests) {
         </div>
       </div>
 
+      <!-- Biomarker search section -->
+      <div class="filter-section">
+        <div class="filter-section-header">
+          <h4>Biomarker Search</h4>
+        </div>
+        <div class="biomarker-search-container">
+          <input type="text" class="biomarker-search-input" placeholder="Search for a biomarker eg testosterone" style="width: 100%; box-sizing: border-box;">
+          <div class="biomarker-dropdown" style="display: none; position: absolute; z-index: 1000;">
+            <!-- Results will be populated here -->
+          </div>
+        </div>
+      </div>
+
 
     </div>
   `;
@@ -1084,6 +1097,9 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     });
   });
 
+  // Setup biomarker search in filter panel
+  setupFilterPanelBiomarkerSearch();
+
   // Handle doctor's report checkbox
   if (doctorsReport) {
     doctorsReport.addEventListener('change', () => applyFilters().catch(console.error));
@@ -1154,4 +1170,163 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
 
   // Initial filter application
   applyFilters().catch(console.error);
+  
+  // Setup biomarker search functionality
+  setupFilterPanelBiomarkerSearch();
+}
+
+// Setup biomarker search functionality for filter panel
+function setupFilterPanelBiomarkerSearch() {
+  const biomarkerInput = document.querySelector('.biomarker-search-input');
+  const biomarkerDropdown = document.querySelector('.biomarker-dropdown');
+  
+  if (!biomarkerInput || !biomarkerDropdown) return;
+  
+  let searchTimeout;
+  let selectedIndex = -1;
+  
+  biomarkerInput.addEventListener('input', (e) => {
+    const query = e.target.value.trim();
+    
+    // Clear previous timeout
+    clearTimeout(searchTimeout);
+    
+    if (query.length < 2) {
+      biomarkerDropdown.style.display = 'none';
+      return;
+    }
+    
+    // Debounce the search
+    searchTimeout = setTimeout(() => {
+      searchFilterPanelBiomarkers(query, biomarkerDropdown);
+    }, 300);
+  });
+  
+  biomarkerInput.addEventListener('keydown', (e) => {
+    const options = biomarkerDropdown.querySelectorAll('.biomarker-option');
+    
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        selectedIndex = Math.min(selectedIndex + 1, options.length - 1);
+        updateFilterPanelSelection(options);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        selectedIndex = Math.max(selectedIndex - 1, -1);
+        updateFilterPanelSelection(options);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (selectedIndex >= 0 && options[selectedIndex]) {
+          selectFilterPanelBiomarker(options[selectedIndex], biomarkerInput, biomarkerDropdown);
+        }
+        break;
+      case 'Escape':
+        biomarkerDropdown.style.display = 'none';
+        selectedIndex = -1;
+        break;
+    }
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!biomarkerInput.contains(e.target) && !biomarkerDropdown.contains(e.target)) {
+      biomarkerDropdown.style.display = 'none';
+      selectedIndex = -1;
+    }
+  });
+}
+
+// Search biomarkers function for filter panel
+async function searchFilterPanelBiomarkers(query, dropdownElement) {
+  try {
+    const { data, error } = await supabase
+      .from('biomarkers')
+      .select('name')
+      .ilike('name', `%${query}%`)
+      .order('name')
+      .limit(20);
+    
+    if (error) {
+      console.error('Error fetching biomarkers:', error);
+      return;
+    }
+    
+    const biomarkerNames = data.map(item => item.name);
+    displayFilterPanelBiomarkerResults(biomarkerNames, dropdownElement);
+  } catch (error) {
+    console.error('Error searching biomarkers:', error);
+  }
+}
+
+// Display biomarker search results for filter panel
+function displayFilterPanelBiomarkerResults(biomarkers, dropdownElement) {
+  if (biomarkers.length === 0) {
+    dropdownElement.innerHTML = '<div class="biomarker-option">No biomarkers found</div>';
+  } else {
+    dropdownElement.innerHTML = biomarkers
+      .map(biomarker => `<div class="biomarker-option" data-value="${biomarker}">${biomarker}</div>`)
+      .join('');
+    
+    // Add click event listeners
+    dropdownElement.querySelectorAll('.biomarker-option').forEach(option => {
+      option.addEventListener('click', () => selectFilterPanelBiomarker(option, null, dropdownElement));
+    });
+  }
+  
+  dropdownElement.style.display = 'block';
+}
+
+// Select a biomarker in filter panel
+function selectFilterPanelBiomarker(option, inputElement, dropdownElement) {
+  const biomarkerInput = inputElement || document.querySelector('.biomarker-search-input');
+  const biomarkerDropdown = dropdownElement || document.querySelector('.biomarker-dropdown');
+  
+  biomarkerInput.value = option.dataset.value;
+  biomarkerDropdown.style.display = 'none';
+  biomarkerInput.focus();
+  
+  // Add the selected biomarker to the URL hash (similar to how biomarker checkboxes work)
+  const biomarkerName = option.dataset.value;
+  let [base, paramStr] = window.location.hash.split('?');
+  base = base || '#/general-health';
+  let params = new URLSearchParams(paramStr || '');
+  
+  // Get current biomarkers
+  let selectedBiomarkers = [];
+  const biomarkerMatch = window.location.hash.match(/[?&]biomarkers=([^&]+)/);
+  if (biomarkerMatch) {
+    selectedBiomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean);
+  }
+  
+  // Add the new biomarker if not already present
+  if (!selectedBiomarkers.includes(biomarkerName)) {
+    selectedBiomarkers.push(biomarkerName);
+  }
+  
+  // Update biomarkers param
+  if (selectedBiomarkers.length > 0) {
+    params.set('biomarkers', selectedBiomarkers.join(','));
+  }
+  
+  // Remove empty params
+  for (const [key, value] of params.entries()) {
+    if (!value) params.delete(key);
+  }
+  
+  // Rebuild hash
+  const newHash = params.toString() ? `${base}?${params.toString()}` : base;
+  window.location.hash = newHash;
+}
+
+// Update selection for filter panel
+function updateFilterPanelSelection(options) {
+  options.forEach((option, index) => {
+    if (index === selectedIndex) {
+      option.classList.add('selected');
+    } else {
+      option.classList.remove('selected');
+    }
+  });
 } 

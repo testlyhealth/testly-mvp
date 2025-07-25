@@ -3422,8 +3422,8 @@ body {
     position: sticky;
     top: 2rem;
     height: fit-content;
-    max-height: calc(100vh - 96px);
-    overflow-y: auto;
+    max-height: none;
+    overflow-y: visible;
     z-index: 100;
     box-shadow: none;
     flex-shrink: 0;
