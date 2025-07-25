@@ -286,8 +286,8 @@ export async function createFilterPanel(tests) {
         <div class="filter-section-header">
           <h4>Biomarker Search</h4>
         </div>
-        <div class="biomarker-search-container">
-          <input type="text" class="biomarker-search-input" placeholder="Search for a biomarker eg testosterone" style="width: 100%; box-sizing: border-box;">
+                  <div class="biomarker-search-container">
+            <input type="text" class="biomarker-search-input" placeholder="e.g. testosterone, vitamin D" style="width: 100%; box-sizing: border-box;">
           <div class="biomarker-dropdown" style="display: none; position: absolute; z-index: 1000;">
             <!-- Results will be populated here -->
           </div>
