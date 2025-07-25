@@ -29,6 +29,10 @@ let sortAscending = true;
 let filteredTests = [];
 let currentTests = [];
 
+// Expose sort state to global scope for filter panel access
+window.sortAscending = sortAscending;
+window.sortType = 'relevance'; // Default sort type
+
 // Function to get grouped biomarkers
 async function getGroupedBiomarkers(biomarkers) {
   try {
@@ -173,12 +177,63 @@ function sortTests(tests, ascending = true) {
   return sorted;
 }
 
-// Function to update sort button text
-function updateSortButtonText(ascending) {
-  const sortBtn = document.querySelector('.sort-btn.mobile-only');
-  if (sortBtn) {
-    sortBtn.innerHTML = `Sort: Price ${ascending ? '&#8593;' : '&#8595;'}`;
+    // Function to update sort button text
+  function updateSortButtonText(sortType) {
+    const sortBtn = document.querySelector('.sort-btn.mobile-only');
+    if (sortBtn) {
+      // For mobile, we'll keep the simple price up/down logic
+      const isAscending = sortType === 'price-asc';
+      if (sortType === 'relevance') {
+        sortBtn.innerHTML = 'Sort: Relevance';
+      } else {
+        sortBtn.innerHTML = `Sort: Price ${isAscending ? '&#8593;' : '&#8595;'}`;
+      }
+    }
+  
+      // Update desktop sort button if it exists
+    const desktopSortBtn = document.querySelector('.sort-btn');
+    if (desktopSortBtn) {
+      switch (sortType) {
+        case 'price-asc':
+          desktopSortBtn.innerHTML = 'Sort: Price <span class="sort-arrow">▲</span>';
+          break;
+        case 'price-desc':
+          desktopSortBtn.innerHTML = 'Sort: Price <span class="sort-arrow">▼</span>';
+          break;
+        case 'relevance':
+          desktopSortBtn.innerHTML = 'Sort: Relevance';
+          break;
+      }
+    }
+}
+
+// Sort callback function for filter panel
+function handleSortChange(sortType) {
+  window.sortType = sortType;
+  
+  let sorted;
+  switch (sortType) {
+    case 'price-asc':
+      sortAscending = true;
+      window.sortAscending = true;
+      sorted = sortTests(filteredTests, true);
+      break;
+    case 'price-desc':
+      sortAscending = false;
+      window.sortAscending = false;
+      sorted = sortTests(filteredTests, false);
+      break;
+    case 'relevance':
+      // For relevance, we'll keep the original order or implement relevance logic
+      sorted = [...filteredTests];
+      break;
+    default:
+      sorted = sortTests(filteredTests, true);
   }
+  
+  currentTests = sorted;
+  updateTestGridContent(currentTests);
+  updateSortButtonText(sortType);
 }
 
 // Function to update the test grid with new content
@@ -199,28 +254,105 @@ async function updateTestGridContent(tests) {
     testsGrid.innerHTML = newContent;
     currentTests = enriched;
     
-    // Update filter tags with results count
+    // Update filter tags with results count and sort button
     const filterTagsContainer = document.querySelector('.filter-tags');
-    if (filterTagsContainer) {
-      const filterTagsList = filterTagsContainer.querySelector('.filter-tags-list');
-      if (filterTagsList) {
-        // Get current filter tags HTML
-        const currentTags = filterTagsList.innerHTML;
-        // Create results count HTML
-        const resultsCountHTML = `
-          <div class="results-count">
-            <span>${enriched.length} result${enriched.length !== 1 ? 's' : ''}</span>
-          </div>
-        `;
-        // Update the container
-        filterTagsContainer.innerHTML = `
-          <div class="filter-tags-list">
-            ${currentTags}
-          </div>
-          ${resultsCountHTML}
-        `;
-      }
-    }
+    // REMOVE the following block that sets filterTagsContainer.innerHTML directly
+    // if (filterTagsContainer) {
+    //   const filterTagsList = filterTagsContainer.querySelector('.filter-tags-list');
+    //   if (filterTagsList) {
+    //     // Get current filter tags HTML
+    //     const currentTags = filterTagsList.innerHTML;
+    //     // Create results count and sort button HTML
+    //     const resultsCountHTML = `
+    //       <div class="results-controls">
+    //         <div class="results-count">
+    //           <span>${enriched.length} result${enriched.length !== 1 ? 's' : ''}</span>
+    //         </div>
+    //         <div class="sort-dropdown desktop-only">
+    //           <button class="sort-btn" aria-label="Sort results" aria-expanded="false">
+    //             Sort: Relevance
+    //           </button>
+    //           <div class="sort-dropdown-menu" style="display: none;">
+    //             <button class="sort-option" data-sort="relevance">Sort by relevance</button>
+    //             <button class="sort-option" data-sort="price-asc">Sort by price: Low to high</button>
+    //             <button class="sort-option" data-sort="price-desc">Sort by price: High to low</button>
+    //           </div>
+    //         </div>
+    //       </div>
+    //     `;
+    //     // Update the container
+    //     filterTagsContainer.innerHTML = `
+    //       <div class="filter-tags-list">
+    //         ${currentTags}
+    //       </div>
+    //       ${resultsCountHTML}
+    //     `;
+        
+    //     // Add event listener to the new sort dropdown
+    //     const sortDropdown = filterTagsContainer.querySelector('.sort-dropdown.desktop-only');
+    //     if (sortDropdown) {
+    //       const sortBtn = sortDropdown.querySelector('.sort-btn');
+    //       const dropdownMenu = sortDropdown.querySelector('.sort-dropdown-menu');
+    //       const sortOptions = dropdownMenu.querySelectorAll('.sort-option');
+              
+    //       // Get current sort state from global variable or default to relevance
+    //       const currentSortType = window.sortType !== undefined ? window.sortType : 'relevance';
+              
+    //       // Update button text based on current sort
+    //       updateSortButtonText(sortBtn, currentSortType);
+              
+    //       // Toggle dropdown on button click
+    //       sortBtn.addEventListener('click', (e) => {
+    //         e.stopPropagation();
+    //         const isExpanded = sortBtn.getAttribute('aria-expanded') === 'true';
+    //         sortBtn.setAttribute('aria-expanded', !isExpanded);
+    //         dropdownMenu.style.display = isExpanded ? 'none' : 'block';
+    //       });
+              
+    //       // Handle sort option clicks
+    //       sortOptions.forEach(option => {
+    //         option.addEventListener('click', (e) => {
+    //           e.stopPropagation();
+    //           const sortType = option.getAttribute('data-sort');
+    //           window.sortType = sortType;
+              
+    //           // Update button text
+    //           updateSortButtonText(sortBtn, sortType);
+              
+    //           // Close dropdown
+    //           sortBtn.setAttribute('aria-expanded', 'false');
+    //           dropdownMenu.style.display = 'none';
+              
+    //           // Handle sort change
+    //           handleSortChange(sortType);
+    //         });
+    //       });
+              
+    //       // Close dropdown when clicking outside
+    //       document.addEventListener('click', (e) => {
+    //         if (!sortDropdown.contains(e.target)) {
+    //           sortBtn.setAttribute('aria-expanded', 'false');
+    //           dropdownMenu.style.display = 'none';
+    //         }
+    //       });
+    //     }
+        
+    //     // Helper function to update sort button text
+    //     function updateSortButtonText(button, sortType) {
+    //       switch (sortType) {
+    //         case 'price-asc':
+    //           button.innerHTML = 'Sort: Price <span class="sort-arrow">▲</span>';
+    //           break;
+    //         case 'price-desc':
+    //           button.innerHTML = 'Sort: Price <span class="sort-arrow">▼</span>';
+    //           break;
+    //         case 'relevance':
+    //           button.innerHTML = 'Sort: Relevance';
+    //           break;
+    //       }
+    //     }
+    //   }
+    // }
     
     attachEventListeners();
   } catch (error) {
@@ -278,6 +410,7 @@ function attachEventListeners() {
     sortBtn.parentNode.replaceChild(newSortBtn, sortBtn);
     newSortBtn.addEventListener('click', () => {
       sortAscending = !sortAscending;
+      window.sortAscending = sortAscending;
       const sorted = sortTests(filteredTests, sortAscending);
       currentTests = sorted;
       updateTestGridContent(currentTests);
@@ -499,6 +632,10 @@ async function initializePageElements(tests) {
     console.error('Products grid not found');
     return;
   }
+  
+  // Set up global sort callback
+  window.sortCallback = handleSortChange;
+  
   filteredTests = tests;
   currentTests = sortTests(filteredTests, sortAscending);
   const cards = await cardService.createCards(currentTests);
@@ -513,6 +650,7 @@ async function initializePageElements(tests) {
       // Legacy case: filterState is an array of filtered tests
       filteredTests = filterState;
       sortAscending = true;
+      window.sortAscending = sortAscending;
       updateSortButtonText(sortAscending);
       currentTests = sortTests(filteredTests, sortAscending);
       updateTestGridContent(currentTests);
@@ -609,6 +747,7 @@ async function initializePageElements(tests) {
       
       filteredTests = enriched;
       sortAscending = true;
+      window.sortAscending = sortAscending;
       updateSortButtonText(sortAscending);
       currentTests = sortTests(filteredTests, sortAscending);
       

@@ -2243,6 +2243,31 @@ body {
     opacity: 1;
   }
 
+  /* Add scrolling to biomarker filter section when expanded */
+  .filter-section-content#biomarker-options {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+
+  .filter-section-content#biomarker-options::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .filter-section-content#biomarker-options::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  .filter-section-content#biomarker-options::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+
+  .filter-section-content#biomarker-options::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+
   /* Mobile responsive styles for collapsible filters */
   @media (max-width: 768px) {
     .filter-section-header {
@@ -3286,6 +3311,92 @@ body {
     font-weight: 600;
   }
 
+  /* Biomarker Grouping Styles for Filter Panel */
+  .biomarker-grouping {
+    margin-bottom: 0.5rem;
+    margin-left: 1rem;
+  }
+
+  .grouping-header {
+    /* Remove background and border styling */
+  }
+
+  .grouping-toggle-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    transition: color 0.2s ease;
+  }
+
+  .grouping-toggle-btn:hover {
+    color: #2563eb;
+  }
+
+  .grouping-toggle-btn[aria-expanded="true"] .grouping-toggle-icon {
+    transform: rotate(180deg);
+  }
+
+  .grouping-toggle-icon {
+    font-size: 0.75rem;
+    transition: transform 0.2s ease;
+    color: #6b7280;
+    order: 2; /* Move arrow to the right */
+  }
+
+  .grouping-name {
+    flex: 1;
+    text-align: left;
+    order: 1; /* Keep text on the left */
+  }
+
+  .grouping-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .grouping-content[style*="display: block"] {
+    max-height: 200px; /* Reduced height for better scrolling */
+    overflow-y: auto;
+  }
+
+  .grouping-content[style*="display: block"]::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .grouping-content[style*="display: block"]::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+  }
+
+  .grouping-content[style*="display: block"]::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+  }
+
+  .grouping-content[style*="display: block"]::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+
+  .grouping-checkboxes {
+    padding: 0.5rem 0 0.5rem 1rem;
+  }
+
+  .loading-indicator {
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-style: italic;
+    padding: 0.5rem 0;
+  }
+
   .page-container {
     min-height: calc(100vh - 64px);
     margin-top: 64px;
@@ -3317,6 +3428,12 @@ body {
     box-shadow: none;
     flex-shrink: 0;
     box-sizing: border-box;
+  }
+
+  /* Allow filter panel to be longer when biomarker section is expanded */
+  .filter-panel.biomarker-expanded {
+    max-height: none;
+    height: auto;
   }
 
   .filter-panel-content {
@@ -4279,6 +4396,13 @@ body {
     flex: 1;
   }
 
+  .results-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: auto;
+  }
+
   .results-count {
     display: flex;
     align-items: center;
@@ -4286,10 +4410,91 @@ body {
     font-weight: 600;
     color: #64748b;
     white-space: nowrap;
-    margin-left: auto;
     padding: 0.25rem 0.5rem;
     background-color: #f8fafc;
     border-radius: 0.25rem;
+  }
+
+  .sort-dropdown.desktop-only {
+    position: relative;
+  }
+
+  .sort-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    background: transparent;
+    border: 1px solid #1E88E5;
+    border-radius: 0.375rem;
+    color: #374151;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .sort-btn:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+  }
+
+  .sort-btn:active {
+    background-color: #f3f4f6;
+  }
+
+  .sort-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.25rem;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    z-index: 1000;
+    min-width: 200px;
+  }
+
+  .sort-option {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 0.75rem;
+    color: #374151;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .sort-option:hover {
+    background-color: #f9fafb;
+  }
+
+  .sort-option:first-child {
+    border-radius: 0.375rem 0.375rem 0 0;
+  }
+
+  .sort-option:last-child {
+    border-radius: 0 0 0.375rem 0.375rem;
+  }
+
+  .sort-arrow {
+    font-weight: bold;
+    transition: all 0.2s ease;
+  }
+
+  @media (max-width: 768px) {
+    .sort-dropdown.desktop-only {
+      display: none;
+    }
+    
+    .results-controls {
+      gap: 0;
+    }
   }
 
   .filter-tag {

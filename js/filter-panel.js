@@ -10,6 +10,35 @@ function generateSafeId(text) {
     .replace(/^-|-$/g, '');  // Remove leading/trailing hyphens
 }
 
+// Helper: Fetch biomarkers for a grouping from Supabase
+async function fetchBiomarkersForGrouping(groupingName) {
+  // 1. Get grouping id
+  const { data: groupRows, error: groupError } = await supabase
+    .from('biomarker_groupings')
+    .select('id')
+    .eq('name', groupingName)
+    .limit(1);
+  if (groupError || !groupRows || groupRows.length === 0) return [];
+  const groupingId = groupRows[0].id;
+
+  // 2. Get biomarker ids for this grouping
+  const { data: linkRows, error: linkError } = await supabase
+    .from('biomarker_groupings_link_table')
+    .select('biomarker_id')
+    .eq('biomarker_grouping_id', groupingId);
+  if (linkError || !linkRows || linkRows.length === 0) return [];
+  const biomarkerIds = linkRows.map(row => row.biomarker_id);
+
+  // 3. Get biomarker names
+  const { data: biomarkerRows, error: biomarkerError } = await supabase
+    .from('biomarkers')
+    .select('id, name')
+    .in('id', biomarkerIds)
+    .order('name');
+  if (biomarkerError || !biomarkerRows) return [];
+  return biomarkerRows;
+}
+
 // Function to create the filter panel HTML
 export async function createFilterPanel(tests) {
   // Get price range
@@ -49,6 +78,51 @@ export async function createFilterPanel(tests) {
     console.log('Fallback providers:', providers);
   }
   
+  // Fetch biomarker groupings from Supabase
+  let biomarkerGroupings = [];
+  try {
+    console.log('Fetching biomarker groupings from database...');
+    const { data, error } = await supabase.from('biomarker_groupings').select('name').order('name');
+    console.log('Raw biomarker groupings data:', data);
+    console.log('Biomarker groupings error:', error);
+    
+    if (error) throw error;
+    biomarkerGroupings = data.map(group => group.name);
+    console.log('Processed biomarker groupings:', biomarkerGroupings);
+    console.log('Number of groupings found:', biomarkerGroupings.length);
+    console.log('Rendering', biomarkerGroupings.length, 'biomarker groupings in HTML');
+  } catch (e) {
+    console.error('Error fetching biomarker groupings:', e);
+    // Fallback to empty array if fetch fails
+    biomarkerGroupings = [];
+  }
+  
+  // If no groupings found in database, use fallback list
+  if (biomarkerGroupings.length === 0) {
+    console.log('No groupings found in database, using fallback list');
+    biomarkerGroupings = [
+      'Allergy testing',
+      'Autoimmune disease',
+      'Blood group, disorders and clotting',
+      'Cardiovascular health',
+      'Diabetes and glucose metabolism',
+      'Digestive health',
+      'Energy and metabolism',
+      'Fertility and reproductive health',
+      'General health',
+      'Hormone health',
+      'Immune system',
+      'Kidney and liver function',
+      'Mental health and stress',
+      'Muscle and bone health',
+      'Nutrition and vitamins',
+      'Sexual health',
+      'Sleep and recovery',
+      'Thyroid function',
+      'Weight management'
+    ];
+  }
+  
   // Check for a filter query parameter in the URL
   let selectedCategory = null;
   let allCategoriesSelected = false;
@@ -59,9 +133,11 @@ export async function createFilterPanel(tests) {
       selectedCategory = decodeURIComponent(filterMatch[1]);
       // Fix the category name - replace + with space
       selectedCategory = selectedCategory.replace(/\+/g, ' ');
-      
-      // Check if all categories are selected (comma-separated list)
-      if (selectedCategory.includes(',')) {
+      // If filter=all, treat as all categories selected
+      if (selectedCategory === 'all') {
+        allCategoriesSelected = true;
+        selectedCategory = null;
+      } else if (selectedCategory.includes(',')) {
         const selectedCategories = selectedCategory.split(',').map(cat => cat.trim());
         // If the number of selected categories matches the total number of categories, treat as "all"
         if (selectedCategories.length >= 15) { // We have 15 categories in the database
@@ -128,7 +204,23 @@ export async function createFilterPanel(tests) {
               <input type="checkbox" id="biomarker-all" checked>
               <label for="biomarker-all">All Biomarkers</label>
             </div>
-            <!-- Biomarker options will be populated dynamically -->
+            ${biomarkerGroupings.map(grouping => `
+              <div class="biomarker-grouping">
+                <div class="grouping-header">
+                  <button class="grouping-toggle-btn" aria-expanded="false" aria-controls="grouping-${generateSafeId(grouping)}">
+                    <span class="grouping-toggle-icon">▼</span>
+                    <span class="grouping-name">${grouping}</span>
+                  </button>
+                </div>
+                <div class="grouping-content" id="grouping-${generateSafeId(grouping)}" style="display: none;">
+                  <div class="grouping-checkboxes">
+                    <!-- Individual biomarkers will be loaded dynamically when grouping is expanded -->
+                    <div class="loading-indicator">Loading biomarkers...</div>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+            ${biomarkerGroupings.length === 0 ? '<div style="color: #6b7280; font-style: italic; padding: 0.5rem;">No biomarker groupings found</div>' : ''}
           </div>
         </div>
       </div>
@@ -213,11 +305,21 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         targetContent.style.display = 'none';
         button.setAttribute('aria-expanded', 'false');
         toggleIcon.textContent = '▼';
+        
+        // Remove biomarker-expanded class if this was the biomarker section
+        if (targetId === 'biomarker-options') {
+          filterPanel.classList.remove('biomarker-expanded');
+        }
       } else {
         // Expand
         targetContent.style.display = 'block';
         button.setAttribute('aria-expanded', 'true');
         toggleIcon.textContent = '▲';
+        
+        // Add biomarker-expanded class if this is the biomarker section
+        if (targetId === 'biomarker-options') {
+          filterPanel.classList.add('biomarker-expanded');
+        }
       }
     }
   }
@@ -242,6 +344,95 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       const button = header.querySelector('.filter-toggle-btn');
       if (button) {
         toggleSection(button);
+      }
+    });
+  });
+
+  // Add click handlers to biomarker grouping toggle buttons
+  const groupingToggleButtons = filterPanel.querySelectorAll('.grouping-toggle-btn');
+  groupingToggleButtons.forEach(button => {
+    button.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const isExpanded = button.getAttribute('aria-expanded') === 'true';
+      const targetId = button.getAttribute('aria-controls');
+      const targetContent = filterPanel.querySelector(`#${targetId}`);
+      const toggleIcon = button.querySelector('.grouping-toggle-icon');
+      if (targetContent) {
+        if (isExpanded) {
+          // Collapse
+          targetContent.style.display = 'none';
+          button.setAttribute('aria-expanded', 'false');
+          toggleIcon.textContent = '▼';
+        } else {
+          // Expand
+          targetContent.style.display = 'block';
+          button.setAttribute('aria-expanded', 'true');
+          toggleIcon.textContent = '▲';
+          // Lazy load biomarkers if not already loaded
+          const checkboxesContainer = targetContent.querySelector('.grouping-checkboxes');
+          if (checkboxesContainer && !checkboxesContainer.dataset.loaded) {
+            const groupName = button.querySelector('.grouping-name').textContent;
+            checkboxesContainer.innerHTML = '';
+            const biomarkers = await fetchBiomarkersForGrouping(groupName);
+            if (biomarkers.length > 0) {
+              // Get selected biomarkers from URL hash
+              let selectedBiomarkers = [];
+              const hash = window.location.hash;
+              const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
+              if (biomarkerMatch) {
+                selectedBiomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim());
+              }
+              checkboxesContainer.innerHTML = biomarkers.map(b => `
+                <div class="checkbox-option">
+                  <input type="checkbox" class="biomarker-checkbox" id="biomarker-${b.id}" value="${b.name}"${selectedBiomarkers.includes(b.name) ? ' checked' : ''}>
+                  <label for="biomarker-${b.id}">${b.name}</label>
+                </div>
+              `).join('');
+            } else {
+              checkboxesContainer.innerHTML = '<div class="loading-indicator">No biomarkers found</div>';
+            }
+            checkboxesContainer.dataset.loaded = 'true';
+            // Add event listeners to biomarker checkboxes
+            checkboxesContainer.querySelectorAll('.biomarker-checkbox').forEach(cb => {
+              cb.addEventListener('change', (e) => {
+                // Use URL hash as source of truth for selected biomarkers
+                let selectedBiomarkers = [];
+                const hash = window.location.hash;
+                const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
+                if (biomarkerMatch) {
+                  selectedBiomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean);
+                }
+                const biomarkerName = cb.value;
+                if (cb.checked) {
+                  if (!selectedBiomarkers.includes(biomarkerName)) {
+                    selectedBiomarkers.push(biomarkerName);
+                  }
+                } else {
+                  selectedBiomarkers = selectedBiomarkers.filter(b => b !== biomarkerName);
+                }
+                // --- Preserve all other params in the hash ---
+                // Parse hash into base and params
+                let [base, paramStr] = window.location.hash.split('?');
+                base = base || '#/general-health';
+                let params = new URLSearchParams(paramStr || '');
+                // Update biomarkers param
+                if (selectedBiomarkers.length > 0) {
+                  params.set('biomarkers', selectedBiomarkers.join(','));
+                } else {
+                  params.delete('biomarkers');
+                }
+                // Remove empty params
+                for (const [key, value] of params.entries()) {
+                  if (!value) params.delete(key);
+                }
+                // Rebuild hash
+                const newHash = params.toString() ? `${base}?${params.toString()}` : base;
+                window.location.hash = newHash;
+              });
+            });
+          }
+        }
       }
     });
   });
@@ -275,9 +466,11 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       selectedCategory = decodeURIComponent(filterMatch[1]);
       // Fix the category name - replace + with space
       selectedCategory = selectedCategory.replace(/\+/g, ' ');
-      
-      // Check if all categories are selected (comma-separated list)
-      if (selectedCategory.includes(',')) {
+      // If filter=all, treat as all categories selected
+      if (selectedCategory === 'all') {
+        allCategoriesSelected = true;
+        selectedCategory = null;
+      } else if (selectedCategory.includes(',')) {
         const selectedCategories = selectedCategory.split(',').map(cat => cat.trim());
         // If the number of selected categories matches the total number of categories, treat as "all"
         if (selectedCategories.length >= 15) { // We have 15 categories in the database
@@ -343,9 +536,8 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         `);
       });
     } else {
-      // Check if "All Categories" is selected
-      const categoryAllCheckbox = document.querySelector('#category-all');
-      if (categoryAllCheckbox && categoryAllCheckbox.checked) {
+      // Show "All Categories" tag if allCategoriesSelected is true
+      if (allCategoriesSelected) {
         console.log('Creating "All Categories" tag');
         tags.push(`
           <div class="filter-tag" data-type="category-all">
@@ -383,11 +575,23 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       });
     }
     
-    // Create the filter tags container with results count
+    // Create the filter tags container with results count and sort button
     const filterTagsHTML = tags.join('');
     const resultsCountHTML = resultsCount !== null ? `
-      <div class="results-count">
-        <span>${resultsCount} result${resultsCount !== 1 ? 's' : ''}</span>
+      <div class="results-controls">
+        <div class="results-count">
+          <span>${resultsCount} result${resultsCount !== 1 ? 's' : ''}</span>
+        </div>
+        <div class="sort-dropdown desktop-only">
+                  <button class="sort-btn" aria-label="Sort results" aria-expanded="false">
+          Sort: Relevance
+        </button>
+          <div class="sort-dropdown-menu" style="display: none;">
+            <button class="sort-option" data-sort="relevance">Sort by relevance</button>
+            <button class="sort-option" data-sort="price-asc">Sort by price: Low to high</button>
+            <button class="sort-option" data-sort="price-desc">Sort by price: High to low</button>
+          </div>
+        </div>
       </div>
     ` : '';
     
@@ -415,98 +619,131 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     const removeButtons = filterTagsContainer.querySelectorAll('.remove-tag');
     console.log('Found', removeButtons.length, 'remove buttons');
     
-    // Add event listeners to remove buttons
-    removeButtons.forEach(button => {
-      button.addEventListener('click', (e) => {
-        console.log('Remove button clicked!');
+    // Add event listener to desktop sort dropdown
+    const sortDropdown = filterTagsContainer.querySelector('.sort-dropdown.desktop-only');
+    if (sortDropdown) {
+      const sortBtn = sortDropdown.querySelector('.sort-btn');
+      const dropdownMenu = sortDropdown.querySelector('.sort-dropdown-menu');
+      const sortOptions = dropdownMenu.querySelectorAll('.sort-option');
+      
+      // Get current sort state from global variable or default to relevance
+      const currentSortType = window.sortType !== undefined ? window.sortType : 'relevance';
+      
+      // Update button text based on current sort
+      updateSortButtonText(sortBtn, currentSortType);
+      
+      // Toggle dropdown on button click
+      sortBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isExpanded = sortBtn.getAttribute('aria-expanded') === 'true';
+        sortBtn.setAttribute('aria-expanded', !isExpanded);
+        dropdownMenu.style.display = isExpanded ? 'none' : 'block';
+      });
+      
+      // Handle sort option clicks
+      sortOptions.forEach(option => {
+        option.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const sortType = option.getAttribute('data-sort');
+          window.sortType = sortType;
+          
+          // Update button text
+          updateSortButtonText(sortBtn, sortType);
+          
+          // Close dropdown
+          sortBtn.setAttribute('aria-expanded', 'false');
+          dropdownMenu.style.display = 'none';
+          
+          // Trigger sort callback if available
+          if (window.sortCallback) {
+            window.sortCallback(sortType);
+          }
+        });
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!sortDropdown.contains(e.target)) {
+          sortBtn.setAttribute('aria-expanded', 'false');
+          dropdownMenu.style.display = 'none';
+        }
+      });
+    }
+    
+    // Helper function to update sort button text
+    function updateSortButtonText(button, sortType) {
+      switch (sortType) {
+        case 'price-asc':
+          button.innerHTML = 'Sort: Price <span class="sort-arrow">▲</span>';
+          break;
+        case 'price-desc':
+          button.innerHTML = 'Sort: Price <span class="sort-arrow">▼</span>';
+          break;
+        case 'relevance':
+          button.innerHTML = 'Sort: Relevance';
+          break;
+      }
+    }
+    
+    // Add event listeners to remove buttons (event delegation)
+    const filterTagsList = filterTagsContainer.querySelector('.filter-tags-list');
+    if (filterTagsList) {
+      filterTagsList.addEventListener('click', (e) => {
+        const button = e.target.closest('.remove-tag');
+        if (!button) return;
         e.preventDefault();
         e.stopPropagation();
-        
-        const tag = e.target.closest('.filter-tag');
-        if (!tag) {
-          console.warn('No filter tag found');
-          return;
-        }
-        
+        const tag = button.closest('.filter-tag');
+        if (!tag) return;
         const type = tag.dataset.type;
         const value = tag.dataset.value;
-        
-        console.log('Removing filter tag:', type, value);
-        
-        switch (type) {
-          case 'provider':
-            const providerCheckbox = document.querySelector(`#provider-${generateSafeId(value)}`);
-            if (providerCheckbox) {
-              providerCheckbox.checked = false;
-              if (providerAll) {
-                providerAll.checked = false;
-              }
-              console.log('Unchecked provider:', value);
-            }
-            break;
-            
-          case 'category':
-            const categoryCheckbox = document.querySelector(`#category-${generateSafeId(value)}`);
-            if (categoryCheckbox) {
-              categoryCheckbox.checked = false;
-              if (categoryAll) {
-                categoryAll.checked = false;
-              }
-              console.log('Unchecked category:', value);
-            }
-            break;
-            
-          case 'category-all':
-            // Uncheck "All Categories" and check "General health" as default
-            if (categoryAll) {
-              categoryAll.checked = false;
-            }
-            const generalHealthCheckbox = document.querySelector('#category-general-health');
-            if (generalHealthCheckbox) {
-              generalHealthCheckbox.checked = true;
-            }
-            console.log('Unchecked "All Categories" and checked "General health"');
-            break;
-            
-          case 'doctorsReport':
-            if (doctorsReport) {
-              doctorsReport.checked = false;
-              console.log('Unchecked doctors report');
-            }
-            break;
-            
-          case 'biomarker':
-            // Remove biomarker from URL and rerun search
-            const hash = window.location.hash;
-            const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
-            if (biomarkerMatch) {
-              let selectedBiomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean);
-              selectedBiomarkers = selectedBiomarkers.filter(b => b !== value);
-              console.log('Removing biomarker:', value, 'Remaining:', selectedBiomarkers);
-              
-              if (selectedBiomarkers.length === 0) {
-                // Remove biomarkers param entirely
-                const newHash = hash.replace(/[?&]biomarkers=[^&]+/, '').replace(/[?&]$/, '');
-                window.location.hash = newHash || '#/general-health';
-              } else {
-                const newBiomarkersParam = `biomarkers=${encodeURIComponent(selectedBiomarkers.join(','))}`;
-                const newHash = hash.replace(/[?&]biomarkers=[^&]+/, '') + (hash.includes('?') ? '&' : '?') + newBiomarkersParam;
-                window.location.hash = newHash;
-              }
-              return; // Don't call applyFilters, let navigation handle it
-            }
-            break;
-            
-          default:
-            console.warn('Unknown filter tag type:', type);
-            return;
+        // Parse hash into base and params
+        let [base, paramStr] = window.location.hash.split('?');
+        base = base || '#/general-health';
+        let params = new URLSearchParams(paramStr || '');
+        if (type === 'category') {
+          // Remove this category from filter param
+          let filterVal = params.get('filter') || '';
+          let cats = filterVal.split(',').map(c => c.trim()).filter(Boolean);
+          cats = cats.filter(c => c !== value);
+          if (cats.length > 0) {
+            params.set('filter', cats.join(','));
+          } else {
+            params.set('filter', 'all');
+          }
+        } else if (type === 'category-all') {
+          // Remove all categories, fallback to default (e.g., general-health)
+          params.set('filter', 'general-health');
+        } else if (type === 'biomarker') {
+          // Remove this biomarker from biomarkers param
+          let biomarkerVal = params.get('biomarkers') || '';
+          let biomarkers = biomarkerVal.split(',').map(b => b.trim()).filter(Boolean);
+          biomarkers = biomarkers.filter(b => b !== value);
+          if (biomarkers.length > 0) {
+            params.set('biomarkers', biomarkers.join(','));
+          } else {
+            params.delete('biomarkers');
+          }
+        } else if (type === 'provider') {
+          // Remove this provider from providers param
+          let providerVal = params.get('providers') || '';
+          let providers = providerVal.split(',').map(p => p.trim()).filter(Boolean);
+          providers = providers.filter(p => p !== value);
+          if (providers.length > 0) {
+            params.set('providers', providers.join(','));
+          } else {
+            params.delete('providers');
+          }
         }
-        
-        // Apply filters after removing the tag
-        console.log('Applying filters after tag removal');
-        applyFilters().catch(console.error);
+        // Remove empty params
+        for (const [key, val] of params.entries()) {
+          if (!val) params.delete(key);
+        }
+        // Rebuild hash
+        const newHash = params.toString() ? `${base}?${params.toString()}` : base;
+        window.location.hash = newHash;
       });
-    });
+    }
   }
 
   // Function to apply filters
@@ -681,17 +918,65 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
           checkbox.checked = false;
         });
       }
-      applyFilters().catch(console.error);
+      // --- Update filter param in hash ---
+      let [base, paramStr] = window.location.hash.split('?');
+      base = base || '#/general-health';
+      let params = new URLSearchParams(paramStr || '');
+      if (isChecked) {
+        params.set('filter', 'all');
+      } else {
+        // When "All Categories" is unchecked, keep the current individual selections
+        const selectedCategories = Array.from(categoryCheckboxes)
+          .filter(cb => cb.checked)
+          .map(cb => cb.value);
+        if (selectedCategories.length > 0) {
+          params.set('filter', selectedCategories.join(','));
+        } else {
+          params.delete('filter');
+        }
+      }
+      // Remove empty params
+      for (const [key, value] of params.entries()) {
+        if (!value) params.delete(key);
+      }
+      const newHash = params.toString() ? `${base}?${params.toString()}` : base;
+      window.location.hash = newHash;
     });
   }
 
   // Handle individual category checkboxes
   categoryCheckboxes.forEach(checkbox => {
     checkbox.addEventListener('change', () => {
-      const allChecked = Array.from(categoryCheckboxes).every(cb => cb.checked);
+      const selectedCategories = Array.from(categoryCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
+      
+      // Update "All Categories" checkbox based on selection
+      const allChecked = selectedCategories.length === categoryCheckboxes.length;
       categoryAll.checked = allChecked;
-      // On category change, call applyFilters to ensure price filter updates properly
-      applyFilters().catch(console.error);
+      
+      // --- Update filter param in hash ---
+      let [base, paramStr] = window.location.hash.split('?');
+      base = base || '#/general-health';
+      let params = new URLSearchParams(paramStr || '');
+      
+      if (allChecked) {
+        // If all categories are selected, use 'all'
+        params.set('filter', 'all');
+      } else if (selectedCategories.length > 0) {
+        // If specific categories are selected, join them
+        params.set('filter', selectedCategories.join(','));
+      } else {
+        // If no categories are selected, remove the filter param
+        params.delete('filter');
+      }
+      
+      // Remove empty params
+      for (const [key, value] of params.entries()) {
+        if (!value) params.delete(key);
+      }
+      const newHash = params.toString() ? `${base}?${params.toString()}` : base;
+      window.location.hash = newHash;
     });
   });
 
@@ -768,31 +1053,4 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
 
   // Initial filter application
   applyFilters().catch(console.error);
-
-  // Attach advanced search button event listener after panel is in DOM
-  const advBtn = document.querySelector('.advanced-search-btn');
-  const mobileAdvBtn = document.querySelector('.advanced-search-btn.mobile-only');
-  
-  if (advBtn) {
-    advBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      // Close mobile filter panel if it's open
-      const mobilePanel = document.querySelector('.mobile-filter-panel');
-      if (mobilePanel && mobilePanel.classList.contains('visible')) {
-        mobilePanel.classList.remove('visible');
-        setTimeout(() => {
-          mobilePanel.classList.add('hidden');
-          document.body.style.overflow = '';
-        }, 300);
-      }
-      window.location.hash = '#/advanced';
-    });
-  }
-
-  if (mobileAdvBtn) {
-    mobileAdvBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.hash = '#/advanced';
-    });
-  }
 } 

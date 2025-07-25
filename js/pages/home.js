@@ -92,15 +92,7 @@ export function getHomePageContent() {
                 <label>What's your symptom or health aim?</label>
                 <select class="symptom-select">
                   <option value="">Choose an option</option>
-                  <option value="fatigue">Fatigue</option>
-                  <option value="weight-gain">Weight gain</option>
-                  <option value="low-energy">Low energy</option>
-                  <option value="sleep-issues">Sleep issues</option>
-                  <option value="digestive-problems">Digestive problems</option>
-                  <option value="hormonal-imbalance">Hormonal imbalance</option>
-                  <option value="stress-anxiety">Stress & anxiety</option>
-                  <option value="immune-support">Immune support</option>
-                  <option value="general-wellness">General wellness</option>
+                  <!-- Problem options will be loaded from database -->
                 </select>
               </div>
               <div class="form-group" style="visibility: hidden;">
@@ -305,6 +297,7 @@ export function getHomePageContent() {
 // Homepage-specific functionality
 export function initializeHomePage() {
   loadFeaturedBloodTest();
+  loadProblemList(); // Load problem list from database
   setupNavigationHandlers();
   setupCategoryCards();
   setupCTAButtons();
@@ -1073,6 +1066,73 @@ async function loadBloodTestCategories() {
     }
   } catch (error) {
     console.error('Error loading blood test categories:', error);
+  }
+}
+
+// Load problem list from database
+async function loadProblemList() {
+  try {
+    console.log('Loading problem list from database...');
+    const { data, error } = await supabase
+      .from('problem_list')
+      .select('name')
+      .order('name');
+    
+    console.log('Problem list query result:', { data, error });
+    console.log('Data length:', data ? data.length : 'null');
+    console.log('First few items:', data ? data.slice(0, 3) : 'null');
+    
+    if (error) {
+      console.error('Error fetching problem list:', error);
+      // Fallback to hardcoded list if database table doesn't exist
+      console.log('Using fallback problem list');
+      const fallbackProblems = [
+        'Fatigue',
+        'Weight gain',
+        'Low energy',
+        'Sleep issues',
+        'Digestive problems',
+        'Hormonal imbalance',
+        'Stress & anxiety',
+        'Immune support',
+        'General wellness'
+      ];
+      
+      const symptomSelect = document.querySelector('.symptom-select');
+      if (symptomSelect) {
+        symptomSelect.innerHTML = '<option value="">Choose an option</option>';
+        fallbackProblems.forEach(problem => {
+          const option = document.createElement('option');
+          option.value = problem.toLowerCase().replace(/\s+/g, '-');
+          option.textContent = problem;
+          symptomSelect.appendChild(option);
+          console.log('Added fallback problem option:', problem);
+        });
+      }
+      return;
+    }
+    
+    const symptomSelect = document.querySelector('.symptom-select');
+    console.log('Found symptom select element:', symptomSelect);
+    
+    if (symptomSelect && data) {
+      console.log('Populating dropdown with', data.length, 'problems');
+      // Clear existing options and set proper placeholder
+      symptomSelect.innerHTML = '<option value="">Choose an option</option>';
+      
+      // Add problems from database
+      data.forEach(problem => {
+        const option = document.createElement('option');
+        option.value = problem.name;
+        option.textContent = problem.name;
+        symptomSelect.appendChild(option);
+        console.log('Added problem option:', problem.name);
+      });
+    } else {
+      console.log('No symptom select element found or no data returned');
+    }
+  } catch (error) {
+    console.error('Error loading problem list:', error);
   }
 }
 
