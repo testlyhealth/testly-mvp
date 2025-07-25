@@ -129,10 +129,13 @@ export class CardService {
                     const emojiMap = {
                       'Home test': '🏠',
                       'Clinic visit': '🏥',
-                      'Phlebotomist to home': '🧑🏼‍⚕️',
+                      'Phlebotomist to home': '👩🏼‍⚕️',
                       'Self arrange': '🙋🏼'
                     };
-                    return `<span style=\"font-size:1.3em;\" title=\"${method}\">${emojiMap[method] || method}</span>`;
+                    const hoverText = method === 'Home test' ? 'Home test/finger prick blood test' : 
+                                     method === 'Clinic visit' ? 'Clinic visit/full venous blood test' : 
+                                     method;
+                    return `<span style=\"font-size:1.3em;\" title=\"${hoverText}\">${emojiMap[method] || method}</span>`;
                   }).join('')
                 : '<span>Not specified</span>'}
             </div>

@@ -248,6 +248,39 @@ export async function createFilterPanel(tests) {
         </div>
       </div>
 
+      <div class="filter-section">
+        <div class="filter-section-header">
+          <h4>Blood taking method</h4>
+          <button class="filter-toggle-btn" aria-expanded="false" aria-controls="blood-method-options">
+            <span class="toggle-icon">▼</span>
+          </button>
+        </div>
+        <div class="filter-section-content" id="blood-method-options" style="display: none;">
+          <div class="provider-checkboxes">
+            <div class="checkbox-option">
+              <input type="checkbox" id="blood-method-all" checked>
+              <label for="blood-method-all">All Methods</label>
+            </div>
+            <div class="checkbox-option">
+              <input type="checkbox" id="blood-method-home" class="blood-method-checkbox" value="Home test">
+              <label for="blood-method-home">Home test/finger prick</label>
+            </div>
+            <div class="checkbox-option">
+              <input type="checkbox" id="blood-method-clinic" class="blood-method-checkbox" value="Clinic visit">
+              <label for="blood-method-clinic">Clinic visit venous test</label>
+            </div>
+            <div class="checkbox-option">
+              <input type="checkbox" id="blood-method-phlebotomist" class="blood-method-checkbox" value="Phlebotomist to home">
+              <label for="blood-method-phlebotomist">Phlebotomist to house</label>
+            </div>
+            <div class="checkbox-option">
+              <input type="checkbox" id="blood-method-self" class="blood-method-checkbox" value="Self arrange">
+              <label for="blood-method-self">Self arrange test</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
 
     </div>
   `;
@@ -285,6 +318,8 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   const providerCheckboxes = filterPanel.querySelectorAll('.provider-checkbox');
   const categoryAll = filterPanel.querySelector('#category-all');
   const categoryCheckboxes = filterPanel.querySelectorAll('.category-checkbox');
+  const bloodMethodAll = filterPanel.querySelector('#blood-method-all');
+  const bloodMethodCheckboxes = filterPanel.querySelectorAll('.blood-method-checkbox');
   const doctorsReport = filterPanel.querySelector('#doctors-report');
   const resetFiltersBtn = filterPanel.querySelector('#reset-filters');
 
@@ -493,6 +528,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     providers: [],
     locations: [],
     categories: allCategoriesSelected ? [] : (selectedCategory ? [selectedCategory] : []),
+    bloodTakingMethods: [],
     doctorsReport: false
   };
   
@@ -548,6 +584,18 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       } else {
         console.log('No categories to create tags for');
       }
+    }
+    // Blood taking method tags
+    if (filters.bloodTakingMethods.length > 0) {
+      console.log('Creating blood taking method tags for:', filters.bloodTakingMethods);
+      filters.bloodTakingMethods.forEach(method => {
+        tags.push(`
+          <div class="filter-tag" data-type="bloodMethod" data-value="${method}">
+            <span>Method: ${method}</span>
+            <button class="remove-tag" aria-label="Remove blood taking method filter">×</button>
+          </div>
+        `);
+      });
     }
     // Doctor's report tag
     if (filters.doctorsReport) {
@@ -734,6 +782,19 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
           } else {
             params.delete('providers');
           }
+        } else if (type === 'bloodMethod') {
+          // Remove this blood taking method by unchecking the corresponding checkbox
+          const checkbox = filterPanel.querySelector(`#blood-method-${value.toLowerCase().replace(/\s+/g, '-')}`);
+          if (checkbox) {
+            checkbox.checked = false;
+            // Update "All Methods" checkbox if needed
+            const allChecked = Array.from(bloodMethodCheckboxes).every(cb => cb.checked);
+            if (bloodMethodAll) {
+              bloodMethodAll.checked = allChecked;
+            }
+            // Reapply filters
+            applyFilters().catch(console.error);
+          }
         }
         // Remove empty params
         for (const [key, val] of params.entries()) {
@@ -762,8 +823,16 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       categories: categoryAll && categoryAll.checked ? [] : Array.from(categoryCheckboxes)
         .filter(cb => cb.checked)
         .map(cb => cb.value),
+      bloodTakingMethods: bloodMethodAll && bloodMethodAll.checked ? [] : Array.from(bloodMethodCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value),
       doctorsReport: doctorsReport ? doctorsReport.checked : false
     };
+    
+    console.log('=== DEBUG: Blood Taking Method Filter ===');
+    console.log('bloodMethodAll checked:', bloodMethodAll?.checked);
+    console.log('bloodMethodCheckboxes:', Array.from(bloodMethodCheckboxes).map(cb => ({ value: cb.value, checked: cb.checked })));
+    console.log('Selected blood taking methods:', currentFilters.bloodTakingMethods);
 
     let filteredTests = tests;
     let availableTests = tests;
@@ -853,7 +922,17 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     }
     // --- End price slider update ---
 
-    // Now apply price and provider filters to availableTests
+    // Now apply price, provider, and blood taking method filters to availableTests
+    console.log('=== DEBUG: Available Tests ===');
+    console.log('Number of available tests:', availableTests.length);
+    console.log('Sample tests with blood taking methods:', availableTests.slice(0, 3).map(t => ({
+      name: t.name,
+      blood_taking_methods: t.blood_taking_methods,
+      hasBloodTakingMethods: !!t.blood_taking_methods,
+      bloodTakingMethodsType: typeof t.blood_taking_methods,
+      bloodTakingMethodsLength: Array.isArray(t.blood_taking_methods) ? t.blood_taking_methods.length : 'not array'
+    })));
+    
     filteredTests = availableTests.filter(test => {
       // Price range filter
       if (test.price < currentFilters.priceRange.min || test.price > currentFilters.priceRange.max) {
@@ -863,6 +942,9 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       if (currentFilters.providers.length > 0 && !currentFilters.providers.includes(test.provider?.name || test.provider)) {
         return false;
       }
+      // Blood taking method filter - moved to filter callback
+      // This filtering will be handled in the general-health.js filter callback
+      // where we have access to enriched tests with blood_taking_methods
       // Doctor's report filter
       if (currentFilters.doctorsReport && test["doctors report"] !== "Yes") {
         return false;
@@ -876,24 +958,15 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     // Update filter tags with results count
     updateFilterTags(currentFilters, filteredTests.length);
 
-    // Check if biomarkers are selected in URL - if so, call callback with filter state instead of raw tests
-    const hash = window.location.hash;
-    const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
-    if (biomarkerMatch) {
-      console.log('=== DEBUG: ApplyFilters - Biomarkers detected, using filter state callback ===');
-      // Call the update callback with filter state object instead of raw tests
-      // This allows the main page to handle biomarker filtering with enriched data
-      updateCallback({
-        categories: currentFilters.categories,
-        providers: currentFilters.providers,
-        priceRange: currentFilters.priceRange,
-        doctorsReport: currentFilters.doctorsReport
-      });
-    } else {
-      // No biomarkers selected, call the update callback with the filtered tests
-      console.log('=== DEBUG: ApplyFilters - No biomarkers, using raw tests callback ===');
-      updateCallback(filteredTests);
-    }
+    // Always call callback with filter state object to handle all filtering (biomarkers, blood taking methods, etc.)
+    console.log('=== DEBUG: ApplyFilters - Using filter state callback ===');
+    updateCallback({
+      categories: currentFilters.categories,
+      providers: currentFilters.providers,
+      priceRange: currentFilters.priceRange,
+      bloodTakingMethods: currentFilters.bloodTakingMethods,
+      doctorsReport: currentFilters.doctorsReport
+    });
   }
 
   // Handle "All Providers" checkbox
@@ -990,6 +1063,27 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     });
   });
 
+  // Handle "All Blood Methods" checkbox
+  if (bloodMethodAll) {
+    bloodMethodAll.addEventListener('change', (e) => {
+      const isChecked = e.target.checked;
+      bloodMethodCheckboxes.forEach(checkbox => {
+        checkbox.checked = isChecked;
+        checkbox.disabled = isChecked;
+      });
+      applyFilters().catch(console.error);
+    });
+  }
+
+  // Handle individual blood taking method checkboxes
+  bloodMethodCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+      const allChecked = Array.from(bloodMethodCheckboxes).every(cb => cb.checked);
+      bloodMethodAll.checked = allChecked;
+      applyFilters().catch(console.error);
+    });
+  });
+
   // Handle doctor's report checkbox
   if (doctorsReport) {
     doctorsReport.addEventListener('change', () => applyFilters().catch(console.error));
@@ -1016,6 +1110,13 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       categoryCheckboxes.forEach(checkbox => {
         checkbox.checked = false;
         // Don't check individual checkboxes when "All Categories" is selected
+      });
+
+      // Reset blood taking method checkboxes
+      bloodMethodAll.checked = true;
+      bloodMethodCheckboxes.forEach(checkbox => {
+        checkbox.checked = true;
+        checkbox.disabled = true;
       });
 
       // Reset doctor's report checkbox

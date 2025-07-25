@@ -640,21 +640,13 @@ async function initializePageElements(tests) {
   currentTests = sortTests(filteredTests, sortAscending);
   const cards = await cardService.createCards(currentTests);
   testsGrid.innerHTML = cards;
-  setupFilterPanel(tests, async (filterState) => {
+  setupFilterPanel(currentTests, async (filterState) => {
     console.log('=== DEBUG: Filter Panel Callback ===');
     console.log('Filter panel callback called with:', filterState);
-    console.log('Initial tests passed to filter panel:', tests.length);
+    console.log('Initial tests passed to filter panel:', currentTests.length);
     
-    // Handle both filter state objects and filtered test arrays
-    if (Array.isArray(filterState)) {
-      // Legacy case: filterState is an array of filtered tests
-      filteredTests = filterState;
-      sortAscending = true;
-      window.sortAscending = sortAscending;
-      updateSortButtonText(sortAscending);
-      currentTests = sortTests(filteredTests, sortAscending);
-      updateTestGridContent(currentTests);
-    } else {
+    // Handle filter state object (new approach)
+    if (!Array.isArray(filterState)) {
       // New case: filterState is an object with categories, providers, etc.
       const selectedCategories = filterState.categories || [];
       const selectedProviders = filterState.providers || [];
@@ -737,6 +729,29 @@ async function initializePageElements(tests) {
           return hasAllBiomarkers;
         });
         console.log('After biomarker filtering:', allEnrichedTests.length, 'tests remaining');
+      }
+      
+      // Apply blood taking method filtering if methods are selected
+      const selectedBloodMethods = filterState.bloodTakingMethods || [];
+      if (selectedBloodMethods.length > 0) {
+        console.log('=== DEBUG: Blood Taking Method Filtering ===');
+        console.log('Applying blood taking method filter to', allEnrichedTests.length, 'tests');
+        console.log('Looking for methods:', selectedBloodMethods);
+        
+        allEnrichedTests = allEnrichedTests.filter(test => {
+          const testMethods = Array.isArray(test.blood_taking_methods) ? test.blood_taking_methods : [];
+          console.log(`Test "${test.name}" has blood taking methods:`, testMethods);
+          
+          const hasMatchingMethod = testMethods.some(method => 
+            selectedBloodMethods.includes(method)
+          );
+          
+          if (!hasMatchingMethod) {
+            console.log(`Filtering out test "${test.name}" - no matching blood taking methods. Test has:`, testMethods, 'Looking for:', selectedBloodMethods);
+          }
+          return hasMatchingMethod;
+        });
+        console.log('After blood taking method filtering:', allEnrichedTests.length, 'tests remaining');
       } else {
         console.log('No biomarker filter applied');
       }
@@ -757,6 +772,14 @@ async function initializePageElements(tests) {
       console.log('Updated window._allGeneralHealthTests to', enriched.length, 'tests');
       console.log('Test names:', enriched.map(t => t.name));
       
+      updateTestGridContent(currentTests);
+    } else {
+      // Legacy case: filterState is an array of filtered tests
+      filteredTests = filterState;
+      sortAscending = true;
+      window.sortAscending = sortAscending;
+      updateSortButtonText(sortAscending);
+      currentTests = sortTests(filteredTests, sortAscending);
       updateTestGridContent(currentTests);
     }
   });
