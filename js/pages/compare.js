@@ -92,6 +92,11 @@ export class ComparePage {
                 
                 <!-- Biomarkers Section -->
                 <div class="row-title">Biomarkers tested</div>
+                <div class="grid-row">
+                  <div class="grid-cell" id="biomarker-count-1">-</div>
+                  <div class="grid-cell" id="biomarker-count-2">-</div>
+                  <div class="grid-cell" id="biomarker-count-3">-</div>
+                </div>
                 <div class="grid-row biomarkers-section">
                   <div class="grid-cell" id="biomarkers-1">
                     <div class="biomarker-content">Count</div>

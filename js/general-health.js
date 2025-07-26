@@ -993,7 +993,7 @@ async function fetchAndEnrichTests({ category = null, provider = null } = {}) {
       }
     });
     test.grouped_biomarkers = grouped;
-    test.biomarker_count = links.length;
+    test.biomarker_count = test.biomarker_column || links.length;
     test.biomarker_names = biomarkerNames;
     // Attach blood taking methods
     const methodIds = methodLinks.filter(l => l.provider_blood_test_id === test.id).map(l => l.blood_taking_method_id);

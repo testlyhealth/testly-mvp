@@ -367,7 +367,7 @@ async function loadFeaturedBloodTest() {
           results_returned: result.data.results_returned || '2 days',
           doctors_report: result.data.doctors_report ? 'Yes' : 'No',
           trustpilot_score: result.data.trustpilot_score || 4.5,
-          biomarker_count: result.data.biomarker_number || 0,
+          biomarker_count: result.data.biomarker_column || 0,
           grouped_biomarkers: {
             "General Health": result.data.biomarkers ? result.data.biomarkers.split(',').map(b => b.trim()) : []
           }

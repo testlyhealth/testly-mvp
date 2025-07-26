@@ -434,7 +434,24 @@ export class CardService {
   }
 
   static async updateComparisonGrid() {
-    const comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
+    let comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
+    
+    // Refresh biomarker counts from the current test data
+    if (window._allGeneralHealthTests) {
+      comparisonTests = comparisonTests.map(storedTest => {
+        const currentTest = window._allGeneralHealthTests.find(t => t.name === storedTest.name);
+        if (currentTest) {
+          return {
+            ...storedTest,
+            biomarker_count: currentTest.biomarker_count
+          };
+        }
+        return storedTest;
+      });
+      
+      // Update localStorage with refreshed data
+      localStorage.setItem('comparisonTests', JSON.stringify(comparisonTests));
+    }
     
     for (let i = 1; i <= 3; i++) {
       const test = comparisonTests[i - 1];
@@ -444,6 +461,13 @@ export class CardService {
         const testNameCell = document.getElementById(`test-name-${i}`);
         if (testNameCell) {
           testNameCell.textContent = test.name;
+        }
+        
+        // Update biomarker count from database
+        const biomarkerCountCell = document.getElementById(`biomarker-count-${i}`);
+        if (biomarkerCountCell) {
+          console.log(`Setting biomarker count for column ${i}: ${test.biomarker_count || 0} for test ${test.name}`);
+          biomarkerCountCell.textContent = test.biomarker_count || 0;
         }
         
         // Update provider info
@@ -604,11 +628,11 @@ export class CardService {
   static async updateComparisonGrid() {
     let comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
     
-    // Sort tests by price (cheapest first)
+    // Sort tests by number of biomarkers (lowest biomarkers first)
     comparisonTests.sort((a, b) => {
-      const priceA = parseFloat(a.price) || 0;
-      const priceB = parseFloat(b.price) || 0;
-      return priceA - priceB;
+      const biomarkersA = a.biomarker_count || 0;
+      const biomarkersB = b.biomarker_count || 0;
+      return biomarkersA - biomarkersB; // Ascending order (lowest first)
     });
     
     // First, collect all unique biomarker groups from all tests
@@ -619,6 +643,45 @@ export class CardService {
       }
     });
     const sortedGroups = Array.from(allGroups).sort();
+
+    // Create master biomarker lists for each group, showing all biomarkers from all tests
+    const masterBiomarkerLists = {};
+    for (const groupName of sortedGroups) {
+      const allBiomarkers = new Set();
+      
+      // Collect all biomarkers from all tests
+      for (let i = 0; i < comparisonTests.length; i++) {
+        const testBiomarkers = comparisonTests[i]?.grouped_biomarkers?.[groupName] || [];
+        testBiomarkers.forEach(biomarker => allBiomarkers.add(biomarker));
+      }
+      
+      // Sort all biomarkers alphabetically
+      masterBiomarkerLists[groupName] = Array.from(allBiomarkers).sort();
+    }
+
+    // Sort groups by their first appearance across all tests (maintain natural order)
+    const sortedGroupsByLowestBiomarkers = sortedGroups.sort((a, b) => {
+      // Find the first test that has each group
+      let aFirstTestIndex = -1;
+      let bFirstTestIndex = -1;
+      
+      for (let i = 0; i < comparisonTests.length; i++) {
+        if (aFirstTestIndex === -1 && comparisonTests[i]?.grouped_biomarkers?.[a]?.length > 0) {
+          aFirstTestIndex = i;
+        }
+        if (bFirstTestIndex === -1 && comparisonTests[i]?.grouped_biomarkers?.[b]?.length > 0) {
+          bFirstTestIndex = i;
+        }
+      }
+      
+      // If both groups appear in the same test, sort alphabetically
+      if (aFirstTestIndex === bFirstTestIndex) {
+        return a.localeCompare(b);
+      }
+      
+      // Sort by first appearance (groups that appear in earlier tests come first)
+      return aFirstTestIndex - bFirstTestIndex;
+    });
     
     for (let i = 1; i <= 3; i++) {
       const test = comparisonTests[i - 1];
@@ -628,6 +691,12 @@ export class CardService {
         const testNameCell = document.getElementById(`test-name-${i}`);
         if (testNameCell) {
           testNameCell.textContent = test.name;
+        }
+        
+        // Update biomarker count
+        const biomarkerCountCell = document.getElementById(`biomarker-count-${i}`);
+        if (biomarkerCountCell) {
+          biomarkerCountCell.textContent = test.biomarker_count || 0;
         }
         
         // Update provider info
@@ -730,7 +799,7 @@ export class CardService {
         if (biomarkersCell) {
           const biomarkerContent = biomarkersCell.querySelector('.biomarker-content');
           if (biomarkerContent) {
-            biomarkerContent.innerHTML = await CardService.generateAlignedBiomarkerHTML(test, sortedGroups);
+            biomarkerContent.innerHTML = await CardService.generateAlignedBiomarkerHTML(test, sortedGroupsByLowestBiomarkers, masterBiomarkerLists);
           }
         }
       } else {
@@ -740,7 +809,7 @@ export class CardService {
     }
   }
 
-  static async generateAlignedBiomarkerHTML(test, allGroups) {
+  static async generateAlignedBiomarkerHTML(test, allGroups, masterBiomarkerLists) {
     if (!test || !test.grouped_biomarkers) {
       return '<div class="no-biomarkers">No biomarkers available</div>';
     }
@@ -749,31 +818,35 @@ export class CardService {
 
     for (const groupName of allGroups) {
       const testBiomarkers = test.grouped_biomarkers[groupName] || [];
+      const masterBiomarkers = masterBiomarkerLists[groupName] || [];
       
       html += `<div class="biomarker-grouping">
         <div class="grouping-header">${groupName}</div>
         <div class="grouping-biomarkers">`;
       
-      if (testBiomarkers.length > 0) {
-        // Sort biomarkers alphabetically within each group
-        const sortedBiomarkers = testBiomarkers.sort();
-        
-        for (const biomarker of sortedBiomarkers) {
-          html += `<div class="biomarker-item">
-            <span class="biomarker-name">${biomarker}</span>
-            <span class="biomarker-status">✓</span>
-          </div>`;
+      if (masterBiomarkers.length > 0) {
+        // Use the master list order (first test biomarkers first, then others)
+        for (const biomarker of masterBiomarkers) {
+          const hasBiomarker = testBiomarkers.some(b => 
+            b.toLowerCase() === biomarker.toLowerCase()
+          );
+          
+          if (hasBiomarker) {
+            html += `<div class="biomarker-item">
+              <span class="biomarker-name">${biomarker}</span>
+              <span class="biomarker-status">✓</span>
+            </div>`;
+          } else {
+            html += `<div class="biomarker-item empty">
+              <span class="biomarker-name">-</span>
+            </div>`;
+          }
         }
       } else {
-        // Show individual dashes for each missing biomarker position
-        // We need to get the total count of biomarkers in this group from all tests
-        const totalBiomarkersInGroup = await CardService.getTotalBiomarkersInGroup(groupName);
-        
-        for (let i = 0; i < totalBiomarkersInGroup; i++) {
-          html += `<div class="biomarker-item empty">
-            <span class="biomarker-name">-</span>
-          </div>`;
-        }
+        // If no biomarkers in this group across all tests, show one dash
+        html += `<div class="biomarker-item empty">
+          <span class="biomarker-name">-</span>
+        </div>`;
       }
       
       html += `</div></div>`;
@@ -782,23 +855,15 @@ export class CardService {
     return html || '<div class="no-biomarkers">No biomarkers available</div>';
   }
 
-  static async getTotalBiomarkersInGroup(groupName) {
-    // Get all comparison tests to count total biomarkers in this group
-    const comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
-    const allBiomarkersInGroup = new Set();
-    
-    comparisonTests.forEach(test => {
-      if (test && test.grouped_biomarkers && test.grouped_biomarkers[groupName]) {
-        test.grouped_biomarkers[groupName].forEach(biomarker => {
-          allBiomarkersInGroup.add(biomarker);
-        });
-      }
-    });
-    
-    return allBiomarkersInGroup.size;
-  }
+
 
   static resetGridCell(index) {
+    // Reset biomarker count
+    const biomarkerCountCell = document.getElementById(`biomarker-count-${index}`);
+    if (biomarkerCountCell) {
+      biomarkerCountCell.textContent = '-';
+    }
+    
     // Reset test name
     const testNameCell = document.getElementById(`test-name-${index}`);
     if (testNameCell) {
