@@ -148,6 +148,8 @@ export default class Router {
         await this.render(content);
         // Ensure the comparison grid is updated after rendering
         if (window.updateComparisonGrid) await window.updateComparisonGrid();
+        // Scroll to top of the page
+        window.scrollTo(0, 0);
       } else if (hash === '/category-select') {
         console.log('Handling category select route');
         const content = await displayCategorySelectPage();

@@ -240,13 +240,32 @@ export class CardService {
 
   setupCardEventHandlers(tests) {
     console.log('Setting up card event handlers...');
+    console.log('Tests passed to setupCardEventHandlers:', tests.length);
+    
+    // Log what elements we find
+    const biomarkerGroups = $all('.biomarker-group');
+    const toggleAllButtons = $all('.toggle-all-biomarkers');
+    const groupHeaders = $all('.biomarker-group .group-header');
+    
+    console.log('Found elements:', {
+      biomarkerGroups: biomarkerGroups.length,
+      toggleAllButtons: toggleAllButtons.length,
+      groupHeaders: groupHeaders.length
+    });
     
     // Remove any existing event listeners first
-    $all('.biomarker-group').forEach(group => {
+    biomarkerGroups.forEach((group, index) => {
       const toggleButton = group.querySelector('.toggle-biomarkers');
+      console.log(`Group ${index} cleanup:`, {
+        group: group,
+        hasToggleButton: !!toggleButton,
+        toggleButtonText: toggleButton?.textContent
+      });
+      
       if (toggleButton) {
         const newButton = toggleButton.cloneNode(true);
         toggleButton.parentNode.replaceChild(newButton, toggleButton);
+        console.log(`Group ${index} - replaced toggle button`);
       }
     });
     
@@ -314,6 +333,14 @@ export class CardService {
       const toggleButton = group.querySelector('.toggle-biomarkers');
       const biomarkerItems = group.querySelector('.biomarker-items');
       
+      console.log('Setting up biomarker group toggle:', {
+        group: group,
+        hasToggleButton: !!toggleButton,
+        hasBiomarkerItems: !!biomarkerItems,
+        toggleButtonText: toggleButton?.textContent,
+        biomarkerItemsClasses: biomarkerItems?.className
+      });
+      
       if (!toggleButton || !biomarkerItems) {
         console.error('Missing elements in group:', {
           hasToggleButton: !!toggleButton,
@@ -323,33 +350,92 @@ export class CardService {
       }
       
       toggleButton.addEventListener('click', (e) => {
+        console.log('Biomarker toggle button clicked:', {
+          button: e.target,
+          buttonText: e.target.textContent,
+          isExpanded: toggleButton.getAttribute('aria-expanded') === 'true',
+          biomarkerItemsClasses: biomarkerItems.className
+        });
+        
         e.preventDefault();
         e.stopPropagation();
         const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
         biomarkerItems.classList.toggle('hidden');
         toggleButton.setAttribute('aria-expanded', !isExpanded);
+        
+        console.log('After toggle:', {
+          isExpanded: toggleButton.getAttribute('aria-expanded'),
+          biomarkerItemsClasses: biomarkerItems.className,
+          biomarkerItemsHidden: biomarkerItems.classList.contains('hidden')
+        });
+        
         // Do NOT swap the arrow character; let CSS handle rotation
       });
     });
 
     // Add event listeners to group headers so clicking the header also toggles the group and arrow
     $all('.biomarker-group .group-header').forEach(header => {
+      console.log('Setting up group header click handler:', {
+        header: header,
+        headerText: header.textContent
+      });
+      
       header.addEventListener('click', (e) => {
+        console.log('Group header clicked:', {
+          header: e.target,
+          headerText: e.target.textContent,
+          clickedElement: e.target,
+          isToggleButton: e.target.closest('.toggle-biomarkers')
+        });
+        
         // Prevent double toggling if the button itself was clicked
-        if (e.target.closest('.toggle-biomarkers')) return;
+        if (e.target.closest('.toggle-biomarkers')) {
+          console.log('Skipping header click - toggle button was clicked');
+          return;
+        }
+        
         const group = header.closest('.biomarker-group');
         const biomarkerItems = group.querySelector('.biomarker-items');
         const toggleButton = group.querySelector('.toggle-biomarkers');
         const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
+        
+        console.log('Header click - before toggle:', {
+          group: group,
+          hasBiomarkerItems: !!biomarkerItems,
+          hasToggleButton: !!toggleButton,
+          isExpanded: isExpanded,
+          biomarkerItemsClasses: biomarkerItems?.className
+        });
+        
         biomarkerItems.classList.toggle('hidden');
         toggleButton.setAttribute('aria-expanded', !isExpanded);
+        
+        console.log('Header click - after toggle:', {
+          isExpanded: toggleButton.getAttribute('aria-expanded'),
+          biomarkerItemsClasses: biomarkerItems.className,
+          biomarkerItemsHidden: biomarkerItems.classList.contains('hidden'),
+          biomarkerItemsElement: biomarkerItems,
+          biomarkerItemsHTML: biomarkerItems.outerHTML.substring(0, 300) + '...'
+        });
+        
         // Do NOT swap the arrow character; let CSS handle rotation
       });
     });
 
     // Add event listeners to the "Show all/Hide all" buttons
     $all('.toggle-all-biomarkers').forEach(button => {
+      console.log('Setting up toggle-all-biomarkers button:', {
+        button: button,
+        buttonText: button.textContent
+      });
+      
       button.addEventListener('click', (e) => {
+        console.log('Toggle all biomarkers button clicked:', {
+          button: e.target,
+          buttonText: e.target.textContent,
+          isExpanded: button.getAttribute('aria-expanded') === 'true'
+        });
+        
         e.preventDefault();
         e.stopPropagation();
         
@@ -357,23 +443,64 @@ export class CardService {
         const biomarkersList = biomarkersSection.querySelector('.biomarkers-list');
         const isExpanded = button.getAttribute('aria-expanded') === 'true';
         
+        console.log('Before toggle all:', {
+          biomarkersSection: biomarkersSection,
+          biomarkersList: biomarkersList,
+          biomarkersListClasses: biomarkersList?.className,
+          isExpanded: isExpanded
+        });
+        
         // Toggle the biomarkers list visibility
         biomarkersList.classList.toggle('hidden');
         
+        console.log('After biomarkers list toggle:', {
+          biomarkersListClasses: biomarkersList.className,
+          biomarkersListHidden: biomarkersList.classList.contains('hidden')
+        });
+        
         // Toggle all biomarker items and their toggle buttons
-        biomarkersSection.querySelectorAll('.biomarker-group').forEach(group => {
+        const groups = biomarkersSection.querySelectorAll('.biomarker-group');
+        console.log('Found biomarker groups:', groups.length);
+        
+        groups.forEach((group, index) => {
           const items = group.querySelector('.biomarker-items');
           const toggle = group.querySelector('.toggle-biomarkers');
           
+                  console.log(`Group ${index}:`, {
+          group: group,
+          hasItems: !!items,
+          hasToggle: !!toggle,
+          itemsClasses: items?.className,
+          toggleText: toggle?.textContent,
+          itemsElement: items,
+          itemsHTML: items?.outerHTML?.substring(0, 200) + '...'
+        });
+          
           if (items && toggle) {
-            items.classList.toggle('hidden', isExpanded);
-            toggle.setAttribute('aria-expanded', !isExpanded);
+            // If the biomarkers list is being shown, show all individual items
+            // If the biomarkers list is being hidden, hide all individual items
+            const shouldShowItems = !biomarkersList.classList.contains('hidden');
+            items.classList.toggle('hidden', !shouldShowItems);
+            toggle.setAttribute('aria-expanded', shouldShowItems);
+            
+            console.log(`Group ${index} after toggle:`, {
+              itemsClasses: items.className,
+              itemsHidden: items.classList.contains('hidden'),
+              toggleExpanded: toggle.getAttribute('aria-expanded'),
+              shouldShowItems: shouldShowItems
+            });
             // Do NOT swap the arrow character; let CSS handle rotation
           }
         });
         
         // Update the "Show all" button
-        button.setAttribute('aria-expanded', !isExpanded);
+        const newExpandedState = !biomarkersList.classList.contains('hidden');
+        button.setAttribute('aria-expanded', newExpandedState);
+        console.log('Toggle all button updated:', {
+          newExpanded: button.getAttribute('aria-expanded'),
+          biomarkersListHidden: biomarkersList.classList.contains('hidden'),
+          newExpandedState: newExpandedState
+        });
       });
     });
 
@@ -434,7 +561,9 @@ export class CardService {
   }
 
   static async updateComparisonGrid() {
+    console.log('=== FIRST updateComparisonGrid method called ===');
     let comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
+    console.log('Comparison tests from localStorage:', comparisonTests);
     
     // Refresh biomarker counts from the current test data
     if (window._allGeneralHealthTests) {
@@ -573,6 +702,29 @@ export class CardService {
             biomarkerContent.innerHTML = await CardService.generateBiomarkerHTML(test);
           }
         }
+        
+        // Update book test button
+        const bookTestCell = document.getElementById(`book-test-${i}`);
+        console.log(`Looking for book-test-${i} cell:`, bookTestCell);
+        if (bookTestCell) {
+          const bookTestBtn = bookTestCell.querySelector('.book-test-btn');
+          console.log(`Found book test button for column ${i}:`, bookTestBtn);
+          if (bookTestBtn) {
+            console.log(`Setting up click handler for test: ${test.name}, URL: ${test.url}`);
+            bookTestBtn.onclick = () => {
+              console.log(`Book test button clicked for test: ${test.name}, URL: ${test.url}`);
+              if (test.url) {
+                window.open(test.url, '_blank');
+              } else {
+                console.warn(`No URL found for test: ${test.name}`);
+              }
+            };
+          } else {
+            console.error(`No book test button found in cell ${i}`);
+          }
+        } else {
+          console.error(`No book-test-${i} cell found`);
+        }
       } else {
         // Reset to placeholder
         CardService.resetGridCell(i);
@@ -626,7 +778,9 @@ export class CardService {
   }
 
   static async updateComparisonGrid() {
+    console.log('=== SECOND updateComparisonGrid method called ===');
     let comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
+    console.log('Comparison tests from localStorage (second method):', comparisonTests);
     
     // Sort tests by number of biomarkers (lowest biomarkers first)
     comparisonTests.sort((a, b) => {
@@ -802,6 +956,29 @@ export class CardService {
             biomarkerContent.innerHTML = await CardService.generateAlignedBiomarkerHTML(test, sortedGroupsByLowestBiomarkers, masterBiomarkerLists);
           }
         }
+        
+        // Update book test button
+        const bookTestCell = document.getElementById(`book-test-${i}`);
+        console.log(`Looking for book-test-${i} cell:`, bookTestCell);
+        if (bookTestCell) {
+          const bookTestBtn = bookTestCell.querySelector('.book-test-btn');
+          console.log(`Found book test button for column ${i}:`, bookTestBtn);
+          if (bookTestBtn) {
+            console.log(`Setting up click handler for test: ${test.name}, URL: ${test.url}`);
+            bookTestBtn.onclick = () => {
+              console.log(`Book test button clicked for test: ${test.name}, URL: ${test.url}`);
+              if (test.url) {
+                window.open(test.url, '_blank');
+              } else {
+                console.warn(`No URL found for test: ${test.name}`);
+              }
+            };
+          } else {
+            console.error(`No book test button found in cell ${i}`);
+          }
+        } else {
+          console.error(`No book-test-${i} cell found`);
+        }
       } else {
         // Reset to placeholder
         CardService.resetGridCell(i);
@@ -833,12 +1010,13 @@ export class CardService {
           
           if (hasBiomarker) {
             html += `<div class="biomarker-item">
-              <span class="biomarker-name">${biomarker}</span>
               <span class="biomarker-status">✓</span>
+              <span class="biomarker-name">${biomarker}</span>
             </div>`;
           } else {
             html += `<div class="biomarker-item empty">
-              <span class="biomarker-name">-</span>
+              <span class="biomarker-status dash">✗</span>
+              <span class="biomarker-name">${biomarker}</span>
             </div>`;
           }
         }
@@ -930,5 +1108,11 @@ export class CardService {
 
 // Make updateComparisonGrid available globally
 window.updateComparisonGrid = async () => {
-  await CardService.updateComparisonGrid();
+  console.log('=== Global updateComparisonGrid called ===');
+  try {
+    await CardService.updateComparisonGrid();
+    console.log('=== updateComparisonGrid completed ===');
+  } catch (error) {
+    console.error('Error in updateComparisonGrid:', error);
+  }
 }; 

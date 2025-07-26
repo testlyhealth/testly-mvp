@@ -108,6 +108,19 @@ export class ComparePage {
                     <div class="biomarker-content">Count</div>
                   </div>
                 </div>
+                
+                <!-- Book Test Buttons Row -->
+                <div class="grid-row">
+                  <div class="grid-cell" id="book-test-1">
+                    <button class="book-test-btn">Book test</button>
+                  </div>
+                  <div class="grid-cell" id="book-test-2">
+                    <button class="book-test-btn">Book test</button>
+                  </div>
+                  <div class="grid-cell" id="book-test-3">
+                    <button class="book-test-btn">Book test</button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
