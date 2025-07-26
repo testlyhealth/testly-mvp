@@ -294,6 +294,18 @@ export async function createFilterPanel(tests) {
         </div>
       </div>
 
+      <!-- Compare button section -->
+      <div class="filter-section">
+        <div class="filter-section-header">
+          <h4>Compare Tests</h4>
+        </div>
+        <div class="filter-section-content">
+          <button class="compare-btn">
+            Compare
+          </button>
+        </div>
+      </div>
+
 
     </div>
   `;
@@ -1173,6 +1185,14 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   
   // Setup biomarker search functionality
   setupFilterPanelBiomarkerSearch();
+
+  // Add click handler to Compare button
+  const compareBtn = filterPanel.querySelector('.compare-btn');
+  if (compareBtn) {
+    compareBtn.addEventListener('click', () => {
+      window.location.hash = '#/compare';
+    });
+  }
 }
 
 // Setup biomarker search functionality for filter panel

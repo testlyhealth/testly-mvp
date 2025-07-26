@@ -723,7 +723,8 @@ body {
   
   /* Blood Test Cards */
   .blood-test-card {
-    display: block;
+    display: flex;
+    flex-direction: column;
     width: 100%;
     background: #fff;
     border-radius: 25px;
@@ -733,6 +734,9 @@ body {
     margin-bottom: 1rem;
     border: 2px solid transparent;
     cursor: pointer;
+    position: relative;
+    min-height: 400px;
+    padding-bottom: 6rem;
   }
 
   .blood-test-card.selected {
@@ -886,8 +890,48 @@ body {
   .biomarkers-list {
     margin-top: 1rem;
     transition: all 0.3s ease;
-    max-height: 1000px;
-    overflow: hidden;
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .biomarkers-list::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .biomarkers-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  .biomarkers-list::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+
+  .biomarkers-list::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+
+  .compare-btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 0.9rem;
+  }
+
+  .compare-btn:hover {
+    background-color: #1d4ed8;
+  }
+
+  .compare-btn:active {
+    background-color: #1e40af;
   }
   
   .biomarkers-list.hidden {
@@ -2952,8 +2996,80 @@ body {
   .biomarkers-list {
     margin-top: 1rem;
     transition: all 0.3s ease;
-    max-height: 1000px;
-    overflow: hidden;
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .biomarkers-list::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .biomarkers-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  .biomarkers-list::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+
+  .biomarkers-list::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+
+  .compare-btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+  }
+
+  .compare-btn:hover {
+    background-color: #1d4ed8;
+  }
+
+  .compare-btn:active {
+    background-color: #1e40af;
+  }
+
+  .general-health-hero {
+    background: transparent;
+    color: white;
+    text-align: center;
+    padding: 2rem 2rem;
+    margin-top: 0;
+  }
+
+  .general-health-hero .hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .general-health-hero .hero-title {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: black;
+  }
+
+  .general-health-hero .hero-subtitle {
+    font-size: 1.1rem;
+    color: black;
+    line-height: 1.4;
+  }
+
+  .gh-em {
+    color: #2d3748;
+    font-weight: 600;
   }
 
   .biomarkers-list.hidden {
@@ -3437,7 +3553,7 @@ body {
   }
 
   .filter-panel-content {
-    padding: 1.5rem 1.5rem 1.5rem 0;
+    padding: 1.5rem 1rem 1.5rem 0;
     width: 100%;
     box-sizing: border-box;
     max-width: 220px;
@@ -6226,11 +6342,14 @@ body {
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    margin-top: 1rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.10);
     display: inline-block;
     transition: background 0.2s, color 0.2s;
     text-decoration: none;
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 10;
   }
   .book-test-btn:hover {
     background: var(--accent-hover, #1741a6);
@@ -8212,3 +8331,59 @@ body {
       font-size: 1.1rem;
     }
   }
+
+  .back-button-container {
+    position: fixed;
+    left: 2rem;
+    bottom: 2rem;
+    z-index: 100;
+  }
+
+  .back-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f3f4f6;
+    color: #1e293b;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .back-button:hover {
+    background: #e5e7eb;
+    color: #2563eb;
+  }
+
+  .add-to-compare-container {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  display: flex;
+  align-items: center;
+  max-width: calc(100% - 12rem);
+  width: fit-content;
+  z-index: 10;
+}
+
+  .add-to-compare-checkbox {
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: #2563eb;
+    cursor: pointer;
+  }
+
+  .add-to-compare-label {
+  margin-left: 0.5rem;
+  font-size: 0.95rem;
+  color: #222;
+  cursor: pointer;
+  user-select: none;
+  white-space: pre-line;
+  line-height: 1.2;
+}

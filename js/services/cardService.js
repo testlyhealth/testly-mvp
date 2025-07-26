@@ -142,7 +142,7 @@ export class CardService {
           </div>
         </div>
         ${showBiomarkers ? `
-          <div style="background-color: #E8F4FD; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem;">
+          <div style="background-color: #E8F4FD; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; margin-bottom: 4rem;">
             <div class="biomarkers-section">
               <div class="biomarkers-header" style="text-align: center;">
                 <div class="biomarker-info" style="text-align: center; display: flex; justify-content: center;">
@@ -168,14 +168,14 @@ export class CardService {
               </div>
             </div>
           </div>
-        ` : ''}
-        <div class="test-details">
-          ${showDetails ? `
-            <div class="card-actions">
-              <a class="book-test-btn" href="${test.url || '#'}" target="_blank" rel="noopener noreferrer" data-test-id="${test.name}" style="background-color: #1E88E5; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; text-decoration: none; display: inline-block; font-weight: 600; text-align: center; transition: background-color 0.2s;">Book test</a>
-            </div>
-          ` : ''}
+        ` : '<div style="margin-bottom: 4rem;"></div>'}
+        <div class="add-to-compare-container">
+          <input type="checkbox" class="add-to-compare-checkbox" id="add-to-compare-${encodeURIComponent(test.name)}" />
+          <label for="add-to-compare-${encodeURIComponent(test.name)}" class="add-to-compare-label" style="margin-left: 0.5rem; font-size: 0.95rem; color: #222; cursor: pointer;">Add to\ncompare</label>
         </div>
+        ${showDetails ? `
+          <a class="book-test-btn" href="${test.url || '#'}" target="_blank" rel="noopener noreferrer" data-test-id="${test.name}" style="position: absolute; bottom: 1rem; right: 1rem; background-color: #1E88E5; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; text-decoration: none; display: inline-block; font-weight: 600; text-align: center; transition: background-color 0.2s; z-index: 10;">Book test</a>
+        ` : ''}
       </div>
     `;
   }
