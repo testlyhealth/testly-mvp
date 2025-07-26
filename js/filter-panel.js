@@ -296,8 +296,9 @@ export async function createFilterPanel(tests) {
 
       <!-- Compare button section -->
       <div class="filter-section">
-        <div class="filter-section-header">
-          <h4>Compare Tests</h4>
+        <div class="filter-section-header" style="display: flex; align-items: center; gap: 0.5rem;">
+          <h4 style="margin: 0;">Compare Tests</h4>
+          <button class="clear-compare-btn" style="border: 1px solid #bbb; background: #fff; color: #444; font-size: 0.85rem; padding: 0.15em 0.7em; border-radius: 0.4em; margin-left: 0.5em; cursor: pointer;">Clear</button>
         </div>
         <div class="filter-section-content">
           <button class="compare-btn">
@@ -1192,6 +1193,62 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     compareBtn.addEventListener('click', () => {
       window.location.hash = '#/compare';
     });
+  }
+
+  // Clear Compare button logic
+  const clearCompareBtn = filterPanel.querySelector('.clear-compare-btn');
+  if (clearCompareBtn) {
+    clearCompareBtn.addEventListener('click', () => {
+      localStorage.removeItem('comparisonTests');
+      window.dispatchEvent(new Event('comparisonTestsUpdated'));
+      // Also uncheck all add-to-compare checkboxes on the page
+      document.querySelectorAll('.add-to-compare-checkbox').forEach(cb => { cb.checked = false; });
+      // Optionally, update the comparison grid if on compare page
+      if (window.location.hash === '#/compare' && window.updateComparisonGrid) {
+        window.updateComparisonGrid();
+      }
+    });
+  }
+
+  // --- Dynamic Compare Button Counter ---
+  function updateCompareBtnCount() {
+    const compareBtn = filterPanel.querySelector('.compare-btn');
+    if (!compareBtn) return;
+    let count = 0;
+    try {
+      const comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
+      count = Array.isArray(comparisonTests) ? comparisonTests.length : 0;
+    } catch (e) { count = 0; }
+    if (count > 0) {
+      compareBtn.textContent = `Compare (${count})`;
+    } else {
+      compareBtn.textContent = 'Compare';
+    }
+  }
+  updateCompareBtnCount();
+
+  // Listen for changes to comparisonTests in localStorage
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'comparisonTests') updateCompareBtnCount();
+  });
+
+  // Listen for custom event in case comparison is updated in this tab
+  window.addEventListener('comparisonTestsUpdated', updateCompareBtnCount);
+
+  // Patch CardService.addTestToComparison and removeTestFromComparison to dispatch event
+  if (window.CardService) {
+    const origAdd = window.CardService.addTestToComparison;
+    window.CardService.addTestToComparison = function(test) {
+      const result = origAdd.call(this, test);
+      window.dispatchEvent(new Event('comparisonTestsUpdated'));
+      return result;
+    };
+    const origRemove = window.CardService.removeTestFromComparison;
+    window.CardService.removeTestFromComparison = function(test) {
+      const result = origRemove.call(this, test);
+      window.dispatchEvent(new Event('comparisonTestsUpdated'));
+      return result;
+    };
   }
 }
 

@@ -13,7 +13,7 @@ import { displayPrivacyPage } from './pages/privacy.js';
 import { displayCookiesPage } from './pages/cookies.js';
 import { displayDisclaimerPage } from './pages/disclaimer.js';
 import { displayAffiliatePage } from './pages/affiliate.js';
-import { displayComparePage } from './pages/compare.js';
+import { ComparePage } from './pages/compare.js';
 import { displayCategorySelectPage } from './pages/category-select.js';
 import { displayBloodTestCategoriesPage } from './pages/blood-test-categories.js';
 import { displayBloodTestSearchOptionsPage } from './pages/blood-test-search-options.js';
@@ -144,8 +144,10 @@ export default class Router {
         await this.render(content);
       } else if (hash === '/compare') {
         console.log('Handling compare route');
-        const content = await displayComparePage();
+        const content = await ComparePage.render();
         await this.render(content);
+        // Ensure the comparison grid is updated after rendering
+        if (window.updateComparisonGrid) await window.updateComparisonGrid();
       } else if (hash === '/category-select') {
         console.log('Handling category select route');
         const content = await displayCategorySelectPage();

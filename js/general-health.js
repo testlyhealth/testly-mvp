@@ -254,6 +254,9 @@ async function updateTestGridContent(tests) {
     testsGrid.innerHTML = newContent;
     currentTests = enriched;
     
+    // Setup event handlers for the cards
+    cardService.setupCardEventHandlers(cardsWithSelection);
+    
     // Update filter tags with results count and sort button
     const filterTagsContainer = document.querySelector('.filter-tags');
     // REMOVE the following block that sets filterTagsContainer.innerHTML directly

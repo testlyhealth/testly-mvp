@@ -67,7 +67,7 @@ async function updateTestsGrid(tests) {
   grid.innerHTML = cards;
 
   // Setup event handlers using the CardService
-  cardService.setupCardEventHandlers(tests);
+  cardService.setupCardEventHandlers(cardsWithSelection);
   
   // Add card selection event listeners
   $all('.blood-test-card').forEach(card => {

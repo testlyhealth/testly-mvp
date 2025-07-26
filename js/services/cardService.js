@@ -263,6 +263,52 @@ export class CardService {
       });
     });
 
+    // Add event listeners to "Add to compare" checkboxes
+    const checkboxes = $all('.add-to-compare-checkbox');
+    console.log('Found checkboxes:', checkboxes.length);
+    
+    // Get current comparison tests from localStorage
+    let comparisonTests = [];
+    try {
+      comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
+    } catch (e) { comparisonTests = []; }
+
+    checkboxes.forEach(checkbox => {
+      // Set checked state if this test is in comparisonTests
+      const testId = checkbox.id.replace('add-to-compare-', '');
+      const decodedTestName = decodeURIComponent(testId);
+      if (comparisonTests.find(t => t.name === decodedTestName)) {
+        checkbox.checked = true;
+      } else {
+        checkbox.checked = false;
+      }
+      // Attach event listener
+      checkbox.addEventListener('change', (e) => {
+        const testId = e.target.id.replace('add-to-compare-', '');
+        const decodedTestName = decodeURIComponent(testId);
+        const test = tests.find(t => t.name === decodedTestName);
+        
+        console.log('Checkbox changed:', {
+          testId,
+          decodedTestName,
+          foundTest: test,
+          checked: e.target.checked
+        });
+        
+        if (test) {
+          if (e.target.checked) {
+            // Add to comparison
+            CardService.addTestToComparison(test);
+          } else {
+            // Remove from comparison
+            CardService.removeTestFromComparison(test);
+          }
+        } else {
+          console.error('Test not found for:', decodedTestName);
+        }
+      });
+    });
+
     // Add event listeners to individual group toggle buttons
     $all('.biomarker-group').forEach(group => {
       const toggleButton = group.querySelector('.toggle-biomarkers');
@@ -343,4 +389,481 @@ export class CardService {
       });
     });
   }
-} 
+
+  // Static comparison methods
+  static async addTestToComparison(test) {
+    console.log('addTestToComparison called with:', test);
+    let comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
+    
+    // Check if test is already in comparison
+    if (!comparisonTests.find(t => t.name === test.name)) {
+      comparisonTests.push(test);
+      
+      // Keep only the first 3 tests
+      if (comparisonTests.length > 3) {
+        comparisonTests = comparisonTests.slice(-3);
+      }
+      
+      localStorage.setItem('comparisonTests', JSON.stringify(comparisonTests));
+      console.log('Added test to comparison:', test.name);
+      console.log('Current comparison tests:', comparisonTests);
+      
+      // Update comparison page if we're on it
+      if (window.location.hash === '#/compare') {
+        await CardService.updateComparisonGrid();
+      }
+      // Dispatch event for UI update
+      window.dispatchEvent(new Event('comparisonTestsUpdated'));
+    } else {
+      console.log('Test already in comparison:', test.name);
+    }
+  }
+
+  static async removeTestFromComparison(test) {
+    let comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
+    comparisonTests = comparisonTests.filter(t => t.name !== test.name);
+    localStorage.setItem('comparisonTests', JSON.stringify(comparisonTests));
+    console.log('Removed test from comparison:', test.name);
+    
+    // Update comparison page if we're on it
+    if (window.location.hash === '#/compare') {
+      await CardService.updateComparisonGrid();
+    }
+    // Dispatch event for UI update
+    window.dispatchEvent(new Event('comparisonTestsUpdated'));
+  }
+
+  static async updateComparisonGrid() {
+    const comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
+    
+    for (let i = 1; i <= 3; i++) {
+      const test = comparisonTests[i - 1];
+      
+      if (test) {
+        // Update test name
+        const testNameCell = document.getElementById(`test-name-${i}`);
+        if (testNameCell) {
+          testNameCell.textContent = test.name;
+        }
+        
+        // Update provider info
+        const providerCell = document.getElementById(`provider-info-${i}`);
+        if (providerCell) {
+          const providerName = (test.provider?.name || test.provider || '').trim();
+          let providerLogo = 'medichecks.png'; // Default logo
+          if (providerName) {
+            const normalized = providerName.toLowerCase().replace(/ |-/g, '');
+            providerLogo = `${normalized}.png`;
+          }
+          
+          const trustpilotData = (() => {
+            const score = Number(test.trustpilot_score);
+            if (isNaN(score)) return { stars: 'Not available', rating: 'N/A' };
+            const fullStars = Math.floor(score);
+            const halfStar = score - fullStars >= 0.5 ? 1 : 0;
+            const emptyStars = 5 - fullStars - halfStar;
+            let stars = '';
+            for (let j = 0; j < fullStars; j++) stars += '★';
+            if (halfStar) stars += '⯨';
+            for (let j = 0; j < emptyStars; j++) stars += '☆';
+            return { stars: stars, rating: score.toFixed(1) };
+          })();
+          
+          providerCell.innerHTML = `
+            <div class="provider-info">
+              <div class="provider-header">
+                <img src="images/logos/${providerLogo}" alt="${providerName} logo" class="provider-logo">
+                <div class="provider-name">${providerName}</div>
+              </div>
+              <div class="trustpilot-row">
+                <span class="trustpilot-label">Trustpilot score:</span>
+                <span class="trustpilot-stars">${trustpilotData.stars}</span>
+                <span class="trustpilot-rating">(${trustpilotData.rating})</span>
+              </div>
+            </div>
+          `;
+        }
+        
+        // Update price
+        const priceCell = document.getElementById(`price-${i}`);
+        if (priceCell) {
+          priceCell.textContent = `£${test.price}`;
+        }
+        
+        // Update description
+        const descriptionCell = document.getElementById(`description-${i}`);
+        if (descriptionCell) {
+          descriptionCell.textContent = `"${test.description}"`;
+        }
+        
+        // Update practical details
+        const practicalCell = document.getElementById(`practical-${i}`);
+        if (practicalCell) {
+          const resultsText = (() => {
+            if (test.results_returned_time_days) {
+              return test.results_returned_time_days + ' days';
+            } else if (test.results_returned_time_min && test.results_returned_time_max) {
+              return test.results_returned_time_min + ' - ' + test.results_returned_time_max + ' days';
+            } else {
+              return 'N/A days';
+            }
+          })();
+          
+          practicalCell.innerHTML = `
+            <div class="practical-details">
+              <div class="detail-item">Results returned in ${resultsText}</div>
+              <div class="detail-item">Doctors report: ${test.doctors_report ? '✅' : '❌'}</div>
+            </div>
+          `;
+        }
+        
+        // Update blood method
+        const bloodMethodCell = document.getElementById(`blood-method-${i}`);
+        if (bloodMethodCell) {
+          const bloodMethod = Array.isArray(test.blood_taking_methods) && test.blood_taking_methods.length > 0
+            ? test.blood_taking_methods.map(method => {
+                const emojiMap = {
+                  'Home test': '🏠',
+                  'Clinic visit': '🏥',
+                  'Phlebotomist to home': '👩🏼‍⚕️',
+                  'Self arrange': '🙋🏼'
+                };
+                
+                const displayTextMap = {
+                  'Home test': 'Home test/ finger prick',
+                  'Clinic visit': 'Clinic visit full venous test',
+                  'Phlebotomist to home': 'Phlebotomist to home',
+                  'Self arrange': 'Self arrange'
+                };
+                return `${emojiMap[method] || '❓'} ${displayTextMap[method] || method}`;
+              }).join('<br>')
+            : 'Not specified';
+          bloodMethodCell.innerHTML = bloodMethod;
+        }
+        
+        // Update biomarkers
+        const biomarkersCell = document.getElementById(`biomarkers-${i}`);
+        if (biomarkersCell) {
+          const biomarkerContent = biomarkersCell.querySelector('.biomarker-content');
+          if (biomarkerContent) {
+            biomarkerContent.innerHTML = await CardService.generateBiomarkerHTML(test);
+          }
+        }
+      } else {
+        // Reset to placeholder
+        CardService.resetGridCell(i);
+      }
+    }
+  }
+
+  static async generateBiomarkerHTML(test) {
+    if (!test || !test.grouped_biomarkers) {
+      return '<div class="no-biomarkers">No biomarkers available</div>';
+    }
+
+    let html = '';
+
+    // Get all unique biomarker names from all tests to create a complete list
+    const allBiomarkers = new Set();
+    const allGroups = new Set();
+    
+    // Collect all biomarkers and groups from the current test
+    Object.entries(test.grouped_biomarkers).forEach(([group, biomarkers]) => {
+      allGroups.add(group);
+      biomarkers.forEach(biomarker => allBiomarkers.add(biomarker));
+    });
+
+    // Sort groups alphabetically
+    const sortedGroups = Array.from(allGroups).sort();
+
+    for (const groupName of sortedGroups) {
+      const testBiomarkers = test.grouped_biomarkers[groupName] || [];
+      
+      if (testBiomarkers.length > 0) {
+        html += `<div class="biomarker-grouping">
+          <div class="grouping-header">${groupName}</div>
+          <div class="grouping-biomarkers">`;
+        
+        // Sort biomarkers alphabetically within each group
+        const sortedBiomarkers = testBiomarkers.sort();
+        
+        for (const biomarker of sortedBiomarkers) {
+          html += `<div class="biomarker-item">
+            <span class="biomarker-name">${biomarker}</span>
+            <span class="biomarker-status">✓</span>
+          </div>`;
+        }
+        
+        html += `</div></div>`;
+      }
+    }
+
+    return html || '<div class="no-biomarkers">No biomarkers available</div>';
+  }
+
+  static async updateComparisonGrid() {
+    let comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
+    
+    // Sort tests by price (cheapest first)
+    comparisonTests.sort((a, b) => {
+      const priceA = parseFloat(a.price) || 0;
+      const priceB = parseFloat(b.price) || 0;
+      return priceA - priceB;
+    });
+    
+    // First, collect all unique biomarker groups from all tests
+    const allGroups = new Set();
+    comparisonTests.forEach(test => {
+      if (test && test.grouped_biomarkers) {
+        Object.keys(test.grouped_biomarkers).forEach(group => allGroups.add(group));
+      }
+    });
+    const sortedGroups = Array.from(allGroups).sort();
+    
+    for (let i = 1; i <= 3; i++) {
+      const test = comparisonTests[i - 1];
+      
+      if (test) {
+        // Update test name
+        const testNameCell = document.getElementById(`test-name-${i}`);
+        if (testNameCell) {
+          testNameCell.textContent = test.name;
+        }
+        
+        // Update provider info
+        const providerCell = document.getElementById(`provider-info-${i}`);
+        if (providerCell) {
+          const providerName = (test.provider?.name || test.provider || '').trim();
+          let providerLogo = 'medichecks.png'; // Default logo
+          if (providerName) {
+            const normalized = providerName.toLowerCase().replace(/ |-/g, '');
+            providerLogo = `${normalized}.png`;
+          }
+          
+          const trustpilotData = (() => {
+            const score = Number(test.trustpilot_score);
+            if (isNaN(score)) return { stars: 'Not available', rating: 'N/A' };
+            const fullStars = Math.floor(score);
+            const halfStar = score - fullStars >= 0.5 ? 1 : 0;
+            const emptyStars = 5 - fullStars - halfStar;
+            let stars = '';
+            for (let j = 0; j < fullStars; j++) stars += '★';
+            if (halfStar) stars += '⯨';
+            for (let j = 0; j < emptyStars; j++) stars += '☆';
+            return { stars: stars, rating: score.toFixed(1) };
+          })();
+          
+          providerCell.innerHTML = `
+            <div class="provider-info">
+              <div class="provider-header">
+                <img src="images/logos/${providerLogo}" alt="${providerName} logo" class="provider-logo">
+                <div class="provider-name">${providerName}</div>
+              </div>
+              <div class="trustpilot-row">
+                <span class="trustpilot-label">Trustpilot score:</span>
+                <span class="trustpilot-stars">${trustpilotData.stars}</span>
+                <span class="trustpilot-rating">(${trustpilotData.rating})</span>
+              </div>
+            </div>
+          `;
+        }
+        
+        // Update price
+        const priceCell = document.getElementById(`price-${i}`);
+        if (priceCell) {
+          priceCell.textContent = `£${test.price}`;
+        }
+        
+        // Update description
+        const descriptionCell = document.getElementById(`description-${i}`);
+        if (descriptionCell) {
+          descriptionCell.textContent = `"${test.description}"`;
+        }
+        
+        // Update practical details
+        const practicalCell = document.getElementById(`practical-${i}`);
+        if (practicalCell) {
+          const resultsText = (() => {
+            if (test.results_returned_time_days) {
+              return test.results_returned_time_days + ' days';
+            } else if (test.results_returned_time_min && test.results_returned_time_max) {
+              return test.results_returned_time_min + ' - ' + test.results_returned_time_max + ' days';
+            } else {
+              return 'N/A days';
+            }
+          })();
+          
+          practicalCell.innerHTML = `
+            <div class="practical-details">
+              <div class="detail-item">Results returned in ${resultsText}</div>
+              <div class="detail-item">Doctors report: ${test.doctors_report ? '✅' : '❌'}</div>
+            </div>
+          `;
+        }
+        
+        // Update blood method
+        const bloodMethodCell = document.getElementById(`blood-method-${i}`);
+        if (bloodMethodCell) {
+          const bloodMethod = Array.isArray(test.blood_taking_methods) && test.blood_taking_methods.length > 0
+            ? test.blood_taking_methods.map(method => {
+                const emojiMap = {
+                  'Home test': '🏠',
+                  'Clinic visit': '🏥',
+                  'Phlebotomist to home': '👩🏼‍⚕️',
+                  'Self arrange': '🙋🏼'
+                };
+                
+                const displayTextMap = {
+                  'Home test': 'Home test/ finger prick',
+                  'Clinic visit': 'Clinic visit full venous test',
+                  'Phlebotomist to home': 'Phlebotomist to home',
+                  'Self arrange': 'Self arrange'
+                };
+                return `${emojiMap[method] || '❓'} ${displayTextMap[method] || method}`;
+              }).join('<br>')
+            : 'Not specified';
+          bloodMethodCell.innerHTML = bloodMethod;
+        }
+        
+        // Update biomarkers with aligned structure
+        const biomarkersCell = document.getElementById(`biomarkers-${i}`);
+        if (biomarkersCell) {
+          const biomarkerContent = biomarkersCell.querySelector('.biomarker-content');
+          if (biomarkerContent) {
+            biomarkerContent.innerHTML = await CardService.generateAlignedBiomarkerHTML(test, sortedGroups);
+          }
+        }
+      } else {
+        // Reset to placeholder
+        CardService.resetGridCell(i);
+      }
+    }
+  }
+
+  static async generateAlignedBiomarkerHTML(test, allGroups) {
+    if (!test || !test.grouped_biomarkers) {
+      return '<div class="no-biomarkers">No biomarkers available</div>';
+    }
+
+    let html = '';
+
+    for (const groupName of allGroups) {
+      const testBiomarkers = test.grouped_biomarkers[groupName] || [];
+      
+      html += `<div class="biomarker-grouping">
+        <div class="grouping-header">${groupName}</div>
+        <div class="grouping-biomarkers">`;
+      
+      if (testBiomarkers.length > 0) {
+        // Sort biomarkers alphabetically within each group
+        const sortedBiomarkers = testBiomarkers.sort();
+        
+        for (const biomarker of sortedBiomarkers) {
+          html += `<div class="biomarker-item">
+            <span class="biomarker-name">${biomarker}</span>
+            <span class="biomarker-status">✓</span>
+          </div>`;
+        }
+      } else {
+        // Show individual dashes for each missing biomarker position
+        // We need to get the total count of biomarkers in this group from all tests
+        const totalBiomarkersInGroup = await CardService.getTotalBiomarkersInGroup(groupName);
+        
+        for (let i = 0; i < totalBiomarkersInGroup; i++) {
+          html += `<div class="biomarker-item empty">
+            <span class="biomarker-name">-</span>
+          </div>`;
+        }
+      }
+      
+      html += `</div></div>`;
+    }
+
+    return html || '<div class="no-biomarkers">No biomarkers available</div>';
+  }
+
+  static async getTotalBiomarkersInGroup(groupName) {
+    // Get all comparison tests to count total biomarkers in this group
+    const comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
+    const allBiomarkersInGroup = new Set();
+    
+    comparisonTests.forEach(test => {
+      if (test && test.grouped_biomarkers && test.grouped_biomarkers[groupName]) {
+        test.grouped_biomarkers[groupName].forEach(biomarker => {
+          allBiomarkersInGroup.add(biomarker);
+        });
+      }
+    });
+    
+    return allBiomarkersInGroup.size;
+  }
+
+  static resetGridCell(index) {
+    // Reset test name
+    const testNameCell = document.getElementById(`test-name-${index}`);
+    if (testNameCell) {
+      testNameCell.textContent = 'Select a test to compare';
+    }
+    
+    // Reset provider info
+    const providerCell = document.getElementById(`provider-info-${index}`);
+    if (providerCell) {
+      providerCell.innerHTML = `
+        <div class="provider-info">
+          <div class="provider-header">
+            <div class="provider-logo-placeholder">Logo</div>
+            <div class="provider-name">Provider</div>
+          </div>
+          <div class="trustpilot-row">
+            <span class="trustpilot-label">Trustpilot score:</span>
+            <span class="trustpilot-stars">★★★★☆</span>
+            <span class="trustpilot-rating">(4.0)</span>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Reset price
+    const priceCell = document.getElementById(`price-${index}`);
+    if (priceCell) {
+      priceCell.textContent = 'Price';
+    }
+    
+    // Reset description
+    const descriptionCell = document.getElementById(`description-${index}`);
+    if (descriptionCell) {
+      descriptionCell.textContent = 'Description';
+    }
+    
+    // Reset practical details
+    const practicalCell = document.getElementById(`practical-${index}`);
+    if (practicalCell) {
+      practicalCell.innerHTML = `
+        <div class="practical-details">
+          <div class="detail-item">Results returned</div>
+          <div class="detail-item">Doctors report</div>
+        </div>
+      `;
+    }
+    
+    // Reset blood method
+    const bloodMethodCell = document.getElementById(`blood-method-${index}`);
+    if (bloodMethodCell) {
+      bloodMethodCell.textContent = 'Method';
+    }
+    
+    // Reset biomarkers
+    const biomarkersCell = document.getElementById(`biomarkers-${index}`);
+    if (biomarkersCell) {
+      const biomarkerContent = biomarkersCell.querySelector('.biomarker-content');
+      if (biomarkerContent) {
+        biomarkerContent.innerHTML = 'Count';
+      }
+    }
+  }
+}
+
+// Make updateComparisonGrid available globally
+window.updateComparisonGrid = async () => {
+  await CardService.updateComparisonGrid();
+}; 
