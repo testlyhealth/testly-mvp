@@ -756,6 +756,27 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
   
+           /* Best option badge for problem-linked tests */
+         .blood-test-card .best-option-badge {
+           position: absolute !important;
+           top: 0 !important;
+           left: 1rem !important;
+           background: #10b981 !important;
+           color: white !important;
+           padding: 0.5rem 0.75rem !important;
+           border-radius: 0.5rem !important;
+           font-weight: 600 !important;
+           font-size: 0.8rem !important;
+           z-index: 999 !important;
+           text-transform: capitalize !important;
+           box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+         }
+         
+         /* Adjust position when test rank is also present */
+         .blood-test-card .test-rank + .best-option-badge {
+           top: 2.5rem !important;
+         }
+  
   .add-to-basket, .toggle-biomarkers, .toggle-details {
     background: var(--accent);
     color: white;
@@ -3523,7 +3544,7 @@ body {
     display: flex;
     gap: 0;
     align-items: flex-start;
-    margin-top: 2rem;
+    margin-top: 0.5rem;
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;

@@ -86,6 +86,7 @@ export class CardService {
     return `
       <div class="product-card blood-test-card ${options.isSelected ? 'selected' : ''}" data-test-id="${test.name}">
         ${showRank ? `<div class="test-rank">${options.rank}</div>` : ''}
+        ${test.best_options ? `<div class="best-option-badge">${test.best_options}</div>` : ''}
         <div class="test-header">
           <div class="provider-info">
             <img src="images/logos/${providerLogo}" alt="${providerName} logo" class="provider-logo">

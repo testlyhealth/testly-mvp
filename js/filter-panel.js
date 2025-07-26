@@ -123,6 +123,24 @@ export async function createFilterPanel(tests) {
     ];
   }
   
+  // Fetch problems from Supabase
+  let problems = [];
+  try {
+    console.log('Fetching problems from database...');
+    const { data, error } = await supabase.from('problem_list').select('name').order('name');
+    console.log('Raw problems data:', data);
+    console.log('Problems error:', error);
+    
+    if (error) throw error;
+    problems = data.map(problem => problem.name);
+    console.log('Processed problems:', problems);
+    console.log('Number of problems found:', problems.length);
+  } catch (e) {
+    console.error('Error fetching problems:', e);
+    // Fallback to empty array if fetch fails
+    problems = [];
+  }
+  
   // Check for a filter query parameter in the URL
   let selectedCategory = null;
   let allCategoriesSelected = false;
@@ -221,6 +239,30 @@ export async function createFilterPanel(tests) {
               </div>
             `).join('')}
             ${biomarkerGroupings.length === 0 ? '<div style="color: #6b7280; font-style: italic; padding: 0.5rem;">No biomarker groupings found</div>' : ''}
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-section-header">
+          <h4>Problems/Symptoms</h4>
+          <button class="filter-toggle-btn" aria-expanded="false" aria-controls="problems-options">
+            <span class="toggle-icon">▼</span>
+          </button>
+        </div>
+        <div class="filter-section-content" id="problems-options" style="display: none;">
+          <div class="provider-checkboxes">
+            <div class="checkbox-option">
+              <input type="checkbox" id="problems-all" checked>
+              <label for="problems-all">All Problems/Symptoms</label>
+            </div>
+            ${problems.map(problem => `
+              <div class="checkbox-option">
+                <input type="checkbox" id="problems-${problem.toLowerCase().replace(/\s+/g, '-')}" class="problems-checkbox" value="${problem}">
+                <label for="problems-${problem.toLowerCase().replace(/\s+/g, '-')}">${problem}</label>
+              </div>
+            `).join('')}
+            ${problems.length === 0 ? '<div style="color: #6b7280; font-style: italic; padding: 0.5rem;">No problems found</div>' : ''}
           </div>
         </div>
       </div>
@@ -346,6 +388,8 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   const categoryCheckboxes = filterPanel.querySelectorAll('.category-checkbox');
   const bloodMethodAll = filterPanel.querySelector('#blood-method-all');
   const bloodMethodCheckboxes = filterPanel.querySelectorAll('.blood-method-checkbox');
+  const problemsAll = filterPanel.querySelector('#problems-all');
+  const problemsCheckboxes = filterPanel.querySelectorAll('.problems-checkbox');
   const doctorsReport = filterPanel.querySelector('#doctors-report');
   const resetFiltersBtn = filterPanel.querySelector('#reset-filters');
 
@@ -555,6 +599,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     locations: [],
     categories: allCategoriesSelected ? [] : (selectedCategory ? [selectedCategory] : []),
     bloodTakingMethods: [],
+    problems: [],
     doctorsReport: false
   };
   
@@ -619,6 +664,18 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
           <div class="filter-tag" data-type="bloodMethod" data-value="${method}">
             <span>Method: ${method}</span>
             <button class="remove-tag" aria-label="Remove blood taking method filter">×</button>
+          </div>
+        `);
+      });
+    }
+    // Problems/Symptoms tags
+    if (filters.problems && filters.problems.length > 0) {
+      console.log('Creating problems/symptoms tags for:', filters.problems);
+      filters.problems.forEach(problem => {
+        tags.push(`
+          <div class="filter-tag" data-type="problem" data-value="${problem}">
+            <span>Problem: ${problem}</span>
+            <button class="remove-tag" aria-label="Remove problem/symptom filter">×</button>
           </div>
         `);
       });
@@ -821,6 +878,19 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
             // Reapply filters
             applyFilters().catch(console.error);
           }
+        } else if (type === 'problem') {
+          // Remove this problem/symptom by unchecking the corresponding checkbox
+          const checkbox = filterPanel.querySelector(`#problems-${value.toLowerCase().replace(/\s+/g, '-')}`);
+          if (checkbox) {
+            checkbox.checked = false;
+            // Update "All Problems" checkbox if needed
+            const allChecked = Array.from(problemsCheckboxes).every(cb => cb.checked);
+            if (problemsAll) {
+              problemsAll.checked = allChecked;
+            }
+            // Reapply filters
+            applyFilters().catch(console.error);
+          }
         }
         // Remove empty params
         for (const [key, val] of params.entries()) {
@@ -850,6 +920,9 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         .filter(cb => cb.checked)
         .map(cb => cb.value),
       bloodTakingMethods: bloodMethodAll && bloodMethodAll.checked ? [] : Array.from(bloodMethodCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value),
+      problems: problemsAll && problemsAll.checked ? [] : Array.from(problemsCheckboxes)
         .filter(cb => cb.checked)
         .map(cb => cb.value),
       doctorsReport: doctorsReport ? doctorsReport.checked : false
@@ -1110,6 +1183,56 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     });
   });
 
+  // Handle "All Problems/Symptoms" checkbox
+  if (problemsAll) {
+    problemsAll.addEventListener('change', (e) => {
+      const isChecked = e.target.checked;
+      problemsCheckboxes.forEach(checkbox => {
+        checkbox.checked = isChecked;
+        checkbox.disabled = isChecked;
+      });
+      if (isChecked) {
+        // If "All Problems" is checked, revert to normal filtering
+        applyFilters().catch(console.error);
+      }
+    });
+  }
+
+  // Handle individual problems/symptoms checkboxes
+  problemsCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', async () => {
+      // If this problem is checked, uncheck all others and disable them
+      if (checkbox.checked) {
+        // Uncheck all other problem checkboxes
+        problemsCheckboxes.forEach(cb => {
+          if (cb !== checkbox) {
+            cb.checked = false;
+            cb.disabled = true;
+          }
+        });
+        
+        // Uncheck and disable "All Problems" checkbox
+        if (problemsAll) {
+          problemsAll.checked = false;
+          problemsAll.disabled = true;
+        }
+        
+        const problemName = checkbox.value;
+        await fetchAndDisplayLinkedTests(problemName);
+      } else {
+        // If unchecked, re-enable all checkboxes and revert to normal filtering
+        problemsCheckboxes.forEach(cb => {
+          cb.disabled = false;
+        });
+        if (problemsAll) {
+          problemsAll.disabled = false;
+          problemsAll.checked = true;
+        }
+        applyFilters().catch(console.error);
+      }
+    });
+  });
+
   // Setup biomarker search in filter panel
   setupFilterPanelBiomarkerSearch();
 
@@ -1144,6 +1267,13 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       // Reset blood taking method checkboxes
       bloodMethodAll.checked = true;
       bloodMethodCheckboxes.forEach(checkbox => {
+        checkbox.checked = true;
+        checkbox.disabled = true;
+      });
+
+      // Reset problems/symptoms checkboxes
+      problemsAll.checked = true;
+      problemsCheckboxes.forEach(checkbox => {
         checkbox.checked = true;
         checkbox.disabled = true;
       });
@@ -1208,6 +1338,113 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         window.updateComparisonGrid();
       }
     });
+  }
+
+  // Function to fetch and display linked tests for a selected problem
+  async function fetchAndDisplayLinkedTests(problemName) {
+    try {
+      // 1. Get the problem ID from problem_list table
+      const { data: problemRows, error: problemError } = await supabase
+        .from('problem_list')
+        .select('id')
+        .eq('name', problemName)
+        .limit(1);
+      
+      if (problemError || !problemRows || problemRows.length === 0) {
+        console.error('Error fetching problem ID:', problemError);
+        return;
+      }
+      
+      const problemId = problemRows[0].id;
+      
+      // 2. Get linked tests from problem_list_link_table
+      const { data: linkRows, error: linkError } = await supabase
+        .from('problem_list_link_table')
+        .select('*, provider_blood_test:provider_blood_tests(*, provider:providers(name))')
+        .eq('problem_list_id', problemId);
+      
+      if (linkError || !linkRows || linkRows.length === 0) {
+        console.error('Error fetching linked tests:', linkError);
+        
+        // Show a message to the user that no linked tests are available
+        const testsGrid = document.querySelector('.products-grid');
+        if (testsGrid) {
+          testsGrid.innerHTML = `
+            <div class="no-results-message" style="text-align: center; padding: 2rem; color: #6b7280;">
+              <h3>No linked tests available</h3>
+              <p>No specific tests have been linked to "${problemName}" yet. Please check back later or browse all available tests.</p>
+              <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #2563eb; color: white; border: none; border-radius: 0.375rem; cursor: pointer;">
+                Browse All Tests
+              </button>
+            </div>
+          `;
+        }
+        
+        return;
+      }
+      
+      // 3. Extract the 3 linked tests with their best_options
+      const linkedTests = linkRows.map(link => ({
+        ...link.provider_blood_test,
+        best_options: link.best_options
+      }));
+      
+      // 4. Clear all other filter tags and show only problem tag
+      const filterTagsContainer = document.querySelector('.filter-tags');
+      if (filterTagsContainer) {
+        filterTagsContainer.innerHTML = `
+          <div class="filter-tags-container">
+            <div class="filter-tags-list">
+              <div class="filter-tag" data-type="problem" data-value="${problemName}">
+                <span>Problem: ${problemName}</span>
+                <button class="remove-tag" aria-label="Remove problem filter">×</button>
+              </div>
+            </div>
+            <div class="results-count">
+              <span>${linkedTests.length} results</span>
+            </div>
+          </div>
+        `;
+        
+        // Add event listener to remove tag
+        const removeBtn = filterTagsContainer.querySelector('.remove-tag');
+        if (removeBtn) {
+          removeBtn.addEventListener('click', () => {
+            // Uncheck the problem checkbox
+            const problemCheckbox = filterPanel.querySelector(`#problems-${problemName.toLowerCase().replace(/\s+/g, '-')}`);
+            if (problemCheckbox) {
+              problemCheckbox.checked = false;
+              // Update "All Problems" checkbox
+              const allChecked = Array.from(problemsCheckboxes).every(cb => cb.checked);
+              if (problemsAll) {
+                problemsAll.checked = allChecked;
+              }
+              // Revert to normal filtering
+              applyFilters().catch(console.error);
+            }
+          });
+        }
+      }
+      
+      // 5. Display the linked tests directly
+      const testsGrid = document.querySelector('.products-grid');
+      
+      if (testsGrid && linkedTests.length > 0) {
+        // Create cards for the linked tests
+        const cardService = new (await import('./services/cardService.js')).CardService();
+        const cards = await cardService.createCards(linkedTests);
+        
+        testsGrid.innerHTML = cards;
+        
+        // Set up card event handlers
+        cardService.setupCardEventHandlers(linkedTests);
+      } else {
+        console.error('Tests grid not found or no linked tests');
+      }
+      
+    } catch (error) {
+      console.error('Error in fetchAndDisplayLinkedTests:', error);
+    }
   }
 
   // --- Dynamic Compare Button Counter ---
