@@ -1613,6 +1613,416 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         } catch (error) {
           console.error('Error fetching female health tests:', error);
         }
+      } else if (problemName.toLowerCase().includes('general health check')) {
+        try {
+          // Get general health category ID
+          const { data: allCategories, error: allCategoriesError } = await supabase
+            .from('blood_test_categories')
+            .select('id, name')
+            .order('name');
+          
+          // Look for the exact general health category
+          const generalCategory = allCategories?.find(cat => 
+            cat.name === 'General health'
+          );
+          
+          if (generalCategory) {
+            const categoryId = generalCategory.id;
+            
+            // Get tests for general health category
+            const { data: linkRows, error: linkError } = await supabase
+              .from('blood_test_category_link_table')
+              .select('provider_blood_test_id')
+              .eq('blood_test_category_id', categoryId);
+            
+            if (!linkError && linkRows && linkRows.length > 0) {
+              const testIds = linkRows.map(row => row.provider_blood_test_id);
+              
+              // Fetch the actual test data
+              const { data: testRows, error: testError } = await supabase
+                .from('provider_blood_tests')
+                .select('*, provider:providers(name)')
+                .in('id', testIds);
+              
+              if (!testError && testRows) {
+                // Enrich general health tests
+                heartHealthTests = await enrichTestsWithBiomarkersAndMethods(testRows);
+                totalResults += heartHealthTests.length;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching general health tests:', error);
+        }
+      } else if (problemName.toLowerCase().includes('heart health monitoring')) {
+        try {
+          // Get heart health category ID
+          const { data: allCategories, error: allCategoriesError } = await supabase
+            .from('blood_test_categories')
+            .select('id, name')
+            .order('name');
+          
+          // Look for the exact heart health category
+          const heartCategory = allCategories?.find(cat => 
+            cat.name === 'Heart and metabolic health'
+          );
+          
+          if (heartCategory) {
+            const categoryId = heartCategory.id;
+            
+            // Get tests for heart health category
+            const { data: linkRows, error: linkError } = await supabase
+              .from('blood_test_category_link_table')
+              .select('provider_blood_test_id')
+              .eq('blood_test_category_id', categoryId);
+            
+            if (!linkError && linkRows && linkRows.length > 0) {
+              const testIds = linkRows.map(row => row.provider_blood_test_id);
+              
+              // Fetch the actual test data
+              const { data: testRows, error: testError } = await supabase
+                .from('provider_blood_tests')
+                .select('*, provider:providers(name)')
+                .in('id', testIds);
+              
+              if (!testError && testRows) {
+                // Enrich heart health tests
+                heartHealthTests = await enrichTestsWithBiomarkersAndMethods(testRows);
+                totalResults += heartHealthTests.length;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching heart health tests:', error);
+        }
+      } else if (problemName.toLowerCase().includes('hrt monitoring')) {
+        try {
+          // Get female health category ID
+          const { data: allCategories, error: allCategoriesError } = await supabase
+            .from('blood_test_categories')
+            .select('id, name')
+            .order('name');
+          
+          // Look for the exact female health category
+          const femaleCategory = allCategories?.find(cat => 
+            cat.name === 'Female health and hormones'
+          );
+          
+          if (femaleCategory) {
+            const categoryId = femaleCategory.id;
+            
+            // Get tests for female health category
+            const { data: linkRows, error: linkError } = await supabase
+              .from('blood_test_category_link_table')
+              .select('provider_blood_test_id')
+              .eq('blood_test_category_id', categoryId);
+            
+            if (!linkError && linkRows && linkRows.length > 0) {
+              const testIds = linkRows.map(row => row.provider_blood_test_id);
+              
+              // Fetch the actual test data
+              const { data: testRows, error: testError } = await supabase
+                .from('provider_blood_tests')
+                .select('*, provider:providers(name)')
+                .in('id', testIds);
+              
+              if (!testError && testRows) {
+                // Enrich female health tests
+                heartHealthTests = await enrichTestsWithBiomarkersAndMethods(testRows);
+                totalResults += heartHealthTests.length;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching female health tests:', error);
+        }
+      } else if (problemName.toLowerCase().includes('kidney health check')) {
+        try {
+          // Get general health category ID
+          const { data: allCategories, error: allCategoriesError } = await supabase
+            .from('blood_test_categories')
+            .select('id, name')
+            .order('name');
+          
+          // Look for the exact general health category
+          const generalCategory = allCategories?.find(cat => 
+            cat.name === 'General health'
+          );
+          
+          if (generalCategory) {
+            const categoryId = generalCategory.id;
+            
+            // Get tests for general health category
+            const { data: linkRows, error: linkError } = await supabase
+              .from('blood_test_category_link_table')
+              .select('provider_blood_test_id')
+              .eq('blood_test_category_id', categoryId);
+            
+            if (!linkError && linkRows && linkRows.length > 0) {
+              const testIds = linkRows.map(row => row.provider_blood_test_id);
+              
+              // Fetch the actual test data
+              const { data: testRows, error: testError } = await supabase
+                .from('provider_blood_tests')
+                .select('*, provider:providers(name)')
+                .in('id', testIds);
+              
+              if (!testError && testRows) {
+                // Enrich general health tests
+                heartHealthTests = await enrichTestsWithBiomarkersAndMethods(testRows);
+                totalResults += heartHealthTests.length;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching general health tests:', error);
+        }
+      } else if (problemName.toLowerCase().includes('liver health check')) {
+        try {
+          // Get general health category ID
+          const { data: allCategories, error: allCategoriesError } = await supabase
+            .from('blood_test_categories')
+            .select('id, name')
+            .order('name');
+          
+          // Look for the exact general health category
+          const generalCategory = allCategories?.find(cat => 
+            cat.name === 'General health'
+          );
+          
+          if (generalCategory) {
+            const categoryId = generalCategory.id;
+            
+            // Get tests for general health category
+            const { data: linkRows, error: linkError } = await supabase
+              .from('blood_test_category_link_table')
+              .select('provider_blood_test_id')
+              .eq('blood_test_category_id', categoryId);
+            
+            if (!linkError && linkRows && linkRows.length > 0) {
+              const testIds = linkRows.map(row => row.provider_blood_test_id);
+              
+              // Fetch the actual test data
+              const { data: testRows, error: testError } = await supabase
+                .from('provider_blood_tests')
+                .select('*, provider:providers(name)')
+                .in('id', testIds);
+              
+              if (!testError && testRows) {
+                // Enrich general health tests
+                heartHealthTests = await enrichTestsWithBiomarkersAndMethods(testRows);
+                totalResults += heartHealthTests.length;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching general health tests:', error);
+        }
+      } else if (problemName.toLowerCase().includes('low fertility (female)')) {
+        try {
+          // Get fertility category ID
+          const { data: allCategories, error: allCategoriesError } = await supabase
+            .from('blood_test_categories')
+            .select('id, name')
+            .order('name');
+          
+          // Look for the exact fertility category
+          const fertilityCategory = allCategories?.find(cat => 
+            cat.name === 'Fertility'
+          );
+          
+          if (fertilityCategory) {
+            const categoryId = fertilityCategory.id;
+            
+            // Get tests for fertility category
+            const { data: linkRows, error: linkError } = await supabase
+              .from('blood_test_category_link_table')
+              .select('provider_blood_test_id')
+              .eq('blood_test_category_id', categoryId);
+            
+            if (!linkError && linkRows && linkRows.length > 0) {
+              const testIds = linkRows.map(row => row.provider_blood_test_id);
+              
+              // Fetch the actual test data
+              const { data: testRows, error: testError } = await supabase
+                .from('provider_blood_tests')
+                .select('*, provider:providers(name)')
+                .in('id', testIds);
+              
+              if (!testError && testRows) {
+                // Enrich fertility tests
+                heartHealthTests = await enrichTestsWithBiomarkersAndMethods(testRows);
+                totalResults += heartHealthTests.length;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching fertility tests:', error);
+        }
+      } else if (problemName.toLowerCase().includes('low fertility (male)')) {
+        try {
+          // Get fertility category ID
+          const { data: allCategories, error: allCategoriesError } = await supabase
+            .from('blood_test_categories')
+            .select('id, name')
+            .order('name');
+          
+          // Look for the exact fertility category
+          const fertilityCategory = allCategories?.find(cat => 
+            cat.name === 'Fertility'
+          );
+          
+          if (fertilityCategory) {
+            const categoryId = fertilityCategory.id;
+            
+            // Get tests for fertility category
+            const { data: linkRows, error: linkError } = await supabase
+              .from('blood_test_category_link_table')
+              .select('provider_blood_test_id')
+              .eq('blood_test_category_id', categoryId);
+            
+            if (!linkError && linkRows && linkRows.length > 0) {
+              const testIds = linkRows.map(row => row.provider_blood_test_id);
+              
+              // Fetch the actual test data
+              const { data: testRows, error: testError } = await supabase
+                .from('provider_blood_tests')
+                .select('*, provider:providers(name)')
+                .in('id', testIds);
+              
+              if (!testError && testRows) {
+                // Enrich fertility tests
+                heartHealthTests = await enrichTestsWithBiomarkersAndMethods(testRows);
+                totalResults += heartHealthTests.length;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching fertility tests:', error);
+        }
+      } else if (problemName.toLowerCase().includes('male hormone check')) {
+        try {
+          // Get male health category ID
+          const { data: allCategories, error: allCategoriesError } = await supabase
+            .from('blood_test_categories')
+            .select('id, name')
+            .order('name');
+          
+          // Look for the exact male health category
+          const maleCategory = allCategories?.find(cat => 
+            cat.name === 'Male health and hormones'
+          );
+          
+          if (maleCategory) {
+            const categoryId = maleCategory.id;
+            
+            // Get tests for male health category
+            const { data: linkRows, error: linkError } = await supabase
+              .from('blood_test_category_link_table')
+              .select('provider_blood_test_id')
+              .eq('blood_test_category_id', categoryId);
+            
+            if (!linkError && linkRows && linkRows.length > 0) {
+              const testIds = linkRows.map(row => row.provider_blood_test_id);
+              
+              // Fetch the actual test data
+              const { data: testRows, error: testError } = await supabase
+                .from('provider_blood_tests')
+                .select('*, provider:providers(name)')
+                .in('id', testIds);
+              
+              if (!testError && testRows) {
+                // Enrich male health tests
+                heartHealthTests = await enrichTestsWithBiomarkersAndMethods(testRows);
+                totalResults += heartHealthTests.length;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching male health tests:', error);
+        }
+      } else if (problemName.toLowerCase().includes('prostate check')) {
+        try {
+          // Get male health category ID
+          const { data: allCategories, error: allCategoriesError } = await supabase
+            .from('blood_test_categories')
+            .select('id, name')
+            .order('name');
+          
+          // Look for the exact male health category
+          const maleCategory = allCategories?.find(cat => 
+            cat.name === 'Male health and hormones'
+          );
+          
+          if (maleCategory) {
+            const categoryId = maleCategory.id;
+            
+            // Get tests for male health category
+            const { data: linkRows, error: linkError } = await supabase
+              .from('blood_test_category_link_table')
+              .select('provider_blood_test_id')
+              .eq('blood_test_category_id', categoryId);
+            
+            if (!linkError && linkRows && linkRows.length > 0) {
+              const testIds = linkRows.map(row => row.provider_blood_test_id);
+              
+              // Fetch the actual test data
+              const { data: testRows, error: testError } = await supabase
+                .from('provider_blood_tests')
+                .select('*, provider:providers(name)')
+                .in('id', testIds);
+              
+              if (!testError && testRows) {
+                // Enrich male health tests
+                heartHealthTests = await enrichTestsWithBiomarkersAndMethods(testRows);
+                totalResults += heartHealthTests.length;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching male health tests:', error);
+        }
+      } else if (problemName.toLowerCase().includes('thyroid health check')) {
+        try {
+          // Get thyroid health category ID
+          const { data: allCategories, error: allCategoriesError } = await supabase
+            .from('blood_test_categories')
+            .select('id, name')
+            .order('name');
+          
+          // Look for the exact thyroid health category
+          const thyroidCategory = allCategories?.find(cat => 
+            cat.name === 'Thyroid health'
+          );
+          
+          if (thyroidCategory) {
+            const categoryId = thyroidCategory.id;
+            
+            // Get tests for thyroid health category
+            const { data: linkRows, error: linkError } = await supabase
+              .from('blood_test_category_link_table')
+              .select('provider_blood_test_id')
+              .eq('blood_test_category_id', categoryId);
+            
+            if (!linkError && linkRows && linkRows.length > 0) {
+              const testIds = linkRows.map(row => row.provider_blood_test_id);
+              
+              // Fetch the actual test data
+              const { data: testRows, error: testError } = await supabase
+                .from('provider_blood_tests')
+                .select('*, provider:providers(name)')
+                .in('id', testIds);
+              
+              if (!testError && testRows) {
+                // Enrich thyroid health tests
+                heartHealthTests = await enrichTestsWithBiomarkersAndMethods(testRows);
+                totalResults += heartHealthTests.length;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching thyroid health tests:', error);
+        }
       }
       
       // 6. Clear all other filter tags and show problem and category tags
@@ -1637,6 +2047,66 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
           filterTagsHTML += `
               <div class="filter-tag" data-type="category" data-value="Female health and hormones">
                 <span>Category: Female health and hormones</span>
+                <button class="remove-tag" aria-label="Remove category filter">×</button>
+              </div>`;
+        } else if (problemName.toLowerCase().includes('general health check') && heartHealthTests.length > 0) {
+          filterTagsHTML += `
+              <div class="filter-tag" data-type="category" data-value="General health">
+                <span>Category: General health</span>
+                <button class="remove-tag" aria-label="Remove category filter">×</button>
+              </div>`;
+        } else if (problemName.toLowerCase().includes('heart health monitoring') && heartHealthTests.length > 0) {
+          filterTagsHTML += `
+              <div class="filter-tag" data-type="category" data-value="Heart and metabolic health">
+                <span>Category: Heart and metabolic health</span>
+                <button class="remove-tag" aria-label="Remove category filter">×</button>
+              </div>`;
+        } else if (problemName.toLowerCase().includes('hrt monitoring') && heartHealthTests.length > 0) {
+          filterTagsHTML += `
+              <div class="filter-tag" data-type="category" data-value="Female health and hormones">
+                <span>Category: Female health and hormones</span>
+                <button class="remove-tag" aria-label="Remove category filter">×</button>
+              </div>`;
+        } else if (problemName.toLowerCase().includes('kidney health check') && heartHealthTests.length > 0) {
+          filterTagsHTML += `
+              <div class="filter-tag" data-type="category" data-value="General health">
+                <span>Category: General health</span>
+                <button class="remove-tag" aria-label="Remove category filter">×</button>
+              </div>`;
+        } else if (problemName.toLowerCase().includes('liver health check') && heartHealthTests.length > 0) {
+          filterTagsHTML += `
+              <div class="filter-tag" data-type="category" data-value="General health">
+                <span>Category: General health</span>
+                <button class="remove-tag" aria-label="Remove category filter">×</button>
+              </div>`;
+        } else if (problemName.toLowerCase().includes('low fertility (female)') && heartHealthTests.length > 0) {
+          filterTagsHTML += `
+              <div class="filter-tag" data-type="category" data-value="Fertility">
+                <span>Category: Fertility</span>
+                <button class="remove-tag" aria-label="Remove category filter">×</button>
+              </div>`;
+        } else if (problemName.toLowerCase().includes('low fertility (male)') && heartHealthTests.length > 0) {
+          filterTagsHTML += `
+              <div class="filter-tag" data-type="category" data-value="Fertility">
+                <span>Category: Fertility</span>
+                <button class="remove-tag" aria-label="Remove category filter">×</button>
+              </div>`;
+        } else if (problemName.toLowerCase().includes('male hormone check') && heartHealthTests.length > 0) {
+          filterTagsHTML += `
+              <div class="filter-tag" data-type="category" data-value="Male health and hormones">
+                <span>Category: Male health and hormones</span>
+                <button class="remove-tag" aria-label="Remove category filter">×</button>
+              </div>`;
+        } else if (problemName.toLowerCase().includes('prostate check') && heartHealthTests.length > 0) {
+          filterTagsHTML += `
+              <div class="filter-tag" data-type="category" data-value="Male health and hormones">
+                <span>Category: Male health and hormones</span>
+                <button class="remove-tag" aria-label="Remove category filter">×</button>
+              </div>`;
+        } else if (problemName.toLowerCase().includes('thyroid health check') && heartHealthTests.length > 0) {
+          filterTagsHTML += `
+              <div class="filter-tag" data-type="category" data-value="Thyroid health">
+                <span>Category: Thyroid health</span>
                 <button class="remove-tag" aria-label="Remove category filter">×</button>
               </div>`;
         }
@@ -1696,6 +2166,36 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
           } else if (problemName.toLowerCase().includes('female hormone')) {
             sectionTitle = 'Female Health Tests';
             sectionDescription = 'Additional tests that may be relevant for female hormone health';
+          } else if (problemName.toLowerCase().includes('general health check')) {
+            sectionTitle = 'General Health Tests';
+            sectionDescription = 'Additional tests that may be relevant for general health monitoring';
+          } else if (problemName.toLowerCase().includes('heart health monitoring')) {
+            sectionTitle = 'Heart Health Tests';
+            sectionDescription = 'Additional tests that may be relevant for heart health monitoring';
+          } else if (problemName.toLowerCase().includes('hrt monitoring')) {
+            sectionTitle = 'Female Health Tests';
+            sectionDescription = 'Additional tests that may be relevant for HRT monitoring';
+          } else if (problemName.toLowerCase().includes('kidney health check')) {
+            sectionTitle = 'General Health Tests';
+            sectionDescription = 'Additional tests that may be relevant for kidney health monitoring';
+          } else if (problemName.toLowerCase().includes('liver health check')) {
+            sectionTitle = 'General Health Tests';
+            sectionDescription = 'Additional tests that may be relevant for liver health monitoring';
+          } else if (problemName.toLowerCase().includes('low fertility (female)')) {
+            sectionTitle = 'Fertility Tests';
+            sectionDescription = 'Additional tests that may be relevant for fertility monitoring';
+          } else if (problemName.toLowerCase().includes('low fertility (male)')) {
+            sectionTitle = 'Fertility Tests';
+            sectionDescription = 'Additional tests that may be relevant for fertility monitoring';
+          } else if (problemName.toLowerCase().includes('male hormone check')) {
+            sectionTitle = 'Male Health Tests';
+            sectionDescription = 'Additional tests that may be relevant for male hormone monitoring';
+          } else if (problemName.toLowerCase().includes('prostate check')) {
+            sectionTitle = 'Male Health Tests';
+            sectionDescription = 'Additional tests that may be relevant for prostate health monitoring';
+          } else if (problemName.toLowerCase().includes('thyroid health check')) {
+            sectionTitle = 'Thyroid Health Tests';
+            sectionDescription = 'Additional tests that may be relevant for thyroid health monitoring';
           }
           
           // Add a section header for additional tests
