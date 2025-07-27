@@ -422,34 +422,8 @@ function attachEventListeners() {
     updateSortButtonText(sortAscending);
   }
 
-  // Toggle biomarkers (individual group)
-  $all('.toggle-biomarkers').forEach(button => {
-    button.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      // Only toggle the biomarker-items for this group
-      const group = button.closest('.biomarker-group');
-      const items = group.querySelector('.biomarker-items');
-      const isExpanded = button.getAttribute('aria-expanded') === 'true';
-      items.classList.toggle('hidden', isExpanded);
-      button.setAttribute('aria-expanded', !isExpanded);
-      // Do NOT set innerHTML or change the arrow here; let CSS handle rotation
-    });
-  });
-
-  // Group headers
-  $all('.group-header').forEach(header => {
-    header.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent event bubbling
-      const group = header.closest('.biomarker-group');
-      const biomarkerItems = group.querySelector('.biomarker-items');
-      const toggleButton = group.querySelector('.toggle-biomarkers');
-      const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
-      biomarkerItems.classList.toggle('hidden');
-      toggleButton.setAttribute('aria-expanded', !isExpanded);
-      // Do NOT swap the arrow character; let CSS handle rotation
-    });
-  });
+  // Toggle biomarkers (individual group) - REMOVED: Handled by cardService.js
+  // Group headers - REMOVED: Handled by cardService.js
 
   // Toggle details
   $all('.toggle-details').forEach(button => {
@@ -475,27 +449,7 @@ function attachEventListeners() {
     });
   });
 
-  // Toggle all biomarkers (Show all/Hide all)
-  $all('.toggle-all-biomarkers').forEach(button => {
-    button.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const biomarkersSection = e.target.closest('.biomarkers-section');
-      const isExpanded = button.getAttribute('aria-expanded') === 'true';
-      // Toggle all biomarker items and their toggle buttons
-      biomarkersSection.querySelectorAll('.biomarker-group').forEach(group => {
-        const items = group.querySelector('.biomarker-items');
-        const toggle = group.querySelector('.toggle-biomarkers');
-        if (items && toggle) {
-          items.classList.toggle('hidden', isExpanded);
-          toggle.setAttribute('aria-expanded', !isExpanded);
-          // Do NOT swap the arrow character; let CSS handle rotation
-        }
-      });
-      // Update the "Show all" button
-      button.setAttribute('aria-expanded', !isExpanded);
-    });
-  });
+  // Toggle all biomarkers (Show all/Hide all) - REMOVED: Handled by cardService.js
 }
 
 // Function to create general health title
@@ -940,6 +894,8 @@ async function fetchAndEnrichTests({ category = null, provider = null } = {}) {
   let biomarkers = [];
   let methodLinks = [];
   let allMethods = [];
+  let labAccreditationLinks = [];
+  let allLabAccreditations = [];
   if (testIds.length > 0) {
     const { data: links, error: linkError } = await supabase
       .from('biomarker_link_table')
@@ -963,6 +919,21 @@ async function fetchAndEnrichTests({ category = null, provider = null } = {}) {
       .select('id, name');
     if (methodError) throw methodError;
     allMethods = methodRows;
+
+    // Fetch lab accreditation links
+    const { data: labAccreditationLinkRows, error: labAccreditationLinkError } = await supabase
+      .from('lab_accreditation_link_table')
+      .select('provider_blood_test_id, lab_accreditation_id')
+      .in('provider_blood_test_id', testIds);
+    if (labAccreditationLinkError) throw labAccreditationLinkError;
+    labAccreditationLinks = labAccreditationLinkRows;
+
+    // Fetch all lab accreditations
+    const { data: labAccreditationRows, error: labAccreditationError } = await supabase
+      .from('lab_accreditations')
+      .select('id, name');
+    if (labAccreditationError) throw labAccreditationError;
+    allLabAccreditations = labAccreditationRows;
   }
   if (biomarkerIds.length > 0) {
     const { data: biomarkerRows, error: biomarkerError } = await supabase
@@ -998,6 +969,18 @@ async function fetchAndEnrichTests({ category = null, provider = null } = {}) {
     // Attach blood taking methods
     const methodIds = methodLinks.filter(l => l.provider_blood_test_id === test.id).map(l => l.blood_taking_method_id);
     test.blood_taking_methods = allMethods.filter(m => methodIds.includes(m.id)).map(m => m.name);
+    
+    // Attach lab accreditations
+    const labAccreditationIds = labAccreditationLinks.filter(l => l.provider_blood_test_id === test.id).map(l => l.lab_accreditation_id);
+    test["lab accreditations"] = allLabAccreditations.filter(la => labAccreditationIds.includes(la.id)).map(la => la.name);
+    
+    // Check if lab_accreditations field exists directly in the test data
+    if (test.lab_accreditations) {
+      // If it's a string, split it into an array
+      if (typeof test.lab_accreditations === 'string') {
+        test["lab accreditations"] = test.lab_accreditations.split(',').map(acc => acc.trim()).filter(acc => acc);
+      }
+    }
   });
   return tests;
 }

@@ -759,7 +759,7 @@ body {
            /* Best option badge for problem-linked tests */
          .blood-test-card .best-option-badge {
            position: absolute !important;
-           top: 0 !important;
+           top: -20px !important;
            left: 1rem !important;
            background: #10b981 !important;
            color: white !important;
@@ -774,7 +774,7 @@ body {
          
          /* Adjust position when test rank is also present */
          .blood-test-card .test-rank + .best-option-badge {
-           top: 2.5rem !important;
+           top: 1.5rem !important;
          }
   
   .add-to-basket, .toggle-biomarkers, .toggle-details {
@@ -971,7 +971,7 @@ body {
     opacity: 0;
   }
   
-  .biomarkers-list ul {
+  .biomarkers-list ul:not(.biomarker-items) {
     list-style-type: none;
     padding: 0;
     margin: 0;
@@ -2903,6 +2903,8 @@ body {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     overflow: hidden;
     margin-bottom: 1rem;
+    position: relative;
+    padding-bottom: 6rem;
   }
 
   .blood-test-card:hover {
@@ -3105,11 +3107,11 @@ body {
     transition: opacity 0.3s ease;
   }
 
-  .biomarkers-list.hidden .biomarker-group {
+    .biomarkers-list.hidden .biomarker-group {
     opacity: 0;
   }
-
-  .biomarkers-list ul {
+  
+  .biomarkers-list ul:not(.biomarker-items) {
     list-style-type: none;
     padding: 0;
     margin: 0;
@@ -3348,6 +3350,7 @@ body {
     padding: 0.75rem 1.5rem 0.75rem 2rem;
     margin: 0;
     list-style: none;
+    display: block;
   }
 
   .biomarker-items li:before {
@@ -3362,6 +3365,61 @@ body {
 
   .biomarker-items.hidden {
     display: none;
+  }
+
+  .biomarker-items:not(.hidden) {
+    display: block !important;
+  }
+
+  /* Ensure biomarker items are visible in results cards */
+  .blood-test-card .biomarker-items:not(.hidden) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Additional specificity for results cards */
+  .products-grid .blood-test-card .biomarker-items:not(.hidden) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Force display for any biomarker-items without hidden class */
+  .biomarker-items:not(.hidden) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Target the specific structure from cardService.js */
+  .biomarker-group .biomarker-items:not(.hidden) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Override any inline styles that might be interfering */
+  .biomarker-items[style*="color: #333"]:not(.hidden) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Ensure biomarker items are visible when parent biomarkers-list is not hidden */
+  .biomarkers-list:not(.hidden) .biomarker-items:not(.hidden) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Force biomarker items to be visible regardless of parent state */
+  .biomarker-items:not(.hidden) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
 
   .biomarker-items li {
@@ -3449,17 +3507,30 @@ body {
   }
 
   /* Biomarker Grouping Styles for Filter Panel */
-  .biomarker-grouping {
-    margin-bottom: 0.5rem;
+  .filter-panel .biomarker-grouping {
+    margin-bottom: 0.25rem;
     margin-left: 1rem;
   }
 
-  .grouping-header {
+  .filter-panel .grouping-header {
     /* Remove background and border styling */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
-  .grouping-toggle-btn {
-    width: 100%;
+  .filter-panel .grouping-checkbox-container {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+
+  .filter-panel .grouping-checkbox {
+    margin-right: 0.5rem;
+    cursor: pointer;
+  }
+
+  .filter-panel .grouping-toggle-btn {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -3471,63 +3542,65 @@ body {
     font-weight: 500;
     color: #374151;
     transition: color 0.2s ease;
+    flex: 1;
   }
 
-  .grouping-toggle-btn:hover {
+  .filter-panel .grouping-toggle-btn:hover {
     color: #2563eb;
   }
 
-  .grouping-toggle-btn[aria-expanded="true"] .grouping-toggle-icon {
+  .filter-panel .grouping-toggle-btn[aria-expanded="true"] .grouping-toggle-icon {
     transform: rotate(180deg);
   }
 
-  .grouping-toggle-icon {
+  .filter-panel .grouping-toggle-icon {
     font-size: 0.75rem;
     transition: transform 0.2s ease;
     color: #6b7280;
     order: 2; /* Move arrow to the right */
   }
 
-  .grouping-name {
+  .filter-panel .grouping-name {
     flex: 1;
     text-align: left;
     order: 1; /* Keep text on the left */
+    padding-left: 0.5rem; /* Add smaller indentation to biomarker headings */
   }
 
-  .grouping-content {
+  .filter-panel .grouping-content {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
   }
 
-  .grouping-content[style*="display: block"] {
+  .filter-panel .grouping-content[style*="display: block"] {
     max-height: 200px; /* Reduced height for better scrolling */
     overflow-y: auto;
   }
 
-  .grouping-content[style*="display: block"]::-webkit-scrollbar {
+  .filter-panel .grouping-content[style*="display: block"]::-webkit-scrollbar {
     width: 4px;
   }
 
-  .grouping-content[style*="display: block"]::-webkit-scrollbar-track {
+  .filter-panel .grouping-content[style*="display: block"]::-webkit-scrollbar-track {
     background: #f1f1f1;
     border-radius: 2px;
   }
 
-  .grouping-content[style*="display: block"]::-webkit-scrollbar-thumb {
+  .filter-panel .grouping-content[style*="display: block"]::-webkit-scrollbar-thumb {
     background: #c1c1c1;
     border-radius: 2px;
   }
 
-  .grouping-content[style*="display: block"]::-webkit-scrollbar-thumb:hover {
+  .filter-panel .grouping-content[style*="display: block"]::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
   }
 
-  .grouping-checkboxes {
+  .filter-panel .grouping-checkboxes {
     padding: 0.5rem 0 0.5rem 1rem;
   }
 
-  .loading-indicator {
+  .filter-panel .loading-indicator {
     color: #6b7280;
     font-size: 0.875rem;
     font-style: italic;
@@ -3558,19 +3631,18 @@ body {
     padding: 0;
     position: sticky;
     top: 2rem;
-    height: fit-content;
-    max-height: none;
-    overflow-y: visible;
+    height: calc(100vh - 4rem);
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
     z-index: 100;
     box-shadow: none;
     flex-shrink: 0;
     box-sizing: border-box;
   }
 
-  /* Allow filter panel to be longer when biomarker section is expanded */
+  /* Filter panel now has its own scroll, so biomarker expansion doesn't affect height */
   .filter-panel.biomarker-expanded {
-    max-height: none;
-    height: auto;
+    /* Keep the same height and scroll behavior */
   }
 
   .filter-panel-content {
@@ -3578,6 +3650,27 @@ body {
     width: 100%;
     box-sizing: border-box;
     max-width: 220px;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  /* Custom scrollbar for filter panel */
+  .filter-panel::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .filter-panel::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  .filter-panel::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+
+  .filter-panel::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
   }
 
   .main-content {
@@ -3596,7 +3689,7 @@ body {
 
   /* Compact card styles for three-column layout */
   .products-grid .blood-test-card {
-    padding: 1rem;
+    padding: 1rem 1rem 6rem 1rem;
     border-radius: 8px;
     position: relative;
     overflow: visible;
@@ -8483,7 +8576,7 @@ body {
 
   .test-name {
     font-size: 1.1rem;
-    font-weight: 600;
+    font-weight: 700;
     color: #1f2937;
     margin: 0;
   }
@@ -8741,19 +8834,47 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    align-items: center;
+    align-items: flex-start;
   }
 
   .detail-item {
     font-size: 0.85rem;
-    color: #6b7280;
-    padding: 0.1rem 0;
+    color: #4b5563;
+    padding: 0.1rem 0 0.1rem 2.5rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    text-align: left;
+  }
+
+  .lab-accreditation {
+    cursor: help;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+  }
+
+  .lab-accreditation:hover {
+    color: #1e40af;
   }
 
   .blood-method {
-    font-size: 0.8rem;
-    color: #6b7280;
-    padding: 0.1rem 0;
+    font-size: 0.85rem;
+    color: #4b5563;
+    padding: 0.1rem 0 0.1rem 2.5rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  }
+
+  .unavailable-method {
+    color: #9ca3af;
+    opacity: 0.6;
+    display: inline-block;
+    width: 100%;
+    padding-left: 0.25rem;
+  }
+
+  .blood-method span {
+    display: inline-block;
+    width: 100%;
+    text-align: left;
   }
 
   .biomarker-count {
@@ -8808,6 +8929,7 @@ body {
     text-align: left;
     justify-content: flex-start;
     padding-left: 2rem;
+    color: #4b5563;
   }
 
   /* Biomarker comparison styles */
@@ -8835,6 +8957,13 @@ body {
     padding-bottom: 0.25rem;
     border-bottom: 1px solid #e5e7eb;
     padding-left: 4rem;
+  }
+
+  .comparison-grid .shared-header {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding-left: 0;
+    margin: 0.5rem 0;
   }
 
   .comparison-grid .grouping-biomarkers {
@@ -8916,3 +9045,4 @@ body {
     color: #fff;
     text-decoration: none;
   }
+

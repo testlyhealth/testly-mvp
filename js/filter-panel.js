@@ -41,6 +41,9 @@ async function fetchBiomarkersForGrouping(groupingName) {
 
 // Function to create the filter panel HTML
 export async function createFilterPanel(tests) {
+  console.log('=== DEBUG: createFilterPanel called ===');
+  console.log('Number of tests passed:', tests.length);
+  
   // Get price range
   const prices = tests.map(test => test.price);
   const minPrice = Math.min(...prices);
@@ -126,7 +129,7 @@ export async function createFilterPanel(tests) {
   // Fetch problems from Supabase
   let problems = [];
   try {
-    console.log('Fetching problems from database...');
+    console.log('=== DEBUG: Fetching problems from database ===');
     const { data, error } = await supabase.from('problem_list').select('name').order('name');
     console.log('Raw problems data:', data);
     console.log('Problems error:', error);
@@ -135,6 +138,7 @@ export async function createFilterPanel(tests) {
     problems = data.map(problem => problem.name);
     console.log('Processed problems:', problems);
     console.log('Number of problems found:', problems.length);
+    console.log('Looking for diabetes-related problems:', problems.filter(p => p.toLowerCase().includes('diabetes')));
   } catch (e) {
     console.error('Error fetching problems:', e);
     // Fallback to empty array if fetch fails
@@ -225,10 +229,13 @@ export async function createFilterPanel(tests) {
             ${biomarkerGroupings.map(grouping => `
               <div class="biomarker-grouping">
                 <div class="grouping-header">
-                  <button class="grouping-toggle-btn" aria-expanded="false" aria-controls="grouping-${generateSafeId(grouping)}">
-                    <span class="grouping-toggle-icon">▼</span>
-                    <span class="grouping-name">${grouping}</span>
-                  </button>
+                  <div class="grouping-checkbox-container">
+                    <input type="checkbox" id="grouping-${generateSafeId(grouping)}-checkbox" class="grouping-checkbox" value="${grouping}">
+                    <button class="grouping-toggle-btn" aria-expanded="false" aria-controls="grouping-${generateSafeId(grouping)}">
+                      <span class="grouping-name">${grouping}</span>
+                      <span class="grouping-toggle-icon">▼</span>
+                    </button>
+                  </div>
                 </div>
                 <div class="grouping-content" id="grouping-${generateSafeId(grouping)}" style="display: none;">
                   <div class="grouping-checkboxes">
@@ -360,6 +367,9 @@ let lastMaxPrice = null;
 
 // Function to setup filter panel functionality
 export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
+  console.log('=== DEBUG: setupFilterPanel called ===');
+  console.log('Number of tests passed:', tests.length);
+  
   // Always re-query the latest filter panel content from the DOM
   let filterPanel = rootPanel || document.querySelector('.filter-panel-content');
   if (!filterPanel) {
@@ -390,6 +400,11 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   const bloodMethodCheckboxes = filterPanel.querySelectorAll('.blood-method-checkbox');
   const problemsAll = filterPanel.querySelector('#problems-all');
   const problemsCheckboxes = filterPanel.querySelectorAll('.problems-checkbox');
+  
+  console.log('=== DEBUG: Problem checkboxes setup ===');
+  console.log('problemsAll found:', !!problemsAll);
+  console.log('Number of problem checkboxes found:', problemsCheckboxes.length);
+  console.log('Problem checkbox values:', Array.from(problemsCheckboxes).map(cb => cb.value));
   const doctorsReport = filterPanel.querySelector('#doctors-report');
   const resetFiltersBtn = filterPanel.querySelector('#reset-filters');
 
@@ -1198,9 +1213,18 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     });
   }
 
+  console.log('=== DEBUG: Setting up problem checkboxes ===');
+  console.log('Number of problem checkboxes found:', problemsCheckboxes.length);
+  console.log('Problem checkbox values:', Array.from(problemsCheckboxes).map(cb => cb.value));
+  console.log('Problem checkbox elements:', Array.from(problemsCheckboxes).map(cb => ({ value: cb.value, id: cb.id, checked: cb.checked })));
+  
   // Handle individual problems/symptoms checkboxes
   problemsCheckboxes.forEach(checkbox => {
     checkbox.addEventListener('change', async () => {
+      console.log('=== DEBUG: Problem checkbox changed ===');
+      console.log('Checkbox value:', checkbox.value);
+      console.log('Checkbox checked:', checkbox.checked);
+      
       // If this problem is checked, uncheck all others and disable them
       if (checkbox.checked) {
         // Uncheck all other problem checkboxes
@@ -1340,6 +1364,117 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     });
   }
 
+  // Function to enrich tests with biomarker and blood taking method data
+  async function enrichTestsWithBiomarkersAndMethods(tests) {
+    try {
+      // 1. Get test IDs
+      const testIds = tests.map(t => t.id);
+      
+      // 2. Fetch biomarker links and biomarkers for these tests
+      let biomarkerLinks = [];
+      let biomarkerIds = [];
+      let biomarkers = [];
+      let methodLinks = [];
+      let allMethods = [];
+      let labAccreditationLinks = [];
+      let allLabAccreditations = [];
+      
+      if (testIds.length > 0) {
+        const { data: links, error: linkError } = await supabase
+          .from('biomarker_link_table')
+          .select('provider_blood_test_id, biomarker_id')
+          .in('provider_blood_test_id', testIds);
+        if (linkError) throw linkError;
+        biomarkerLinks = links;
+        biomarkerIds = [...new Set(links.map(l => l.biomarker_id))];
+
+        // Fetch blood taking method links
+        const { data: methodLinkRows, error: methodLinkError } = await supabase
+          .from('blood_taking_method_link_table')
+          .select('provider_blood_test_id, blood_taking_method_id')
+          .in('provider_blood_test_id', testIds);
+        if (methodLinkError) throw methodLinkError;
+        methodLinks = methodLinkRows;
+
+        // Fetch all blood taking methods
+        const { data: methodRows, error: methodError } = await supabase
+          .from('blood_taking_methods')
+          .select('id, name');
+        if (methodError) throw methodError;
+        allMethods = methodRows;
+
+        // Fetch lab accreditation links
+        const { data: labAccreditationLinkRows, error: labAccreditationLinkError } = await supabase
+          .from('lab_accreditation_link_table')
+          .select('provider_blood_test_id, lab_accreditation_id')
+          .in('provider_blood_test_id', testIds);
+        if (labAccreditationLinkError) throw labAccreditationLinkError;
+        labAccreditationLinks = labAccreditationLinkRows;
+
+        // Fetch all lab accreditations
+        const { data: labAccreditationRows, error: labAccreditationError } = await supabase
+          .from('lab_accreditations')
+          .select('id, name');
+        if (labAccreditationError) throw labAccreditationError;
+        allLabAccreditations = labAccreditationRows;
+      }
+      
+      if (biomarkerIds.length > 0) {
+        const { data: biomarkerRows, error: biomarkerError } = await supabase
+          .from('biomarkers')
+          .select('id, name, group_links:biomarker_groupings_link_table(grouping:biomarker_groupings(name))')
+          .in('id', biomarkerIds);
+        if (biomarkerError) throw biomarkerError;
+        biomarkers = biomarkerRows;
+      }
+      
+      // 3. Attach grouped biomarkers, flat biomarker names, and blood taking methods to each test
+      tests.forEach(test => {
+        const links = biomarkerLinks.filter(link => link.provider_blood_test_id === test.id);
+        const grouped = {};
+        const biomarkerNames = [];
+        links.forEach(link => {
+          const biomarker = biomarkers.find(b => b.id === link.biomarker_id);
+          if (!biomarker) return;
+          biomarkerNames.push(biomarker.name);
+          if (Array.isArray(biomarker.group_links) && biomarker.group_links.length > 0) {
+            biomarker.group_links.forEach(gl => {
+              const groupName = gl.grouping?.name || 'Other';
+              if (!grouped[groupName]) grouped[groupName] = [];
+              grouped[groupName].push(biomarker.name);
+            });
+          } else {
+            if (!grouped['Other']) grouped['Other'] = [];
+            grouped['Other'].push(biomarker.name);
+          }
+        });
+        test.grouped_biomarkers = grouped;
+        test.biomarker_count = test.biomarker_column || links.length;
+        test.biomarker_names = biomarkerNames;
+        // Attach blood taking methods
+        const methodIds = methodLinks.filter(l => l.provider_blood_test_id === test.id).map(l => l.blood_taking_method_id);
+        test.blood_taking_methods = allMethods.filter(m => methodIds.includes(m.id)).map(m => m.name);
+        
+        // Attach lab accreditations
+        const labAccreditationIds = labAccreditationLinks.filter(l => l.provider_blood_test_id === test.id).map(l => l.lab_accreditation_id);
+        test["lab accreditations"] = allLabAccreditations.filter(la => labAccreditationIds.includes(la.id)).map(la => la.name);
+        
+        // Check if lab_accreditations field exists directly in the test data
+        if (test.lab_accreditations) {
+          // If it's a string, split it into an array
+          if (typeof test.lab_accreditations === 'string') {
+            test["lab accreditations"] = test.lab_accreditations.split(',').map(acc => acc.trim()).filter(acc => acc);
+          }
+        }
+      });
+      
+      return tests;
+    } catch (error) {
+      console.error('Error enriching tests:', error);
+      return tests; // Return original tests if enrichment fails
+    }
+  }
+
   // Function to fetch and display linked tests for a selected problem
   async function fetchAndDisplayLinkedTests(problemName) {
     try {
@@ -1383,28 +1518,138 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         return;
       }
       
-      // 3. Extract the 3 linked tests with their best_options
+      // 3. Extract the linked tests with their best_options
       const linkedTests = linkRows.map(link => ({
         ...link.provider_blood_test,
         best_options: link.best_options
       }));
       
-      // 4. Clear all other filter tags and show only problem tag
+      // 4. Enrich the linked tests with biomarker and blood taking method data
+      const enrichedLinkedTests = await enrichTestsWithBiomarkersAndMethods(linkedTests);
+      
+      // 5. For diabetes problem, also fetch heart health category tests
+      let heartHealthTests = [];
+      let totalResults = enrichedLinkedTests.length;
+      
+      if (problemName.toLowerCase().includes('diabetes')) {
+        try {
+          // Get heart health category ID
+          const { data: allCategories, error: allCategoriesError } = await supabase
+            .from('blood_test_categories')
+            .select('id, name')
+            .order('name');
+          
+          // Look for the exact heart health category
+          const heartCategory = allCategories?.find(cat => 
+            cat.name === 'Heart and metabolic health'
+          );
+          
+          if (heartCategory) {
+            const categoryId = heartCategory.id;
+            
+            // Get tests for heart health category
+            const { data: linkRows, error: linkError } = await supabase
+              .from('blood_test_category_link_table')
+              .select('provider_blood_test_id')
+              .eq('blood_test_category_id', categoryId);
+            
+            if (!linkError && linkRows && linkRows.length > 0) {
+              const testIds = linkRows.map(row => row.provider_blood_test_id);
+              
+              // Fetch the actual test data
+              const { data: testRows, error: testError } = await supabase
+                .from('provider_blood_tests')
+                .select('*, provider:providers(name)')
+                .in('id', testIds);
+              
+              if (!testError && testRows) {
+                // Enrich heart health tests
+                heartHealthTests = await enrichTestsWithBiomarkersAndMethods(testRows);
+                totalResults += heartHealthTests.length;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching heart health tests:', error);
+        }
+      } else if (problemName.toLowerCase().includes('female hormone')) {
+        try {
+          // Get female health category ID
+          const { data: allCategories, error: allCategoriesError } = await supabase
+            .from('blood_test_categories')
+            .select('id, name')
+            .order('name');
+          
+          // Look for the exact female health category
+          const femaleCategory = allCategories?.find(cat => 
+            cat.name === 'Female health and hormones'
+          );
+          
+          if (femaleCategory) {
+            const categoryId = femaleCategory.id;
+            
+            // Get tests for female health category
+            const { data: linkRows, error: linkError } = await supabase
+              .from('blood_test_category_link_table')
+              .select('provider_blood_test_id')
+              .eq('blood_test_category_id', categoryId);
+            
+            if (!linkError && linkRows && linkRows.length > 0) {
+              const testIds = linkRows.map(row => row.provider_blood_test_id);
+              
+              // Fetch the actual test data
+              const { data: testRows, error: testError } = await supabase
+                .from('provider_blood_tests')
+                .select('*, provider:providers(name)')
+                .in('id', testIds);
+              
+              if (!testError && testRows) {
+                // Enrich female health tests
+                heartHealthTests = await enrichTestsWithBiomarkersAndMethods(testRows);
+                totalResults += heartHealthTests.length;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching female health tests:', error);
+        }
+      }
+      
+      // 6. Clear all other filter tags and show problem and category tags
       const filterTagsContainer = document.querySelector('.filter-tags');
       if (filterTagsContainer) {
-        filterTagsContainer.innerHTML = `
+        let filterTagsHTML = `
           <div class="filter-tags-container">
             <div class="filter-tags-list">
               <div class="filter-tag" data-type="problem" data-value="${problemName}">
                 <span>Problem: ${problemName}</span>
                 <button class="remove-tag" aria-label="Remove problem filter">×</button>
-              </div>
+              </div>`;
+        
+        // Add category tags for specific problems
+        if (problemName.toLowerCase().includes('diabetes') && heartHealthTests.length > 0) {
+          filterTagsHTML += `
+              <div class="filter-tag" data-type="category" data-value="Heart and metabolic health">
+                <span>Category: Heart and metabolic health</span>
+                <button class="remove-tag" aria-label="Remove category filter">×</button>
+              </div>`;
+        } else if (problemName.toLowerCase().includes('female hormone') && heartHealthTests.length > 0) {
+          filterTagsHTML += `
+              <div class="filter-tag" data-type="category" data-value="Female health and hormones">
+                <span>Category: Female health and hormones</span>
+                <button class="remove-tag" aria-label="Remove category filter">×</button>
+              </div>`;
+        }
+        
+        filterTagsHTML += `
             </div>
             <div class="results-count">
-              <span>${linkedTests.length} results</span>
+              <span>${totalResults} results</span>
             </div>
           </div>
         `;
+        
+        filterTagsContainer.innerHTML = filterTagsHTML;
         
         // Add event listener to remove tag
         const removeBtn = filterTagsContainer.querySelector('.remove-tag');
@@ -1426,18 +1671,50 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         }
       }
       
-      // 5. Display the linked tests directly
+      // 7. Display the enriched linked tests and heart health tests
       const testsGrid = document.querySelector('.products-grid');
       
-      if (testsGrid && linkedTests.length > 0) {
-        // Create cards for the linked tests
+      if (testsGrid && (enrichedLinkedTests.length > 0 || heartHealthTests.length > 0)) {
         const cardService = new (await import('./services/cardService.js')).CardService();
-        const cards = await cardService.createCards(linkedTests);
         
-        testsGrid.innerHTML = cards;
+        let allCardsHTML = '';
         
-        // Set up card event handlers
-        cardService.setupCardEventHandlers(linkedTests);
+        // Display top 3 linked tests first (if any)
+        if (enrichedLinkedTests.length > 0) {
+          const topCards = await cardService.createCards(enrichedLinkedTests);
+          allCardsHTML += topCards;
+        }
+        
+        // Display additional category tests below (if any)
+        if (heartHealthTests.length > 0) {
+          let sectionTitle = '';
+          let sectionDescription = '';
+          
+          if (problemName.toLowerCase().includes('diabetes')) {
+            sectionTitle = 'Heart Health Tests';
+            sectionDescription = 'Additional tests that may be relevant for diabetes management';
+          } else if (problemName.toLowerCase().includes('female hormone')) {
+            sectionTitle = 'Female Health Tests';
+            sectionDescription = 'Additional tests that may be relevant for female hormone health';
+          }
+          
+          // Add a section header for additional tests
+          allCardsHTML += `
+            <div style="grid-column: 1 / -1; margin: 2rem 0 1rem 0; padding: 1rem; background: #f8f9fa; border-radius: 0.5rem; border-left: 4px solid #dc3545;">
+              <h3 style="margin: 0; color: #333; font-size: 1.2rem;">${sectionTitle}</h3>
+              <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.9rem;">${sectionDescription}</p>
+            </div>
+          `;
+          
+          const additionalCards = await cardService.createCards(heartHealthTests);
+          allCardsHTML += additionalCards;
+        }
+        
+        testsGrid.innerHTML = allCardsHTML;
+        
+        // Set up card event handlers for all tests
+        const allTests = [...enrichedLinkedTests, ...heartHealthTests];
+        cardService.setupCardEventHandlers(allTests);
       } else {
         console.error('Tests grid not found or no linked tests');
       }

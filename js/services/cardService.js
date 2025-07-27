@@ -28,6 +28,8 @@ export class CardService {
       showDetails = true
     } = options;
 
+
+
     // Get the provider name (handle both string and object)
     const providerName = (test.provider?.name || test.provider || '').trim();
     let providerLogo = this.providerLogoMap[providerName];
@@ -35,26 +37,9 @@ export class CardService {
       const normalized = providerName.toLowerCase().replace(/ |-/g, '');
       providerLogo = `${normalized}.png`;
     }
-    // Group biomarkers by group name from Supabase structure
-    const groupMap = new Map();
-    if (Array.isArray(test.test_biomarkers)) {
-      test.test_biomarkers.forEach(link => {
-        const biomarker = link.biomarker;
-        if (!biomarker) return;
-        // Each biomarker may have multiple group_links
-        if (Array.isArray(biomarker.group_links) && biomarker.group_links.length > 0) {
-          biomarker.group_links.forEach(gl => {
-            const groupName = gl.grouping?.name || 'Other';
-            if (!groupMap.has(groupName)) groupMap.set(groupName, []);
-            groupMap.get(groupName).push(biomarker.name);
-          });
-        } else {
-          // No group, put in 'Other'
-          if (!groupMap.has('Other')) groupMap.set('Other', []);
-          groupMap.get('Other').push(biomarker.name);
-        }
-      });
-    }
+    // Use the already processed grouped biomarkers from the database
+    // The data is already processed in fetchAndEnrichTests function
+    // No need to reprocess here since test.grouped_biomarkers is already set
     // Defensive: ensure these are arrays
     const bloodTestLocations = Array.isArray(test["blood test location"]) ? test["blood test location"] : [];
     const labAccreditations = Array.isArray(test["lab accreditations"]) ? test["lab accreditations"] : [];
@@ -63,7 +48,12 @@ export class CardService {
     if (!test.grouped_biomarkers || Object.keys(test.grouped_biomarkers).length === 0) {
       console.log('WARNING: No grouped biomarkers for', test.name);
     }
-    const biomarkerCount = test.biomarker_count || 0;
+    
+    // Calculate biomarker count from grouped_biomarkers if not already set
+    let biomarkerCount = test.biomarker_count || 0;
+    if (biomarkerCount === 0 && test.grouped_biomarkers) {
+      biomarkerCount = Object.values(test.grouped_biomarkers).reduce((total, group) => total + group.length, 0);
+    }
 
     // Remove duplicate biomarkers across groups (show in first group only)
     if (test.grouped_biomarkers && typeof test.grouped_biomarkers === 'object') {
@@ -312,7 +302,8 @@ export class CardService {
           testId,
           decodedTestName,
           foundTest: test,
-          checked: e.target.checked
+          checked: e.target.checked,
+          allTestNames: tests.map(t => t.name)
         });
         
         if (test) {
@@ -325,6 +316,7 @@ export class CardService {
           }
         } else {
           console.error('Test not found for:', decodedTestName);
+          console.error('Available tests:', tests.map(t => t.name));
         }
       });
     });
@@ -375,18 +367,30 @@ export class CardService {
     });
 
     // Add event listeners to group headers so clicking the header also toggles the group and arrow
-    $all('.biomarker-group .group-header').forEach(header => {
-      console.log('Setting up group header click handler:', {
+    console.log('=== SETTING UP BIOMARKER GROUP HEADERS ===');
+    const headers = $all('.biomarker-group .group-header');
+    console.log('Found headers:', headers.length);
+    
+    headers.forEach((header, index) => {
+      console.log(`Header ${index}:`, {
         header: header,
-        headerText: header.textContent
+        headerText: header.textContent,
+        headerHTML: header.outerHTML.substring(0, 200) + '...'
       });
       
       header.addEventListener('click', (e) => {
+        console.log('=== HEADER CLICK EVENT ===');
+        console.log('Event target:', e.target);
+        console.log('Event currentTarget:', e.currentTarget);
+        console.log('Event type:', e.type);
+        console.log('Event bubbles:', e.bubbles);
+        
         console.log('Group header clicked:', {
           header: e.target,
           headerText: e.target.textContent,
           clickedElement: e.target,
-          isToggleButton: e.target.closest('.toggle-biomarkers')
+          isToggleButton: e.target.closest('.toggle-biomarkers'),
+          toggleButtonFound: !!e.target.closest('.toggle-biomarkers')
         });
         
         // Prevent double toggling if the button itself was clicked
@@ -400,16 +404,46 @@ export class CardService {
         const toggleButton = group.querySelector('.toggle-biomarkers');
         const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
         
-        console.log('Header click - before toggle:', {
+        console.log('Elements found:', {
           group: group,
+          groupHTML: group?.outerHTML.substring(0, 200) + '...',
           hasBiomarkerItems: !!biomarkerItems,
+          biomarkerItems: biomarkerItems,
+          biomarkerItemsHTML: biomarkerItems?.outerHTML.substring(0, 200) + '...',
           hasToggleButton: !!toggleButton,
+          toggleButton: toggleButton,
+          toggleButtonHTML: toggleButton?.outerHTML.substring(0, 200) + '...',
           isExpanded: isExpanded,
-          biomarkerItemsClasses: biomarkerItems?.className
+          biomarkerItemsClasses: biomarkerItems?.className,
+          toggleButtonAriaExpanded: toggleButton?.getAttribute('aria-expanded')
+        });
+        
+        console.log('Before toggle - biomarker items state:', {
+          classList: biomarkerItems?.classList.toString(),
+          hasHiddenClass: biomarkerItems?.classList.contains('hidden'),
+          display: biomarkerItems ? window.getComputedStyle(biomarkerItems).display : 'N/A',
+          visibility: biomarkerItems ? window.getComputedStyle(biomarkerItems).visibility : 'N/A',
+          opacity: biomarkerItems ? window.getComputedStyle(biomarkerItems).opacity : 'N/A'
         });
         
         biomarkerItems.classList.toggle('hidden');
-        toggleButton.setAttribute('aria-expanded', !isExpanded);
+        toggleButton.setAttribute('aria-expanded', (!isExpanded).toString());
+        
+        console.log('After toggle - biomarker items state:', {
+          classList: biomarkerItems?.classList.toString(),
+          hasHiddenClass: biomarkerItems?.classList.contains('hidden'),
+          display: biomarkerItems ? window.getComputedStyle(biomarkerItems).display : 'N/A',
+          visibility: biomarkerItems ? window.getComputedStyle(biomarkerItems).visibility : 'N/A',
+          opacity: biomarkerItems ? window.getComputedStyle(biomarkerItems).opacity : 'N/A'
+        });
+        
+        console.log('After toggle - toggle button state:', {
+          ariaExpanded: toggleButton?.getAttribute('aria-expanded'),
+          ariaExpandedType: typeof toggleButton?.getAttribute('aria-expanded'),
+          toggleIcon: toggleButton?.querySelector('.toggle-icon'),
+          toggleIconHTML: toggleButton?.querySelector('.toggle-icon')?.outerHTML,
+          toggleIconTransform: toggleButton?.querySelector('.toggle-icon') ? window.getComputedStyle(toggleButton.querySelector('.toggle-icon')).transform : 'N/A'
+        });
         
         console.log('Header click - after toggle:', {
           isExpanded: toggleButton.getAttribute('aria-expanded'),
@@ -451,15 +485,7 @@ export class CardService {
           isExpanded: isExpanded
         });
         
-        // Toggle the biomarkers list visibility
-        biomarkersList.classList.toggle('hidden');
-        
-        console.log('After biomarkers list toggle:', {
-          biomarkersListClasses: biomarkersList.className,
-          biomarkersListHidden: biomarkersList.classList.contains('hidden')
-        });
-        
-        // Toggle all biomarker items and their toggle buttons
+        // Toggle all biomarker items and their toggle buttons (don't hide the list container)
         const groups = biomarkersSection.querySelectorAll('.biomarker-group');
         console.log('Found biomarker groups:', groups.length);
         
@@ -467,20 +493,19 @@ export class CardService {
           const items = group.querySelector('.biomarker-items');
           const toggle = group.querySelector('.toggle-biomarkers');
           
-                  console.log(`Group ${index}:`, {
-          group: group,
-          hasItems: !!items,
-          hasToggle: !!toggle,
-          itemsClasses: items?.className,
-          toggleText: toggle?.textContent,
-          itemsElement: items,
-          itemsHTML: items?.outerHTML?.substring(0, 200) + '...'
-        });
+          console.log(`Group ${index}:`, {
+            group: group,
+            hasItems: !!items,
+            hasToggle: !!toggle,
+            itemsClasses: items?.className,
+            toggleText: toggle?.textContent,
+            itemsElement: items,
+            itemsHTML: items?.outerHTML?.substring(0, 200) + '...'
+          });
           
           if (items && toggle) {
-            // If the biomarkers list is being shown, show all individual items
-            // If the biomarkers list is being hidden, hide all individual items
-            const shouldShowItems = !biomarkersList.classList.contains('hidden');
+            // Toggle the individual biomarker items based on current state
+            const shouldShowItems = !isExpanded; // If currently collapsed, show items; if expanded, hide items
             items.classList.toggle('hidden', !shouldShowItems);
             toggle.setAttribute('aria-expanded', shouldShowItems);
             
@@ -495,12 +520,11 @@ export class CardService {
         });
         
         // Update the "Show all" button
-        const newExpandedState = !biomarkersList.classList.contains('hidden');
-        button.setAttribute('aria-expanded', newExpandedState);
+        button.setAttribute('aria-expanded', !isExpanded);
         console.log('Toggle all button updated:', {
           newExpanded: button.getAttribute('aria-expanded'),
           biomarkersListHidden: biomarkersList.classList.contains('hidden'),
-          newExpandedState: newExpandedState
+          newExpandedState: !isExpanded
         });
       });
     });
@@ -566,14 +590,15 @@ export class CardService {
     let comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
     console.log('Comparison tests from localStorage:', comparisonTests);
     
-    // Refresh biomarker counts from the current test data
+    // Refresh biomarker counts and lab accreditations from the current test data
     if (window._allGeneralHealthTests) {
       comparisonTests = comparisonTests.map(storedTest => {
         const currentTest = window._allGeneralHealthTests.find(t => t.name === storedTest.name);
         if (currentTest) {
           return {
             ...storedTest,
-            biomarker_count: currentTest.biomarker_count
+            biomarker_count: currentTest.biomarker_count,
+            "lab accreditations": currentTest["lab accreditations"] || storedTest["lab accreditations"]
           };
         }
         return storedTest;
@@ -663,10 +688,25 @@ export class CardService {
             }
           })();
           
+          // Get lab accreditations
+          const labAccreditations = Array.isArray(test["lab accreditations"]) ? test["lab accreditations"] : [];
+          
+          // Create lab accreditations HTML with tooltips
+          const labAccreditationsHTML = labAccreditations.length > 0 
+            ? labAccreditations.map(acc => {
+                if (acc === 'ISO 15189') {
+                  return `<span class="lab-accreditation" title="ISO 15189: Medical laboratories - Requirements for quality and competence. This international standard specifies requirements for quality and competence in medical laboratories.">${acc}</span>`;
+                } else {
+                  return `<span class="lab-accreditation">${acc}</span>`;
+                }
+              }).join(', ')
+            : 'Not specified';
+          
           practicalCell.innerHTML = `
             <div class="practical-details">
               <div class="detail-item">Results returned in ${resultsText}</div>
               <div class="detail-item">Doctors report: ${test.doctors_report ? '✅' : '❌'}</div>
+              <div class="detail-item">Lab accreditations: ${labAccreditationsHTML}</div>
             </div>
           `;
         }
@@ -674,25 +714,33 @@ export class CardService {
         // Update blood method
         const bloodMethodCell = document.getElementById(`blood-method-${i}`);
         if (bloodMethodCell) {
-          const bloodMethod = Array.isArray(test.blood_taking_methods) && test.blood_taking_methods.length > 0
-            ? test.blood_taking_methods.map(method => {
-                const emojiMap = {
-                  'Home test': '🏠',
-                  'Clinic visit': '🏥',
-                  'Phlebotomist to home': '👩🏼‍⚕️',
-                  'Self arrange': '🙋🏼'
-                };
-                
-                const displayTextMap = {
-                  'Home test': 'Home test/ finger prick',
-                  'Clinic visit': 'Clinic visit full venous test',
-                  'Phlebotomist to home': 'Phlebotomist to home',
-                  'Self arrange': 'Self arrange'
-                };
-                return `${emojiMap[method] || '❓'} ${displayTextMap[method] || method}`;
-              }).join('<br>')
-            : 'Not specified';
-          bloodMethodCell.innerHTML = bloodMethod;
+          const allMethods = ['Home test', 'Clinic visit', 'Phlebotomist to home', 'Self arrange'];
+          const availableMethods = Array.isArray(test.blood_taking_methods) ? test.blood_taking_methods : [];
+          
+          const bloodMethod = allMethods.map(method => {
+            const isAvailable = availableMethods.includes(method);
+            const emojiMap = {
+              'Home test': '🏠',
+              'Clinic visit': '🏥',
+              'Phlebotomist to home': '👩🏼‍⚕️',
+              'Self arrange': '🙋🏼'
+            };
+            
+            const displayTextMap = {
+              'Home test': 'Home test/ finger prick',
+              'Clinic visit': 'Clinic visit full venous test',
+              'Phlebotomist to home': 'Phlebotomist to home',
+              'Self arrange': 'Self arrange'
+            };
+            
+            const icon = isAvailable ? (emojiMap[method] || '❓') : '✗';
+            const text = displayTextMap[method] || method;
+            const className = isAvailable ? '' : 'unavailable-method';
+            
+            return `<span class="${className}">${icon} ${text}</span>`;
+          }).join('<br>');
+          
+          bloodMethodCell.innerHTML = `<div class="blood-method">${bloodMethod}</div>`;
         }
         
         // Update biomarkers
@@ -758,7 +806,7 @@ export class CardService {
       
       if (testBiomarkers.length > 0) {
         html += `<div class="biomarker-grouping">
-          <div class="grouping-header">${groupName}</div>
+          <div class="grouping-header shared-header">${groupName}</div>
           <div class="grouping-biomarkers">`;
         
         // Sort biomarkers alphabetically within each group
@@ -917,10 +965,25 @@ export class CardService {
             }
           })();
           
+          // Get lab accreditations
+          const labAccreditations = Array.isArray(test["lab accreditations"]) ? test["lab accreditations"] : [];
+          
+          // Create lab accreditations HTML with tooltips
+          const labAccreditationsHTML = labAccreditations.length > 0 
+            ? labAccreditations.map(acc => {
+                if (acc === 'ISO 15189') {
+                  return `<span class="lab-accreditation" title="ISO 15189: Medical laboratories - Requirements for quality and competence. This international standard specifies requirements for quality and competence in medical laboratories.">${acc}</span>`;
+                } else {
+                  return `<span class="lab-accreditation">${acc}</span>`;
+                }
+              }).join(', ')
+            : 'Not specified';
+          
           practicalCell.innerHTML = `
             <div class="practical-details">
               <div class="detail-item">Results returned in ${resultsText}</div>
               <div class="detail-item">Doctors report: ${test.doctors_report ? '✅' : '❌'}</div>
+              <div class="detail-item">Lab accreditations: ${labAccreditationsHTML}</div>
             </div>
           `;
         }
@@ -928,25 +991,33 @@ export class CardService {
         // Update blood method
         const bloodMethodCell = document.getElementById(`blood-method-${i}`);
         if (bloodMethodCell) {
-          const bloodMethod = Array.isArray(test.blood_taking_methods) && test.blood_taking_methods.length > 0
-            ? test.blood_taking_methods.map(method => {
-                const emojiMap = {
-                  'Home test': '🏠',
-                  'Clinic visit': '🏥',
-                  'Phlebotomist to home': '👩🏼‍⚕️',
-                  'Self arrange': '🙋🏼'
-                };
-                
-                const displayTextMap = {
-                  'Home test': 'Home test/ finger prick',
-                  'Clinic visit': 'Clinic visit full venous test',
-                  'Phlebotomist to home': 'Phlebotomist to home',
-                  'Self arrange': 'Self arrange'
-                };
-                return `${emojiMap[method] || '❓'} ${displayTextMap[method] || method}`;
-              }).join('<br>')
-            : 'Not specified';
-          bloodMethodCell.innerHTML = bloodMethod;
+          const allMethods = ['Home test', 'Clinic visit', 'Phlebotomist to home', 'Self arrange'];
+          const availableMethods = Array.isArray(test.blood_taking_methods) ? test.blood_taking_methods : [];
+          
+          const bloodMethod = allMethods.map(method => {
+            const isAvailable = availableMethods.includes(method);
+            const emojiMap = {
+              'Home test': '🏠',
+              'Clinic visit': '🏥',
+              'Phlebotomist to home': '👩🏼‍⚕️',
+              'Self arrange': '🙋🏼'
+            };
+            
+            const displayTextMap = {
+              'Home test': 'Home test/ finger prick',
+              'Clinic visit': 'Clinic visit full venous test',
+              'Phlebotomist to home': 'Phlebotomist to home',
+              'Self arrange': 'Self arrange'
+            };
+            
+            const icon = isAvailable ? (emojiMap[method] || '❓') : '✗';
+            const text = displayTextMap[method] || method;
+            const className = isAvailable ? '' : 'unavailable-method';
+            
+            return `<span class="${className}">${icon} ${text}</span>`;
+          }).join('<br>');
+          
+          bloodMethodCell.innerHTML = `<div class="blood-method">${bloodMethod}</div>`;
         }
         
         // Update biomarkers with aligned structure
@@ -999,7 +1070,7 @@ export class CardService {
       const masterBiomarkers = masterBiomarkerLists[groupName] || [];
       
       html += `<div class="biomarker-grouping">
-        <div class="grouping-header">${groupName}</div>
+        <div class="grouping-header shared-header">${groupName}</div>
         <div class="grouping-biomarkers">`;
       
       if (masterBiomarkers.length > 0) {
@@ -1086,6 +1157,7 @@ export class CardService {
         <div class="practical-details">
           <div class="detail-item">Results returned</div>
           <div class="detail-item">Doctors report</div>
+          <div class="detail-item">Lab accreditations</div>
         </div>
       `;
     }

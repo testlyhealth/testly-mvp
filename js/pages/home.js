@@ -312,7 +312,7 @@ export function initializeHomePage() {
 // Load featured blood tests from database
 async function loadFeaturedBloodTest() {
   try {
-    // Fetch the three specified tests in parallel
+    // Fetch the three specified tests in parallel with enriched data
     const [test1Result, test2Result, test3Result] = await Promise.all([
       supabase
         .from('provider_blood_tests')
@@ -320,6 +320,16 @@ async function loadFeaturedBloodTest() {
           *,
           providers:provider_id (
             name
+          ),
+          biomarker_link_table (
+            biomarkers (
+              name
+            )
+          ),
+          blood_taking_method_link_table (
+            blood_taking_methods (
+              name
+            )
           )
         `)
         .eq('id', 5)
@@ -330,6 +340,16 @@ async function loadFeaturedBloodTest() {
           *,
           providers:provider_id (
             name
+          ),
+          biomarker_link_table (
+            biomarkers (
+              name
+            )
+          ),
+          blood_taking_method_link_table (
+            blood_taking_methods (
+              name
+            )
           )
         `)
         .eq('id', 63)
@@ -340,6 +360,16 @@ async function loadFeaturedBloodTest() {
           *,
           providers:provider_id (
             name
+          ),
+          biomarker_link_table (
+            biomarkers (
+              name
+            )
+          ),
+          blood_taking_method_link_table (
+            blood_taking_methods (
+              name
+            )
           )
         `)
         .eq('id', 152)
@@ -354,22 +384,25 @@ async function loadFeaturedBloodTest() {
       if (result.error) {
         console.error(`Error fetching blood test ${index + 1}:`, result.error);
       } else if (result.data) {
-        // Convert database format to CardService format
+        // Convert database format to CardService format with enriched data
+        const biomarkers = result.data.biomarker_link_table?.map(link => link.biomarkers?.name).filter(Boolean) || [];
+        const bloodTakingMethods = result.data.blood_taking_method_link_table?.map(link => link.blood_taking_methods?.name).filter(Boolean) || [];
+        
         const testData = {
           name: result.data.name,
           provider: result.data.providers?.name || 'Unknown Provider',
           price: result.data.price || 0,
-          biomarkers: result.data.biomarkers ? result.data.biomarkers.split(',').map(b => b.trim()) : [],
+          biomarkers: biomarkers,
           url: result.data.url || '#',
           logo: result.data.logo_url || '',
           description: result.data.description || '',
-          blood_taking_method: result.data.blood_taking_method || 'Finger prick',
+          blood_taking_method: bloodTakingMethods.join(', ') || 'Finger prick',
           results_returned: result.data.results_returned || '2 days',
           doctors_report: result.data.doctors_report ? 'Yes' : 'No',
           trustpilot_score: result.data.trustpilot_score || 4.5,
-          biomarker_count: result.data.biomarker_column || 0,
+          biomarker_count: biomarkers.length || result.data.biomarker_column || 0,
           grouped_biomarkers: {
-            "General Health": result.data.biomarkers ? result.data.biomarkers.split(',').map(b => b.trim()) : []
+            "General Health": biomarkers
           }
         };
         tests.push(testData);
