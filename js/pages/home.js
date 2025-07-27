@@ -38,7 +38,7 @@ export function getHomePageContent() {
           <h3>Find your solution</h3>
           <div class="search-tabs">
             <button class="tab-button active">Test / Treatment</button>
-            <button class="tab-button">Problem</button>
+            <button class="tab-button">Problem / Symptom</button>
           </div>
           <div class="search-form">
             <!-- Blood tests form -->
@@ -872,7 +872,7 @@ function setupRollingText() {
                 problemForm.style.opacity = '0';
                 problemForm.style.visibility = 'hidden';
                 problemForm.style.position = 'absolute';
-              } else if (button.textContent === 'Problem') {
+              } else if (button.textContent === 'Problem / Symptom') {
                 bloodTestsForm.style.opacity = '0';
                 bloodTestsForm.style.visibility = 'hidden';
                 bloodTestsForm.style.position = 'absolute';
@@ -885,9 +885,55 @@ function setupRollingText() {
         }
         
         function setupQuickSearchForm() {
+          console.log('=== DEBUG: setupQuickSearchForm ===');
+          
           const searchButton = document.querySelector('.blood-tests-form .search-button');
+          console.log('Blood tests search button found:', !!searchButton);
           if (searchButton) {
             searchButton.addEventListener('click', handleQuickSearch);
+          }
+          
+          // Setup problem form submission
+          const problemSearchButton = document.querySelector('.problem-form .search-button');
+          console.log('Problem search button found:', !!problemSearchButton);
+          console.log('Problem search button element:', problemSearchButton);
+          if (problemSearchButton) {
+            console.log('Adding click listener to problem search button');
+            console.log('Button text content:', problemSearchButton.textContent);
+            console.log('Button HTML:', problemSearchButton.outerHTML);
+            console.log('Button onclick attribute:', problemSearchButton.onclick);
+            console.log('Button event listeners:', problemSearchButton.onclick);
+            
+            // Add multiple event listeners to catch any issues
+            problemSearchButton.addEventListener('click', (e) => {
+              console.log('=== PROBLEM SEARCH BUTTON CLICKED ===');
+              console.log('Event:', e);
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('About to call handleProblemSearch');
+              handleProblemSearch();
+              console.log('handleProblemSearch called');
+            });
+            
+            problemSearchButton.addEventListener('mousedown', (e) => {
+              console.log('=== PROBLEM SEARCH BUTTON MOUSEDOWN ===');
+            });
+            
+            // Also try adding to the parent form
+            const problemForm = document.querySelector('.problem-form');
+            if (problemForm) {
+              problemForm.addEventListener('submit', (e) => {
+                console.log('=== PROBLEM FORM SUBMIT ===');
+                e.preventDefault();
+                handleProblemSearch();
+              });
+            }
+          } else {
+            console.error('Problem search button not found!');
+            console.log('Available .search-button elements:', document.querySelectorAll('.search-button'));
+            console.log('Available .problem-form elements:', document.querySelectorAll('.problem-form'));
+            console.log('All buttons in problem form:', document.querySelectorAll('.problem-form button'));
+            console.log('All buttons with text "Find Solutions":', Array.from(document.querySelectorAll('button')).filter(btn => btn.textContent.includes('Find Solutions')));
           }
           
           // Setup category section visibility based on first dropdown
@@ -1026,6 +1072,40 @@ function setupRollingText() {
           }
         }
         
+        function handleProblemSearch() {
+          console.log('=== DEBUG: handleProblemSearch function called ===');
+          const selectedProblem = document.querySelector('.symptom-select')?.value;
+          
+          console.log('=== DEBUG: handleProblemSearch ===');
+          console.log('Selected problem value:', selectedProblem);
+          console.log('Selected problem text:', document.querySelector('.symptom-select option:checked')?.textContent);
+          
+          // Clear previous validation errors
+          clearValidationErrors();
+          
+          // Validate required fields
+          let hasErrors = false;
+          
+          // Check if a problem is selected
+          if (!selectedProblem) {
+            showValidationError('.symptom-select', 'Please select a symptom or health aim');
+            hasErrors = true;
+          }
+          
+          // If there are validation errors, don't proceed
+          if (hasErrors) {
+            return;
+          }
+          
+          // Store the selected problem in localStorage for the general health page to pick up
+          localStorage.setItem('selectedProblem', selectedProblem);
+          console.log('Stored selected problem in localStorage:', selectedProblem);
+          
+          // Navigate to the general health page
+          console.log('Navigating to general health page');
+          window.location.hash = '#/general-health';
+        }
+        
         // Function to show validation error
         function showValidationError(selector, message) {
           const element = document.querySelector(selector);
@@ -1150,6 +1230,7 @@ async function loadProblemList() {
     
     if (symptomSelect && data) {
       console.log('Populating dropdown with', data.length, 'problems');
+      console.log('Problem data from database:', data);
       // Clear existing options and set proper placeholder
       symptomSelect.innerHTML = '<option value="">Choose an option</option>';
       
@@ -1159,8 +1240,10 @@ async function loadProblemList() {
         option.value = problem.name;
         option.textContent = problem.name;
         symptomSelect.appendChild(option);
-        console.log('Added problem option:', problem.name);
+        console.log('Added problem option:', { value: problem.name, text: problem.name });
       });
+      
+      console.log('Final dropdown options:', Array.from(symptomSelect.options).map(opt => ({ value: opt.value, text: opt.textContent })));
     } else {
       console.log('No symptom select element found or no data returned');
     }

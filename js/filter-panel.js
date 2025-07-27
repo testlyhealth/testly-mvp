@@ -1,5 +1,6 @@
 import { $, $all } from './dom.js';
 import { supabase } from './api/supabase.js';
+import { loadingOverlay } from './components/loading-overlay.js';
 
 // Add this helper function at the top of the file, after the imports
 function generateSafeId(text) {
@@ -139,10 +140,27 @@ export async function createFilterPanel(tests) {
     console.log('Processed problems:', problems);
     console.log('Number of problems found:', problems.length);
     console.log('Looking for diabetes-related problems:', problems.filter(p => p.toLowerCase().includes('diabetes')));
+    console.log('All problem names:', problems);
   } catch (e) {
     console.error('Error fetching problems:', e);
-    // Fallback to empty array if fetch fails
-    problems = [];
+    // Fallback to hardcoded problems if fetch fails
+    problems = [
+      'Diabetes risk check',
+      'Female hormone check',
+      'General health check',
+      'Heart health monitoring',
+      'HRT monitoring',
+      'Kidney health check',
+      'Liver health check',
+      'Low fertility (female)',
+      'Low fertility (male)',
+      'Male hormone check',
+      'Prostate check',
+      'Thyroid health check',
+      'Tired all the time',
+      'TRT monitoring'
+    ];
+    console.log('Using fallback problems list:', problems);
   }
   
   // Check for a filter query parameter in the URL
@@ -579,9 +597,18 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   // Get selected category from URL
   let selectedCategory = null;
   let allCategoriesSelected = false;
+  let selectedProblem = null;
   try {
     const urlHash = window.location.hash;
+    console.log('=== DEBUG: Parsing URL hash ===');
+    console.log('Full URL hash:', urlHash);
+    
     const filterMatch = urlHash.match(/[?&]filter=([^&]+)/);
+    const problemMatch = urlHash.match(/[?&]problem=([^&]+)/);
+    
+    console.log('Filter match:', filterMatch);
+    console.log('Problem match:', problemMatch);
+    
     if (filterMatch) {
       selectedCategory = decodeURIComponent(filterMatch[1]);
       // Fix the category name - replace + with space
@@ -598,7 +625,13 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         }
       }
     }
-  } catch (e) {}
+    if (problemMatch) {
+      selectedProblem = decodeURIComponent(problemMatch[1]);
+      console.log('Selected problem from URL:', selectedProblem);
+    }
+  } catch (e) {
+    console.error('Error parsing URL hash:', e);
+  }
 
   console.log('=== DEBUG: Filter Panel Setup ===');
   console.log('URL hash:', window.location.hash);
@@ -1220,10 +1253,12 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   
   // Handle individual problems/symptoms checkboxes
   problemsCheckboxes.forEach(checkbox => {
-    checkbox.addEventListener('change', async () => {
+    checkbox.addEventListener('change', async (e) => {
       console.log('=== DEBUG: Problem checkbox changed ===');
       console.log('Checkbox value:', checkbox.value);
       console.log('Checkbox checked:', checkbox.checked);
+      console.log('Event type:', e.type);
+      console.log('Is synthetic event:', e.isTrusted === false);
       
       // If this problem is checked, uncheck all others and disable them
       if (checkbox.checked) {
@@ -1256,6 +1291,84 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       }
     });
   });
+
+  // Auto-check problem checkbox if problem parameter is in URL or localStorage
+  let problemToCheck = selectedProblem;
+  if (!problemToCheck) {
+    // Check localStorage for selected problem
+    problemToCheck = localStorage.getItem('selectedProblem');
+    if (problemToCheck) {
+      console.log('=== DEBUG: Found selected problem in localStorage ===');
+      console.log('Selected problem from localStorage:', problemToCheck);
+      // Clear localStorage after reading
+      localStorage.removeItem('selectedProblem');
+    }
+  }
+  
+  if (problemToCheck) {
+    console.log('=== DEBUG: Auto-checking problem ===');
+    console.log('Selected problem to check:', problemToCheck);
+    console.log('Selected problem type:', typeof problemToCheck);
+    console.log('Number of problem checkboxes found:', problemsCheckboxes.length);
+    console.log('Available problem checkbox values:', Array.from(problemsCheckboxes).map(cb => ({ value: cb.value, id: cb.id, checked: cb.checked })));
+    console.log('Available problem checkbox value types:', Array.from(problemsCheckboxes).map(cb => ({ value: cb.value, valueType: typeof cb.value })));
+    
+    // Add a small delay to ensure checkboxes are fully loaded
+    setTimeout(() => {
+      const matchingCheckbox = Array.from(problemsCheckboxes).find(cb => cb.value === selectedProblem);
+      if (matchingCheckbox) {
+        console.log('Found matching checkbox, checking it');
+        matchingCheckbox.checked = true;
+        
+        // Manually perform the actions that would happen in the change event
+        // Uncheck all other problem checkboxes
+        problemsCheckboxes.forEach(cb => {
+          if (cb !== matchingCheckbox) {
+            cb.checked = false;
+            cb.disabled = true;
+          }
+        });
+        
+        // Uncheck and disable "All Problems" checkbox
+        if (problemsAll) {
+          problemsAll.checked = false;
+          problemsAll.disabled = true;
+        }
+        
+        // Fetch and display linked tests
+        fetchAndDisplayLinkedTests(problemToCheck);
+      } else {
+        console.log('No matching checkbox found for problem:', problemToCheck);
+        console.log('Available problem values:', Array.from(problemsCheckboxes).map(cb => cb.value));
+        
+        // Try case-insensitive matching
+        const caseInsensitiveMatch = Array.from(problemsCheckboxes).find(cb => 
+          cb.value.toLowerCase() === problemToCheck.toLowerCase()
+        );
+        if (caseInsensitiveMatch) {
+          console.log('Found case-insensitive match, checking it');
+          caseInsensitiveMatch.checked = true;
+          
+          // Manually perform the actions that would happen in the change event
+          problemsCheckboxes.forEach(cb => {
+            if (cb !== caseInsensitiveMatch) {
+              cb.checked = false;
+              cb.disabled = true;
+            }
+          });
+          
+          if (problemsAll) {
+            problemsAll.checked = false;
+            problemsAll.disabled = true;
+          }
+          
+          fetchAndDisplayLinkedTests(problemToCheck);
+        } else {
+          console.log('No case-insensitive match found either');
+        }
+      }
+    }, 100); // Small delay to ensure DOM is ready
+  }
 
   // Setup biomarker search in filter panel
   setupFilterPanelBiomarkerSearch();
@@ -1487,7 +1600,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       
       if (problemError || !problemRows || problemRows.length === 0) {
         console.error('Error fetching problem ID:', problemError);
-        return;
+        return Promise.resolve();
       }
       
       const problemId = problemRows[0].id;
@@ -1498,25 +1611,30 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         .select('*, provider_blood_test:provider_blood_tests(*, provider:providers(name))')
         .eq('problem_list_id', problemId);
       
-      if (linkError || !linkRows || linkRows.length === 0) {
-        console.error('Error fetching linked tests:', linkError);
-        
-        // Show a message to the user that no linked tests are available
-        const testsGrid = document.querySelector('.products-grid');
-        if (testsGrid) {
-          testsGrid.innerHTML = `
-            <div class="no-results-message" style="text-align: center; padding: 2rem; color: #6b7280;">
-              <h3>No linked tests available</h3>
-              <p>No specific tests have been linked to "${problemName}" yet. Please check back later or browse all available tests.</p>
-              <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #2563eb; color: white; border: none; border-radius: 0.375rem; cursor: pointer;">
-                Browse All Tests
-              </button>
-            </div>
-          `;
+              if (linkError || !linkRows || linkRows.length === 0) {
+          console.error('Error fetching linked tests:', linkError);
+          
+          // Show a message to the user that no linked tests are available
+          const testsGrid = document.querySelector('.products-grid');
+          if (testsGrid) {
+            testsGrid.innerHTML = `
+              <div class="no-results-message" style="text-align: center; padding: 2rem; color: #6b7280;">
+                <h3>No linked tests available</h3>
+                <p>No specific tests have been linked to "${problemName}" yet. Please check back later or browse all available tests.</p>
+                <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #2563eb; color: white; border: none; border-radius: 0.375rem; cursor: pointer;">
+                  Browse All Tests
+                </button>
+              </div>
+            `;
+            // Show the products grid with the no results message
+            testsGrid.style.display = 'grid';
+            
+            // Hide the loading overlay when no linked tests are available
+            loadingOverlay.hide();
+          }
+          
+          return Promise.resolve();
         }
-        
-        return;
-      }
       
       // 3. Extract the linked tests with their best_options
       const linkedTests = linkRows.map(link => ({
@@ -1532,6 +1650,8 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       let totalResults = enrichedLinkedTests.length;
       
       if (problemName.toLowerCase().includes('diabetes')) {
+        console.log('=== DEBUG: Processing diabetes problem ===');
+        console.log('Problem name:', problemName);
         try {
           // Get heart health category ID
           const { data: allCategories, error: allCategoriesError } = await supabase
@@ -1539,10 +1659,14 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
             .select('id, name')
             .order('name');
           
+          console.log('=== DEBUG: Available categories for diabetes ===');
+          console.log('All categories:', allCategories?.map(cat => cat.name));
+          
           // Look for the exact heart health category
           const heartCategory = allCategories?.find(cat => 
             cat.name === 'Heart and metabolic health'
           );
+          console.log('Found heart category:', heartCategory);
           
           if (heartCategory) {
             const categoryId = heartCategory.id;
@@ -2023,6 +2147,88 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         } catch (error) {
           console.error('Error fetching thyroid health tests:', error);
         }
+      } else if (problemName.toLowerCase().includes('tired all the time')) {
+        try {
+          // Get general health category ID
+          const { data: allCategories, error: allCategoriesError } = await supabase
+            .from('blood_test_categories')
+            .select('id, name')
+            .order('name');
+          
+          // Look for the exact general health category
+          const generalCategory = allCategories?.find(cat => 
+            cat.name === 'General health'
+          );
+          
+          if (generalCategory) {
+            const categoryId = generalCategory.id;
+            
+            // Get tests for general health category
+            const { data: linkRows, error: linkError } = await supabase
+              .from('blood_test_category_link_table')
+              .select('provider_blood_test_id')
+              .eq('blood_test_category_id', categoryId);
+            
+            if (!linkError && linkRows && linkRows.length > 0) {
+              const testIds = linkRows.map(row => row.provider_blood_test_id);
+              
+              // Fetch the actual test data
+              const { data: testRows, error: testError } = await supabase
+                .from('provider_blood_tests')
+                .select('*, provider:providers(name)')
+                .in('id', testIds);
+              
+              if (!testError && testRows) {
+                // Enrich general health tests
+                heartHealthTests = await enrichTestsWithBiomarkersAndMethods(testRows);
+                totalResults += heartHealthTests.length;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching general health tests:', error);
+        }
+      } else if (problemName.toLowerCase().includes('trt monitoring')) {
+        try {
+          // Get male health category ID
+          const { data: allCategories, error: allCategoriesError } = await supabase
+            .from('blood_test_categories')
+            .select('id, name')
+            .order('name');
+          
+          // Look for the exact male health category
+          const maleCategory = allCategories?.find(cat => 
+            cat.name === 'Male health and hormones'
+          );
+          
+          if (maleCategory) {
+            const categoryId = maleCategory.id;
+            
+            // Get tests for male health category
+            const { data: linkRows, error: linkError } = await supabase
+              .from('blood_test_category_link_table')
+              .select('provider_blood_test_id')
+              .eq('blood_test_category_id', categoryId);
+            
+            if (!linkError && linkRows && linkRows.length > 0) {
+              const testIds = linkRows.map(row => row.provider_blood_test_id);
+              
+              // Fetch the actual test data
+              const { data: testRows, error: testError } = await supabase
+                .from('provider_blood_tests')
+                .select('*, provider:providers(name)')
+                .in('id', testIds);
+              
+              if (!testError && testRows) {
+                // Enrich male health tests
+                heartHealthTests = await enrichTestsWithBiomarkersAndMethods(testRows);
+                totalResults += heartHealthTests.length;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching male health tests:', error);
+        }
       }
       
       // 6. Clear all other filter tags and show problem and category tags
@@ -2107,6 +2313,18 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
           filterTagsHTML += `
               <div class="filter-tag" data-type="category" data-value="Thyroid health">
                 <span>Category: Thyroid health</span>
+                <button class="remove-tag" aria-label="Remove category filter">×</button>
+              </div>`;
+        } else if (problemName.toLowerCase().includes('tired all the time') && heartHealthTests.length > 0) {
+          filterTagsHTML += `
+              <div class="filter-tag" data-type="category" data-value="General health">
+                <span>Category: General health</span>
+                <button class="remove-tag" aria-label="Remove category filter">×</button>
+              </div>`;
+        } else if (problemName.toLowerCase().includes('trt monitoring') && heartHealthTests.length > 0) {
+          filterTagsHTML += `
+              <div class="filter-tag" data-type="category" data-value="Male health and hormones">
+                <span>Category: Male health and hormones</span>
                 <button class="remove-tag" aria-label="Remove category filter">×</button>
               </div>`;
         }
@@ -2196,6 +2414,12 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
           } else if (problemName.toLowerCase().includes('thyroid health check')) {
             sectionTitle = 'Thyroid Health Tests';
             sectionDescription = 'Additional tests that may be relevant for thyroid health monitoring';
+          } else if (problemName.toLowerCase().includes('tired all the time')) {
+            sectionTitle = 'General Health Tests';
+            sectionDescription = 'Additional tests that may be relevant for fatigue and energy monitoring';
+          } else if (problemName.toLowerCase().includes('trt monitoring')) {
+            sectionTitle = 'Male Health Tests';
+            sectionDescription = 'Additional tests that may be relevant for TRT monitoring';
           }
           
           // Add a section header for additional tests
@@ -2215,13 +2439,30 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         // Set up card event handlers for all tests
         const allTests = [...enrichedLinkedTests, ...heartHealthTests];
         cardService.setupCardEventHandlers(allTests);
+        
+        // Show the products grid now that problem-specific results are loaded
+        testsGrid.style.display = 'grid';
+        console.log('=== DEBUG: Problem-specific results loaded and displayed ===');
+        
+        // Hide the loading overlay now that problem-specific results are ready
+        loadingOverlay.hide();
       } else {
         console.error('Tests grid not found or no linked tests');
+        // Show the products grid even if there are no linked tests
+        const testsGrid = document.querySelector('.products-grid');
+        if (testsGrid) {
+          testsGrid.style.display = 'grid';
+        }
+        
+        // Hide the loading overlay even if there are no linked tests
+        loadingOverlay.hide();
       }
       
     } catch (error) {
       console.error('Error in fetchAndDisplayLinkedTests:', error);
     }
+    
+    return Promise.resolve();
   }
 
   // --- Dynamic Compare Button Counter ---

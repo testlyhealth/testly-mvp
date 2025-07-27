@@ -582,8 +582,9 @@ function injectMobileFiltersButton(retryCount = 0) {
 }
 
 // Function to initialize page elements
-async function initializePageElements(tests) {
+async function initializePageElements(tests, selectedProblem = null) {
   console.log('Initializing page elements with', tests.length, 'tests');
+  console.log('Selected problem passed to initializePageElements:', selectedProblem);
   const testsGrid = $('.products-grid');
   if (!testsGrid) {
     console.error('Products grid not found');
@@ -597,6 +598,12 @@ async function initializePageElements(tests) {
   currentTests = sortTests(filteredTests, sortAscending);
   const cards = await cardService.createCards(currentTests);
   testsGrid.innerHTML = cards;
+  console.log('=== DEBUG: About to call setupFilterPanel ===');
+  console.log('Passing selectedProblem to setupFilterPanel:', selectedProblem);
+  
+  // Import setupFilterPanel function
+  const { setupFilterPanel } = await import('./filter-panel.js');
+  
   setupFilterPanel(currentTests, async (filterState) => {
     console.log('=== DEBUG: Filter Panel Callback ===');
     console.log('Filter panel callback called with:', filterState);
@@ -988,12 +995,14 @@ async function fetchAndEnrichTests({ category = null, provider = null } = {}) {
 // Export the main function
 export async function displayGeneralHealthPage() {
   try {
-    // --- Parse biomarkers from URL hash ---
+    // --- Parse URL parameters from hash ---
     const hash = window.location.hash;
     let selectedCategory = null;
     let selectedBiomarkers = [];
+    let selectedProblem = null;
     const filterMatch = hash.match(/[?&]filter=([^&]+)/);
     const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
+    const problemMatch = hash.match(/[?&]problem=([^&]+)/);
     if (filterMatch) {
       selectedCategory = decodeURIComponent(filterMatch[1]);
       // Fix the category name - replace + with space
@@ -1003,6 +1012,10 @@ export async function displayGeneralHealthPage() {
     if (biomarkerMatch) {
       selectedBiomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean);
       console.log('Selected biomarkers from URL:', selectedBiomarkers);
+    }
+    if (problemMatch) {
+      selectedProblem = decodeURIComponent(problemMatch[1]);
+      console.log('Selected problem from URL:', selectedProblem);
     }
     
     console.log('=== DEBUG: URL Parameters ===');
@@ -1070,11 +1083,26 @@ export async function displayGeneralHealthPage() {
     // Create and return the page structure
     const content = createPageStructure(filterPanel, null);
     // Add a custom event listener for when the content is rendered
+    console.log('=== DEBUG: Adding contentRendered event listener ===');
     document.addEventListener('contentRendered', () => {
+      console.log('=== DEBUG: contentRendered event fired ===');
       if (window._allGeneralHealthTests) {
-        initializePageElements(window._allGeneralHealthTests);
+        console.log('=== DEBUG: Calling initializePageElements ===');
+        initializePageElements(window._allGeneralHealthTests, selectedProblem);
+      } else {
+        console.error('window._allGeneralHealthTests is not set!');
       }
     }, { once: true });
+    
+    // If there's a selected problem, don't show the default results immediately
+    if (selectedProblem) {
+      console.log('=== DEBUG: Problem selected, hiding default results ===');
+      // Hide the products grid initially
+      const productsGrid = document.querySelector('.products-grid');
+      if (productsGrid) {
+        productsGrid.style.display = 'none';
+      }
+    }
     return content;
   } catch (error) {
     console.error('Error loading general health page:', error);

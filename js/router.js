@@ -97,6 +97,14 @@ export default class Router {
         this.setupBloodTestsHandlers();
       } else if (hash.startsWith('/general-health')) {
         console.log('Handling general health route');
+        
+        // Check if there's a selected problem in localStorage
+        const selectedProblem = localStorage.getItem('selectedProblem');
+        if (selectedProblem) {
+          console.log('Found selected problem in localStorage, keeping loading overlay visible');
+          // Don't hide the loading overlay yet - it will be hidden when problem-specific results are loaded
+        }
+        
         const content = await displayGeneralHealthPage();
         console.log('General health content received, length:', content.length);
         await this.render(content);
@@ -218,8 +226,13 @@ export default class Router {
         }
       }
     } finally {
-      // Hide loading overlay
-      loadingOverlay.hide();
+      // Hide loading overlay only if there's no selected problem
+      const selectedProblem = localStorage.getItem('selectedProblem');
+      if (!selectedProblem) {
+        loadingOverlay.hide();
+      } else {
+        console.log('Keeping loading overlay visible for problem-specific results');
+      }
     }
   }
 
@@ -278,6 +291,7 @@ export default class Router {
     }
 
     // Dispatch event to notify that content has been rendered
+    console.log('=== DEBUG: Dispatching contentRendered event ===');
     document.dispatchEvent(new Event('contentRendered'));
   }
 
