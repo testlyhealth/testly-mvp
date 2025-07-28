@@ -101,7 +101,7 @@ export class CardService {
         <div class="test-price">£${test.price}</div>
         <p>"${test.description}"</p>
         <div class="test-locations">
-          <div style="margin-bottom: 0.7em;"><span style="color: #333; font-size: 0.9rem;">• Results returned in ${(() => {
+                              <div style="margin-bottom: 0.7em;"><span class="blood-method-label" style="color: #333;">• Results returned in ${(() => {
             if (test.results_returned_time_days) {
               return test.results_returned_time_days + ' days';
             } else if (test.results_returned_time_min && test.results_returned_time_max) {
@@ -111,61 +111,48 @@ export class CardService {
             }
           })()}</span>
           </div>
-          <div style="margin-bottom: 0.7em;"><span style="color: #333; font-size: 0.9rem;">• Doctors report</span> ${test.doctors_report ? '✅' : '❌'}</div>
-          <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.5em;">
-            <span style="margin: 0; color: #333; font-size: 0.9rem;">• Blood taking method:</span>
-            <div style="display: flex; align-items: center; gap: 0.3em; margin-left: 1.5em;">
-              ${Array.isArray(test.blood_taking_methods) && test.blood_taking_methods.length > 0
-                ? test.blood_taking_methods.map(method => {
-                    const emojiMap = {
-                      'Home test': '🏠',
-                      'Clinic visit': '🏥',
-                      'Phlebotomist to home': '👩🏼‍⚕️',
-                      'Self arrange': '🙋🏼'
-                    };
-                    const hoverText = method === 'Home test' ? 'Home test/finger prick blood test' : 
-                                     method === 'Clinic visit' ? 'Clinic visit/full venous blood test' : 
-                                     method;
-                    return `<span style=\"font-size:1.3em;\" title=\"${hoverText}\">${emojiMap[method] || method}</span>`;
-                  }).join('')
-                : '<span>Not specified</span>'}
-            </div>
+                              <div style="margin-bottom: 0.7em;"><span class="blood-method-label" style="color: #333;">• Doctors report</span> ${test.doctors_report ? '✅' : '❌'}</div>
+                    <div style="display: flex; align-items: center; flex-wrap: nowrap; gap: 0.5em;">
+                      <span class="blood-method-label" style="margin: 0; color: #333;">• Blood collection:</span>
+            ${Array.isArray(test.blood_taking_methods) && test.blood_taking_methods.length > 0
+              ? test.blood_taking_methods.map(method => {
+                  const emojiMap = {
+                    'Home test': '👉🏼',
+                    'Clinic visit': '🏥',
+                    'Phlebotomist to home': '👩🏼‍⚕️',
+                    'Self arrange': '🙋🏼'
+                  };
+                  const hoverText = method === 'Home test' ? 'Finger prick at home' : 
+                                   method === 'Clinic visit' ? 'Full venous at a clinic' : 
+                                   method === 'Phlebotomist to home' ? 'Phlebotomist to home for full venous' : 
+                                   method === 'Self arrange' ? 'Test kit sent to you to self arrange' : 
+                                   method;
+                  return `<span class="blood-method-emoji" style="line-height:1;vertical-align:middle;" title="${hoverText}">${emojiMap[method] || method}</span>`;
+                }).join('')
+              : '<span>Not specified</span>'}
           </div>
         </div>
         ${showBiomarkers ? `
-          <div style="background-color: #E8F4FD; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; margin-bottom: 4rem;">
-            <div class="biomarkers-section">
-              <div class="biomarkers-header" style="text-align: center;">
-                <div class="biomarker-info" style="text-align: center; display: flex; justify-content: center;">
-                  <h4 class="toggle-all-biomarkers" aria-expanded="false" style="color: #2d3748; margin: 0; text-decoration: underline; cursor: pointer; user-select: none; outline: none; border: none; background: none; padding: 0;">${biomarkerCount} biomarkers tested</h4>
-                </div>
-              </div>
-              <div class="biomarkers-list">
-                ${Object.entries(test.grouped_biomarkers || {}).map(([group, biomarkers]) => `
-                  <div class="biomarker-group">
-                    <div class="group-header" style="background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                      <h4 style="color: #333; margin: 0;">${group}</h4>
-                      <button class="toggle-biomarkers" aria-expanded="false" style="color: #333; background: transparent; border: none; font-size: 1rem;">
-                        <span class="toggle-icon">▼</span>
-                      </button>
-                    </div>
-                    <ul class="biomarker-items hidden" style="color: #333;">
-                      ${biomarkers.map(biomarker => `
-                        <li style="color: #333; padding-left: 1.5rem;">${biomarker}</li>
-                      `).join('')}
-                    </ul>
-                  </div>
-                `).join('')}
+          <div style="background-color: #E8F4FD; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; margin-bottom: 0.5rem;">
+            <div style="text-align: left; color: #2d3748; font-size: 0.9rem; line-height: 1.4;">
+              <div style="font-weight: 600;">${biomarkerCount} biomarkers tested</div>
+              <div style="font-size: 0.8rem; color: #666; font-style: italic; margin-top: 0.2rem;">
+                (covering ${Object.keys(test.grouped_biomarkers || {}).join(', ')})
               </div>
             </div>
           </div>
-        ` : '<div style="margin-bottom: 4rem;"></div>'}
-        <div class="add-to-compare-container">
-          <input type="checkbox" class="add-to-compare-checkbox" id="add-to-compare-${encodeURIComponent(test.name)}" />
-          <label for="add-to-compare-${encodeURIComponent(test.name)}" class="add-to-compare-label" style="margin-left: 0.5rem; font-size: 0.95rem; color: #222; cursor: pointer;">Add to\ncompare</label>
-        </div>
+          ${showDetails ? `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.2rem; margin-bottom: 0.5rem; padding-right: 1rem;">
+              <div class="add-to-compare-container" style="margin: 0;">
+                <input type="checkbox" class="add-to-compare-checkbox" id="add-to-compare-${encodeURIComponent(test.name)}" />
+                <label for="add-to-compare-${encodeURIComponent(test.name)}" class="add-to-compare-label" style="margin-left: 0.5rem; font-size: 0.95rem; color: #222; cursor: pointer;">Add to compare</label>
+              </div>
+              <div style="color: #1E88E5; font-size: 0.9rem; font-weight: 500; cursor: pointer; white-space: nowrap;">Learn more>></div>
+            </div>
+          ` : ''}
+        ` : '<div style="margin-bottom: 1rem;"></div>'}
         ${showDetails ? `
-          <a class="book-test-btn" href="${test.url || '#'}" target="_blank" rel="noopener noreferrer" data-test-id="${test.name}" style="position: absolute; bottom: 1rem; right: 1rem; background-color: #1E88E5; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; text-decoration: none; display: inline-block; font-weight: 600; text-align: center; transition: background-color 0.2s; z-index: 10;">Book test</a>
+          <a class="book-test-btn" href="${test.url || '#'}" target="_blank" rel="noopener noreferrer" data-test-id="${test.name}" style="position: absolute; top: 6rem; right: 1rem; background-color: white; color: #1E88E5; border: 2px solid #1E88E5; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; display: inline-block; font-weight: 600; text-align: center; transition: background-color 0.2s; z-index: 10;">Book test</a>
         ` : ''}
       </div>
     `;
