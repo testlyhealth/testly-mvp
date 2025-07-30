@@ -21,6 +21,7 @@ import { displayBloodTestRequestPage, initializeBloodTestRequestPage } from './p
 import { displayComingSoonPage } from './pages/coming-soon.js';
 import { displayWeightLossPage, initializeWeightLossPage } from './pages/weight-loss.js';
 import { displayAdminPage, initializeAdminPage } from './pages/admin.js';
+import { getGraphPageContent, initializeGraphPage } from './pages/graph.js';
 
 // Router class to handle SPA navigation
 export default class Router {
@@ -194,10 +195,15 @@ export default class Router {
         // Initialize admin page after render is complete
         await new Promise(resolve => setTimeout(resolve, 100));
         initializeAdminPage();
+      } else if (hash === '/graph') {
+        console.log('Handling graph route');
+        const content = getGraphPageContent();
+        await this.render(content);
+        initializeGraphPage();
       } else if (hash.startsWith('/category/')) {
         console.log('Handling category route:', hash);
         const categoryId = hash.split('/')[2];
-        // For now, render the general health page for all categories
+        // Always render the general health page with men's health and hormones category
         const content = await displayGeneralHealthPage();
         await this.render(content);
       } else {

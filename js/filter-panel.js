@@ -41,7 +41,7 @@ async function fetchBiomarkersForGrouping(groupingName) {
 }
 
 // Function to create the filter panel HTML
-export async function createFilterPanel(tests) {
+export async function createFilterPanel(tests, options = {}) {
   console.log('=== DEBUG: createFilterPanel called ===');
   console.log('Number of tests passed:', tests.length);
   
@@ -208,6 +208,7 @@ export async function createFilterPanel(tests) {
         </div>
       </div>
 
+      ${options.hideCategories ? '' : `
       <div class="filter-section">
         <div class="filter-section-header">
           <h4>Categories</h4>
@@ -230,6 +231,7 @@ export async function createFilterPanel(tests) {
           </div>
         </div>
       </div>
+      `}
 
       <div class="filter-section">
         <div class="filter-section-header">
@@ -268,6 +270,7 @@ export async function createFilterPanel(tests) {
         </div>
       </div>
 
+      ${options.hideProblems ? '' : `
       <div class="filter-section">
         <div class="filter-section-header">
           <h4>Problems/Symptoms</h4>
@@ -291,6 +294,7 @@ export async function createFilterPanel(tests) {
           </div>
         </div>
       </div>
+      `}
 
       <div class="filter-section">
         <div class="filter-section-header">
