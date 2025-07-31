@@ -187,221 +187,7 @@ export async function createFilterPanel(tests, options = {}) {
     }
   } catch (e) {}
 
-  return `
-    <div class="filter-panel-content">
-      
-      <div class="filter-section">
-        <div class="filter-section-header">
-          <h4>Sort</h4>
-          <button class="filter-toggle-btn" aria-expanded="false" aria-controls="sort-options">
-            <span class="toggle-icon">▼</span>
-          </button>
-        </div>
-        <div class="filter-section-content" id="sort-options" style="display: none;">
-          <div class="sort-options">
-            <div class="radio-option">
-              <input type="radio" id="sort-relevance" name="sort" value="relevance" checked>
-              <label for="sort-relevance">Sort by relevance</label>
-            </div>
-            <div class="radio-option">
-              <input type="radio" id="sort-price-asc" name="sort" value="price-asc">
-              <label for="sort-price-asc">Sort by price: Low to high</label>
-            </div>
-            <div class="radio-option">
-              <input type="radio" id="sort-price-desc" name="sort" value="price-desc">
-              <label for="sort-price-desc">Sort by price: High to low</label>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="filter-section">
-        <div class="filter-section-header">
-          <h4>Price</h4>
-          <button class="filter-toggle-btn" aria-expanded="false" aria-controls="price-options">
-            <span class="toggle-icon">▼</span>
-          </button>
-        </div>
-        <div class="filter-section-content" id="price-options" style="display: none;">
-          <div class="price-range">
-            <span id="price-min-value">£${minPrice.toFixed(2)}</span> - <span id="price-max-value">£${maxPrice.toFixed(2)}</span>
-          </div>
-          <div class="price-slider">
-            <input type="range" id="price-min" min="${minPrice}" max="${maxPrice}" value="${minPrice}" step="1">
-            <input type="range" id="price-max" min="${minPrice}" max="${maxPrice}" value="${maxPrice}" step="1">
-          </div>
-        </div>
-      </div>
-
-      ${options.hideCategories ? '' : `
-      <div class="filter-section">
-        <div class="filter-section-header">
-          <h4>Categories</h4>
-          <button class="filter-toggle-btn" aria-expanded="false" aria-controls="category-options">
-            <span class="toggle-icon">▼</span>
-          </button>
-        </div>
-        <div class="filter-section-content" id="category-options" style="display: none;">
-          <div class="provider-checkboxes">
-            <div class="checkbox-option">
-              <input type="checkbox" id="category-all" ${allCategoriesSelected || !selectedCategory ? 'checked' : ''}>
-              <label for="category-all">All Categories</label>
-            </div>
-            ${categories.map(category => `
-              <div class="checkbox-option">
-                <input type="checkbox" id="category-${generateSafeId(category)}" class="category-checkbox" value="${category}" ${(selectedCategory && !allCategoriesSelected ? (selectedCategory === category ? 'checked' : '') : (!selectedCategory ? (category === 'General health' ? 'checked' : '') : ''))}>
-                <label for="category-${generateSafeId(category)}">${category}</label>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      </div>
-      `}
-
-      <div class="filter-section">
-        <div class="filter-section-header">
-          <h4>Biomarkers</h4>
-          <button class="filter-toggle-btn" aria-expanded="false" aria-controls="biomarker-options">
-            <span class="toggle-icon">▼</span>
-          </button>
-        </div>
-        <div class="filter-section-content" id="biomarker-options" style="display: none;">
-          <div class="provider-checkboxes">
-            <div class="checkbox-option">
-              <input type="checkbox" id="biomarker-all" checked>
-              <label for="biomarker-all">All Biomarkers</label>
-            </div>
-            ${biomarkerGroupings.map(grouping => `
-              <div class="biomarker-grouping">
-                <div class="grouping-header">
-                  <div class="grouping-checkbox-container">
-                    <input type="checkbox" id="grouping-${generateSafeId(grouping)}-checkbox" class="grouping-checkbox" value="${grouping}">
-                    <button class="grouping-toggle-btn" aria-expanded="false" aria-controls="grouping-${generateSafeId(grouping)}">
-                      <span class="grouping-name">${grouping}</span>
-                      <span class="grouping-toggle-icon">▼</span>
-                    </button>
-                  </div>
-                </div>
-                <div class="grouping-content" id="grouping-${generateSafeId(grouping)}" style="display: none;">
-                  <div class="grouping-checkboxes">
-                    <!-- Individual biomarkers will be loaded dynamically when grouping is expanded -->
-                    <div class="loading-indicator">Loading biomarkers...</div>
-                  </div>
-                </div>
-              </div>
-            `).join('')}
-            ${biomarkerGroupings.length === 0 ? '<div style="color: #6b7280; font-style: italic; padding: 0.5rem;">No biomarker groupings found</div>' : ''}
-          </div>
-        </div>
-      </div>
-
-      ${options.hideProblems ? '' : `
-      <div class="filter-section">
-        <div class="filter-section-header">
-          <h4>Problems/Symptoms</h4>
-          <button class="filter-toggle-btn" aria-expanded="false" aria-controls="problems-options">
-            <span class="toggle-icon">▼</span>
-          </button>
-        </div>
-        <div class="filter-section-content" id="problems-options" style="display: none;">
-          <div class="provider-checkboxes">
-            <div class="checkbox-option">
-              <input type="checkbox" id="problems-all" checked>
-              <label for="problems-all">All Problems/Symptoms</label>
-            </div>
-            ${problems.map(problem => `
-              <div class="checkbox-option">
-                <input type="checkbox" id="problems-${problem.toLowerCase().replace(/\s+/g, '-')}" class="problems-checkbox" value="${problem}">
-                <label for="problems-${problem.toLowerCase().replace(/\s+/g, '-')}">${problem}</label>
-              </div>
-            `).join('')}
-            ${problems.length === 0 ? '<div style="color: #6b7280; font-style: italic; padding: 0.5rem;">No problems found</div>' : ''}
-          </div>
-        </div>
-      </div>
-      `}
-
-      <div class="filter-section">
-        <div class="filter-section-header">
-          <h4>Providers</h4>
-          <button class="filter-toggle-btn" aria-expanded="false" aria-controls="provider-options">
-            <span class="toggle-icon">▼</span>
-          </button>
-        </div>
-        <div class="filter-section-content" id="provider-options" style="display: none;">
-          <div class="provider-checkboxes">
-            <div class="checkbox-option">
-              <input type="checkbox" id="provider-all" checked>
-              <label for="provider-all">All Providers</label>
-            </div>
-            ${providers.map(provider => `
-              <div class="checkbox-option">
-                <input type="checkbox" id="provider-${provider.toLowerCase().replace(/\s+/g, '-')}" class="provider-checkbox" value="${provider}">
-                <label for="provider-${provider.toLowerCase().replace(/\s+/g, '-')}" >${provider}</label>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      </div>
-
-      <div class="filter-section">
-        <div class="filter-section-header">
-          <h4>Blood taking method</h4>
-          <button class="filter-toggle-btn" aria-expanded="false" aria-controls="blood-method-options">
-            <span class="toggle-icon">▼</span>
-          </button>
-        </div>
-        <div class="filter-section-content" id="blood-method-options" style="display: none;">
-          <div class="provider-checkboxes">
-            <div class="checkbox-option">
-              <input type="checkbox" id="blood-method-all" checked>
-              <label for="blood-method-all">All Methods</label>
-            </div>
-            <div class="checkbox-option">
-              <input type="checkbox" id="blood-method-home" class="blood-method-checkbox" value="Home test">
-              <label for="blood-method-home">Home test/finger prick</label>
-            </div>
-            <div class="checkbox-option">
-              <input type="checkbox" id="blood-method-clinic" class="blood-method-checkbox" value="Clinic visit">
-              <label for="blood-method-clinic">Clinic visit venous test</label>
-            </div>
-            <div class="checkbox-option">
-              <input type="checkbox" id="blood-method-phlebotomist" class="blood-method-checkbox" value="Phlebotomist to home">
-              <label for="blood-method-phlebotomist">Phlebotomist to house</label>
-            </div>
-            <div class="checkbox-option">
-              <input type="checkbox" id="blood-method-self" class="blood-method-checkbox" value="Self arrange">
-              <label for="blood-method-self">Self arrange test</label>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Biomarker search section -->
-      <div class="filter-section">
-        <div class="filter-section-header">
-          <h4>Biomarker Search</h4>
-        </div>
-                  <div class="biomarker-search-container">
-            <input type="text" class="biomarker-search-input" placeholder="e.g. testosterone, vitamin D" style="width: 100%; box-sizing: border-box;">
-          <div class="biomarker-dropdown" style="display: none; position: absolute; z-index: 1000;">
-            <!-- Results will be populated here -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Compare button section -->
-      <div class="filter-section">
-        <div class="filter-section-header" style="display: flex; align-items: center; gap: 0.5rem;">
-          <h4 style="margin: 0;">Compare Tests</h4>
-        </div>
-        <div class="filter-section-content">
-        </div>
-      </div>
-
-
-    </div>
-  `;
+  return '';
 }
 
 // Track last min/max price for robust slider reset
@@ -409,7 +195,7 @@ let lastMinPrice = null;
 let lastMaxPrice = null;
 
 // Function to setup filter panel functionality
-export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
+// setupFilterPanel function removed - filter panel no longer exists
   console.log('=== DEBUG: setupFilterPanel function called ===');
   console.log('Number of tests passed:', tests.length);
   console.log('Update callback type:', typeof updateCallback);
@@ -860,76 +646,181 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       console.log('Using existing overlay');
     }
     
-    // Copy the filter panel content (excluding compare section)
-    const originalFilterPanel = document.querySelector('.filter-panel');
+    // Create filter content directly instead of cloning from filter panel
     const overlayPanel = overlay.querySelector('.filters-overlay-panel');
     
-    console.log('Original filter panel found:', !!originalFilterPanel);
     console.log('Overlay panel found:', !!overlayPanel);
     
-    if (originalFilterPanel && overlayPanel) {
-      console.log('Cloning filter panel content');
-      // Clone the filter panel content
-      const filterContent = originalFilterPanel.cloneNode(true);
+    if (overlayPanel) {
+      console.log('Creating filter content for overlay');
       
-      console.log('Filter content cloned, length:', filterContent.innerHTML.length);
+      // Get current tests for price range calculation
+      const currentTests = window._allGeneralHealthTests || [];
+      const prices = currentTests.map(test => test.price);
+      const minPrice = Math.min(...prices);
+      const maxPrice = Math.max(...prices);
       
-      // Remove the compare section if it exists
-      const compareSection = filterContent.querySelector('.comparison-section');
-      if (compareSection) {
-        console.log('Removing comparison section');
-        compareSection.remove();
-      }
+      // Create basic filter content
+      const filterContent = document.createElement('div');
+      filterContent.className = 'filter-panel-content';
+      filterContent.innerHTML = `
+        <div class="filter-section">
+          <div class="filter-section-header">
+            <h4>Sort</h4>
+            <button class="filter-toggle-btn" aria-expanded="false" aria-controls="sort-options">
+              <span class="toggle-icon">▼</span>
+            </button>
+          </div>
+          <div class="filter-section-content" id="sort-options" style="display: none;">
+            <div class="sort-options">
+              <div class="radio-option">
+                <input type="radio" id="sort-relevance" name="sort" value="relevance" checked>
+                <label for="sort-relevance">Sort by relevance</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="sort-price-asc" name="sort" value="price-asc">
+                <label for="sort-price-asc">Sort by price: Low to high</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="sort-price-desc" name="sort" value="price-desc">
+                <label for="sort-price-desc">Sort by price: High to low</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <div class="filter-section-header">
+            <h4>Price</h4>
+            <button class="filter-toggle-btn" aria-expanded="false" aria-controls="price-options">
+              <span class="toggle-icon">▼</span>
+            </button>
+          </div>
+          <div class="filter-section-content" id="price-options" style="display: none;">
+            <div class="price-range">
+              <span id="price-min-value">£${minPrice.toFixed(2)}</span> - <span id="price-max-value">£${maxPrice.toFixed(2)}</span>
+            </div>
+            <div class="price-slider">
+              <input type="range" id="price-min" min="${minPrice}" max="${maxPrice}" value="${minPrice}" step="1">
+              <input type="range" id="price-max" min="${minPrice}" max="${maxPrice}" value="${maxPrice}" step="1">
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <div class="filter-section-header">
+            <h4>Providers</h4>
+            <button class="filter-toggle-btn" aria-expanded="false" aria-controls="provider-options">
+              <span class="toggle-icon">▼</span>
+            </button>
+          </div>
+          <div class="filter-section-content" id="provider-options" style="display: none;">
+            <div class="provider-checkboxes">
+              <div class="checkbox-option">
+                <input type="checkbox" id="provider-all" checked>
+                <label for="provider-all">All Providers</label>
+              </div>
+              <div class="checkbox-option">
+                <input type="checkbox" id="provider-bluecrest" class="provider-checkbox" value="Bluecrest">
+                <label for="provider-bluecrest">Bluecrest</label>
+              </div>
+              <div class="checkbox-option">
+                <input type="checkbox" id="provider-forth" class="provider-checkbox" value="Forth">
+                <label for="provider-forth">Forth</label>
+              </div>
+              <div class="checkbox-option">
+                <input type="checkbox" id="provider-lloyds-pharmacy" class="provider-checkbox" value="Lloyds Pharmacy">
+                <label for="provider-lloyds-pharmacy">Lloyds Pharmacy</label>
+              </div>
+              <div class="checkbox-option">
+                <input type="checkbox" id="provider-lola" class="provider-checkbox" value="Lola">
+                <label for="provider-lola">Lola</label>
+              </div>
+              <div class="checkbox-option">
+                <input type="checkbox" id="provider-london-health-company" class="provider-checkbox" value="London Health Company">
+                <label for="provider-london-health-company">London Health Company</label>
+              </div>
+              <div class="checkbox-option">
+                <input type="checkbox" id="provider-london-medical-laboratory" class="provider-checkbox" value="London Medical Laboratory">
+                <label for="provider-london-medical-laboratory">London Medical Laboratory</label>
+              </div>
+              <div class="checkbox-option">
+                <input type="checkbox" id="provider-medichecks" class="provider-checkbox" value="Medichecks">
+                <label for="provider-medichecks">Medichecks</label>
+              </div>
+              <div class="checkbox-option">
+                <input type="checkbox" id="provider-nuffield" class="provider-checkbox" value="Nuffield">
+                <label for="provider-nuffield">Nuffield</label>
+              </div>
+              <div class="checkbox-option">
+                <input type="checkbox" id="provider-numan" class="provider-checkbox" value="Numan">
+                <label for="provider-numan">Numan</label>
+              </div>
+              <div class="checkbox-option">
+                <input type="checkbox" id="provider-randox" class="provider-checkbox" value="Randox">
+                <label for="provider-randox">Randox</label>
+              </div>
+              <div class="checkbox-option">
+                <input type="checkbox" id="provider-selph" class="provider-checkbox" value="Selph">
+                <label for="provider-selph">Selph</label>
+              </div>
+              <div class="checkbox-option">
+                <input type="checkbox" id="provider-superdrug" class="provider-checkbox" value="Superdrug">
+                <label for="provider-superdrug">Superdrug</label>
+              </div>
+              <div class="checkbox-option">
+                <input type="checkbox" id="provider-thriva" class="provider-checkbox" value="Thriva">
+                <label for="provider-thriva">Thriva</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <div class="filter-section-header">
+            <h4>Blood taking method</h4>
+            <button class="filter-toggle-btn" aria-expanded="false" aria-controls="blood-method-options">
+              <span class="toggle-icon">▼</span>
+            </button>
+          </div>
+          <div class="filter-section-content" id="blood-method-options" style="display: none;">
+            <div class="provider-checkboxes">
+              <div class="checkbox-option">
+                <input type="checkbox" id="blood-method-all" checked>
+                <label for="blood-method-all">All Methods</label>
+              </div>
+              <div class="checkbox-option">
+                <input type="checkbox" id="blood-method-home" class="blood-method-checkbox" value="Home test">
+                <label for="blood-method-home">Home test/finger prick</label>
+              </div>
+              <div class="checkbox-option">
+                <input type="checkbox" id="blood-method-clinic" class="blood-method-checkbox" value="Clinic visit">
+                <label for="blood-method-clinic">Clinic visit venous test</label>
+              </div>
+              <div class="checkbox-option">
+                <input type="checkbox" id="blood-method-phlebotomist" class="blood-method-checkbox" value="Phlebotomist to home">
+                <label for="blood-method-phlebotomist">Phlebotomist to house</label>
+              </div>
+              <div class="checkbox-option">
+                <input type="checkbox" id="blood-method-self" class="blood-method-checkbox" value="Self arrange">
+                <label for="blood-method-self">Self arrange test</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
       
-      // Remove the compare tests button if it exists
-      const compareButton = filterContent.querySelector('.compare-tests-btn');
-      if (compareButton) {
-        console.log('Removing compare tests button');
-        compareButton.remove();
-      }
-      
-      // Remove the entire "Compare Tests" filter section
-      const filterSections = filterContent.querySelectorAll('.filter-section');
-      console.log('Found filter sections:', filterSections.length);
-      filterSections.forEach((section, index) => {
-        const compareHeader = section.querySelector('h4');
-        if (compareHeader && compareHeader.textContent.trim() === 'Compare Tests') {
-          console.log('Removing Compare Tests section at index:', index);
-          section.remove();
-        }
-      });
-      
-      // Remove any other compare-related elements
-      const compareElements = filterContent.querySelectorAll('[class*="compare"]');
-      console.log('Found compare elements:', compareElements.length);
-      compareElements.forEach(element => {
-        if (element.classList.contains('compare-tests-btn') || 
-            element.classList.contains('comparison-section') ||
-            element.classList.contains('compare-tests-container') ||
-            element.classList.contains('clear-compare-btn') ||
-            element.classList.contains('compare-btn')) {
-          console.log('Removing compare element:', element.className);
-          element.remove();
-        }
-      });
-      
-      // Clear and append the filtered content
+      // Clear and append the filter content
       overlayPanel.innerHTML = '';
       overlayPanel.appendChild(filterContent);
-      console.log('Filter content appended to overlay');
+      console.log('Filter content created and appended to overlay');
       
-      // Re-initialize any necessary event listeners for the copied content
+      // Initialize overlay filter events
       console.log('Initializing overlay filter events');
       initializeOverlayFilterEvents(filterContent, updateCallback);
     } else {
-      console.error('Missing required elements:', {
-        originalFilterPanel: !!originalFilterPanel,
-        overlayPanel: !!overlayPanel
-      });
+      console.error('Overlay panel not found');
     }
-    
-    overlay.classList.add('visible');
-    console.log('Overlay made visible');
   }
   
   // Function to hide filters overlay

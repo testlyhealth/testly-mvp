@@ -59,6 +59,9 @@ function init() {
   
   // Initialize user dropdown
   initUserDropdown();
+  
+  // Setup header scroll behavior
+  setupHeaderScrollBehavior();
 }
 
 // Setup blood tests menu
@@ -266,6 +269,65 @@ function setupMobileFilterPanel() {
 if (!window._mobileFilterPanelSetup) {
   window.addEventListener('DOMContentLoaded', setupMobileFilterPanel);
   window._mobileFilterPanelSetup = true;
+}
+
+// Setup header scroll behavior
+function setupHeaderScrollBehavior() {
+  const header = document.querySelector('.main-header');
+  if (!header) return;
+
+  let lastScrollTop = 0;
+  let isScrolling = false;
+  let scrollTimeout;
+
+  // Add initial visible class
+  header.classList.add('header-visible');
+
+  function handleScroll() {
+    if (isScrolling) return;
+    
+    isScrolling = true;
+    clearTimeout(scrollTimeout);
+    
+    const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    
+    // Always show header when at the top
+    if (currentScrollTop <= 0) {
+      header.classList.remove('header-hidden');
+      header.classList.add('header-visible');
+    } else {
+      // Hide header when scrolling down, show when scrolling up
+      if (currentScrollTop > lastScrollTop && currentScrollTop > 64) {
+        // Scrolling down and not at top
+        header.classList.remove('header-visible');
+        header.classList.add('header-hidden');
+      } else if (currentScrollTop < lastScrollTop) {
+        // Scrolling up
+        header.classList.remove('header-hidden');
+        header.classList.add('header-visible');
+      }
+    }
+    
+    lastScrollTop = currentScrollTop;
+    
+    scrollTimeout = setTimeout(() => {
+      isScrolling = false;
+    }, 100);
+  }
+
+  // Throttle scroll events
+  let ticking = false;
+  function requestTick() {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        handleScroll();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }
+
+  window.addEventListener('scroll', requestTick, { passive: true });
 }
 
 // Start the app

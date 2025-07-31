@@ -112,31 +112,12 @@ export class CardService {
           })()}</span>
           </div>
                               <div style="margin-bottom: 0.7em;"><span class="blood-method-label" style="color: #333;">• Doctors report</span> ${test.doctors_report ? '✅' : '❌'}</div>
-                    <div style="display: flex; align-items: center; flex-wrap: nowrap; gap: 0.5em;">
-                      <span class="blood-method-label" style="margin: 0; color: #333;">• Blood collection:</span>
-            ${Array.isArray(test.blood_taking_methods) && test.blood_taking_methods.length > 0
-              ? test.blood_taking_methods.map(method => {
-                  const emojiMap = {
-                    'Home test': '👉🏼',
-                    'Clinic visit': '🏥',
-                    'Phlebotomist to home': '👩🏼‍⚕️',
-                    'Self arrange': '🙋🏼'
-                  };
-                  const hoverText = method === 'Home test' ? 'Finger prick at home' : 
-                                   method === 'Clinic visit' ? 'Full venous at a clinic' : 
-                                   method === 'Phlebotomist to home' ? 'Phlebotomist to home for full venous' : 
-                                   method === 'Self arrange' ? 'Test kit sent to you to self arrange' : 
-                                   method;
-                  return `<span class="blood-method-emoji" style="line-height:1;vertical-align:middle;" title="${hoverText}">${emojiMap[method] || method}</span>`;
-                }).join('')
-              : '<span>Not specified</span>'}
-          </div>
         </div>
         ${showBiomarkers ? `
           <div style="background-color: #E8F4FD; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; margin-bottom: 0.5rem;">
-            <div style="text-align: left; color: #2d3748; font-size: 0.9rem; line-height: 1.4;">
+            <div style="text-align: left; color: #2d3748; font-size: 0.8rem; line-height: 1.4;">
               <div style="font-weight: 600;">${biomarkerCount} biomarkers tested</div>
-              <div style="font-size: 0.8rem; color: #666; font-style: italic; margin-top: 0.2rem;">
+              <div style="font-size: 0.75rem; color: #666; font-style: italic; margin-top: 0.2rem;">
                 (covering ${Object.keys(test.grouped_biomarkers || {}).join(', ')})
               </div>
             </div>
@@ -150,7 +131,7 @@ export class CardService {
               <div style="color: #1E88E5; font-size: 0.9rem; font-weight: 500; cursor: pointer; white-space: nowrap;">Learn more>></div>
             </div>
           ` : ''}
-        ` : '<div style="margin-bottom: 1rem;"></div>'}
+        ` : '<div style="margin-bottom: 0.5rem;"></div>'}
         ${showDetails ? `
           <a class="book-test-btn" href="${test.url || '#'}" target="_blank" rel="noopener noreferrer" data-test-id="${test.name}" style="position: absolute; top: 6rem; right: 1rem; background-color: white; color: #1E88E5; border: 2px solid #1E88E5; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; display: inline-block; font-weight: 600; text-align: center; transition: background-color 0.2s; z-index: 10;">Book test</a>
         ` : ''}

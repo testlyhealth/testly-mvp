@@ -1366,8 +1366,8 @@ function setupNavigationHandlers() {
             searchParams.set('biomarkers', biomarkers.join(','));
           }
           
-          // Always navigate to the men's health and hormones page
-          const url = `#/general-health${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+          // Always navigate to the search results page
+          const url = `#/search-results${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
           console.log('Navigating to:', url);
           window.location.hash = url;
         }
@@ -1403,7 +1403,7 @@ function setupNavigationHandlers() {
           
           // Navigate to the general health page
           console.log('Navigating to general health page');
-          window.location.hash = '#/general-health';
+          window.location.hash = '#/search-results';
         }
         
         // Function to show validation error

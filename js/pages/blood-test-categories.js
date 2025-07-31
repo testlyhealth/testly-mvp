@@ -21,7 +21,7 @@ export async function displayBloodTestCategoriesPage() {
       const optionClass = getOptionClass(index);
       
       // Special handling for "Other" category
-      const targetRoute = category === 'Other' ? '#/blood-test-request' : `#/general-health?filter=${encodeURIComponent(category)}`;
+      const targetRoute = category === 'Other' ? '#/blood-test-request' : `#/search-results?filter=${encodeURIComponent(category)}`;
       
       return `
         <div class="compare-tile ${optionClass}" onclick="window.location.hash='${targetRoute}'">
@@ -71,17 +71,17 @@ export async function displayBloodTestCategoriesPage() {
       <section class="compare-content-section">
         <div class="compare-content">
           <div class="category-select-grid">
-            <div class="compare-tile option-specific" onclick="window.location.hash='#/general-health?filter=General Health'">
+            <div class="compare-tile option-specific" onclick="window.location.hash='#/search-results?filter=General Health'">
               <div class="tile-content">
                 <h3>General Health</h3>
               </div>
             </div>
-            <div class="compare-tile option-concern" onclick="window.location.hash='#/general-health?filter=Hormone Health'">
+            <div class="compare-tile option-concern" onclick="window.location.hash='#/search-results?filter=Hormone Health'">
               <div class="tile-content">
                 <h3>Hormone Health</h3>
               </div>
             </div>
-            <div class="compare-tile option-checkup" onclick="window.location.hash='#/general-health?filter=Heart Health'">
+            <div class="compare-tile option-checkup" onclick="window.location.hash='#/search-results?filter=Heart Health'">
               <div class="tile-content">
                 <h3>Heart Health</h3>
               </div>

@@ -88,7 +88,7 @@ export default class Router {
             searchParams.set('biomarkers', biomarker1);
           }
           
-          const url = `#/general-health${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+          const url = `#/search-results${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
           window.location.hash = url;
           return; // Exit early since we're redirecting
         }
@@ -96,8 +96,8 @@ export default class Router {
         const content = await displayBloodTestsPage();
         await this.render(content);
         this.setupBloodTestsHandlers();
-      } else if (hash.startsWith('/general-health')) {
-        console.log('Handling general health route');
+      } else if (hash.startsWith('/search-results')) {
+        console.log('Handling search results route');
         
         // Check if there's a selected problem in localStorage
         const selectedProblem = localStorage.getItem('selectedProblem');
@@ -107,8 +107,23 @@ export default class Router {
         }
         
         const content = await displayGeneralHealthPage();
-        console.log('General health content received, length:', content.length);
+        console.log('Search results content received, length:', content.length);
         await this.render(content);
+      } else if (hash.startsWith('/general-health')) {
+        console.log('Handling general health route - redirecting to search results');
+        
+        // Redirect to search-results with the same parameters
+        const urlParams = new URLSearchParams(hash.split('?')[1] || '');
+        const searchParams = new URLSearchParams();
+        
+        // Copy all parameters
+        for (const [key, value] of urlParams.entries()) {
+          searchParams.set(key, value);
+        }
+        
+        const url = `#/search-results${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+        window.location.hash = url;
+        return; // Exit early since we're redirecting
       } else if (hash === '/advanced-search') {
         console.log('Handling advanced search route');
         const content = getAdvancedSearchPageContent();
@@ -299,6 +314,7 @@ export default class Router {
     // Dispatch event to notify that content has been rendered
     console.log('=== DEBUG: Dispatching contentRendered event ===');
     document.dispatchEvent(new Event('contentRendered'));
+    console.log('=== DEBUG: contentRendered event dispatched ===');
   }
 
   async renderError(title, message) {

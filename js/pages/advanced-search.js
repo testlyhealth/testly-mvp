@@ -271,7 +271,7 @@ function handleQuickSearch() {
   } else if (category && category !== 'all') {
     // Add category as filter parameter
     searchParams.set('filter', category);
-    const url = `#/general-health${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+            const url = `#/search-results${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
     window.location.hash = url;
   } else {
     // If no category selected, go to blood tests page

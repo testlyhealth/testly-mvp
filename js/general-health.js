@@ -454,18 +454,7 @@ function attachEventListeners() {
 
 // Function to create general health title
 function createGeneralHealthTitle() {
-  return `
-    <section class="general-health-hero">
-      <div class="hero-content">
-        <h1 class="hero-title">
-          Compare testosterone <span style="color: #1E88E5;">blood tests</span>
-        </h1>
-        <p class="hero-subtitle">
-          Blood tests from accredited labs covering the health of your <strong class="gh-em">heart</strong>, <strong class="gh-em">liver</strong>, <strong class="gh-em">kidneys</strong>, <strong class="gh-em">cholesterol</strong>, <strong class="gh-em">vitamins</strong> and more.
-        </p>
-      </div>
-    </section>
-  `;
+  return ``; // Removed hero header and subtext
 }
 
 // Function to create page structure
@@ -599,225 +588,310 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
   const cards = await cardService.createCards(currentTests);
   testsGrid.innerHTML = cards;
   
-  // Update results count and show applied filters
-  const filterTagsContainer = document.querySelector('.filter-tags');
-  if (filterTagsContainer) {
-    // Get URL parameters to show applied filters
-    const hash = window.location.hash;
-    const appliedFilters = [];
-    
-    // Check for applied filters
-    const minPriceMatch = hash.match(/[?&]minPrice=([^&]+)/);
-    if (minPriceMatch) {
-      appliedFilters.push(`Min price: ${decodeURIComponent(minPriceMatch[1])}`);
-    }
-    
-    const maxPriceMatch = hash.match(/[?&]maxPrice=([^&]+)/);
-    if (maxPriceMatch) {
-      appliedFilters.push(`Max price: ${decodeURIComponent(maxPriceMatch[1])}`);
-    }
-    
-    const providerMatch = hash.match(/[?&]provider=([^&]+)/);
-    if (providerMatch) {
-      appliedFilters.push(`Provider: ${decodeURIComponent(providerMatch[1])}`);
-    }
-    
-    const methodMatch = hash.match(/[?&]method=([^&]+)/);
-    if (methodMatch) {
-      appliedFilters.push(`Method: ${decodeURIComponent(methodMatch[1])}`);
-    }
-    
-    const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
-    if (biomarkerMatch) {
-      const biomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim());
-      biomarkers.forEach(biomarker => {
-        appliedFilters.push(`Biomarker: ${biomarker}`);
-      });
-    }
-    
-    // Create filter tags HTML
-    const filterTagsHTML = appliedFilters.map(filter => `
-      <div class="filter-tag">
-        <span>${filter}</span>
-        <button class="remove-tag" aria-label="Remove filter">×</button>
-      </div>
-    `).join('');
-    
-    const resultsCountHTML = `
-      <div class="filter-tags-container">
-        <div class="filter-tags-list">
-          ${filterTagsHTML}
+      // Update results count and show applied filters
+    const filterTagsContainer = document.querySelector('.filter-tags');
+    if (filterTagsContainer) {
+      // Get URL parameters to show applied filters
+      const hash = window.location.hash;
+      const appliedFilters = [];
+      
+      // Check for applied filters
+      const minPriceMatch = hash.match(/[?&]minPrice=([^&]+)/);
+      if (minPriceMatch) {
+        appliedFilters.push(`Min price: ${decodeURIComponent(minPriceMatch[1])}`);
+      }
+      
+      const maxPriceMatch = hash.match(/[?&]maxPrice=([^&]+)/);
+      if (maxPriceMatch) {
+        appliedFilters.push(`Max price: ${decodeURIComponent(maxPriceMatch[1])}`);
+      }
+      
+      const providerMatch = hash.match(/[?&]provider=([^&]+)/);
+      if (providerMatch) {
+        appliedFilters.push(`Provider: ${decodeURIComponent(providerMatch[1])}`);
+      }
+      
+      const methodMatch = hash.match(/[?&]method=([^&]+)/);
+      if (methodMatch) {
+        appliedFilters.push(`Method: ${decodeURIComponent(methodMatch[1])}`);
+      }
+      
+      const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
+      if (biomarkerMatch) {
+        const biomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim());
+        biomarkers.forEach(biomarker => {
+          appliedFilters.push(`Biomarker: ${biomarker}`);
+        });
+      }
+      
+      // Create filter tags HTML
+      const filterTagsHTML = appliedFilters.map(filter => `
+        <div class="filter-tag">
+          <span>${filter}</span>
+          <button class="remove-tag" aria-label="Remove filter">×</button>
         </div>
-        <div class="results-controls">
-          <div class="results-count">
-            <span>${tests.length} result${tests.length !== 1 ? 's' : ''}</span>
+      `).join('');
+      
+      console.log('=== DEBUG: Creating initial filter tags HTML ===');
+      console.log('Tests length:', tests.length);
+      console.log('Applied filters:', appliedFilters);
+      
+      const resultsCountHTML = `
+        <div class="filter-tags-container">
+          <div class="filter-tags-list">
+            ${filterTagsHTML}
           </div>
-          <div class="sort-dropdown desktop-only">
-            <button class="sort-btn" aria-label="Sort results" aria-expanded="false">
-              Sort: Relevance
+          <div class="results-controls">
+            <div class="results-count">
+              <span>${tests.length} result${tests.length !== 1 ? 's' : ''}</span>
+            </div>
+            <button class="filters-btn" aria-label="Toggle filters panel">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
+              </svg>
+              Filters
             </button>
-            <div class="sort-dropdown-menu" style="display: none;">
-              <button class="sort-option" data-sort="relevance">Sort by relevance</button>
-              <button class="sort-option" data-sort="price-asc">Sort by price: Low to high</button>
-              <button class="sort-option" data-sort="price-desc">Sort by price: High to low</button>
+            <div class="sort-dropdown desktop-only">
+              <button class="sort-btn" aria-label="Sort results" aria-expanded="false">
+                Sort: Relevance
+              </button>
+              <div class="sort-dropdown-menu" style="display: none;">
+                <button class="sort-option" data-sort="relevance">Sort by relevance</button>
+                <button class="sort-option" data-sort="price-asc">Sort by price: Low to high</button>
+                <button class="sort-option" data-sort="price-desc">Sort by price: High to low</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    `;
-    filterTagsContainer.innerHTML = resultsCountHTML;
-  }
+      `;
+      console.log('Setting filter tags container HTML');
+      filterTagsContainer.innerHTML = resultsCountHTML;
+      console.log('Filter tags container HTML set');
+    }
   
   console.log('=== DEBUG: About to call setupFilterPanel ===');
   console.log('Passing selectedProblem to setupFilterPanel:', selectedProblem);
+  console.log('Current tests length being passed to setupFilterPanel:', currentTests.length);
   
   if (!skipFilterPanel) {
+    console.log('=== DEBUG: Setting up filter panel ===');
     // Import setupFilterPanel function
     const { setupFilterPanel } = await import('./filter-panel.js');
+    console.log('setupFilterPanel imported, calling it with', currentTests.length, 'tests');
     
-    setupFilterPanel(currentTests, async (filterState) => {
-    console.log('=== DEBUG: Filter Panel Callback ===');
-    console.log('Filter panel callback called with:', filterState);
-    console.log('Initial tests passed to filter panel:', currentTests.length);
+    // Simple test to see if this code is running
+    console.log('Filter panel setup code is executing!');
     
-    // Handle filter state object (new approach)
-    if (!Array.isArray(filterState)) {
-      // New case: filterState is an object with categories, providers, etc.
-      const selectedCategories = filterState.categories || [];
-      const selectedProviders = filterState.providers || [];
+    // Define the callback function
+    console.log('=== DEBUG: Defining callback function ===');
+    const filterCallback = async (filterState) => {
+      console.log('=== DEBUG: Filter Panel Callback TRIGGERED ===');
+      console.log('=== DEBUG: Callback function is being executed! ===');
+      console.log('Filter panel callback called with:', filterState);
+      console.log('FilterState type:', typeof filterState);
+      console.log('FilterState keys:', Object.keys(filterState || {}));
+      console.log('Initial tests passed to filter panel:', currentTests.length);
       
-      console.log('Fetching tests for categories:', selectedCategories, 'providers:', selectedProviders);
+      // Simple test to see if callback is working
+      console.log('Callback function is executing!');
       
-      // Get current biomarker filter from URL
-      const hash = window.location.hash;
-      const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
-      const selectedBiomarkers = biomarkerMatch ? 
-        decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean) : [];
-      
-      console.log('Current biomarker filter:', selectedBiomarkers);
-      
-      // Fetch and enrich tests based on the filter state
-      // For now, handle multiple categories by fetching each one and combining results
-      let allEnrichedTests = [];
-      
-      console.log('=== DEBUG: Filter Panel Fetching ===');
-      console.log('Selected categories:', selectedCategories);
-      console.log('Selected providers:', selectedProviders);
-      
-      if (selectedCategories.length > 0) {
-        for (const category of selectedCategories) {
-          const enriched = await fetchAndEnrichTests({ 
-            category: category,
-            provider: selectedProviders.length > 0 ? selectedProviders[0] : null 
-          });
-          allEnrichedTests = allEnrichedTests.concat(enriched);
-        }
-        // Remove duplicates based on test ID
-        const uniqueTests = [];
-        const seenIds = new Set();
-        allEnrichedTests.forEach(test => {
-          if (!seenIds.has(test.id)) {
-            seenIds.add(test.id);
-            uniqueTests.push(test);
-          }
-        });
-        allEnrichedTests = uniqueTests;
-        console.log('Fetched tests for categories:', allEnrichedTests.length);
-      } else {
-        // No categories selected, fetch all tests
-        allEnrichedTests = await fetchAndEnrichTests({ 
-          category: null,
-          provider: selectedProviders.length > 0 ? selectedProviders[0] : null 
-        });
-        console.log('Fetched all tests:', allEnrichedTests.length);
-      }
-      
-      // Apply biomarker filtering if biomarkers are selected
-      if (selectedBiomarkers.length > 0) {
-        console.log('Applying biomarker filter to', allEnrichedTests.length, 'tests');
-        console.log('Looking for biomarkers:', selectedBiomarkers);
+      // Handle filter state object (new approach)
+      if (!Array.isArray(filterState)) {
+        // New case: filterState is an object with categories, providers, etc.
+        const selectedCategories = filterState.categories || [];
+        const selectedProviders = filterState.providers || [];
         
-        allEnrichedTests = allEnrichedTests.filter(test => {
-          const testBiomarkers = test.biomarker_names || [];
-          console.log(`Test "${test.name}" has biomarkers:`, testBiomarkers);
+        // Check if filtered tests are provided directly (for price/provider filtering)
+        if (filterState.filteredTests) {
+          console.log('=== DEBUG: Using Provided Filtered Tests ===');
+          console.log('Filtered tests count:', filterState.filteredTests.length);
+          console.log('Sample filtered test names:', filterState.filteredTests.slice(0, 3).map(t => t.name));
+          console.log('Sample filtered test prices:', filterState.filteredTests.slice(0, 3).map(t => t.price));
+          const enriched = filterState.filteredTests;
           
-          const hasAllBiomarkers = selectedBiomarkers.every(searchBiomarker => {
-            // Normalize the search biomarker (replace + with space, lowercase)
-            const normalizedSearch = searchBiomarker.toLowerCase().replace(/\+/g, ' ');
+          filteredTests = enriched;
+          sortAscending = true;
+          window.sortAscending = sortAscending;
+          updateSortButtonText(sortAscending);
+          currentTests = sortTests(filteredTests, sortAscending);
+          
+          // Update the global tests to match what we're displaying
+          window._allGeneralHealthTests = enriched;
+          console.log('=== DEBUG: Using Provided Filtered Tests ===');
+          console.log('Updated window._allGeneralHealthTests to', enriched.length, 'tests');
+          console.log('Test names:', enriched.map(t => t.name));
+          
+                    updateTestGridContent(currentTests);
+          return; // Exit early since we're using the provided filtered tests
+        }
+        
+        console.log('Fetching tests for categories:', selectedCategories, 'providers:', selectedProviders);
+        
+        // Get current biomarker filter from URL
+        const hash = window.location.hash;
+        const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
+        const selectedBiomarkers = biomarkerMatch ? 
+          decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean) : [];
+        
+        console.log('Current biomarker filter:', selectedBiomarkers);
+        
+        // Fetch and enrich tests based on the filter state
+        // For now, handle multiple categories by fetching each one and combining results
+        let allEnrichedTests = [];
+        
+        console.log('=== DEBUG: Filter Panel Fetching ===');
+        console.log('Selected categories:', selectedCategories);
+        console.log('Selected providers:', selectedProviders);
+        
+        if (selectedCategories.length > 0) {
+          for (const category of selectedCategories) {
+            const enriched = await fetchAndEnrichTests({ 
+              category: category,
+              provider: selectedProviders.length > 0 ? selectedProviders[0] : null 
+            });
+            allEnrichedTests = allEnrichedTests.concat(enriched);
+          }
+          // Remove duplicates based on test ID
+          const uniqueTests = [];
+          const seenIds = new Set();
+          allEnrichedTests.forEach(test => {
+            if (!seenIds.has(test.id)) {
+              seenIds.add(test.id);
+              uniqueTests.push(test);
+            }
+          });
+          allEnrichedTests = uniqueTests;
+          console.log('Fetched tests for categories:', allEnrichedTests.length);
+        } else {
+          // No categories selected, use the initially filtered tests instead of fetching all
+          console.log('No categories selected, using initial filtered tests');
+          allEnrichedTests = window._allGeneralHealthTests || [];
+          console.log('Using initial filtered tests:', allEnrichedTests.length);
+          
+          // Apply provider filter if specified
+          if (selectedProviders.length > 0) {
+            console.log('Applying provider filter to initial tests:', selectedProviders);
+            allEnrichedTests = allEnrichedTests.filter(test => 
+              selectedProviders.includes(test.provider?.name || test.provider)
+            );
+            console.log('Tests after provider filtering:', allEnrichedTests.length);
+          }
+        }
+        
+        // Apply biomarker filtering if biomarkers are selected
+        if (selectedBiomarkers.length > 0) {
+          console.log('Applying biomarker filter to', allEnrichedTests.length, 'tests');
+          console.log('Looking for biomarkers:', selectedBiomarkers);
+          
+          allEnrichedTests = allEnrichedTests.filter(test => {
+            const testBiomarkers = test.biomarker_names || [];
+            console.log(`Test "${test.name}" has biomarkers:`, testBiomarkers);
             
-            // Check if any test biomarker matches (case insensitive, handle + vs space)
-            const hasMatch = testBiomarkers.some(testBiomarker => {
-              if (!testBiomarker) return false;
-              const normalizedTest = testBiomarker.toLowerCase().replace(/\+/g, ' ');
-              return normalizedTest === normalizedSearch;
+            const hasAllBiomarkers = selectedBiomarkers.every(searchBiomarker => {
+              // Normalize the search biomarker (replace + with space, lowercase)
+              const normalizedSearch = searchBiomarker.toLowerCase().replace(/\+/g, ' ');
+              
+              // Check if any test biomarker matches (case insensitive, handle + vs space)
+              const hasMatch = testBiomarkers.some(testBiomarker => {
+                if (!testBiomarker) return false;
+                const normalizedTest = testBiomarker.toLowerCase().replace(/\+/g, ' ');
+                return normalizedTest === normalizedSearch;
+              });
+              
+              if (!hasMatch) {
+                console.log(`  Missing biomarker: "${searchBiomarker}" (normalized: "${normalizedSearch}")`);
+              }
+              return hasMatch;
             });
             
-            if (!hasMatch) {
-              console.log(`  Missing biomarker: "${searchBiomarker}" (normalized: "${normalizedSearch}")`);
+            if (!hasAllBiomarkers) {
+              console.log(`Filtering out test "${test.name}" - missing biomarkers. Test has:`, testBiomarkers, 'Looking for:', selectedBiomarkers);
             }
-            return hasMatch;
+            return hasAllBiomarkers;
           });
-          
-          if (!hasAllBiomarkers) {
-            console.log(`Filtering out test "${test.name}" - missing biomarkers. Test has:`, testBiomarkers, 'Looking for:', selectedBiomarkers);
-          }
-          return hasAllBiomarkers;
-        });
-        console.log('After biomarker filtering:', allEnrichedTests.length, 'tests remaining');
-      }
-      
-      // Apply blood taking method filtering if methods are selected
-      const selectedBloodMethods = filterState.bloodTakingMethods || [];
-      if (selectedBloodMethods.length > 0) {
-        console.log('=== DEBUG: Blood Taking Method Filtering ===');
-        console.log('Applying blood taking method filter to', allEnrichedTests.length, 'tests');
-        console.log('Looking for methods:', selectedBloodMethods);
+          console.log('After biomarker filtering:', allEnrichedTests.length, 'tests remaining');
+        }
         
-        allEnrichedTests = allEnrichedTests.filter(test => {
-          const testMethods = Array.isArray(test.blood_taking_methods) ? test.blood_taking_methods : [];
-          console.log(`Test "${test.name}" has blood taking methods:`, testMethods);
+        // Apply blood taking method filtering if methods are selected
+        const selectedBloodMethods = filterState.bloodTakingMethods || [];
+        if (selectedBloodMethods.length > 0) {
+          console.log('=== DEBUG: Blood Taking Method Filtering ===');
+          console.log('Applying blood taking method filter to', allEnrichedTests.length, 'tests');
+          console.log('Looking for methods:', selectedBloodMethods);
           
-          const hasMatchingMethod = testMethods.some(method => 
-            selectedBloodMethods.includes(method)
-          );
-          
-          if (!hasMatchingMethod) {
-            console.log(`Filtering out test "${test.name}" - no matching blood taking methods. Test has:`, testMethods, 'Looking for:', selectedBloodMethods);
-          }
-          return hasMatchingMethod;
-        });
-        console.log('After blood taking method filtering:', allEnrichedTests.length, 'tests remaining');
+          allEnrichedTests = allEnrichedTests.filter(test => {
+            const testMethods = Array.isArray(test.blood_taking_methods) ? test.blood_taking_methods : [];
+            console.log(`Test "${test.name}" has blood taking methods:`, testMethods);
+            
+            const hasMatchingMethod = testMethods.some(method => 
+              selectedBloodMethods.includes(method)
+            );
+            
+            if (!hasMatchingMethod) {
+              console.log(`Filtering out test "${test.name}" - no matching blood taking methods. Test has:`, testMethods, 'Looking for:', selectedBloodMethods);
+            }
+            return hasMatchingMethod;
+          });
+          console.log('After blood taking method filtering:', allEnrichedTests.length, 'tests remaining');
+        } else {
+          console.log('No biomarker filter applied');
+        }
+        
+        const enriched = allEnrichedTests;
+        
+        console.log('Final enriched tests:', enriched.length);
+        
+        filteredTests = enriched;
+        sortAscending = true;
+        window.sortAscending = sortAscending;
+        updateSortButtonText(sortAscending);
+        currentTests = sortTests(filteredTests, sortAscending);
+        
+        // Update the global tests to match what we're displaying
+        window._allGeneralHealthTests = enriched;
+        console.log('=== DEBUG: Filter Panel Callback Update ===');
+        console.log('Updated window._allGeneralHealthTests to', enriched.length, 'tests');
+        console.log('Test names:', enriched.map(t => t.name));
+        
+        updateTestGridContent(currentTests);
       } else {
-        console.log('No biomarker filter applied');
+        // Legacy case: filterState is an array of filtered tests
+        filteredTests = filterState;
+        sortAscending = true;
+        window.sortAscending = sortAscending;
+        updateSortButtonText(sortAscending);
+        currentTests = sortTests(filteredTests, sortAscending);
+        updateTestGridContent(currentTests);
       }
-      
-      const enriched = allEnrichedTests;
-      
-      console.log('Final enriched tests:', enriched.length);
-      
-      filteredTests = enriched;
-      sortAscending = true;
-      window.sortAscending = sortAscending;
-      updateSortButtonText(sortAscending);
-      currentTests = sortTests(filteredTests, sortAscending);
-      
-      // Update the global tests to match what we're displaying
-      window._allGeneralHealthTests = enriched;
-      console.log('=== DEBUG: Filter Panel Callback Update ===');
-      console.log('Updated window._allGeneralHealthTests to', enriched.length, 'tests');
-      console.log('Test names:', enriched.map(t => t.name));
-      
-      updateTestGridContent(currentTests);
-    } else {
-      // Legacy case: filterState is an array of filtered tests
-      filteredTests = filterState;
-      sortAscending = true;
-      window.sortAscending = sortAscending;
-      updateSortButtonText(sortAscending);
-      currentTests = sortTests(filteredTests, sortAscending);
-      updateTestGridContent(currentTests);
+    };
+    
+    console.log('About to call setupFilterPanel with callback');
+    console.log('filterCallback type:', typeof filterCallback);
+    console.log('filterCallback is function:', typeof filterCallback === 'function');
+    console.log('currentTests length:', currentTests.length);
+    
+    // Test the callback directly
+    console.log('Testing callback function...');
+    try {
+      filterCallback({ test: 'test' });
+      console.log('Callback test successful');
+    } catch (error) {
+      console.error('Callback test failed:', error);
     }
-    });
+    
+    console.log('Calling setupFilterPanel...');
+    console.log('=== DEBUG: About to call setupFilterPanel with callback ===');
+    console.log('Callback function defined:', typeof filterCallback);
+    try {
+      setupFilterPanel(currentTests, filterCallback);
+      console.log('=== DEBUG: setupFilterPanel called successfully ===');
+      console.log('setupFilterPanel called successfully');
+    } catch (error) {
+      console.error('=== ERROR: setupFilterPanel failed ===');
+      console.error('Error:', error);
+      console.error('Error stack:', error.stack);
+    }
+    
     setTimeout(() => {
       document.dispatchEvent(new Event('filterPanelReady'));
     }, 0);
@@ -1084,7 +1158,7 @@ async function fetchAndEnrichTests({ category = null, categoryId = null, provide
 }
 
 // Export the main function
-export async function displayGeneralHealthPage() {
+export async function displayGeneralHealthPage(skipFilterPanel = false) {
   try {
     // --- Parse URL parameters from hash ---
     const hash = window.location.hash;
@@ -1209,23 +1283,35 @@ export async function displayGeneralHealthPage() {
     console.log('Test names:', tests.map(t => t.name));
     
     // Create filter panel with tests data - hide categories and problems for men's health page
-    const filterPanel = await createFilterPanel(tests, { hideCategories: true, hideProblems: true });
-    // Create and return the page structure
-    const content = createPageStructure(filterPanel, null);
-    // Add a custom event listener for when the content is rendered
-    console.log('=== DEBUG: Adding contentRendered event listener ===');
-    document.addEventListener('contentRendered', () => {
-      console.log('=== DEBUG: contentRendered event fired ===');
-      if (window._allGeneralHealthTests) {
-        console.log('=== DEBUG: Calling initializePageElements ===');
-        // For men's health page, don't set up the filter panel callback to prevent re-fetching
-        initializePageElements(window._allGeneralHealthTests, null, true);
-      } else {
-        console.error('window._allGeneralHealthTests is not set!');
-      }
-    }, { once: true });
-    
-    return content;
+    console.log('=== DEBUG: Creating filter panel ===');
+    try {
+      const filterPanel = await createFilterPanel(tests, { hideCategories: true, hideProblems: true });
+      console.log('=== DEBUG: Filter panel created ===');
+      console.log('Filter panel HTML length:', filterPanel.length);
+      // Create and return the page structure
+      const content = createPageStructure(filterPanel, null);
+      console.log('=== DEBUG: Page structure created ===');
+      // Add a custom event listener for when the content is rendered
+      console.log('=== DEBUG: Adding contentRendered event listener ===');
+      document.addEventListener('contentRendered', async () => {
+        console.log('=== DEBUG: contentRendered event fired ===');
+        if (window._allGeneralHealthTests) {
+          console.log('=== DEBUG: Calling initializePageElements ===');
+          // Set up the filter panel properly
+          initializePageElements(window._allGeneralHealthTests, null, false);
+        } else {
+          console.error('window._allGeneralHealthTests is not set!');
+        }
+      }, { once: true });
+      console.log('=== DEBUG: contentRendered event listener added ===');
+      
+      return content;
+    } catch (error) {
+      console.error('=== ERROR: createFilterPanel failed ===');
+      console.error('Error:', error);
+      console.error('Error stack:', error.stack);
+      throw error;
+    }
   } catch (error) {
     console.error('Error loading general health page:', error);
     return createErrorContent();
