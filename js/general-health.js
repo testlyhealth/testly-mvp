@@ -588,86 +588,395 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
   const cards = await cardService.createCards(currentTests);
   testsGrid.innerHTML = cards;
   
-      // Update results count and show applied filters
-    const filterTagsContainer = document.querySelector('.filter-tags');
-    if (filterTagsContainer) {
-      // Get URL parameters to show applied filters
-      const hash = window.location.hash;
-      const appliedFilters = [];
-      
-      // Check for applied filters
-      const minPriceMatch = hash.match(/[?&]minPrice=([^&]+)/);
-      if (minPriceMatch) {
-        appliedFilters.push(`Min price: ${decodeURIComponent(minPriceMatch[1])}`);
-      }
-      
-      const maxPriceMatch = hash.match(/[?&]maxPrice=([^&]+)/);
-      if (maxPriceMatch) {
-        appliedFilters.push(`Max price: ${decodeURIComponent(maxPriceMatch[1])}`);
-      }
-      
-      const providerMatch = hash.match(/[?&]provider=([^&]+)/);
-      if (providerMatch) {
-        appliedFilters.push(`Provider: ${decodeURIComponent(providerMatch[1])}`);
-      }
-      
-      const methodMatch = hash.match(/[?&]method=([^&]+)/);
-      if (methodMatch) {
-        appliedFilters.push(`Method: ${decodeURIComponent(methodMatch[1])}`);
-      }
-      
-      const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
-      if (biomarkerMatch) {
-        const biomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim());
-        biomarkers.forEach(biomarker => {
-          appliedFilters.push(`Biomarker: ${biomarker}`);
-        });
-      }
-      
-      // Create filter tags HTML
-      const filterTagsHTML = appliedFilters.map(filter => `
-        <div class="filter-tag">
-          <span>${filter}</span>
-          <button class="remove-tag" aria-label="Remove filter">×</button>
-        </div>
-      `).join('');
-      
-      console.log('=== DEBUG: Creating initial filter tags HTML ===');
-      console.log('Tests length:', tests.length);
-      console.log('Applied filters:', appliedFilters);
-      
-      const resultsCountHTML = `
-        <div class="filter-tags-container">
-          <div class="filter-tags-list">
-            ${filterTagsHTML}
-          </div>
-          <div class="results-controls">
-            <div class="results-count">
-              <span>${tests.length} result${tests.length !== 1 ? 's' : ''}</span>
-            </div>
-            <button class="filters-btn" aria-label="Toggle filters panel">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
-              </svg>
-              Filters
-            </button>
-            <div class="sort-dropdown desktop-only">
-              <button class="sort-btn" aria-label="Sort results" aria-expanded="false">
-                Sort: Relevance
-              </button>
-              <div class="sort-dropdown-menu" style="display: none;">
-                <button class="sort-option" data-sort="relevance">Sort by relevance</button>
-                <button class="sort-option" data-sort="price-asc">Sort by price: Low to high</button>
-                <button class="sort-option" data-sort="price-desc">Sort by price: High to low</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-      console.log('Setting filter tags container HTML');
-      filterTagsContainer.innerHTML = resultsCountHTML;
-      console.log('Filter tags container HTML set');
+  // Create or update filter tags container
+  let filterTagsContainer = document.querySelector('.filter-tags');
+  if (!filterTagsContainer) {
+    // Create filter tags container if it doesn't exist
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+      const filterTagsDiv = document.createElement('div');
+      filterTagsDiv.className = 'filter-tags';
+      mainContent.insertBefore(filterTagsDiv, mainContent.firstChild);
+      filterTagsContainer = filterTagsDiv;
     }
+  }
+  
+  if (filterTagsContainer) {
+    // Get URL parameters to show applied filters
+    const hash = window.location.hash;
+    const appliedFilters = [];
+    
+    // Check for applied filters from homepage form
+    const minPriceMatch = hash.match(/[?&]minPrice=([^&]+)/);
+    if (minPriceMatch) {
+      appliedFilters.push({
+        type: 'minPrice',
+        value: decodeURIComponent(minPriceMatch[1]),
+        display: `Min price: ${decodeURIComponent(minPriceMatch[1])}`
+      });
+    }
+    
+    const maxPriceMatch = hash.match(/[?&]maxPrice=([^&]+)/);
+    if (maxPriceMatch) {
+      appliedFilters.push({
+        type: 'maxPrice',
+        value: decodeURIComponent(maxPriceMatch[1]),
+        display: `Max price: ${decodeURIComponent(maxPriceMatch[1])}`
+      });
+    }
+    
+    const providerMatch = hash.match(/[?&]provider=([^&]+)/);
+    if (providerMatch) {
+      appliedFilters.push({
+        type: 'provider',
+        value: decodeURIComponent(providerMatch[1]),
+        display: `Provider: ${decodeURIComponent(providerMatch[1])}`
+      });
+    }
+    
+    const methodMatch = hash.match(/[?&]method=([^&]+)/);
+    if (methodMatch) {
+      appliedFilters.push({
+        type: 'method',
+        value: decodeURIComponent(methodMatch[1]),
+        display: `Method: ${decodeURIComponent(methodMatch[1])}`
+      });
+    }
+    
+    const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
+    if (biomarkerMatch) {
+      const biomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean);
+      biomarkers.forEach(biomarker => {
+        appliedFilters.push({
+          type: 'biomarker',
+          value: biomarker,
+          display: biomarker.replace(/\+/g, ' ')
+        });
+      });
+    }
+    
+    // Check for filter panel filters
+    const filterMatch = hash.match(/[?&]filter=([^&]+)/);
+    if (filterMatch) {
+      const filters = decodeURIComponent(filterMatch[1]).split(',').map(f => f.trim()).filter(Boolean);
+      filters.forEach(filter => {
+        appliedFilters.push({
+          type: 'category',
+          value: filter,
+          display: `Category: ${filter}`
+        });
+      });
+    }
+    
+    // Create filter tags HTML with proper data attributes
+    const filterTagsHTML = appliedFilters.map(filter => `
+      <div class="filter-tag" data-type="${filter.type}" data-value="${filter.value}">
+        <span>${filter.display}</span>
+        <button class="remove-tag" aria-label="Remove filter">×</button>
+      </div>
+    `).join('');
+    
+    console.log('=== DEBUG: Creating initial filter tags HTML ===');
+    console.log('Tests length:', tests.length);
+    console.log('Applied filters:', appliedFilters);
+    
+    const resultsCountHTML = `
+      <div class="filter-tags-container">
+        <div class="filter-tags-list">
+          ${filterTagsHTML}
+        </div>
+        <div class="results-controls">
+          <div class="results-count">
+            <span>${tests.length} result${tests.length !== 1 ? 's' : ''}</span>
+          </div>
+          <button class="filters-btn" aria-label="Toggle filters panel">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
+            </svg>
+            Filters
+          </button>
+          <div class="sort-dropdown desktop-only">
+            <button class="sort-btn" aria-label="Sort results" aria-expanded="false">
+              Sort: Relevance
+            </button>
+            <div class="sort-dropdown-menu" style="display: none;">
+              <button class="sort-option" data-sort="relevance">Sort by relevance</button>
+              <button class="sort-option" data-sort="price-asc">Sort by price: Low to high</button>
+              <button class="sort-option" data-sort="price-desc">Sort by price: High to low</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    console.log('Setting filter tags container HTML');
+    filterTagsContainer.innerHTML = resultsCountHTML;
+    console.log('Filter tags container HTML set');
+    
+    // Set up event delegation for remove tag buttons
+    const filterTagsList = filterTagsContainer.querySelector('.filter-tags-list');
+    if (filterTagsList) {
+      filterTagsList.addEventListener('click', (e) => {
+        const button = e.target.closest('.remove-tag');
+        if (!button) return;
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const tag = button.closest('.filter-tag');
+        if (!tag) return;
+        
+        const type = tag.dataset.type;
+        const value = tag.dataset.value;
+        console.log('Removing filter tag:', type, value);
+        
+        // Parse current URL parameters
+        let [base, paramStr] = window.location.hash.split('?');
+        base = base || '#/search-results';
+        let params = new URLSearchParams(paramStr || '');
+        
+        // Remove the specific filter
+        if (type === 'minPrice') {
+          params.delete('minPrice');
+        } else if (type === 'maxPrice') {
+          params.delete('maxPrice');
+        } else if (type === 'provider') {
+          params.delete('provider');
+        } else if (type === 'method') {
+          params.delete('method');
+        } else if (type === 'biomarker') {
+          // Remove specific biomarker from biomarkers parameter
+          let biomarkerVal = params.get('biomarkers') || '';
+          let biomarkers = biomarkerVal.split(',').map(b => b.trim()).filter(Boolean);
+          biomarkers = biomarkers.filter(b => b !== value);
+          if (biomarkers.length > 0) {
+            params.set('biomarkers', biomarkers.join(','));
+          } else {
+            params.delete('biomarkers');
+          }
+        } else if (type === 'category') {
+          // Remove specific category from filter parameter
+          let filterVal = params.get('filter') || '';
+          let filters = filterVal.split(',').map(f => f.trim()).filter(Boolean);
+          filters = filters.filter(f => f !== value);
+          if (filters.length > 0) {
+            params.set('filter', filters.join(','));
+          } else {
+            params.delete('filter');
+          }
+        }
+        
+        // Remove empty params
+        for (const [key, val] of params.entries()) {
+          if (!val) params.delete(key);
+        }
+        
+        // Rebuild hash and navigate
+        const newHash = params.toString() ? `${base}?${params.toString()}` : base;
+        window.location.hash = newHash;
+      });
+    }
+    
+    // Add event listener to filters button
+    const filtersBtn = filterTagsContainer.querySelector('.filters-btn');
+    if (filtersBtn) {
+      filtersBtn.addEventListener('click', () => {
+        const filterPanel = document.querySelector('.filter-panel');
+        if (filterPanel) {
+          filterPanel.classList.toggle('visible');
+        }
+      });
+    }
+  }
+  
+  // Set up a function to update filter tags when URL changes
+  function updateFilterTagsFromURL() {
+    const filterTagsContainer = document.querySelector('.filter-tags');
+    if (!filterTagsContainer) return;
+    
+    // Get URL parameters to show applied filters
+    const hash = window.location.hash;
+    const appliedFilters = [];
+    
+    // Check for applied filters from homepage form
+    const minPriceMatch = hash.match(/[?&]minPrice=([^&]+)/);
+    if (minPriceMatch) {
+      appliedFilters.push({
+        type: 'minPrice',
+        value: decodeURIComponent(minPriceMatch[1]),
+        display: `Min price: ${decodeURIComponent(minPriceMatch[1])}`
+      });
+    }
+    
+    const maxPriceMatch = hash.match(/[?&]maxPrice=([^&]+)/);
+    if (maxPriceMatch) {
+      appliedFilters.push({
+        type: 'maxPrice',
+        value: decodeURIComponent(maxPriceMatch[1]),
+        display: `Max price: ${decodeURIComponent(maxPriceMatch[1])}`
+      });
+    }
+    
+    const providerMatch = hash.match(/[?&]provider=([^&]+)/);
+    if (providerMatch) {
+      appliedFilters.push({
+        type: 'provider',
+        value: decodeURIComponent(providerMatch[1]),
+        display: `Provider: ${decodeURIComponent(providerMatch[1])}`
+      });
+    }
+    
+    const methodMatch = hash.match(/[?&]method=([^&]+)/);
+    if (methodMatch) {
+      appliedFilters.push({
+        type: 'method',
+        value: decodeURIComponent(methodMatch[1]),
+        display: `Method: ${decodeURIComponent(methodMatch[1])}`
+      });
+    }
+    
+    const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
+    if (biomarkerMatch) {
+      const biomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean);
+      biomarkers.forEach(biomarker => {
+        appliedFilters.push({
+          type: 'biomarker',
+          value: biomarker,
+          display: biomarker.replace(/\+/g, ' ')
+        });
+      });
+    }
+    
+    // Check for filter panel filters
+    const filterMatch = hash.match(/[?&]filter=([^&]+)/);
+    if (filterMatch) {
+      const filters = decodeURIComponent(filterMatch[1]).split(',').map(f => f.trim()).filter(Boolean);
+      filters.forEach(filter => {
+        appliedFilters.push({
+          type: 'category',
+          value: filter,
+          display: `Category: ${filter}`
+        });
+      });
+    }
+    
+    // Create filter tags HTML with proper data attributes
+    const filterTagsHTML = appliedFilters.map(filter => `
+      <div class="filter-tag" data-type="${filter.type}" data-value="${filter.value}">
+        <span>${filter.display}</span>
+        <button class="remove-tag" aria-label="Remove filter">×</button>
+      </div>
+    `).join('');
+    
+    const resultsCountHTML = `
+      <div class="filter-tags-container">
+        <div class="filter-tags-list">
+          ${filterTagsHTML}
+        </div>
+        <div class="results-controls">
+          <div class="results-count">
+            <span>${tests.length} result${tests.length !== 1 ? 's' : ''}</span>
+          </div>
+          <button class="filters-btn" aria-label="Toggle filters panel">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
+            </svg>
+            Filters
+          </button>
+          <div class="sort-dropdown desktop-only">
+            <button class="sort-btn" aria-label="Sort results" aria-expanded="false">
+              Sort: Relevance
+            </button>
+            <div class="sort-dropdown-menu" style="display: none;">
+              <button class="sort-option" data-sort="relevance">Sort by relevance</button>
+              <button class="sort-option" data-sort="price-asc">Sort by price: Low to high</button>
+              <button class="sort-option" data-sort="price-desc">Sort by price: High to low</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    filterTagsContainer.innerHTML = resultsCountHTML;
+    
+    // Re-attach event listeners
+    const filterTagsList = filterTagsContainer.querySelector('.filter-tags-list');
+    if (filterTagsList) {
+      filterTagsList.addEventListener('click', (e) => {
+        const button = e.target.closest('.remove-tag');
+        if (!button) return;
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const tag = button.closest('.filter-tag');
+        if (!tag) return;
+        
+        const type = tag.dataset.type;
+        const value = tag.dataset.value;
+        console.log('Removing filter tag:', type, value);
+        
+        // Parse current URL parameters
+        let [base, paramStr] = window.location.hash.split('?');
+        base = base || '#/search-results';
+        let params = new URLSearchParams(paramStr || '');
+        
+        // Remove the specific filter
+        if (type === 'minPrice') {
+          params.delete('minPrice');
+        } else if (type === 'maxPrice') {
+          params.delete('maxPrice');
+        } else if (type === 'provider') {
+          params.delete('provider');
+        } else if (type === 'method') {
+          params.delete('method');
+        } else if (type === 'biomarker') {
+          // Remove specific biomarker from biomarkers parameter
+          let biomarkerVal = params.get('biomarkers') || '';
+          let biomarkers = biomarkerVal.split(',').map(b => b.trim()).filter(Boolean);
+          biomarkers = biomarkers.filter(b => b !== value);
+          if (biomarkers.length > 0) {
+            params.set('biomarkers', biomarkers.join(','));
+          } else {
+            params.delete('biomarkers');
+          }
+        } else if (type === 'category') {
+          // Remove specific category from filter parameter
+          let filterVal = params.get('filter') || '';
+          let filters = filterVal.split(',').map(f => f.trim()).filter(Boolean);
+          filters = filters.filter(f => f !== value);
+          if (filters.length > 0) {
+            params.set('filter', filters.join(','));
+          } else {
+            params.delete('filter');
+          }
+        }
+        
+        // Remove empty params
+        for (const [key, val] of params.entries()) {
+          if (!val) params.delete(key);
+        }
+        
+        // Rebuild hash and navigate
+        const newHash = params.toString() ? `${base}?${params.toString()}` : base;
+        window.location.hash = newHash;
+      });
+    }
+    
+    // Re-attach filters button event listener
+    const filtersBtn = filterTagsContainer.querySelector('.filters-btn');
+    if (filtersBtn) {
+      filtersBtn.addEventListener('click', () => {
+        const filterPanel = document.querySelector('.filter-panel');
+        if (filterPanel) {
+          filterPanel.classList.toggle('visible');
+        }
+      });
+    }
+  }
+  
+  // Set up hash change listener to update filter tags
+  window.addEventListener('hashchange', updateFilterTagsFromURL);
   
   console.log('=== DEBUG: About to call setupFilterPanel ===');
   console.log('Passing selectedProblem to setupFilterPanel:', selectedProblem);
@@ -1198,7 +1507,7 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     // Parse method filter
     const methodMatch = hash.match(/[?&]method=([^&]+)/);
     if (methodMatch) {
-      selectedMethod = decodeURIComponent(methodMatch[1]);
+      selectedMethod = decodeURIComponent(methodMatch[1]).replace(/\+/g, ' ');
       console.log('Selected method from URL:', selectedMethod);
     }
     
@@ -1270,9 +1579,17 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     // Apply method filtering
     if (selectedMethod && selectedMethod !== '') {
       console.log('Applying method filter:', selectedMethod);
+      console.log('Sample tests with blood taking methods:', tests.slice(0, 3).map(t => ({
+        name: t.name,
+        blood_taking_methods: t.blood_taking_methods
+      })));
       tests = tests.filter(test => {
         const testMethods = test.blood_taking_methods || [];
-        return testMethods.some(method => method === selectedMethod);
+        const hasMethod = testMethods.some(method => method === selectedMethod);
+        if (!hasMethod) {
+          console.log(`Filtering out test "${test.name}" - method "${selectedMethod}" not found in:`, testMethods);
+        }
+        return hasMethod;
       });
       console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after method filtering`);
       beforeFilter = tests.length;

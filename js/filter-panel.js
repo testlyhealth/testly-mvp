@@ -69,18 +69,50 @@ export async function createFilterPanel(tests, options = {}) {
     ];
   }
   
-  // Fetch providers from Supabase
+  // Fetch providers from male health and hormones category (same as homepage form)
   let providers = [];
   try {
-    const { data, error } = await supabase.from('providers').select('*').order('name');
-    if (error) throw error;
-    providers = data.map(p => p.name);
-    console.log('Supabase providers:', providers);
-  } catch (e) {
-    // Fallback to unique providers from tests if fetch fails
-    providers = [...new Set(tests.map(test => test.provider))];
-    console.log('Fallback providers:', providers);
-  }
+    const { data, error } = await supabase
+      .from('blood_test_category_link_table')
+      .select(`
+        provider_blood_test_id,
+        provider_blood_tests!inner (
+          provider_id,
+          providers!inner (
+            name
+          )
+        )
+      `)
+      .eq('blood_test_category_id', 3); // Male health and hormones category
+    
+    if (error) {
+      console.error('Error fetching providers:', error);
+      // Fallback to unique providers from tests if fetch fails
+      const fallbackProviders = [...new Set(tests.map(test => test.provider))];
+      providers = fallbackProviders.map(name => ({ name, count: 1 }));
+      console.log('Fallback providers:', providers);
+    } else {
+      // Count tests per provider
+      const providerCounts = {};
+      data.forEach(item => {
+        const providerName = item.provider_blood_tests.providers.name;
+        providerCounts[providerName] = (providerCounts[providerName] || 0) + 1;
+      });
+      
+      // Convert to array and sort by provider name
+      providers = Object.entries(providerCounts)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+      
+      console.log('Male health category providers:', providers);
+    }
+      } catch (e) {
+      console.error('Error getting providers:', e);
+      // Fallback to unique providers from tests if fetch fails
+      const fallbackProviders = [...new Set(tests.map(test => test.provider))];
+      providers = fallbackProviders.map(name => ({ name, count: 1 }));
+      console.log('Fallback providers:', providers);
+    }
   
   // Fetch biomarker groupings from Supabase
   let biomarkerGroupings = [];
@@ -336,8 +368,8 @@ export async function createFilterPanel(tests, options = {}) {
             </div>
             ${providers.map(provider => `
               <div class="checkbox-option">
-                <input type="checkbox" id="provider-${provider.toLowerCase().replace(/\s+/g, '-')}" class="provider-checkbox" value="${provider}">
-                <label for="provider-${provider.toLowerCase().replace(/\s+/g, '-')}" >${provider}</label>
+                <input type="checkbox" id="provider-${provider.name.toLowerCase().replace(/\s+/g, '-')}" class="provider-checkbox" value="${provider.name}">
+                <label for="provider-${provider.name.toLowerCase().replace(/\s+/g, '-')}" >${provider.name} (${provider.count})</label>
               </div>
             `).join('')}
           </div>
@@ -772,8 +804,51 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         </div>
       `);
     }
-    // --- Biomarker tags from URL ---
+    // --- Homepage form filters from URL ---
     const hash = window.location.hash;
+    
+    // Check for homepage form filters
+    const minPriceMatch = hash.match(/[?&]minPrice=([^&]+)/);
+    if (minPriceMatch) {
+      tags.push(`
+        <div class="filter-tag" data-type="minPrice" data-value="${decodeURIComponent(minPriceMatch[1])}">
+          <span>Min price: ${decodeURIComponent(minPriceMatch[1])}</span>
+          <button class="remove-tag" aria-label="Remove min price filter">×</button>
+        </div>
+      `);
+    }
+    
+    const maxPriceMatch = hash.match(/[?&]maxPrice=([^&]+)/);
+    if (maxPriceMatch) {
+      tags.push(`
+        <div class="filter-tag" data-type="maxPrice" data-value="${decodeURIComponent(maxPriceMatch[1])}">
+          <span>Max price: ${decodeURIComponent(maxPriceMatch[1])}</span>
+          <button class="remove-tag" aria-label="Remove max price filter">×</button>
+        </div>
+      `);
+    }
+    
+    const providerMatch = hash.match(/[?&]provider=([^&]+)/);
+    if (providerMatch) {
+      tags.push(`
+        <div class="filter-tag" data-type="provider" data-value="${decodeURIComponent(providerMatch[1])}">
+          <span>Provider: ${decodeURIComponent(providerMatch[1])}</span>
+          <button class="remove-tag" aria-label="Remove provider filter">×</button>
+        </div>
+      `);
+    }
+    
+    const methodMatch = hash.match(/[?&]method=([^&]+)/);
+    if (methodMatch) {
+      tags.push(`
+        <div class="filter-tag" data-type="method" data-value="${decodeURIComponent(methodMatch[1])}">
+          <span>Method: ${decodeURIComponent(methodMatch[1])}</span>
+          <button class="remove-tag" aria-label="Remove method filter">×</button>
+        </div>
+      `);
+    }
+    
+    // --- Biomarker tags from URL ---
     const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
     if (biomarkerMatch) {
       const selectedBiomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean);
@@ -1330,30 +1405,76 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     
     // Re-initialize biomarker search
     const biomarkerSearchInput = filterContent.querySelector('.biomarker-search-input');
+    const biomarkerDropdown = filterContent.querySelector('.biomarker-dropdown');
     console.log('Biomarker search input found:', !!biomarkerSearchInput);
-    if (biomarkerSearchInput) {
-      console.log('Adding biomarker search event listener');
+    console.log('Biomarker dropdown found:', !!biomarkerDropdown);
+    
+    if (biomarkerSearchInput && biomarkerDropdown) {
+      console.log('Setting up biomarker search for overlay');
+      
+      let searchTimeout;
+      let selectedIndex = -1;
+      
+      // Update selection for overlay
+      function updateOverlaySelection(options) {
+        options.forEach((option, index) => {
+          if (index === selectedIndex) {
+            option.classList.add('selected');
+          } else {
+            option.classList.remove('selected');
+          }
+        });
+      }
+      
       biomarkerSearchInput.addEventListener('input', (e) => {
         const query = e.target.value.trim();
-        const dropdown = filterContent.querySelector('.biomarker-dropdown');
         
-        if (query.length > 0) {
-          // Simple search logic - you can enhance this
-          const biomarkerCheckboxes = filterContent.querySelectorAll('.biomarker-checkbox');
-          biomarkerCheckboxes.forEach(checkbox => {
-            const label = checkbox.nextElementSibling;
-            if (label && label.textContent.toLowerCase().includes(query.toLowerCase())) {
-              checkbox.closest('.checkbox-option').style.display = 'block';
-            } else {
-              checkbox.closest('.checkbox-option').style.display = 'none';
+        // Clear previous timeout
+        clearTimeout(searchTimeout);
+        
+        if (query.length < 2) {
+          biomarkerDropdown.style.display = 'none';
+          return;
+        }
+        
+        // Debounce the search
+        searchTimeout = setTimeout(() => {
+          searchFilterPanelBiomarkers(query, biomarkerDropdown);
+        }, 300);
+      });
+      
+      biomarkerSearchInput.addEventListener('keydown', (e) => {
+        const options = biomarkerDropdown.querySelectorAll('.biomarker-option');
+        
+        switch (e.key) {
+          case 'ArrowDown':
+            e.preventDefault();
+            selectedIndex = Math.min(selectedIndex + 1, options.length - 1);
+            updateOverlaySelection(options);
+            break;
+          case 'ArrowUp':
+            e.preventDefault();
+            selectedIndex = Math.max(selectedIndex - 1, -1);
+            updateOverlaySelection(options);
+            break;
+          case 'Enter':
+            e.preventDefault();
+            if (selectedIndex >= 0 && options[selectedIndex]) {
+              selectFilterPanelBiomarker(options[selectedIndex], biomarkerSearchInput, biomarkerDropdown);
             }
-          });
-        } else {
-          // Show all when search is empty
-          const biomarkerOptions = filterContent.querySelectorAll('.biomarker-checkbox');
-          biomarkerOptions.forEach(checkbox => {
-            checkbox.closest('.checkbox-option').style.display = 'block';
-          });
+            break;
+          case 'Escape':
+            biomarkerDropdown.style.display = 'none';
+            selectedIndex = -1;
+            break;
+        }
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!biomarkerSearchInput.contains(e.target) && !biomarkerDropdown.contains(e.target)) {
+          biomarkerDropdown.style.display = 'none';
+          selectedIndex = -1;
         }
       });
     }
@@ -1475,6 +1596,12 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
             // Reapply filters
             applyFilters().catch(console.error);
           }
+        } else if (type === 'minPrice') {
+          params.delete('minPrice');
+        } else if (type === 'maxPrice') {
+          params.delete('maxPrice');
+        } else if (type === 'method') {
+          params.delete('method');
         }
         // Remove empty params
         for (const [key, val] of params.entries()) {
@@ -3159,6 +3286,9 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       return result;
     };
   }
+
+  // Setup biomarker search functionality
+  setupFilterPanelBiomarkerSearch();
 }
 
 // Setup biomarker search functionality for filter panel
@@ -3170,6 +3300,17 @@ function setupFilterPanelBiomarkerSearch() {
   
   let searchTimeout;
   let selectedIndex = -1;
+  
+  // Update selection for filter panel
+  function updateFilterPanelSelection(options) {
+    options.forEach((option, index) => {
+      if (index === selectedIndex) {
+        option.classList.add('selected');
+      } else {
+        option.classList.remove('selected');
+      }
+    });
+  }
   
   biomarkerInput.addEventListener('input', (e) => {
     const query = e.target.value.trim();
@@ -3306,13 +3447,4 @@ function selectFilterPanelBiomarker(option, inputElement, dropdownElement) {
   window.location.hash = newHash;
 }
 
-// Update selection for filter panel
-function updateFilterPanelSelection(options) {
-  options.forEach((option, index) => {
-    if (index === selectedIndex) {
-      option.classList.add('selected');
-    } else {
-      option.classList.remove('selected');
-    }
-  });
-} 
+ 

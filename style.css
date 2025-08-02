@@ -3681,7 +3681,7 @@ body {
 
   .products-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
     width: 100%;
     overflow: visible;
@@ -3764,7 +3764,7 @@ body {
 
   @media (max-width: 1024px) {
     .products-grid {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 1.5rem;
     }
   }
@@ -4605,6 +4605,50 @@ body {
     margin-bottom: 0.5rem;
     width: 100%;
     box-sizing: border-box;
+  }
+  
+  .filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f0f8ff;
+    border: 1px solid #1E88E5;
+    color: #1E88E5;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  
+  .filter-tag:hover {
+    background: #e3f2fd;
+    border-color: #1565C0;
+    color: #1565C0;
+  }
+  
+  .filter-tag .remove-tag {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+  }
+  
+  .filter-tag .remove-tag:hover {
+    background: rgba(30, 136, 229, 0.1);
+    color: #1565C0;
   }
 
   .filter-tags-container {
@@ -6707,29 +6751,40 @@ body {
     flex-shrink: 0;
   }
 
+  .tab-toggle {
+    display: flex;
+    background: #f3f4f6;
+    border-radius: 8px;
+    padding: 0.25rem;
+    position: relative;
+    width: 100%;
+    border: 1px solid #e2e8f0;
+  }
+
   .tab-button {
     flex: 1;
-    padding: 0.75rem 1rem;
-    border: 1px solid #e2e8f0;
+    padding: 0.75rem 1.5rem;
+    border: none;
     background: transparent;
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 0.9rem;
     font-weight: 500;
     color: #64748b;
     cursor: pointer;
     transition: all 0.2s ease;
+    position: relative;
+    z-index: 1;
+    min-width: 120px;
   }
 
   .tab-button.active {
-    background: transparent;
-    color: #1E88E5;
-    border-color: #1E88E5;
-    border-width: 3px;
-    font-weight: 700;
+    background: #1E88E5;
+    color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
 
   .tab-button:hover:not(.active) {
-    background: #f8fafc;
+    color: #374151;
   }
 
   .search-form {
@@ -6931,6 +6986,61 @@ body {
   .biomarker-option.selected {
     background-color: #2563eb;
     color: white;
+  }
+
+  /* Filter panel biomarker search styles */
+  .filter-panel .biomarker-search-container {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+
+  .filter-panel .biomarker-search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+  }
+
+  .filter-panel .biomarker-search-input:focus {
+    outline: none;
+    border-color: #1E88E5;
+    box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.1);
+  }
+
+  .filter-panel .biomarker-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+  }
+
+  .filter-panel .biomarker-option {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .filter-panel .biomarker-option:hover,
+  .filter-panel .biomarker-option.selected {
+    background-color: #f3f4f6;
+  }
+
+  .filter-panel .biomarker-option:first-child {
+    border-radius: 8px 8px 0 0;
+  }
+
+  .filter-panel .biomarker-option:last-child {
+    border-radius: 0 0 8px 8px;
   }
 
   .search-button {

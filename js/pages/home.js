@@ -233,6 +233,8 @@ async function getMethodsInCategory() {
       return [];
     }
     
+    console.log('Raw method data from database:', data.slice(0, 3));
+    
     // Count tests per method
     const methodCounts = {};
     data.forEach(item => {
@@ -247,11 +249,14 @@ async function getMethodsInCategory() {
       }
     });
     
+    console.log('Method counts:', methodCounts);
+    
     // Convert to array and sort by method name
     const methodsWithCounts = Object.entries(methodCounts)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => a.name.localeCompare(b.name));
     
+    console.log('Final methods with counts:', methodsWithCounts);
     return methodsWithCounts;
   } catch (error) {
     console.error('Error getting methods:', error);
@@ -283,6 +288,7 @@ async function updateProviderDropdown() {
 async function updateMethodDropdown() {
   try {
     const methods = await getMethodsInCategory();
+    console.log('Available methods for dropdown:', methods);
     const methodSelect = document.querySelector('.dropdown-select-4');
     
     if (methodSelect) {
@@ -293,6 +299,7 @@ async function updateMethodDropdown() {
         option.textContent = `${method.name} (${method.count})`;
         methodSelect.appendChild(option);
       });
+      console.log('Method dropdown populated with options:', methodSelect.options.length - 1);
     }
   } catch (error) {
     console.error('Error updating method dropdown:', error);
@@ -385,8 +392,10 @@ export function getHomePageContent() {
         <div class="side-box-content">
           <h3>Find your <span style="color: #1E88E5;">testosterone</span> solution</h3>
           <div class="search-tabs">
-            <button class="tab-button active">Blood tests</button>
-            <button class="tab-button">Clinics</button>
+            <div class="tab-toggle">
+              <button class="tab-button active" data-tab="blood-tests">Blood tests</button>
+              <button class="tab-button" data-tab="clinics">Clinics</button>
+            </div>
           </div>
           <div class="search-form">
             <!-- Blood tests form -->
@@ -1183,21 +1192,24 @@ function setupNavigationHandlers() {
               // Add active class to clicked button
               button.classList.add('active');
               
+              // Get the tab type from data attribute
+              const tabType = button.getAttribute('data-tab');
+              
               // Show/hide appropriate form using opacity and visibility instead of display
-              if (button.textContent === 'Test / Treatment') {
+              if (tabType === 'blood-tests') {
                 bloodTestsForm.style.opacity = '1';
                 bloodTestsForm.style.visibility = 'visible';
-                bloodTestsForm.style.position = 'absolute';
+                bloodTestsForm.style.position = 'relative';
                 problemForm.style.opacity = '0';
                 problemForm.style.visibility = 'hidden';
                 problemForm.style.position = 'absolute';
-              } else if (button.textContent === 'Problem / Symptom') {
+              } else if (tabType === 'clinics') {
                 bloodTestsForm.style.opacity = '0';
                 bloodTestsForm.style.visibility = 'hidden';
                 bloodTestsForm.style.position = 'absolute';
                 problemForm.style.opacity = '1';
                 problemForm.style.visibility = 'visible';
-                problemForm.style.position = 'absolute';
+                problemForm.style.position = 'relative';
               }
             });
           });
@@ -1208,8 +1220,25 @@ function setupNavigationHandlers() {
           
           const searchButton = document.querySelector('.blood-tests-form .search-button');
           console.log('Blood tests search button found:', !!searchButton);
+          console.log('Blood tests search button element:', searchButton);
           if (searchButton) {
-            searchButton.addEventListener('click', handleQuickSearch);
+            console.log('Adding click listener to blood tests search button');
+            console.log('Button text content:', searchButton.textContent);
+            console.log('Button HTML:', searchButton.outerHTML);
+            searchButton.addEventListener('click', (e) => {
+              console.log('=== BLOOD TESTS SEARCH BUTTON CLICKED ===');
+              console.log('Event:', e);
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('About to call handleQuickSearch');
+              handleQuickSearch();
+              console.log('handleQuickSearch called');
+            });
+          } else {
+            console.error('Blood tests search button not found!');
+            console.log('Available .search-button elements:', document.querySelectorAll('.search-button'));
+            console.log('Available .blood-tests-form elements:', document.querySelectorAll('.blood-tests-form'));
+            console.log('All buttons in blood tests form:', document.querySelectorAll('.blood-tests-form button'));
           }
           
           // Setup problem form submission
@@ -1323,6 +1352,7 @@ function setupNavigationHandlers() {
         }
         
         function handleQuickSearch() {
+          console.log('=== DEBUG: handleQuickSearch function called ===');
           // Get form values from the new form structure
           const minPrice = document.querySelector('.dropdown-select-1')?.value;
           const maxPrice = document.querySelector('.dropdown-select-2')?.value;
@@ -1332,6 +1362,7 @@ function setupNavigationHandlers() {
           const biomarker2 = document.querySelector('.biomarker-search-input-2')?.value;
           
           console.log('Form values:', { minPrice, maxPrice, provider, method, biomarker1, biomarker2 });
+          console.log('Method dropdown selected option:', document.querySelector('.dropdown-select-4 option:checked')?.textContent);
           
           // Clear previous validation errors
           clearValidationErrors();
