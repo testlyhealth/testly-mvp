@@ -5,6 +5,7 @@ const AUTHORIZED_EMAILS = ['charles.djannor.hand@gmail.com', 'adamhopkinsonhill@
 let referenceData = {
     biomarkers: [],
     productCategories: [],
+    bloodTestCategories: [],
     labAccreditations: [],
     bloodTakingMethods: [],
     providers: []
@@ -12,15 +13,17 @@ let referenceData = {
 
 async function fetchReferenceData() {
     // Fetch all reference data from Supabase
-    const [biomarkersRes, categoriesRes, accreditationsRes, methodsRes, providersRes] = await Promise.all([
+    const [biomarkersRes, categoriesRes, bloodTestCategoriesRes, accreditationsRes, methodsRes, providersRes] = await Promise.all([
         supabase.from('biomarkers').select('name'),
         supabase.from('product_categories').select('name'),
+        supabase.from('blood_test_categories').select('name'),
         supabase.from('lab_accreditations').select('name'),
         supabase.from('blood_taking_methods').select('name'),
         supabase.from('providers').select('name')
     ]);
     referenceData.biomarkers = (biomarkersRes.data || []).map(x => x.name);
     referenceData.productCategories = (categoriesRes.data || []).map(x => x.name);
+    referenceData.bloodTestCategories = (bloodTestCategoriesRes.data || []).map(x => x.name);
     referenceData.labAccreditations = (accreditationsRes.data || []).map(x => x.name);
     referenceData.bloodTakingMethods = (methodsRes.data || []).map(x => x.name);
     referenceData.providers = (providersRes.data || []).map(x => x.name);
@@ -126,7 +129,7 @@ export function initializeAdminPage() {
                         }
                         fileNameDiv.parentNode.appendChild(previewDiv);
 
-                        // --- Validation ---
+                        // --- Enhanced Validation ---
                         const validationDiv = document.getElementById('csvValidation') || document.createElement('div');
                         validationDiv.id = 'csvValidation';
                         validationDiv.style.marginTop = '2rem';
@@ -139,55 +142,87 @@ export function initializeAdminPage() {
                         let missingProviders = new Set();
                         let invalidRows = [];
                         let warningRows = [];
+                        let requiredFieldErrors = [];
+                        
                         data.forEach((row, idx) => {
+                            let rowErrors = [];
+                            let rowWarnings = [];
+                            
+                            // Check required fields
+                            if (!row.name || row.name.trim() === '') {
+                                rowErrors.push('name is required');
+                            }
+                            if (!row.provider_name || row.provider_name.trim() === '') {
+                                rowErrors.push('provider_name is required');
+                            }
+                            
                             // Providers
                             if (row.provider_name && !referenceData.providers.includes(row.provider_name)) {
                                 missingProviders.add(row.provider_name);
+                                rowErrors.push(`Provider "${row.provider_name}" does not exist in database`);
                             }
+                            
                             // Biomarkers
                             if (row.biomarkers) {
                                 row.biomarkers.split(',').map(x => x.trim()).forEach(bio => {
                                     if (bio && !referenceData.biomarkers.includes(bio)) {
                                         missingBiomarkers.add(bio);
+                                        rowErrors.push(`Biomarker "${bio}" does not exist in database`);
                                     }
                                 });
                             }
-                            // Categories
+                            
+                            // Product Categories
                             if (row.product_categories) {
                                 row.product_categories.split(',').map(x => x.trim()).forEach(cat => {
                                     if (cat && !referenceData.productCategories.includes(cat)) {
                                         missingCategories.add(cat);
+                                        rowErrors.push(`Product category "${cat}" does not exist in database`);
                                     }
                                 });
                             }
+                            
+                            // Blood Test Categories
+                            if (row.blood_test_categories) {
+                                row.blood_test_categories.split(',').map(x => x.trim()).forEach(cat => {
+                                    if (cat && !referenceData.bloodTestCategories.includes(cat)) {
+                                        missingCategories.add(cat);
+                                        rowErrors.push(`Blood test category "${cat}" does not exist in database`);
+                                    }
+                                });
+                            }
+                            
                             // Accreditations
                             if (row.lab_accreditations) {
                                 row.lab_accreditations.split(',').map(x => x.trim()).forEach(acc => {
                                     if (acc && !referenceData.labAccreditations.includes(acc)) {
                                         missingAccreditations.add(acc);
+                                        rowErrors.push(`Lab accreditation "${acc}" does not exist in database`);
                                     }
                                 });
                             }
+                            
                             // Blood taking methods
                             if (row.blood_taking_methods) {
                                 row.blood_taking_methods.split(',').map(x => x.trim()).forEach(method => {
                                     if (method && !referenceData.bloodTakingMethods.includes(method)) {
                                         missingMethods.add(method);
+                                        rowErrors.push(`Blood taking method "${method}" does not exist in database`);
                                     }
                                 });
                             }
-                            // New results returned time logic
+                            
+                            // Results returned time logic
                             const min = row.results_returned_time_min;
                             const max = row.results_returned_time_max;
                             const days = row.results_returned_time_days;
-                            let rowErrors = [];
-                            let rowWarnings = [];
                             const hasDays = days !== undefined && days !== "";
                             const hasMin = min !== undefined && min !== "";
                             const hasMax = max !== undefined && max !== "";
                             const daysNum = Number(days);
                             const minNum = Number(min);
                             const maxNum = Number(max);
+                            
                             // Check for valid combinations
                             if (!hasDays && !hasMin && !hasMax) {
                                 rowErrors.push('Must provide either results_returned_time_days or both results_returned_time_min and results_returned_time_max');
@@ -227,53 +262,66 @@ export function initializeAdminPage() {
                                     rowWarnings.push('Both results_returned_time_days and min/max are filled; only one system is usually needed');
                                 }
                             }
+                            
+                            // URL validation
+                            if (row.url && row.url.trim() !== '') {
+                                try {
+                                    new URL(row.url);
+                                } catch (e) {
+                                    rowErrors.push('Invalid URL format');
+                                }
+                            }
+                            
+                            // Price validation
+                            if (row.price && row.price.trim() !== '') {
+                                const priceNum = Number(row.price);
+                                if (isNaN(priceNum) || priceNum < 0) {
+                                    rowErrors.push('Price must be a valid positive number');
+                                }
+                            }
+                            
+                            // Trustpilot score validation
+                            if (row.trustpilot_score && row.trustpilot_score.trim() !== '') {
+                                const scoreNum = Number(row.trustpilot_score);
+                                if (isNaN(scoreNum) || scoreNum < 0 || scoreNum > 5) {
+                                    rowErrors.push('Trustpilot score must be between 0 and 5');
+                                }
+                            }
+                            
                             if (rowErrors.length > 0) {
-                                invalidRows.push({ row: idx + 2, errors: rowErrors }); // +2 for header and 0-index
+                                invalidRows.push({ row: idx + 2, errors: rowErrors, testName: row.name || 'UNNAMED' }); // +2 for header and 0-index
                             }
                             if (rowWarnings.length > 0) {
-                                warningRows.push({ row: idx + 2, warnings: rowWarnings }); // +2 for header and 0-index
+                                warningRows.push({ row: idx + 2, warnings: rowWarnings, testName: row.name || 'UNNAMED' }); // +2 for header and 0-index
                             }
                         });
+                        
                         let report = '';
                         let validationPassed = false;
-                        if (missingProviders.size > 0) {
-                            report += `<div style='color:#b00;'><strong>Unknown providers:</strong> ${Array.from(missingProviders).join(', ')}</div>`;
-                        }
-                        if (missingBiomarkers.size > 0) {
-                            const biomarkerList = Array.from(missingBiomarkers)
-                                .map((bio, idx) => `<div style="margin-left:1.5rem;">${idx + 1}. ${bio}</div>`)
-                                .join('');
-                            report += `<div style='color:#b00;'><strong>Missing biomarkers:</strong><br>${biomarkerList}</div>`;
-                        }
-                        if (missingCategories.size > 0) {
-                            report += `<div style='color:#b00;'><strong>Missing product categories:</strong> ${Array.from(missingCategories).join(', ')}</div>`;
-                        }
-                        if (missingAccreditations.size > 0) {
-                            report += `<div style='color:#b00;'><strong>Missing lab accreditations:</strong> ${Array.from(missingAccreditations).join(', ')}</div>`;
-                        }
-                        if (missingMethods.size > 0) {
-                            report += `<div style='color:#b00;'><strong>Missing blood taking methods:</strong> ${Array.from(missingMethods).join(', ')}</div>`;
-                        }
+                        
                         if (invalidRows.length > 0) {
-                            report += `<div style='color:#b00;'><strong>Rows with invalid results_returned_time fields:</strong><ul style='margin:0.5rem 0 0 1.5rem;'>`;
+                            report += `<div style='color:#b00;'><strong>Rows with errors (upload will be blocked):</strong><ul style='margin:0.5rem 0 0 1.5rem;'>`;
                             invalidRows.forEach(r => {
-                                report += `<li>Row ${r.row}: ${r.errors.join('; ')}</li>`;
+                                report += `<li>Row ${r.row} (${r.testName}): ${r.errors.join('; ')}</li>`;
                             });
                             report += `</ul></div>`;
                         }
+                        
                         if (warningRows.length > 0) {
-                            report += `<div style='color:#f90;'><strong>Rows with results_returned_time warnings (will be uploaded):</strong><ul style='margin:0.5rem 0 0 1.5rem;'>`;
+                            report += `<div style='color:#f90;'><strong>Rows with warnings (will be uploaded):</strong><ul style='margin:0.5rem 0 0 1.5rem;'>`;
                             warningRows.forEach(r => {
-                                report += `<li>Row ${r.row}: ${r.warnings.join('; ')}</li>`;
+                                report += `<li>Row ${r.row} (${r.testName}): ${r.warnings.join('; ')}</li>`;
                             });
                             report += `</ul></div>`;
                         }
+                        
                         if (!report) {
                             report = `<div style='color:#080;'><strong>No errors found. Ready to upload!</strong></div>`;
                             validationPassed = true;
                         } else if (invalidRows.length === 0) {
                             validationPassed = true;
                         }
+                        
                         validationDiv.innerHTML = `<h4>Validation Report</h4>${report}`;
                         fileNameDiv.parentNode.appendChild(validationDiv);
 
@@ -306,13 +354,18 @@ export function initializeAdminPage() {
                                     try {
                                         // Use the last parsed CSV data
                                         const parsedData = window._lastParsedCsvData;
-                                        const { data, error } = await supabase.rpc('bulk_insert_blood_tests', { tests: parsedData });
+                                        const { data, error } = await supabase.rpc('bulk_insert_blood_tests_safe', { tests: parsedData });
                                         if (error) {
                                             alert('Upload failed: ' + error.message);
                                             uploadBtn.disabled = false;
                                             uploadBtn.textContent = 'Upload to Supabase';
                                         } else {
-                                            alert(`Upload complete! ${data.inserted} tests added.`);
+                                            if (data.errors && data.errors.length > 0) {
+                                                const errorMsg = 'Upload completed with errors:\n\n' + data.errors.join('\n');
+                                                alert(errorMsg);
+                                            } else {
+                                                alert(`Upload complete! ${data.inserted} tests added successfully.`);
+                                            }
                                             uploadBtn.textContent = 'Upload to Supabase';
                                         }
                                     } catch (err) {

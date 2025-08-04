@@ -627,10 +627,11 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
     
     const providerMatch = hash.match(/[?&]provider=([^&]+)/);
     if (providerMatch) {
+      const providerValue = decodeURIComponent(providerMatch[1]).replace(/\+/g, ' ');
       appliedFilters.push({
         type: 'provider',
-        value: decodeURIComponent(providerMatch[1]),
-        display: `Provider: ${decodeURIComponent(providerMatch[1])}`
+        value: providerValue,
+        display: `Provider: ${providerValue}`
       });
     }
     
@@ -819,10 +820,11 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
     
     const providerMatch = hash.match(/[?&]provider=([^&]+)/);
     if (providerMatch) {
+      const providerValue = decodeURIComponent(providerMatch[1]).replace(/\+/g, ' ');
       appliedFilters.push({
         type: 'provider',
-        value: decodeURIComponent(providerMatch[1]),
-        display: `Provider: ${decodeURIComponent(providerMatch[1])}`
+        value: providerValue,
+        display: `Provider: ${providerValue}`
       });
     }
     
@@ -1500,7 +1502,7 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     // Parse provider filter
     const providerMatch = hash.match(/[?&]provider=([^&]+)/);
     if (providerMatch) {
-      selectedProvider = decodeURIComponent(providerMatch[1]);
+      selectedProvider = decodeURIComponent(providerMatch[1]).replace(/\+/g, ' ');
       console.log('Selected provider from URL:', selectedProvider);
     }
     

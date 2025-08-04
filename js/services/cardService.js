@@ -17,7 +17,8 @@ export class CardService {
       'Lloyds Pharmacy': 'lloyds pharmacy.png',
       'Selph': 'selph.png',
       'Lola': 'lola.png',
-      'Randox': 'randox.png'
+      'Randox': 'randox.png',
+      'One day tests': 'one day tests.png'
     };
   }
 

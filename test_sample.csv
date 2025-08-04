@@ -1,0 +1,2 @@
+name,provider_name,price,url,description,biomarkers,product_categories,blood_test_categories,lab_accreditations,blood_taking_methods,results_returned_time_days,doctors_report,trustpilot_score
+Test Upload Sample,Thriva,99.99,https://example.com/test,Test description,Vitamin D,General Health,General Health,UKAS,Finger prick,3,true,4.5 

@@ -830,9 +830,10 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     
     const providerMatch = hash.match(/[?&]provider=([^&]+)/);
     if (providerMatch) {
+      const providerValue = decodeURIComponent(providerMatch[1]).replace(/\+/g, ' ');
       tags.push(`
-        <div class="filter-tag" data-type="provider" data-value="${decodeURIComponent(providerMatch[1])}">
-          <span>Provider: ${decodeURIComponent(providerMatch[1])}</span>
+        <div class="filter-tag" data-type="provider" data-value="${providerValue}">
+          <span>Provider: ${providerValue}</span>
           <button class="remove-tag" aria-label="Remove provider filter">×</button>
         </div>
       `);
