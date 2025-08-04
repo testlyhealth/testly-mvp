@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Database Check</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .debug-section {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Direct Database Check</h1>
+    
+    <div class="debug-section">
+        <h2>Run Direct Database Check</h2>
+        <button onclick="runDirectCheck()">Run Direct Check</button>
+        <div id="checkResults"></div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './js/api/supabase.js';
+        
+        window.supabase = supabase;
+        
+        async function runDirectCheck() {
+            const resultsDiv = document.getElementById('checkResults');
+            resultsDiv.innerHTML = '<p>Running direct database check...</p>';
+            
+            try {
+                // Import and run the direct check script
+                const directCheckScript = await import('./direct_db_check.js');
+                
+                // Capture console output
+                const originalLog = console.log;
+                const originalError = console.error;
+                let output = '';
+                
+                console.log = function(...args) {
+                    output += args.join(' ') + '\n';
+                    originalLog.apply(console, args);
+                };
+                
+                console.error = function(...args) {
+                    output += 'ERROR: ' + args.join(' ') + '\n';
+                    originalError.apply(console, args);
+                };
+                
+                // Run the direct check function
+                await directCheckScript.directDbCheck();
+                
+                // Restore console
+                console.log = originalLog;
+                console.error = originalError;
+                
+                // Display results
+                resultsDiv.innerHTML = `<h3>Direct Check Results</h3><pre>${output}</pre>`;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div style="color: red;">Error: ${error.message}</div>`;
+                console.error('Error in runDirectCheck:', error);
+            }
+        }
+        
+        // Make function globally available
+        window.runDirectCheck = runDirectCheck;
+    </script>
+</body>
+</html> 

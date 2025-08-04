@@ -21,7 +21,8 @@ const providerLogoMap = {
   'Superdrug': 'superdrug.png',
   'Thriva': 'thriva.png',
   'Forth': 'forth.png',
-  'Medichecks': 'medichecks.png'
+  'Medichecks': 'medichecks.png',
+  'Blue horizon blood tests': 'blue horizon blood tests.png'
 };
 
 // Store sort direction and test lists globally
@@ -66,11 +67,18 @@ async function getGroupedBiomarkers(biomarkers) {
 
 // Single source of truth for card creation
 async function createTestCard(test, index) {
-  const groupedBiomarkers = await getGroupedBiomarkers(test.biomarkers);
-  const providerLogo = providerLogoMap[test.provider] || `${test.provider.toLowerCase().replace(/ /g, ' ')}.png`;
+  // Use the enriched biomarker data instead of the old test.biomarkers
+  const biomarkerNames = test.biomarker_names || [];
+  const groupedBiomarkers = test.grouped_biomarkers || {};
+
+  // Debug: Check if mapping is working
+  console.log('Provider:', test.provider);
+  console.log('Mapping found:', providerLogoMap[test.provider]);
+  const providerLogo = providerLogoMap[test.provider] || `${test.provider.toLowerCase().replace(/ /g, '')}.png`;
+  console.log('Final logo path:', providerLogo);
   
   // Calculate total number of biomarkers
-  const totalBiomarkers = test.biomarkers.length;
+  const totalBiomarkers = biomarkerNames.length;
   
   return `
     <div class="product-card blood-test-card" data-test-id="${test.test_name}">
@@ -93,7 +101,7 @@ async function createTestCard(test, index) {
             </div>
           </div>
           <div class="biomarkers-list hidden">
-            ${Array.from(groupedBiomarkers.entries()).map(([group, tests]) => `
+            ${Object.entries(groupedBiomarkers).map(([group, biomarkers]) => `
               <div class="biomarker-group">
                 <div class="group-header">
                   <h4>${group}</h4>
@@ -102,7 +110,7 @@ async function createTestCard(test, index) {
                   </button>
                 </div>
                 <ul class="biomarker-items hidden">
-                  ${tests.map(test => `<li>${test}</li>`).join('')}
+                  ${biomarkers.map(biomarker => `<li>${biomarker}</li>`).join('')}
                 </ul>
               </div>
             `).join('')}
@@ -1018,21 +1026,41 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
           console.log('Filtered tests count:', filterState.filteredTests.length);
           console.log('Sample filtered test names:', filterState.filteredTests.slice(0, 3).map(t => t.name));
           console.log('Sample filtered test prices:', filterState.filteredTests.slice(0, 3).map(t => t.price));
-          const enriched = filterState.filteredTests;
           
-          filteredTests = enriched;
+          // Re-enrich the filtered tests with biomarker data
+          const testIds = filterState.filteredTests.map(t => t.id);
+          console.log('Re-enriching tests with biomarker data for IDs:', testIds);
+          
+          // Fetch biomarker data for these specific tests
+          console.log('=== DEBUG: Re-enrichment process starting ===');
+          const enriched = await fetchAndEnrichTests({ categoryId: 3 }); // Fetch all tests in category
+          const enrichedMap = new Map(enriched.map(t => [t.id, t]));
+          
+          // Replace the filtered tests with their enriched versions
+          const reEnrichedTests = filterState.filteredTests.map(test => {
+            const enrichedTest = enrichedMap.get(test.id);
+            if (enrichedTest) {
+              console.log(`DEBUG: Test "${test.name}" re-enriched with ${enrichedTest.biomarker_names?.length || 0} biomarkers`);
+            } else {
+              console.log(`DEBUG: WARNING - No enriched data found for test "${test.name}" (ID: ${test.id})`);
+              console.log(`DEBUG: Available enriched test IDs:`, Array.from(enrichedMap.keys()));
+            }
+            return enrichedTest || test; // Fallback to original if not found
+          });
+          
+          filteredTests = reEnrichedTests;
           sortAscending = true;
           window.sortAscending = sortAscending;
           updateSortButtonText(sortAscending);
           currentTests = sortTests(filteredTests, sortAscending);
           
           // Update the global tests to match what we're displaying
-          window._allGeneralHealthTests = enriched;
-          console.log('=== DEBUG: Using Provided Filtered Tests ===');
-          console.log('Updated window._allGeneralHealthTests to', enriched.length, 'tests');
-          console.log('Test names:', enriched.map(t => t.name));
+          window._allGeneralHealthTests = reEnrichedTests;
+          console.log('=== DEBUG: Re-enriched Filtered Tests ===');
+          console.log('Updated window._allGeneralHealthTests to', reEnrichedTests.length, 'tests');
+          console.log('Test names:', reEnrichedTests.map(t => t.name));
           
-                    updateTestGridContent(currentTests);
+          updateTestGridContent(currentTests);
           return; // Exit early since we're using the provided filtered tests
         }
         
@@ -1100,17 +1128,20 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
             
             const hasAllBiomarkers = selectedBiomarkers.every(searchBiomarker => {
               // Normalize the search biomarker (replace + with space, lowercase)
-              const normalizedSearch = searchBiomarker.toLowerCase().replace(/\+/g, ' ');
+              const normalizedSearch = searchBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
               
               // Check if any test biomarker matches (case insensitive, handle + vs space)
               const hasMatch = testBiomarkers.some(testBiomarker => {
                 if (!testBiomarker) return false;
-                const normalizedTest = testBiomarker.toLowerCase().replace(/\+/g, ' ');
-                return normalizedTest === normalizedSearch;
+                const normalizedTest = testBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
+                const exactMatch = normalizedTest === normalizedSearch;
+                const containsMatch = normalizedTest.includes(normalizedSearch) || normalizedSearch.includes(normalizedTest);
+                return exactMatch || containsMatch;
               });
               
               if (!hasMatch) {
                 console.log(`  Missing biomarker: "${searchBiomarker}" (normalized: "${normalizedSearch}")`);
+                console.log(`  Available test biomarkers:`, testBiomarkers.map(b => b.toLowerCase().replace(/\+/g, ' ').trim()));
               }
               return hasMatch;
             });
@@ -1272,6 +1303,7 @@ observeFilterPanelForMobile();
 
 // --- New: Fetch and enrich tests with biomarkers and groupings ---
 async function fetchAndEnrichTests({ category = null, categoryId = null, provider = null } = {}) {
+  console.log(`DEBUG: fetchAndEnrichTests called with:`, { category, categoryId, provider });
   let tests = [];
   // 1. Fetch tests (with provider info, filtered by category/provider if needed)
   if (category || categoryId) {
@@ -1329,6 +1361,8 @@ async function fetchAndEnrichTests({ category = null, categoryId = null, provide
     // Remove duplicates
     allTestIds = [...new Set(allTestIds)];
     console.log('Total unique test IDs found:', allTestIds.length);
+    console.log('DEBUG: allTestIds sample:', allTestIds.slice(0, 10));
+    console.log('DEBUG: allTestIds full array:', allTestIds);
     
     if (allTestIds.length > 0) {
       let query = supabase.from('provider_blood_tests').select('*, provider:providers(name)').in('id', allTestIds);
@@ -1350,6 +1384,25 @@ async function fetchAndEnrichTests({ category = null, categoryId = null, provide
       tests = testRows;
       console.log('Tests fetched for category:', tests.length);
       console.log('Sample test names:', tests.slice(0, 3).map(t => t.name));
+      console.log('DEBUG: All test IDs fetched:', tests.map(t => t.id));
+      console.log('DEBUG: Sample test data:', tests.slice(0, 3).map(t => ({
+        id: t.id,
+        type: typeof t.id,
+        name: t.name,
+        provider: t.provider?.name
+      })));
+      
+      // Debug: Check if problematic tests are in the initial fetch
+      const problematicTestNames = ['Testosterone Check', 'Testosterone Plus Profile', 'Well Man Premier Plus Profile', 'Sports Hormone Profile'];
+      const problematicTestsInFetch = tests.filter(test => problematicTestNames.includes(test.name));
+      console.log('DEBUG: Problematic tests in initial fetch:', problematicTestsInFetch.map(t => ({ 
+        id: t.id, 
+        name: t.name, 
+        provider: t.provider?.name,
+        results_returned_time_days: t.results_returned_time_days,
+        results_returned_time_min: t.results_returned_time_min,
+        results_returned_time_max: t.results_returned_time_max
+      })));
     }
   } else {
     let query = supabase.from('provider_blood_tests').select('*, provider:providers(name)');
@@ -1371,7 +1424,28 @@ async function fetchAndEnrichTests({ category = null, categoryId = null, provide
     tests = allTests;
   }
   // 2. Fetch biomarker links and biomarkers for these tests
+  console.log(`DEBUG: tests array length:`, tests.length);
+  console.log(`DEBUG: Sample tests:`, tests.slice(0, 3).map(t => ({ id: t.id, name: t.name })));
   const testIds = tests.map(t => t.id);
+  
+  // Check for problematic test IDs specifically
+  const problematicTestNames = ['Testosterone Check', 'Testosterone Plus Profile', 'Well Man Premier Plus Profile', 'Sports Hormone Profile'];
+  const problematicTests = tests.filter(test => problematicTestNames.includes(test.name));
+  
+  if (problematicTests.length > 0) {
+    console.log(`DEBUG: Found ${problematicTests.length} problematic tests:`, problematicTests.map(t => ({ id: t.id, name: t.name })));
+  }
+  
+  // Debug: Check if problematic test IDs are in the testIds array
+  const problematicTestIds = [432, 433, 434, 435];
+  const missingTestIds = problematicTestIds.filter(id => !testIds.includes(id));
+  if (missingTestIds.length > 0) {
+    console.log(`DEBUG: ❌ PROBLEMATIC TEST IDS MISSING FROM testIds:`, missingTestIds);
+    console.log(`DEBUG: testIds array contains:`, testIds.slice(0, 10), `... (${testIds.length} total)`);
+  } else {
+    console.log(`DEBUG: ✅ All problematic test IDs found in testIds:`, problematicTestIds);
+  }
+  
   let biomarkerLinks = [];
   let biomarkerIds = [];
   let biomarkers = [];
@@ -1380,81 +1454,189 @@ async function fetchAndEnrichTests({ category = null, categoryId = null, provide
   let labAccreditationLinks = [];
   let allLabAccreditations = [];
   if (testIds.length > 0) {
-    const { data: links, error: linkError } = await supabase
-      .from('biomarker_link_table')
-      .select('provider_blood_test_id, biomarker_id')
-      .in('provider_blood_test_id', testIds);
-    if (linkError) throw linkError;
-    biomarkerLinks = links;
-    biomarkerIds = [...new Set(links.map(l => l.biomarker_id))];
+    // Check if we need to split the query due to too many IDs
+            const maxIdsPerQuery = 10; // Much smaller limit to avoid capacity issues
+    if (testIds.length > maxIdsPerQuery) {
+      // Split the query into chunks
+      const chunks = [];
+      for (let i = 0; i < testIds.length; i += maxIdsPerQuery) {
+        chunks.push(testIds.slice(i, i + maxIdsPerQuery));
+      }
+      
+      
+      
+              for (let i = 0; i < chunks.length; i++) {
+          const { data: chunkLinks, error: chunkError } = await supabase
+            .from('biomarker_link_table')
+            .select('provider_blood_test_id, biomarker_id')
+            .in('provider_blood_test_id', chunks[i]);
+          
+          if (chunkError) {
+            console.error(`Error in chunk ${i + 1}:`, chunkError);
+          } else {
+            biomarkerLinks = biomarkerLinks.concat(chunkLinks);
+          }
+        }
+    } else {
+      const { data: links, error: linkError } = await supabase
+        .from('biomarker_link_table')
+        .select('provider_blood_test_id, biomarker_id')
+        .in('provider_blood_test_id', testIds);
+      
+      if (linkError) {
+        console.error('Error in biomarker link query:', linkError);
+        throw linkError;
+      }
+      
+      biomarkerLinks = links;
+    }
+    
 
-    // Fetch blood taking method links
-    const { data: methodLinkRows, error: methodLinkError } = await supabase
-      .from('blood_taking_method_link_table')
-      .select('provider_blood_test_id, blood_taking_method_id')
-      .in('provider_blood_test_id', testIds);
-    if (methodLinkError) throw methodLinkError;
-    methodLinks = methodLinkRows;
+    
 
-    // Fetch all blood taking methods
-    const { data: methodRows, error: methodError } = await supabase
-      .from('blood_taking_methods')
-      .select('id, name');
-    if (methodError) throw methodError;
-    allMethods = methodRows;
+    
 
-    // Fetch lab accreditation links
-    const { data: labAccreditationLinkRows, error: labAccreditationLinkError } = await supabase
-      .from('lab_accreditation_link_table')
-      .select('provider_blood_test_id, lab_accreditation_id')
-      .in('provider_blood_test_id', testIds);
-    if (labAccreditationLinkError) throw labAccreditationLinkError;
-    labAccreditationLinks = labAccreditationLinkRows;
-
-    // Fetch all lab accreditations
-    const { data: labAccreditationRows, error: labAccreditationError } = await supabase
-      .from('lab_accreditations')
-      .select('id, name');
-    if (labAccreditationError) throw labAccreditationError;
-    allLabAccreditations = labAccreditationRows;
+    
+    biomarkerIds = [...new Set(biomarkerLinks.map(l => l.biomarker_id))];
   }
+  
+  // Fetch blood taking method links
+  const { data: methodLinkRows, error: methodLinkError } = await supabase
+    .from('blood_taking_method_link_table')
+    .select('provider_blood_test_id, blood_taking_method_id')
+    .in('provider_blood_test_id', testIds);
+  if (methodLinkError) throw methodLinkError;
+  methodLinks = methodLinkRows;
+
+  // Fetch all blood taking methods
+  const { data: methodRows, error: methodError } = await supabase
+    .from('blood_taking_methods')
+    .select('id, name');
+  if (methodError) throw methodError;
+  allMethods = methodRows;
+
+  // Fetch lab accreditation links
+  const { data: labAccreditationLinkRows, error: labAccreditationLinkError } = await supabase
+    .from('lab_accreditation_link_table')
+    .select('provider_blood_test_id, lab_accreditation_id')
+    .in('provider_blood_test_id', testIds);
+  if (labAccreditationLinkError) throw labAccreditationLinkError;
+  labAccreditationLinks = labAccreditationLinkRows;
+
+  // Fetch all lab accreditations
+  const { data: labAccreditationRows, error: labAccreditationError } = await supabase
+    .from('lab_accreditations')
+    .select('id, name');
+  if (labAccreditationError) throw labAccreditationError;
+  allLabAccreditations = labAccreditationRows;
+  
   if (biomarkerIds.length > 0) {
+    console.log(`DEBUG: Fetching biomarkers for IDs:`, biomarkerIds.slice(0, 10));
     const { data: biomarkerRows, error: biomarkerError } = await supabase
       .from('biomarkers')
       .select('id, name, group_links:biomarker_groupings_link_table(grouping:biomarker_groupings(name))')
       .in('id', biomarkerIds);
-    if (biomarkerError) throw biomarkerError;
+    if (biomarkerError) {
+      console.error('DEBUG: Error in biomarker query:', biomarkerError);
+      throw biomarkerError;
+    }
     biomarkers = biomarkerRows;
+    console.log(`DEBUG: Biomarker query successful, returned ${biomarkerRows.length} biomarkers`);
+    console.log(`DEBUG: Fetched ${biomarkers.length} biomarkers from database`);
+    console.log(`DEBUG: Sample biomarkers:`, biomarkers.slice(0, 3));
+    
+    // Debug: Check for missing biomarker names (only log if there are issues)
+    const biomarkerIdsInLinks = [...new Set(biomarkerLinks.map(l => l.biomarker_id))];
+    const biomarkerIdsWithNames = biomarkerRows.map(b => b.id);
+    const missingBiomarkerIds = biomarkerIdsInLinks.filter(id => !biomarkerIdsWithNames.includes(id));
+    if (missingBiomarkerIds.length > 0) {
+      console.log('DEBUG: WARNING - Found biomarker links pointing to non-existent biomarker IDs:', missingBiomarkerIds);
+    }
+    
+    // Debug: Log summary of biomarker data
+    console.log(`DEBUG: Biomarker enrichment summary:`);
+    console.log(`- Total tests: ${tests.length}`);
+    console.log(`- Total biomarker links: ${biomarkerLinks.length}`);
+    console.log(`- Total unique biomarker IDs in links: ${biomarkerIdsInLinks.length}`);
+    console.log(`- Total biomarker names available: ${biomarkerRows.length}`);
+    console.log(`- Missing biomarker IDs: ${missingBiomarkerIds.length}`);
   }
   // 3. Attach grouped biomarkers, flat biomarker names, and blood taking methods to each test
+  console.log(`DEBUG: Starting biomarker enrichment for ${tests.length} tests`);
+  console.log(`DEBUG: Sample test IDs being processed:`, tests.slice(0, 5).map(t => ({ id: t.id, type: typeof t.id, name: t.name })));
+  
   tests.forEach(test => {
-    const links = biomarkerLinks.filter(link => link.provider_blood_test_id === test.id);
+    // Convert both IDs to numbers for comparison to handle type mismatches
+    const testId = parseInt(test.id);
+    
+    // Use numeric comparison for consistent matching
+    const links = biomarkerLinks.filter(link => {
+      const linkTestId = link.provider_blood_test_id;
+      const testId = test.id;
+      
+      // Convert both to numbers for comparison
+      const linkTestIdNum = parseInt(linkTestId);
+      const testIdNum = parseInt(testId);
+      
+      return linkTestIdNum === testIdNum;
+    });
+    
+
+    
+
+    
     const grouped = {};
     const biomarkerNames = [];
     links.forEach(link => {
-      const biomarker = biomarkers.find(b => b.id === link.biomarker_id);
-      if (!biomarker) return;
-      biomarkerNames.push(biomarker.name);
+      // Try multiple comparison methods for biomarker IDs
+      let biomarker = biomarkers.find(b => b.id === link.biomarker_id);
+      if (!biomarker) {
+        // Try with parsed comparison
+        biomarker = biomarkers.find(b => parseInt(b.id) === parseInt(link.biomarker_id));
+      }
+      if (!biomarker) {
+        // Try with loose comparison
+        biomarker = biomarkers.find(b => b.id == link.biomarker_id);
+      }
+      
+      if (!biomarker) {
+        if (isProblematic) {
+          console.log(`DEBUG: WARNING - No biomarker found for ID ${link.biomarker_id} in test "${test.name}"`);
+        }
+        return;
+      }
+      
+      // Fix URL encoding issues in biomarker names
+      let biomarkerName = biomarker.name;
+      if (biomarkerName.includes('+')) {
+        biomarkerName = biomarkerName.replace(/\+/g, ' ');
+      }
+      
+      biomarkerNames.push(biomarkerName);
+      
       if (Array.isArray(biomarker.group_links) && biomarker.group_links.length > 0) {
         biomarker.group_links.forEach(gl => {
           const groupName = gl.grouping?.name || 'Other';
           if (!grouped[groupName]) grouped[groupName] = [];
-          grouped[groupName].push(biomarker.name);
+          grouped[groupName].push(biomarkerName);
         });
       } else {
         if (!grouped['Other']) grouped['Other'] = [];
-        grouped['Other'].push(biomarker.name);
+        grouped['Other'].push(biomarkerName);
       }
     });
     test.grouped_biomarkers = grouped;
     test.biomarker_count = test.biomarker_column || links.length;
     test.biomarker_names = biomarkerNames;
+    
+
+    
     // Attach blood taking methods
-    const methodIds = methodLinks.filter(l => l.provider_blood_test_id === test.id).map(l => l.blood_taking_method_id);
+    const methodIds = methodLinks.filter(l => parseInt(l.provider_blood_test_id) === testId).map(l => l.blood_taking_method_id);
     test.blood_taking_methods = allMethods.filter(m => methodIds.includes(m.id)).map(m => m.name);
     
     // Attach lab accreditations
-    const labAccreditationIds = labAccreditationLinks.filter(l => l.provider_blood_test_id === test.id).map(l => l.lab_accreditation_id);
+    const labAccreditationIds = labAccreditationLinks.filter(l => parseInt(l.provider_blood_test_id) === testId).map(l => l.lab_accreditation_id);
     test["lab accreditations"] = allLabAccreditations.filter(la => labAccreditationIds.includes(la.id)).map(la => la.name);
     
     // Check if lab_accreditations field exists directly in the test data
@@ -1465,6 +1647,35 @@ async function fetchAndEnrichTests({ category = null, categoryId = null, provide
       }
     }
   });
+  
+  // Summary of biomarker enrichment results
+  const testsWithBiomarkers = tests.filter(test => test.biomarker_names && test.biomarker_names.length > 0);
+  const testsWithoutBiomarkers = tests.filter(test => !test.biomarker_names || test.biomarker_names.length === 0);
+  
+  console.log(`DEBUG: Biomarker enrichment summary:`);
+  console.log(`- Total tests processed: ${tests.length}`);
+  console.log(`- Tests with biomarkers: ${testsWithBiomarkers.length}`);
+  console.log(`- Tests without biomarkers: ${testsWithoutBiomarkers.length}`);
+  
+  if (testsWithoutBiomarkers.length > 0) {
+    console.log(`DEBUG: Tests without biomarkers:`, testsWithoutBiomarkers.map(t => ({
+      id: t.id,
+      name: t.name,
+      provider: t.provider?.name
+    })));
+    
+    // Check if these tests have biomarker links in the database
+    for (const test of testsWithoutBiomarkers) {
+      const testLinks = biomarkerLinks.filter(link => {
+        const linkTestId = link.provider_blood_test_id;
+        const testId = test.id;
+        return linkTestId === testId || parseInt(linkTestId) === parseInt(testId) || linkTestId == testId;
+      });
+      console.log(`DEBUG: Test "${test.name}" (ID: ${test.id}) has ${testLinks.length} biomarker links in query results`);
+    }
+  }
+  
+  console.log(`DEBUG: Finished biomarker enrichment`);
   return tests;
 }
 
@@ -1483,6 +1694,8 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
     if (biomarkerMatch) {
       selectedBiomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean);
+      // Fix URL encoding issue: convert + back to spaces
+      selectedBiomarkers = selectedBiomarkers.map(b => b.replace(/\+/g, ' '));
       console.log('Selected biomarkers from URL:', selectedBiomarkers);
     }
     
@@ -1539,13 +1752,27 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     
     // Apply biomarker filtering
     if (selectedBiomarkers.length > 0) {
-      console.log('Applying biomarker filter');
+      console.log('Applying biomarker filter for:', selectedBiomarkers);
+      
       tests = tests.filter(test => {
-        const hasAllBiomarkers = selectedBiomarkers.every(biomarker =>
-          (test.biomarker_names || []).some(name => name && name.toLowerCase() === biomarker.toLowerCase())
-        );
+        const testBiomarkerNames = test.biomarker_names || [];
+        const hasAllBiomarkers = selectedBiomarkers.every(selectedBiomarker => {
+          // Normalize both the search term and test biomarkers
+          const normalizedSearch = selectedBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
+          
+          return testBiomarkerNames.some(testBiomarker => {
+            if (!testBiomarker) return false;
+            const normalizedTest = testBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
+            const exactMatch = normalizedTest === normalizedSearch;
+            const containsMatch = normalizedTest.includes(normalizedSearch) || normalizedSearch.includes(normalizedTest);
+            return exactMatch || containsMatch;
+          });
+        });
+        
         if (!hasAllBiomarkers) {
-          console.log(`Filtering out test "${test.name}" - missing biomarkers. Test has:`, test.biomarker_names, 'Looking for:', selectedBiomarkers);
+          console.log(`Filtering out test "${test.name}" - missing biomarkers. Test has:`, testBiomarkerNames, 'Looking for:', selectedBiomarkers);
+          console.log(`  Normalized search terms:`, selectedBiomarkers.map(b => b.toLowerCase().replace(/\+/g, ' ').trim()));
+          console.log(`  Normalized test biomarkers:`, testBiomarkerNames.map(b => b.toLowerCase().replace(/\+/g, ' ').trim()));
         }
         return hasAllBiomarkers;
       });

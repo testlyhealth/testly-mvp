@@ -127,12 +127,11 @@ export function initializeAdminPage() {
                             html += '</table>';
                             previewDiv.innerHTML = html;
                         }
-                        fileNameDiv.parentNode.appendChild(previewDiv);
 
                         // --- Enhanced Validation ---
                         const validationDiv = document.getElementById('csvValidation') || document.createElement('div');
                         validationDiv.id = 'csvValidation';
-                        validationDiv.style.marginTop = '2rem';
+                        validationDiv.style.marginTop = '1rem';
                         let errors = [];
                         let warnings = [];
                         let missingBiomarkers = new Set();
@@ -324,6 +323,9 @@ export function initializeAdminPage() {
                         
                         validationDiv.innerHTML = `<h4>Validation Report</h4>${report}`;
                         fileNameDiv.parentNode.appendChild(validationDiv);
+
+                        // Insert CSV preview after validation report
+                        fileNameDiv.parentNode.appendChild(previewDiv);
 
                         // --- Upload Button ---
                         let uploadBtn = document.getElementById('uploadToSupabaseBtn');

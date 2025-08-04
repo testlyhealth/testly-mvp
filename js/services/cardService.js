@@ -48,12 +48,26 @@ export class CardService {
     // Debug log for grouped_biomarkers (only if there are issues)
     if (!test.grouped_biomarkers || Object.keys(test.grouped_biomarkers).length === 0) {
       console.log('WARNING: No grouped biomarkers for', test.name);
+    } else {
+      console.log('DEBUG: Test', test.name, 'has grouped biomarkers:', Object.keys(test.grouped_biomarkers));
+      console.log('DEBUG: Biomarker groups:', test.grouped_biomarkers);
     }
     
     // Calculate biomarker count from grouped_biomarkers if not already set
     let biomarkerCount = test.biomarker_count || 0;
+    console.log('DEBUG: Initial biomarker count for', test.name, ':', biomarkerCount);
+    
     if (biomarkerCount === 0 && test.grouped_biomarkers) {
       biomarkerCount = Object.values(test.grouped_biomarkers).reduce((total, group) => total + group.length, 0);
+      console.log('DEBUG: Calculated biomarker count for', test.name, ':', biomarkerCount);
+      console.log('DEBUG: Biomarker groups for', test.name, ':', Object.keys(test.grouped_biomarkers));
+      console.log('DEBUG: Group lengths for', test.name, ':', Object.values(test.grouped_biomarkers).map(group => group.length));
+    } else if (biomarkerCount === 0 && !test.grouped_biomarkers) {
+      console.log('DEBUG: No grouped biomarkers for', test.name, '- checking biomarker_names');
+      if (test.biomarker_names && test.biomarker_names.length > 0) {
+        biomarkerCount = test.biomarker_names.length;
+        console.log('DEBUG: Using biomarker_names count for', test.name, ':', biomarkerCount);
+      }
     }
 
     // Remove duplicate biomarkers across groups (show in first group only)
@@ -72,6 +86,16 @@ export class CardService {
           delete test.grouped_biomarkers[group];
         }
       }
+      
+      // Recalculate biomarker count after removing duplicates
+      biomarkerCount = Object.values(test.grouped_biomarkers).reduce((total, group) => total + group.length, 0);
+      console.log('DEBUG: Final biomarker count for', test.name, 'after removing duplicates:', biomarkerCount);
+    }
+    
+    // Final check - ensure biomarker count is not 0 if we have grouped biomarkers
+    if (biomarkerCount === 0 && test.grouped_biomarkers && Object.keys(test.grouped_biomarkers).length > 0) {
+      biomarkerCount = Object.values(test.grouped_biomarkers).reduce((total, group) => total + group.length, 0);
+      console.log('DEBUG: Final fallback biomarker count for', test.name, ':', biomarkerCount);
     }
 
     return `
@@ -123,6 +147,7 @@ export class CardService {
               </div>
             </div>
           </div>
+
           ${showDetails ? `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.2rem; margin-bottom: 0.5rem; padding-right: 1rem;">
               <div class="add-to-compare-container" style="margin: 0;">
@@ -514,11 +539,25 @@ export class CardService {
   // Static comparison methods
   static async addTestToComparison(test) {
     console.log('addTestToComparison called with:', test);
+    console.log('Test biomarker data:', {
+      biomarker_count: test.biomarker_count,
+      grouped_biomarkers: test.grouped_biomarkers,
+      biomarker_names: test.biomarker_names
+    });
+    
     let comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
     
     // Check if test is already in comparison
     if (!comparisonTests.find(t => t.name === test.name)) {
-      comparisonTests.push(test);
+      // Ensure the test has complete biomarker data
+      const testWithBiomarkers = {
+        ...test,
+        biomarker_count: test.biomarker_count || 0,
+        grouped_biomarkers: test.grouped_biomarkers || {},
+        biomarker_names: test.biomarker_names || []
+      };
+      
+      comparisonTests.push(testWithBiomarkers);
       
       // Keep only the first 3 tests
       if (comparisonTests.length > 3) {
@@ -527,7 +566,11 @@ export class CardService {
       
       localStorage.setItem('comparisonTests', JSON.stringify(comparisonTests));
       console.log('Added test to comparison:', test.name);
-      console.log('Current comparison tests:', comparisonTests);
+      console.log('Test biomarker data in comparison:', {
+        biomarker_count: testWithBiomarkers.biomarker_count,
+        grouped_biomarkers: testWithBiomarkers.grouped_biomarkers,
+        biomarker_names: testWithBiomarkers.biomarker_names
+      });
       
       // Update comparison page if we're on it
       if (window.location.hash === '#/compare') {
@@ -559,7 +602,7 @@ export class CardService {
     let comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
     console.log('Comparison tests from localStorage:', comparisonTests);
     
-    // Refresh biomarker counts and lab accreditations from the current test data
+    // Refresh biomarker counts, grouped biomarkers, and lab accreditations from the current test data
     if (window._allGeneralHealthTests) {
       comparisonTests = comparisonTests.map(storedTest => {
         const currentTest = window._allGeneralHealthTests.find(t => t.name === storedTest.name);
@@ -567,6 +610,8 @@ export class CardService {
           return {
             ...storedTest,
             biomarker_count: currentTest.biomarker_count,
+            grouped_biomarkers: currentTest.grouped_biomarkers || storedTest.grouped_biomarkers,
+            biomarker_names: currentTest.biomarker_names || storedTest.biomarker_names,
             "lab accreditations": currentTest["lab accreditations"] || storedTest["lab accreditations"]
           };
         }
@@ -751,7 +796,12 @@ export class CardService {
   }
 
   static async generateBiomarkerHTML(test) {
+    console.log('generateBiomarkerHTML called for test:', test.name);
+    console.log('Test grouped_biomarkers:', test.grouped_biomarkers);
+    console.log('Test biomarker_names:', test.biomarker_names);
+    
     if (!test || !test.grouped_biomarkers) {
+      console.log('No grouped_biomarkers found for test:', test.name);
       return '<div class="no-biomarkers">No biomarkers available</div>';
     }
 
@@ -1028,7 +1078,13 @@ export class CardService {
   }
 
   static async generateAlignedBiomarkerHTML(test, allGroups, masterBiomarkerLists) {
+    console.log('generateAlignedBiomarkerHTML called for test:', test.name);
+    console.log('Test grouped_biomarkers:', test.grouped_biomarkers);
+    console.log('All groups:', allGroups);
+    console.log('Master biomarker lists:', masterBiomarkerLists);
+    
     if (!test || !test.grouped_biomarkers) {
+      console.log('No grouped_biomarkers found for test:', test.name);
       return '<div class="no-biomarkers">No biomarkers available</div>';
     }
 

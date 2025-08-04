@@ -2088,7 +2088,9 @@ let lastMaxPrice = null;
       
       // 3. Attach grouped biomarkers, flat biomarker names, and blood taking methods to each test
       tests.forEach(test => {
-        const links = biomarkerLinks.filter(link => link.provider_blood_test_id === test.id);
+        // Convert both IDs to numbers for comparison to handle type mismatches
+        const testId = parseInt(test.id);
+        const links = biomarkerLinks.filter(link => parseInt(link.provider_blood_test_id) === testId);
         const grouped = {};
         const biomarkerNames = [];
         links.forEach(link => {
@@ -2110,11 +2112,11 @@ let lastMaxPrice = null;
         test.biomarker_count = test.biomarker_column || links.length;
         test.biomarker_names = biomarkerNames;
         // Attach blood taking methods
-        const methodIds = methodLinks.filter(l => l.provider_blood_test_id === test.id).map(l => l.blood_taking_method_id);
+        const methodIds = methodLinks.filter(l => parseInt(l.provider_blood_test_id) === testId).map(l => l.blood_taking_method_id);
         test.blood_taking_methods = allMethods.filter(m => methodIds.includes(m.id)).map(m => m.name);
         
         // Attach lab accreditations
-        const labAccreditationIds = labAccreditationLinks.filter(l => l.provider_blood_test_id === test.id).map(l => l.lab_accreditation_id);
+        const labAccreditationIds = labAccreditationLinks.filter(l => parseInt(l.provider_blood_test_id) === testId).map(l => l.lab_accreditation_id);
         test["lab accreditations"] = allLabAccreditations.filter(la => labAccreditationIds.includes(la.id)).map(la => la.name);
         
         // Check if lab_accreditations field exists directly in the test data

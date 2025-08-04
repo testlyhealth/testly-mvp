@@ -291,8 +291,8 @@ export default class Router {
     // Add visible class for transition in
     this.mainContent.classList.add('visible');
     
-    // Reset scroll position for about page, otherwise restore previous position
-    if (window.location.hash === '#/about') {
+    // Reset scroll position for about page and admin page, otherwise restore previous position
+    if (window.location.hash === '#/about' || window.location.hash === '#/admin') {
       window.scrollTo(0, 0);
     } else {
       window.scrollTo(0, scrollPosition);

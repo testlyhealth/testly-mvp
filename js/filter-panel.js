@@ -2325,7 +2325,9 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       
       // 3. Attach grouped biomarkers, flat biomarker names, and blood taking methods to each test
       tests.forEach(test => {
-        const links = biomarkerLinks.filter(link => link.provider_blood_test_id === test.id);
+        // Convert both IDs to numbers for comparison to handle type mismatches
+        const testId = parseInt(test.id);
+        const links = biomarkerLinks.filter(link => parseInt(link.provider_blood_test_id) === testId);
         const grouped = {};
         const biomarkerNames = [];
         links.forEach(link => {
@@ -2347,11 +2349,11 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         test.biomarker_count = test.biomarker_column || links.length;
         test.biomarker_names = biomarkerNames;
         // Attach blood taking methods
-        const methodIds = methodLinks.filter(l => l.provider_blood_test_id === test.id).map(l => l.blood_taking_method_id);
+        const methodIds = methodLinks.filter(l => parseInt(l.provider_blood_test_id) === testId).map(l => l.blood_taking_method_id);
         test.blood_taking_methods = allMethods.filter(m => methodIds.includes(m.id)).map(m => m.name);
         
         // Attach lab accreditations
-        const labAccreditationIds = labAccreditationLinks.filter(l => l.provider_blood_test_id === test.id).map(l => l.lab_accreditation_id);
+        const labAccreditationIds = labAccreditationLinks.filter(l => parseInt(l.provider_blood_test_id) === testId).map(l => l.lab_accreditation_id);
         test["lab accreditations"] = allLabAccreditations.filter(la => labAccreditationIds.includes(la.id)).map(la => la.name);
         
         // Check if lab_accreditations field exists directly in the test data
@@ -2362,6 +2364,23 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
           }
         }
       });
+      
+      // Summary of biomarker enrichment results
+      const testsWithBiomarkers = tests.filter(test => test.biomarker_names && test.biomarker_names.length > 0);
+      const testsWithoutBiomarkers = tests.filter(test => !test.biomarker_names || test.biomarker_names.length === 0);
+      
+      console.log(`DEBUG: Filter panel biomarker enrichment summary:`);
+      console.log(`- Total tests processed: ${tests.length}`);
+      console.log(`- Tests with biomarkers: ${testsWithBiomarkers.length}`);
+      console.log(`- Tests without biomarkers: ${testsWithoutBiomarkers.length}`);
+      
+      if (testsWithoutBiomarkers.length > 0) {
+        console.log(`DEBUG: Tests without biomarkers:`, testsWithoutBiomarkers.map(t => ({
+          id: t.id,
+          name: t.name,
+          provider: t.provider?.name
+        })));
+      }
       
       return tests;
     } catch (error) {
