@@ -22,7 +22,9 @@ const providerLogoMap = {
   'Thriva': 'thriva.png',
   'Forth': 'forth.png',
   'Medichecks': 'medichecks.png',
-  'Blue horizon blood tests': 'blue horizon blood tests.png'
+  'Blue horizon blood tests': 'blue horizon blood tests.png',
+  'Blood Tests London': 'bloodtestslondon.png',
+  'Goodbody Clinic': 'goodbodyclinic.png'
 };
 
 // Store sort direction and test lists globally
@@ -71,11 +73,7 @@ async function createTestCard(test, index) {
   const biomarkerNames = test.biomarker_names || [];
   const groupedBiomarkers = test.grouped_biomarkers || {};
 
-  // Debug: Check if mapping is working
-  console.log('Provider:', test.provider);
-  console.log('Mapping found:', providerLogoMap[test.provider]);
   const providerLogo = providerLogoMap[test.provider] || `${test.provider.toLowerCase().replace(/ /g, '')}.png`;
-  console.log('Final logo path:', providerLogo);
   
   // Calculate total number of biomarkers
   const totalBiomarkers = biomarkerNames.length;

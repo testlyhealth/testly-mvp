@@ -1284,6 +1284,15 @@ function setupNavigationHandlers() {
             console.log('All buttons with text "Find Solutions":', Array.from(document.querySelectorAll('button')).filter(btn => btn.textContent.includes('Find Solutions')));
           }
           
+          // Setup reset filters functionality
+          const resetFiltersLink = document.querySelector('.reset-filters');
+          if (resetFiltersLink) {
+            resetFiltersLink.addEventListener('click', (e) => {
+              e.preventDefault();
+              resetHomePageForm();
+            });
+          }
+          
           // Setup category section visibility based on first dropdown
           const productCategorySelect = document.querySelector('.product-category-select');
           const categorySection = document.querySelector('.category-section');
@@ -2720,4 +2729,47 @@ async function updateProviderDropdownForMethod(methodName) {
   } catch (error) {
     console.error('Error updating provider dropdown for method:', error);
   }
+}
+
+// Reset homepage form to default state
+function resetHomePageForm() {
+  console.log('🔄 Resetting homepage form...');
+  
+  // Reset all dropdown selects
+  const dropdownSelects = document.querySelectorAll('.blood-tests-form select');
+  dropdownSelects.forEach(select => {
+    select.value = '';
+  });
+  
+  // Reset biomarker search inputs
+  const biomarkerInputs = document.querySelectorAll('.biomarker-search-input, .biomarker-search-input-2');
+  biomarkerInputs.forEach(input => {
+    input.value = '';
+  });
+  
+  // Hide biomarker dropdowns
+  const biomarkerDropdowns = document.querySelectorAll('.biomarker-dropdown, .biomarker-dropdown-2');
+  biomarkerDropdowns.forEach(dropdown => {
+    dropdown.style.display = 'none';
+  });
+  
+  // Clear any validation errors
+  clearValidationErrors();
+  
+  // Reset test count
+  const testCountElement = document.querySelector('.test-count');
+  if (testCountElement) {
+    testCountElement.textContent = '0';
+  }
+  
+  // Reset problem form if visible
+  const problemForm = document.querySelector('.problem-form');
+  if (problemForm) {
+    const problemSelect = problemForm.querySelector('.symptom-select');
+    if (problemSelect) {
+      problemSelect.value = '';
+    }
+  }
+  
+  console.log('✅ Homepage form reset complete');
 } 
