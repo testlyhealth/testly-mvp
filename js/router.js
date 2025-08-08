@@ -312,9 +312,7 @@ export default class Router {
     }
 
     // Dispatch event to notify that content has been rendered
-    console.log('=== DEBUG: Dispatching contentRendered event ===');
     document.dispatchEvent(new Event('contentRendered'));
-    console.log('=== DEBUG: contentRendered event dispatched ===');
   }
 
   async renderError(title, message) {

@@ -45,28 +45,14 @@ export class CardService {
     const bloodTestLocations = Array.isArray(test["blood test location"]) ? test["blood test location"] : [];
     const labAccreditations = Array.isArray(test["lab accreditations"]) ? test["lab accreditations"] : [];
 
-    // Debug log for grouped_biomarkers (only if there are issues)
-    if (!test.grouped_biomarkers || Object.keys(test.grouped_biomarkers).length === 0) {
-      console.log('WARNING: No grouped biomarkers for', test.name);
-    } else {
-      console.log('DEBUG: Test', test.name, 'has grouped biomarkers:', Object.keys(test.grouped_biomarkers));
-      console.log('DEBUG: Biomarker groups:', test.grouped_biomarkers);
-    }
-    
     // Calculate biomarker count from grouped_biomarkers if not already set
     let biomarkerCount = test.biomarker_count || 0;
-    console.log('DEBUG: Initial biomarker count for', test.name, ':', biomarkerCount);
     
     if (biomarkerCount === 0 && test.grouped_biomarkers) {
       biomarkerCount = Object.values(test.grouped_biomarkers).reduce((total, group) => total + group.length, 0);
-      console.log('DEBUG: Calculated biomarker count for', test.name, ':', biomarkerCount);
-      console.log('DEBUG: Biomarker groups for', test.name, ':', Object.keys(test.grouped_biomarkers));
-      console.log('DEBUG: Group lengths for', test.name, ':', Object.values(test.grouped_biomarkers).map(group => group.length));
     } else if (biomarkerCount === 0 && !test.grouped_biomarkers) {
-      console.log('DEBUG: No grouped biomarkers for', test.name, '- checking biomarker_names');
       if (test.biomarker_names && test.biomarker_names.length > 0) {
         biomarkerCount = test.biomarker_names.length;
-        console.log('DEBUG: Using biomarker_names count for', test.name, ':', biomarkerCount);
       }
     }
 
@@ -89,17 +75,15 @@ export class CardService {
       
       // Recalculate biomarker count after removing duplicates
       biomarkerCount = Object.values(test.grouped_biomarkers).reduce((total, group) => total + group.length, 0);
-      console.log('DEBUG: Final biomarker count for', test.name, 'after removing duplicates:', biomarkerCount);
     }
     
     // Final check - ensure biomarker count is not 0 if we have grouped biomarkers
     if (biomarkerCount === 0 && test.grouped_biomarkers && Object.keys(test.grouped_biomarkers).length > 0) {
       biomarkerCount = Object.values(test.grouped_biomarkers).reduce((total, group) => total + group.length, 0);
-      console.log('DEBUG: Final fallback biomarker count for', test.name, ':', biomarkerCount);
     }
 
     return `
-      <div class="product-card blood-test-card ${options.isSelected ? 'selected' : ''}" data-test-id="${test.name}">
+      <div class="product-card blood-test-card ${options.isSelected ? 'selected' : ''}" data-test-id="${test.id}">
         ${showRank ? `<div class="test-rank">${options.rank}</div>` : ''}
         ${test.best_options ? `<div class="best-option-badge">${test.best_options}</div>` : ''}
         <div class="test-header">
@@ -123,7 +107,12 @@ export class CardService {
             return `<span title="Trustpilot score: ${score.toFixed(2)}">${stars}</span>`;
           })()}
         </div>
-        <div class="test-price">£${test.price}</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <div class="test-price" style="margin-bottom: 0;">£${test.price}</div>
+          ${showDetails ? `
+            <a class="book-test-btn" href="${test.url || '#'}" target="_blank" rel="noopener noreferrer" data-test-id="${test.name}" style="background-color: white; color: #1E88E5; border: 2px solid #1E88E5; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; display: inline-block; font-weight: 600; text-align: center; transition: background-color 0.2s; align-self: center; line-height: 1;">Book test</a>
+          ` : ''}
+        </div>
         <p>"${test.description}"</p>
         <div class="test-locations">
                               <div style="margin-bottom: 0.7em;"><span class="blood-method-label" style="color: #333;">• Results returned in ${(() => {
@@ -158,9 +147,6 @@ export class CardService {
             </div>
           ` : ''}
         ` : '<div style="margin-bottom: 0.5rem;"></div>'}
-        ${showDetails ? `
-          <a class="book-test-btn" href="${test.url || '#'}" target="_blank" rel="noopener noreferrer" data-test-id="${test.name}" style="position: absolute; top: 6rem; right: 1rem; background-color: white; color: #1E88E5; border: 2px solid #1E88E5; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; display: inline-block; font-weight: 600; text-align: center; transition: background-color 0.2s; z-index: 10;">Book test</a>
-        ` : ''}
       </div>
     `;
   }
@@ -258,7 +244,7 @@ export class CardService {
     $all('.add-to-basket').forEach(button => {
       button.addEventListener('click', (e) => {
         const testId = e.target.dataset.testId;
-        const test = tests.find(t => t.name === testId);
+        const test = tests.find(t => t.id == testId);
         if (test) {
           // Dispatch a custom event that can be handled by the basket service
           const event = new CustomEvent('addToBasket', { detail: { test } });

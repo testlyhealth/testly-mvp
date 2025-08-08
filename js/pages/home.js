@@ -466,8 +466,13 @@ export function getHomePageContent() {
                   <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </button>
-              <div class="reset-filters-link">
-                <a href="#" class="reset-filters">Reset filters</a>
+              <div class="form-links-container">
+                <div class="reset-filters-link">
+                  <a href="#" class="reset-filters">Reset filters</a>
+                </div>
+                <div class="advanced-search-link">
+                  <a href="#" class="advanced-search-text" id="advanced-search-link">Advanced search</a>
+                </div>
               </div>
             </div>
             
@@ -1216,7 +1221,7 @@ function setupNavigationHandlers() {
         }
         
         function setupQuickSearchForm() {
-          console.log('=== DEBUG: setupQuickSearchForm ===');
+      
           
           const searchButton = document.querySelector('.blood-tests-form .search-button');
           console.log('Blood tests search button found:', !!searchButton);
@@ -1293,6 +1298,15 @@ function setupNavigationHandlers() {
             });
           }
           
+          // Setup advanced search functionality
+          const advancedSearchLink = document.querySelector('#advanced-search-link');
+          if (advancedSearchLink) {
+            advancedSearchLink.addEventListener('click', (e) => {
+              e.preventDefault();
+              handleAdvancedSearch(e);
+            });
+          }
+          
           // Setup category section visibility based on first dropdown
           const productCategorySelect = document.querySelector('.product-category-select');
           const categorySection = document.querySelector('.category-section');
@@ -1361,7 +1375,7 @@ function setupNavigationHandlers() {
         }
         
         function handleQuickSearch() {
-          console.log('=== DEBUG: handleQuickSearch function called ===');
+      
           // Get form values from the new form structure
           const minPrice = document.querySelector('.dropdown-select-1')?.value;
           const maxPrice = document.querySelector('.dropdown-select-2')?.value;
@@ -1412,11 +1426,67 @@ function setupNavigationHandlers() {
           window.location.hash = url;
         }
         
+        function handleAdvancedSearch(event) {
+          event.preventDefault();
+      
+          
+          // Get form values from the new form structure
+          const minPrice = document.querySelector('.dropdown-select-1')?.value;
+          const maxPrice = document.querySelector('.dropdown-select-2')?.value;
+          const provider = document.querySelector('.dropdown-select-3')?.value;
+          const method = document.querySelector('.dropdown-select-4')?.value;
+          const biomarker1 = document.querySelector('.biomarker-search-input')?.value;
+          const biomarker2 = document.querySelector('.biomarker-search-input-2')?.value;
+          
+          console.log('Form values:', { minPrice, maxPrice, provider, method, biomarker1, biomarker2 });
+          
+          // Clear previous validation errors
+          clearValidationErrors();
+          
+          // Build search parameters
+          const searchParams = new URLSearchParams();
+          
+          // Add price filters
+          if (minPrice && minPrice !== '') {
+            searchParams.set('minPrice', minPrice);
+          }
+          if (maxPrice && maxPrice !== '') {
+            searchParams.set('maxPrice', maxPrice);
+          }
+          
+          // Add provider filter
+          if (provider && provider !== '') {
+            searchParams.set('provider', provider);
+          }
+          
+          // Add method filter
+          if (method && method !== '') {
+            searchParams.set('method', method);
+          }
+          
+          // Combine biomarkers if both are selected
+          const biomarkers = [];
+          if (biomarker1) biomarkers.push(biomarker1);
+          if (biomarker2) biomarkers.push(biomarker2);
+          
+          if (biomarkers.length > 0) {
+            searchParams.set('biomarkers', biomarkers.join(','));
+          }
+          
+          // Add parameter to indicate filter panel should be open
+          searchParams.set('openFilters', 'true');
+          
+          // Navigate to the search results page with filters open
+          const url = `#/search-results${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+          console.log('Navigating to search results with filters open:', url);
+          window.location.hash = url;
+        }
+        
         function handleProblemSearch() {
-          console.log('=== DEBUG: handleProblemSearch function called ===');
+      
           const selectedProblem = document.querySelector('.symptom-select')?.value;
           
-          console.log('=== DEBUG: handleProblemSearch ===');
+      
           console.log('Selected problem value:', selectedProblem);
           console.log('Selected problem text:', document.querySelector('.symptom-select option:checked')?.textContent);
           

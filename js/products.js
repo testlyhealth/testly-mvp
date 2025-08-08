@@ -119,34 +119,36 @@ export async function displayCategoryProducts(categoryId) {
 
       // Create the tests grid container with empty grid first
       const testsGridContainer = `
-        <div class="filter-panel">
-          ${filterPanel}
-        </div>
-        <div class="main-content">
-          ${categoryHeader}
-          <div class="filter-tags">
-            <div class="filter-tags-container">
-              <div class="filter-tags-list">
-                <!-- Filter tags will be populated here -->
+        <div class="filter-tags">
+          <div class="filter-tags-container">
+            <div class="filter-tags-list">
+              <!-- Filter tags will be populated here -->
+            </div>
+            <div class="results-controls">
+              <div class="results-count">
+                <span>${tests.length} result${tests.length !== 1 ? 's' : ''}</span>
               </div>
-              <div class="results-controls">
-                <div class="results-count">
-                  <span>${tests.length} result${tests.length !== 1 ? 's' : ''}</span>
-                </div>
-                <button class="filters-btn" aria-label="Toggle filters panel">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
-                  </svg>
-                  Filters
-                </button>
-              </div>
+              <button class="filters-btn" aria-label="Toggle filters panel">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
+                </svg>
+                Filters
+              </button>
             </div>
           </div>
-          <div class="mobile-filter-buttons">
-            <button class="filters-btn mobile-only" aria-label="Open filters">Filters</button>
-            <button class="advanced-search-btn mobile-only" aria-label="Advanced search">Advanced search</button>
+        </div>
+        <div class="results-container">
+          <div class="filter-panel">
+            ${filterPanel}
           </div>
-          <div class="products-grid" id="tests-grid"></div>
+          <div class="main-content">
+            ${categoryHeader}
+            <div class="mobile-filter-buttons">
+              <button class="filters-btn mobile-only" aria-label="Open filters">Filters</button>
+              <button class="advanced-search-btn mobile-only" aria-label="Advanced search">Advanced search</button>
+            </div>
+            <div class="products-grid" id="tests-grid"></div>
+          </div>
         </div>
       `;
 

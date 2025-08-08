@@ -42,9 +42,7 @@ body {
   .main-header {
     background: var(--white);
     border-bottom: 1px solid var(--border);
-    position: fixed;
-    top: 0;
-    left: 0;
+    position: relative;
     width: 100%;
     z-index: 1000;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -142,7 +140,6 @@ body {
   
   /* Update main content margin */
   main {
-    margin-top: 64px; /* Match header height */
     min-height: calc(100vh - 64px);
     background: transparent;
   }
@@ -3608,7 +3605,6 @@ body {
 
   .page-container {
     min-height: calc(100vh - 64px);
-    margin-top: 64px;
     padding: 0;
   }
 
@@ -3771,9 +3767,7 @@ body {
 
   /* Blood Tests Dropdown Menu Styles */
   .blood-tests-menu {
-    position: fixed;
-    top: 64px; /* height of your header */
-    left: 0;
+    position: relative;
     width: 100%;
     background: #fff;
     border-bottom: 1px solid #eee;
@@ -3822,10 +3816,8 @@ body {
 
   .mobile-menu {
     display: none;
-    position: fixed;
-    top: 64px;
-    left: 0;
-    width: 100vw;
+    position: relative;
+    width: 100%;
     height: calc(100vh - 64px);
     background: #fff;
     z-index: 3000;
@@ -3908,10 +3900,8 @@ body {
 
   .mobile-menu {
     display: none;
-    position: fixed;
-    top: 64px;
-    left: 0;
-    width: 100vw;
+    position: relative;
+    width: 100%;
     height: calc(100vh - 64px);
     background: #fff;
     z-index: 3000;
@@ -4656,11 +4646,27 @@ body {
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 1rem;
-    margin-top: 1rem;
+    margin-top: 0;
     gap: 1rem;
-    width: 100%;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
     box-sizing: border-box;
+
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   }
+
+
+
+
+
+  /* Ensure the header stays in its normal position when filter container floats */
+
 
   .filter-tags-list {
     display: flex;
@@ -6619,10 +6625,6 @@ body {
     display: inline-block;
     transition: background 0.2s, color 0.2s;
     text-decoration: none;
-    position: absolute;
-    top: 6rem;
-    right: 1rem;
-    z-index: 10;
   }
   .book-test-btn:hover {
     background: #1E88E5 !important;
@@ -7066,8 +7068,14 @@ body {
     transform: translateY(-1px);
   }
 
-  .reset-filters-link {
+  .form-links-container {
     margin-top: 0.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .reset-filters-link {
     text-align: left;
   }
 
@@ -7087,6 +7095,30 @@ body {
   }
 
   .reset-filters-link .reset-filters:hover {
+    color: #374151 !important;
+    background: none !important;
+  }
+
+  .advanced-search-link {
+    text-align: right;
+  }
+
+  .advanced-search-link .advanced-search-text {
+    color: #6b7280 !important;
+    font-size: 0.875rem !important;
+    text-decoration: underline !important;
+    transition: color 0.2s ease !important;
+    cursor: pointer !important;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: auto !important;
+    border-radius: 0 !important;
+    font-weight: normal !important;
+  }
+
+  .advanced-search-link .advanced-search-text:hover {
     color: #374151 !important;
     background: none !important;
   }

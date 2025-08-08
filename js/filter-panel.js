@@ -42,7 +42,6 @@ async function fetchBiomarkersForGrouping(groupingName) {
 
 // Function to create the filter panel HTML
 export async function createFilterPanel(tests, options = {}) {
-  console.log('=== DEBUG: createFilterPanel called ===');
   console.log('Number of tests passed:', tests.length);
   
   // Get price range
@@ -162,7 +161,6 @@ export async function createFilterPanel(tests, options = {}) {
   // Fetch problems from Supabase
   let problems = [];
   try {
-    console.log('=== DEBUG: Fetching problems from database ===');
     const { data, error } = await supabase.from('problem_list').select('name').order('name');
     console.log('Raw problems data:', data);
     console.log('Problems error:', error);
@@ -442,7 +440,6 @@ let lastMaxPrice = null;
 
 // Function to setup filter panel functionality
 export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
-  console.log('=== DEBUG: setupFilterPanel function called ===');
   console.log('Number of tests passed:', tests.length);
   console.log('Update callback type:', typeof updateCallback);
   console.log('Root panel:', !!rootPanel);
@@ -482,7 +479,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   const problemsAll = filterPanel.querySelector('#problems-all');
   const problemsCheckboxes = filterPanel.querySelectorAll('.problems-checkbox');
   
-  console.log('=== DEBUG: Problem checkboxes setup ===');
+  
   console.log('problemsAll found:', !!problemsAll);
   console.log('Number of problem checkboxes found:', problemsCheckboxes.length);
   console.log('Problem checkbox values:', Array.from(problemsCheckboxes).map(cb => cb.value));
@@ -644,15 +641,15 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     filterTagsContainer = document.createElement('div');
     filterTagsContainer.className = 'filter-tags';
     
-    // Insert into main-content before the mobile filter buttons
-    const mainContent = document.querySelector('.main-content');
-    if (mainContent) {
-      const mobileFilterButtons = mainContent.querySelector('.mobile-filter-buttons');
-      if (mobileFilterButtons) {
-        mainContent.insertBefore(filterTagsContainer, mobileFilterButtons);
+    // Insert into page-container before the results-container
+    const pageContainer = document.querySelector('.page-container');
+    if (pageContainer) {
+      const resultsContainer = pageContainer.querySelector('.results-container');
+      if (resultsContainer) {
+        pageContainer.insertBefore(filterTagsContainer, resultsContainer);
       } else {
-        // If no mobile filter buttons, insert at the start of main-content
-        mainContent.insertBefore(filterTagsContainer, mainContent.firstChild);
+        // If no results container, append to page container
+        pageContainer.appendChild(filterTagsContainer);
       }
     }
   }
@@ -663,7 +660,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   let selectedProblem = null;
   try {
     const urlHash = window.location.hash;
-    console.log('=== DEBUG: Parsing URL hash ===');
+
     console.log('Full URL hash:', urlHash);
     
     const filterMatch = urlHash.match(/[?&]filter=([^&]+)/);
@@ -696,7 +693,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     console.error('Error parsing URL hash:', e);
   }
 
-  console.log('=== DEBUG: Filter Panel Setup ===');
+  
   console.log('URL hash:', window.location.hash);
   console.log('Selected category from URL:', selectedCategory);
   console.log('Number of tests passed to filter panel:', tests.length);
@@ -728,7 +725,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
 
   // Function to create filter tags HTML
   function createFilterTags(filters, resultsCount = null) {
-    console.log('=== DEBUG: Creating Filter Tags ===');
+
     console.log('Filters object:', filters);
     console.log('Categories in filters:', filters.categories);
     console.log('Results count passed to createFilterTags:', resultsCount);
@@ -898,7 +895,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
 
   // Function to show filters overlay
   function showFiltersOverlay() {
-    console.log('=== DEBUG: showFiltersOverlay called ===');
+
     
     // Create overlay if it doesn't exist
     let overlay = document.querySelector('.filters-overlay');
@@ -1018,7 +1015,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   
   // Function to initialize filter events in the overlay
   function initializeOverlayFilterEvents(filterContent, callback) {
-    console.log('=== DEBUG: initializeOverlayFilterEvents called ===');
+
     console.log('Filter content element:', filterContent);
     console.log('Filter content HTML length:', filterContent.innerHTML.length);
     
@@ -1362,7 +1359,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     
     // Re-initialize sort radio buttons
     const sortRadioButtons = filterContent.querySelectorAll('input[name="sort"]');
-    console.log('=== DEBUG: Overlay sort setup ===');
+
     console.log('Overlay sort radio buttons found:', sortRadioButtons.length);
     console.log('Overlay filter content HTML:', filterContent.innerHTML.substring(0, 500));
     console.log('All input elements in overlay:', filterContent.querySelectorAll('input').length);
@@ -1391,7 +1388,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       });
       radio.addEventListener('change', (e) => {
         const sortType = e.target.value;
-        console.log('=== DEBUG: Overlay sort option selected ===');
+    
         console.log('Sort type:', sortType);
         
         // Set global sort type (same as existing dropdown)
@@ -1483,7 +1480,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
 
   // Function to update filter tags
   function updateFilterTags(filters, resultsCount = null) {
-    console.log('=== DEBUG: updateFilterTags called ===');
+
     console.log('Filters:', filters);
     console.log('Results count:', resultsCount);
     console.log('Results count type:', typeof resultsCount);
@@ -1617,7 +1614,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
 
   // Function to apply filters
   async function applyFilters() {
-    console.log('=== DEBUG: applyFilters called ===');
+
     console.log('Timestamp:', new Date().toISOString());
     console.log('Call stack:', new Error().stack);
     console.log('Current filters:', currentFilters);
@@ -1643,7 +1640,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       doctorsReport: doctorsReport ? doctorsReport.checked : false
     };
     
-    console.log('=== DEBUG: Blood Taking Method Filter ===');
+
     console.log('bloodMethodAll checked:', bloodMethodAll?.checked);
     console.log('bloodMethodCheckboxes:', Array.from(bloodMethodCheckboxes).map(cb => ({ value: cb.value, checked: cb.checked })));
     console.log('Selected blood taking methods:', currentFilters.bloodTakingMethods);
@@ -1689,7 +1686,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       }
     } else {
       // No category filter - always use the initial filtered tests
-      console.log('=== DEBUG: No Categories Selected ===');
+  
       console.log('Using initial filtered tests for price/provider filtering:', tests.length);
       console.log('Initial tests price range:', Math.min(...tests.map(t => t.price)), 'to', Math.max(...tests.map(t => t.price)));
       console.log('Current price filter:', currentFilters.priceRange.min, 'to', currentFilters.priceRange.max);
@@ -1733,7 +1730,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     // --- End price slider update ---
 
     // Now apply price, provider, and blood taking method filters to availableTests
-    console.log('=== DEBUG: Available Tests ===');
+
     console.log('Number of available tests:', availableTests.length);
     console.log('Sample tests with blood taking methods:', availableTests.slice(0, 3).map(t => ({
       name: t.name,
@@ -1743,7 +1740,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       bloodTakingMethodsLength: Array.isArray(t.blood_taking_methods) ? t.blood_taking_methods.length : 'not array'
     })));
     
-    console.log('=== DEBUG: Applying Filters ===');
+
     console.log('Available tests before filtering:', availableTests.length);
     console.log('Price filter range:', currentFilters.priceRange.min, 'to', currentFilters.priceRange.max);
     
@@ -1801,13 +1798,13 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     }
 
     // Update filter tags with results count
-    console.log('=== DEBUG: applyFilters updating filter tags ===');
+
     console.log('Filtered tests length:', filteredTests.length);
     console.log('Current filters:', currentFilters);
     updateFilterTags(currentFilters, filteredTests.length);
 
     // Always call callback with filter state object to handle all filtering (biomarkers, blood taking methods, etc.)
-    console.log('=== DEBUG: ApplyFilters - Using filter state callback ===');
+
     console.log('Passing filtered tests to callback:', filteredTests.length);
     console.log('Sample filtered test names:', filteredTests.slice(0, 3).map(t => t.name));
     console.log('About to call updateCallback...');
@@ -1957,7 +1954,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     });
   }
 
-  console.log('=== DEBUG: Setting up problem checkboxes ===');
+  
   console.log('Number of problem checkboxes found:', problemsCheckboxes.length);
   console.log('Problem checkbox values:', Array.from(problemsCheckboxes).map(cb => cb.value));
   console.log('Problem checkbox elements:', Array.from(problemsCheckboxes).map(cb => ({ value: cb.value, id: cb.id, checked: cb.checked })));
@@ -1965,7 +1962,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   // Handle individual problems/symptoms checkboxes
   problemsCheckboxes.forEach(checkbox => {
     checkbox.addEventListener('change', async (e) => {
-      console.log('=== DEBUG: Problem checkbox changed ===');
+  
       console.log('Checkbox value:', checkbox.value);
       console.log('Checkbox checked:', checkbox.checked);
       console.log('Event type:', e.type);
@@ -2009,7 +2006,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     // Check localStorage for selected problem
     problemToCheck = localStorage.getItem('selectedProblem');
     if (problemToCheck) {
-      console.log('=== DEBUG: Found selected problem in localStorage ===');
+  
       console.log('Selected problem from localStorage:', problemToCheck);
       // Clear localStorage after reading
       localStorage.removeItem('selectedProblem');
@@ -2017,7 +2014,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   }
   
   if (problemToCheck) {
-    console.log('=== DEBUG: Auto-checking problem ===');
+
     console.log('Selected problem to check:', problemToCheck);
     console.log('Selected problem type:', typeof problemToCheck);
     console.log('Number of problem checkboxes found:', problemsCheckboxes.length);
@@ -2091,7 +2088,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
 
   // Handle sort radio buttons
   const sortRadioButtons = filterPanel.querySelectorAll('input[name="sort"]');
-  console.log('=== DEBUG: Main filter panel sort setup ===');
+  
   console.log('Main filter panel sort radio buttons found:', sortRadioButtons.length);
   console.log('All input elements in filter panel:', filterPanel.querySelectorAll('input').length);
   console.log('All radio elements in filter panel:', filterPanel.querySelectorAll('input[type="radio"]').length);
@@ -2136,13 +2133,13 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     
     // Add a simple click test
     radio.addEventListener('click', (e) => {
-      console.log('=== DEBUG: Sort radio button clicked ===');
+  
       console.log('Clicked radio button:', e.target.id, e.target.value);
     });
     
     radio.addEventListener('change', (e) => {
       const sortType = e.target.value;
-      console.log('=== DEBUG: Main filter panel sort option selected ===');
+  
       console.log('Sort type:', sortType);
       
       // Set global sort type (same as existing dropdown)
@@ -2235,6 +2232,11 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
   
   // Setup biomarker search functionality
   setupFilterPanelBiomarkerSearch();
+
+  // Setup floating filter container behavior
+
+
+
 
   // Add click handler to Compare button
   const compareBtn = document.querySelector('.compare-btn');
@@ -2451,7 +2453,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       let totalResults = enrichedLinkedTests.length;
       
       if (problemName.toLowerCase().includes('diabetes')) {
-        console.log('=== DEBUG: Processing diabetes problem ===');
+    
         console.log('Problem name:', problemName);
         try {
           // Get heart health category ID
@@ -2460,7 +2462,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
             .select('id, name')
             .order('name');
           
-          console.log('=== DEBUG: Available categories for diabetes ===');
+      
           console.log('All categories:', allCategories?.map(cat => cat.name));
           
           // Look for the exact heart health category
@@ -3243,7 +3245,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         
         // Show the products grid now that problem-specific results are loaded
         testsGrid.style.display = 'grid';
-        console.log('=== DEBUG: Problem-specific results loaded and displayed ===');
+    
         
         // Hide the loading overlay now that problem-specific results are ready
         loadingOverlay.hide();

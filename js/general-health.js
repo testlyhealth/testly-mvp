@@ -4,6 +4,8 @@ import { createFilterPanel, setupFilterPanel } from './filter-panel.js';
 import { basket } from './basket.js';
 import { getUrl } from './config.js';
 import { supabase } from './api/supabase.js';
+import { bloodTestOverlay } from './components/blood-test-overlay.js';
+console.log('bloodTestOverlay imported:', bloodTestOverlay);
 
 // Initialize card service
 const cardService = new CardService();
@@ -79,7 +81,7 @@ async function createTestCard(test, index) {
   const totalBiomarkers = biomarkerNames.length;
   
   return `
-    <div class="product-card blood-test-card" data-test-id="${test.test_name}">
+    <div class="product-card blood-test-card" data-test-id="${test.id}">
       <div class="test-rank">${index + 1}</div>
       <div class="test-header">
         <div class="provider-info">
@@ -123,7 +125,7 @@ async function createTestCard(test, index) {
         </div>
         <div class="card-actions">
           <button class="toggle-details" aria-expanded="false">Details</button>
-          <button class="add-to-basket" data-test-id="${test.test_name}">Add to Basket</button>
+          <button class="add-to-basket" data-test-id="${test.id}">Add to Basket</button>
         </div>
       </div>
     </div>
@@ -409,6 +411,42 @@ function attachEventListeners() {
       // Add selection to clicked card
       card.classList.add('selected');
       lastHoveredCard = card;
+
+      // Open overlay with test details
+      const testId = card.dataset.testId;
+      console.log('Card clicked, testId:', testId);
+      console.log('currentTests:', currentTests);
+      
+      // Log the structure of the first test to see what properties it has
+      if (currentTests.length > 0) {
+        console.log('First test object:', currentTests[0]);
+        console.log('Available properties:', Object.keys(currentTests[0]));
+      }
+      
+      // Log all test IDs to see what we're working with
+      console.log('All test IDs in currentTests:');
+      currentTests.forEach((t, index) => {
+        console.log(`Test ${index}: id=${t.id}, test_name="${t.test_name}", name="${t.name}"`);
+      });
+      
+      // Try to find test by ID first, then by name as fallback
+      let test = currentTests.find(t => t.id == testId);
+      if (!test) {
+        // Fallback to name matching for backward compatibility
+        test = currentTests.find(t => 
+          t.test_name === testId || 
+          t.name === testId || 
+          t.title === testId ||
+          t.testName === testId
+        );
+      }
+      console.log('Found test:', test);
+      if (test) {
+        console.log('Opening overlay for test ID:', test.id, 'Name:', test.test_name || test.name || test.title || test.testName);
+        bloodTestOverlay.open(test);
+      } else {
+        console.log('No test found for testId:', testId);
+      }
     });
   });
 
@@ -447,7 +485,7 @@ function attachEventListeners() {
   $all('.add-to-basket').forEach(button => {
     button.addEventListener('click', (e) => {
       const testId = e.target.dataset.testId;
-      const test = tests.find(t => t.test_name === testId);
+      const test = currentTests.find(t => t.id == testId);
       if (test) {
         const event = new CustomEvent('addToBasket', { detail: { test } });
         document.dispatchEvent(event);
@@ -468,12 +506,12 @@ function createPageStructure(filterPanel, testsGrid) {
   return `
     <div class="page-container">
       ${createGeneralHealthTitle()}
+      <div class="filter-tags"></div>
       <div class="results-container"><aside class="filter-panel">
           <div class="filter-panel-content">
             ${filterPanel}
           </div>
         </aside><div class="main-content">
-          <div class="filter-tags"></div>
           <div class="mobile-filter-buttons">
             <div class="left-buttons">
               <button class="filters-btn mobile-only" aria-label="Open filters">Filters</button>
@@ -683,7 +721,7 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
       </div>
     `).join('');
     
-    console.log('=== DEBUG: Creating initial filter tags HTML ===');
+    
     console.log('Tests length:', tests.length);
     console.log('Applied filters:', appliedFilters);
     
@@ -986,12 +1024,12 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
   // Set up hash change listener to update filter tags
   window.addEventListener('hashchange', updateFilterTagsFromURL);
   
-  console.log('=== DEBUG: About to call setupFilterPanel ===');
+  
   console.log('Passing selectedProblem to setupFilterPanel:', selectedProblem);
   console.log('Current tests length being passed to setupFilterPanel:', currentTests.length);
   
   if (!skipFilterPanel) {
-    console.log('=== DEBUG: Setting up filter panel ===');
+
     // Import setupFilterPanel function
     const { setupFilterPanel } = await import('./filter-panel.js');
     console.log('setupFilterPanel imported, calling it with', currentTests.length, 'tests');
@@ -999,18 +1037,8 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
     // Simple test to see if this code is running
     console.log('Filter panel setup code is executing!');
     
-    // Define the callback function
-    console.log('=== DEBUG: Defining callback function ===');
-    const filterCallback = async (filterState) => {
-      console.log('=== DEBUG: Filter Panel Callback TRIGGERED ===');
-      console.log('=== DEBUG: Callback function is being executed! ===');
-      console.log('Filter panel callback called with:', filterState);
-      console.log('FilterState type:', typeof filterState);
-      console.log('FilterState keys:', Object.keys(filterState || {}));
-      console.log('Initial tests passed to filter panel:', currentTests.length);
-      
-      // Simple test to see if callback is working
-      console.log('Callback function is executing!');
+          // Define the callback function
+      const filterCallback = async (filterState) => {
       
       // Handle filter state object (new approach)
       if (!Array.isArray(filterState)) {
@@ -1020,29 +1048,22 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
         
         // Check if filtered tests are provided directly (for price/provider filtering)
         if (filterState.filteredTests) {
-          console.log('=== DEBUG: Using Provided Filtered Tests ===');
-          console.log('Filtered tests count:', filterState.filteredTests.length);
-          console.log('Sample filtered test names:', filterState.filteredTests.slice(0, 3).map(t => t.name));
-          console.log('Sample filtered test prices:', filterState.filteredTests.slice(0, 3).map(t => t.price));
           
-          // Re-enrich the filtered tests with biomarker data
-          const testIds = filterState.filteredTests.map(t => t.id);
-          console.log('Re-enriching tests with biomarker data for IDs:', testIds);
-          
-          // Fetch biomarker data for these specific tests
-          console.log('=== DEBUG: Re-enrichment process starting ===');
+                      // Re-enrich the filtered tests with biomarker data
+            const testIds = filterState.filteredTests.map(t => t.id);
+            
+            // Fetch biomarker data for these specific tests
           const enriched = await fetchAndEnrichTests({ categoryId: 3 }); // Fetch all tests in category
           const enrichedMap = new Map(enriched.map(t => [t.id, t]));
           
           // Replace the filtered tests with their enriched versions
           const reEnrichedTests = filterState.filteredTests.map(test => {
-            const enrichedTest = enrichedMap.get(test.id);
-            if (enrichedTest) {
-              console.log(`DEBUG: Test "${test.name}" re-enriched with ${enrichedTest.biomarker_names?.length || 0} biomarkers`);
-            } else {
-              console.log(`DEBUG: WARNING - No enriched data found for test "${test.name}" (ID: ${test.id})`);
-              console.log(`DEBUG: Available enriched test IDs:`, Array.from(enrichedMap.keys()));
-            }
+                          const enrichedTest = enrichedMap.get(test.id);
+              if (enrichedTest) {
+                // Test re-enriched successfully
+              } else {
+                // No enriched data found for this test
+              }
             return enrichedTest || test; // Fallback to original if not found
           });
           
@@ -1054,9 +1075,6 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
           
           // Update the global tests to match what we're displaying
           window._allGeneralHealthTests = reEnrichedTests;
-          console.log('=== DEBUG: Re-enriched Filtered Tests ===');
-          console.log('Updated window._allGeneralHealthTests to', reEnrichedTests.length, 'tests');
-          console.log('Test names:', reEnrichedTests.map(t => t.name));
           
           updateTestGridContent(currentTests);
           return; // Exit early since we're using the provided filtered tests
@@ -1076,9 +1094,7 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
         // For now, handle multiple categories by fetching each one and combining results
         let allEnrichedTests = [];
         
-        console.log('=== DEBUG: Filter Panel Fetching ===');
-        console.log('Selected categories:', selectedCategories);
-        console.log('Selected providers:', selectedProviders);
+
         
         if (selectedCategories.length > 0) {
           for (const category of selectedCategories) {
@@ -1155,7 +1171,7 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
         // Apply blood taking method filtering if methods are selected
         const selectedBloodMethods = filterState.bloodTakingMethods || [];
         if (selectedBloodMethods.length > 0) {
-          console.log('=== DEBUG: Blood Taking Method Filtering ===');
+  
           console.log('Applying blood taking method filter to', allEnrichedTests.length, 'tests');
           console.log('Looking for methods:', selectedBloodMethods);
           
@@ -1189,7 +1205,7 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
         
         // Update the global tests to match what we're displaying
         window._allGeneralHealthTests = enriched;
-        console.log('=== DEBUG: Filter Panel Callback Update ===');
+
         console.log('Updated window._allGeneralHealthTests to', enriched.length, 'tests');
         console.log('Test names:', enriched.map(t => t.name));
         
@@ -1220,11 +1236,9 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
     }
     
     console.log('Calling setupFilterPanel...');
-    console.log('=== DEBUG: About to call setupFilterPanel with callback ===');
     console.log('Callback function defined:', typeof filterCallback);
     try {
       setupFilterPanel(currentTests, filterCallback);
-      console.log('=== DEBUG: setupFilterPanel called successfully ===');
       console.log('setupFilterPanel called successfully');
     } catch (error) {
       console.error('=== ERROR: setupFilterPanel failed ===');
@@ -1279,6 +1293,60 @@ if (!window._mobileFilterPanelSetup) {
     });
   });
   window._mobileFilterPanelSetup = true;
+
+  // Setup floating filter container behavior
+  function setupFloatingFilterContainer() {
+    const filterContainer = document.querySelector('.filter-tags-container');
+    
+    if (!filterContainer) {
+      console.log('Filter container not found');
+      return;
+    }
+
+    console.log('Found filter container:', filterContainer);
+
+    // Wait for the container to be properly positioned
+    setTimeout(() => {
+      let containerTop = filterContainer.offsetTop;
+      let isFloating = false;
+      
+      console.log('Container top position:', containerTop);
+
+      function handleScroll() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        console.log('Scroll position:', scrollTop, 'Container top:', containerTop);
+        
+        // Check if we've scrolled past the filter container's original position
+        if (scrollTop > containerTop) {
+          if (!isFloating) {
+            console.log('Making container float');
+            filterContainer.classList.add('floating');
+            document.body.classList.add('filter-container-floating');
+            isFloating = true;
+          }
+        } else {
+          if (isFloating) {
+            console.log('Removing float');
+            filterContainer.classList.remove('floating');
+            document.body.classList.remove('filter-container-floating');
+            isFloating = false;
+          }
+        }
+      }
+
+      // Add scroll event listener
+      window.addEventListener('scroll', handleScroll);
+      
+      // Handle window resize to recalculate positions
+      window.addEventListener('resize', () => {
+        containerTop = filterContainer.offsetTop;
+        console.log('Recalculated container top:', containerTop);
+      });
+    }, 500); // Increased timeout to ensure page is fully loaded
+  }
+
+  // Initialize floating behavior
+  setupFloatingFilterContainer();
 }
 
 // SPA-safe: Use MutationObserver to watch for .filter-panel
@@ -1724,17 +1792,14 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
       console.log('Selected method from URL:', selectedMethod);
     }
     
-    console.log('=== DEBUG: URL Parameters ===');
-    console.log('Full hash:', hash);
-    console.log('Selected biomarkers:', selectedBiomarkers);
-    console.log('Selected min price:', selectedMinPrice);
-    console.log('Selected max price:', selectedMaxPrice);
-    console.log('Selected provider:', selectedProvider);
-    console.log('Selected method:', selectedMethod);
+    // Check if filters should be opened
+    const openFiltersMatch = hash.match(/[?&]openFilters=([^&]+)/);
+    const shouldOpenFilters = openFiltersMatch && decodeURIComponent(openFiltersMatch[1]) === 'true';
+    console.log('Should open filters:', shouldOpenFilters);
+    
 
     // --- Fetch and enrich tests ---
     let tests;
-    console.log('=== DEBUG: Fetch Strategy ===');
     // Always fetch from men's health and hormones category (ID 3)
     const selectedCategory = 'Male health and hormones';
     console.log('Always fetching from category:', selectedCategory);
@@ -1822,32 +1887,48 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
       beforeFilter = tests.length;
     }
     window._allGeneralHealthTests = tests;
-    console.log('=== DEBUG: Setting Global Tests ===');
-    console.log('Setting window._allGeneralHealthTests to', tests.length, 'tests');
-    console.log('Test names:', tests.map(t => t.name));
     
     // Create filter panel with tests data - hide categories and problems for men's health page
-    console.log('=== DEBUG: Creating filter panel ===');
-    try {
-      const filterPanel = await createFilterPanel(tests, { hideCategories: true, hideProblems: true });
-      console.log('=== DEBUG: Filter panel created ===');
-      console.log('Filter panel HTML length:', filterPanel.length);
-      // Create and return the page structure
-      const content = createPageStructure(filterPanel, null);
-      console.log('=== DEBUG: Page structure created ===');
-      // Add a custom event listener for when the content is rendered
-      console.log('=== DEBUG: Adding contentRendered event listener ===');
-      document.addEventListener('contentRendered', async () => {
-        console.log('=== DEBUG: contentRendered event fired ===');
-        if (window._allGeneralHealthTests) {
-          console.log('=== DEBUG: Calling initializePageElements ===');
-          // Set up the filter panel properly
-          initializePageElements(window._allGeneralHealthTests, null, false);
+          try {
+        const filterPanel = await createFilterPanel(tests, { hideCategories: true, hideProblems: true });
+        // Create and return the page structure
+        const content = createPageStructure(filterPanel, null);
+        // Add a custom event listener for when the content is rendered
+        document.addEventListener('contentRendered', async () => {
+          if (window._allGeneralHealthTests) {
+            // Set up the filter panel properly
+            initializePageElements(window._allGeneralHealthTests, null, false);
+          
+          // Open filter panel if requested
+          if (shouldOpenFilters) {
+            console.log('=== FILTER DEBUG: Should open filters is true ===');
+            
+            // On desktop, just show the filter panel overlay
+            setTimeout(() => {
+              const filterPanel = document.querySelector('.filter-panel');
+              console.log('=== FILTER DEBUG: Looking for filter panel ===');
+              console.log('=== FILTER DEBUG: Filter panel found:', !!filterPanel);
+              
+              if (filterPanel) {
+                console.log('=== FILTER DEBUG: Making filter panel visible ===');
+                // Show the filter panel by triggering the same event as the Filters button
+                const filtersBtn = document.querySelector('.filters-btn');
+                if (filtersBtn) {
+                  console.log('=== FILTER DEBUG: Found desktop filters button, clicking it ===');
+                  filtersBtn.click();
+                } else {
+                  console.log('=== FILTER DEBUG: Desktop filters button not found ===');
+                }
+              } else {
+                console.log('=== FILTER DEBUG: Filter panel not found ===');
+              }
+            }, 500);
+          }
         } else {
           console.error('window._allGeneralHealthTests is not set!');
         }
       }, { once: true });
-      console.log('=== DEBUG: contentRendered event listener added ===');
+      
       
       return content;
     } catch (error) {
