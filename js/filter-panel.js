@@ -850,16 +850,47 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
     if (biomarkerMatch) {
       const selectedBiomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean);
-      selectedBiomarkers.forEach(biomarker => {
-        // Normalize biomarker name for display (replace + with space)
-        const displayName = biomarker.replace(/\+/g, ' ');
+      
+      // Check if this is a testosterone-only search
+      const testosteroneOnlyMatch = hash.match(/[?&]testosteroneOnly=([^&]+)/);
+      const isTestosteroneOnly = testosteroneOnlyMatch && decodeURIComponent(testosteroneOnlyMatch[1]) === 'true';
+      
+      // Check if this is a testosterone full hormone profile search
+          const testosteroneFullHormoneMatch = hash.match(/[?&]testosteroneFullHormone=([^&]+)/);
+    const isTestosteroneFullHormone = testosteroneFullHormoneMatch && decodeURIComponent(testosteroneFullHormoneMatch[1]) === 'true';
+    
+
+      
+      if (isTestosteroneOnly && selectedBiomarkers.includes('Testosterone')) {
+        // Create special "Testosterone only" filter tag
         tags.push(`
-          <div class="filter-tag" data-type="biomarker" data-value="${biomarker}">
-            <span>${displayName}</span>
+          <div class="filter-tag" data-type="biomarker" data-value="Testosterone">
+            <span>Testosterone only</span>
             <button class="remove-tag" aria-label="Remove biomarker">×</button>
           </div>
         `);
-      });
+      } else if (isTestosteroneFullHormone) {
+        // Create special "Testosterone full hormone profile" filter tag
+        tags.push(`
+          <div class="filter-tag" data-type="biomarker" data-value="Testosterone">
+            <span>Testosterone full hormone profile</span>
+            <button class="remove-tag" aria-label="Remove biomarker">×</button>
+          </div>
+        `);
+
+      } else {
+        // Regular biomarker filter tags
+        selectedBiomarkers.forEach(biomarker => {
+          // Normalize biomarker name for display (replace + with space)
+          const displayName = biomarker.replace(/\+/g, ' ');
+          tags.push(`
+            <div class="filter-tag" data-type="biomarker" data-value="${biomarker}">
+              <span>${displayName}</span>
+              <button class="remove-tag" aria-label="Remove biomarker">×</button>
+            </div>
+          `);
+        });
+      }
     }
     
     // Create the filter tags container with results count and sort button
