@@ -870,10 +870,10 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
           </div>
         `);
       } else if (isTestosteroneFullHormone) {
-        // Create special "Testosterone full hormone profile" filter tag
+        // Create special "Male hormone check" filter tag
         tags.push(`
           <div class="filter-tag" data-type="biomarker" data-value="Testosterone">
-            <span>Testosterone full hormone profile</span>
+            <span>Male hormone check</span>
             <button class="remove-tag" aria-label="Remove biomarker">×</button>
           </div>
         `);

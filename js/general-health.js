@@ -80,6 +80,20 @@ async function createTestCard(test, index) {
   // Calculate total number of biomarkers
   const totalBiomarkers = biomarkerNames.length;
   
+  // Truncate description to approximately 4 lines (roughly 200 characters)
+  const maxDescriptionLength = 200;
+  let truncatedDescription = test.description;
+  if (test.description.length > maxDescriptionLength) {
+    // Find the last complete word within the limit
+    const truncated = test.description.substring(0, maxDescriptionLength);
+    const lastSpaceIndex = truncated.lastIndexOf(' ');
+    if (lastSpaceIndex > 0) {
+      truncatedDescription = truncated.substring(0, lastSpaceIndex) + '...';
+    } else {
+      truncatedDescription = truncated + '...';
+    }
+  }
+  
   return `
     <div class="product-card blood-test-card" data-test-id="${test.id}">
       <div class="test-rank">${index + 1}</div>
@@ -90,7 +104,7 @@ async function createTestCard(test, index) {
         </div>
         <h3 class="test-name">${test.test_name}</h3>
       </div>
-      <p>${test.description}</p>
+      <p class="description-limited">${truncatedDescription}</p>
       <div class="test-details">
         <div class="test-price">£${test.price}</div>
         <div class="biomarkers-section">
@@ -167,6 +181,38 @@ function filterTests(tests, filters = {}) {
     }
 
     return true;
+  });
+}
+
+// Shared function to apply male hormone check filtering (same logic as results page)
+export function applyMaleHormoneCheckFilter(tests) {
+  console.log('Applying male hormone check filter (shared function)');
+  
+  // Define the required biomarkers for male hormone check
+  const requiredBiomarkers = ['Testosterone', 'Free testosterone', 'SHBG'];
+  
+  return tests.filter(test => {
+    const testBiomarkerNames = test.biomarker_names || [];
+    
+    // Check if the test has ALL the required biomarkers (same logic as results page)
+    const hasAllRequiredBiomarkers = requiredBiomarkers.every(requiredBiomarker => 
+      testBiomarkerNames.some(biomarker => 
+        biomarker && biomarker.toLowerCase().includes(requiredBiomarker.toLowerCase())
+      )
+    );
+    
+    // Additional filter: test must have 10 or fewer total biomarkers
+    const hasLimitedBiomarkers = testBiomarkerNames.length <= 10;
+    
+    if (hasAllRequiredBiomarkers && hasLimitedBiomarkers) {
+      console.log(`✅ SHARED FUNCTION INCLUDED: Test "${test.name}" (ID: ${test.id}) - has required biomarkers and ≤10 total biomarkers (${testBiomarkerNames.length})`);
+    } else if (hasAllRequiredBiomarkers && !hasLimitedBiomarkers) {
+      console.log(`❌ SHARED FUNCTION EXCLUDED: Test "${test.name}" (ID: ${test.id}) - has required biomarkers but >10 total biomarkers (${testBiomarkerNames.length})`);
+    } else {
+      console.log(`❌ SHARED FUNCTION EXCLUDED: Test "${test.name}" (ID: ${test.id}) - missing required biomarkers`);
+    }
+    
+    return hasAllRequiredBiomarkers && hasLimitedBiomarkers;
   });
 }
 
@@ -912,14 +958,21 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
           display: 'Testosterone only'
         });
       } else if (isTestosteroneFullHormone) {
-        console.log('🔍 Creating "Testosterone full hormone profile" filter tag');
-        // Create special "Testosterone full hormone profile" filter tag
+        console.log('🔍 Creating "Male hormone check" filter tag');
+        // Create special "Male hormone check" filter tag
         appliedFilters.push({
           type: 'biomarker',
           value: 'Testosterone',
-          display: 'Testosterone full hormone profile'
+          display: 'Male hormone check'
         });
-
+      } else if (isTestosteroneFullHormoneGeneralHealth) {
+        console.log('🔍 Creating "Male hormone check + general health check" filter tag');
+        // Create special "Male hormone check + general health check" filter tag
+        appliedFilters.push({
+          type: 'biomarker',
+          value: 'Testosterone',
+          display: 'Male hormone check + general health check'
+        });
       } else {
         console.log('🔍 Creating regular biomarker filter tags');
         // Regular biomarker filter tags
@@ -1561,7 +1614,7 @@ async function fetchAndEnrichTests({ category = null, categoryId = null, provide
   let allLabAccreditations = [];
   if (testIds.length > 0) {
     // Check if we need to split the query due to too many IDs
-            const maxIdsPerQuery = 10; // Much smaller limit to avoid capacity issues
+    const maxIdsPerQuery = 10; // Much smaller limit to avoid capacity issues
     if (testIds.length > maxIdsPerQuery) {
       // Split the query into chunks
       const chunks = [];
@@ -1569,20 +1622,20 @@ async function fetchAndEnrichTests({ category = null, categoryId = null, provide
         chunks.push(testIds.slice(i, i + maxIdsPerQuery));
       }
       
+      console.log(`DEBUG: Fetching biomarker links in ${chunks.length} chunks...`);
       
-      
-              for (let i = 0; i < chunks.length; i++) {
-          const { data: chunkLinks, error: chunkError } = await supabase
-            .from('biomarker_link_table')
-            .select('provider_blood_test_id, biomarker_id')
-            .in('provider_blood_test_id', chunks[i]);
-          
-          if (chunkError) {
-            console.error(`Error in chunk ${i + 1}:`, chunkError);
-          } else {
-            biomarkerLinks = biomarkerLinks.concat(chunkLinks);
-          }
+      for (let i = 0; i < chunks.length; i++) {
+        const { data: chunkLinks, error: chunkError } = await supabase
+          .from('biomarker_link_table')
+          .select('provider_blood_test_id, biomarker_id')
+          .in('provider_blood_test_id', chunks[i]);
+        
+        if (chunkError) {
+          console.error(`Error in chunk ${i + 1}:`, chunkError);
+        } else {
+          biomarkerLinks = biomarkerLinks.concat(chunkLinks);
         }
+      }
     } else {
       const { data: links, error: linkError } = await supabase
         .from('biomarker_link_table')
@@ -1596,12 +1649,6 @@ async function fetchAndEnrichTests({ category = null, categoryId = null, provide
       
       biomarkerLinks = links;
     }
-    
-
-    
-
-    
-
     
     biomarkerIds = [...new Set(biomarkerLinks.map(l => l.biomarker_id))];
   }
@@ -1732,8 +1779,14 @@ async function fetchAndEnrichTests({ category = null, categoryId = null, provide
       }
     });
     test.grouped_biomarkers = grouped;
-    test.biomarker_count = test.biomarker_column || links.length;
+    // Use the biomarker_number field from the database for total count
+    test.biomarker_count = test.biomarker_number || links.length;
     test.biomarker_names = biomarkerNames;
+    
+    // Debug: Log biomarker count for this test
+    if (test.name && test.name.toLowerCase().includes('testosterone')) {
+      console.log(`🔍 Test "${test.name}" (ID: ${test.id}): ${links.length} biomarkers found`);
+    }
     
 
     
@@ -1847,6 +1900,16 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     const isTestosteroneFullHormone = testosteroneFullHormoneMatch && decodeURIComponent(testosteroneFullHormoneMatch[1]) === 'true';
     console.log('Is testosterone full hormone profile search:', isTestosteroneFullHormone);
     
+    // Check if this is a male hormone check only search
+    const testosteroneFullHormoneOnlyMatch = hash.match(/[?&]testosteroneFullHormoneOnly=([^&]+)/);
+    const isTestosteroneFullHormoneOnly = testosteroneFullHormoneOnlyMatch && decodeURIComponent(testosteroneFullHormoneOnlyMatch[1]) === 'true';
+    console.log('Is male hormone check only search:', isTestosteroneFullHormoneOnly);
+    
+    // Check if this is a male hormone check + general health check search
+    const testosteroneFullHormoneGeneralHealthMatch = hash.match(/[?&]testosteroneFullHormoneGeneralHealth=([^&]+)/);
+    const isTestosteroneFullHormoneGeneralHealth = testosteroneFullHormoneGeneralHealthMatch && decodeURIComponent(testosteroneFullHormoneGeneralHealthMatch[1]) === 'true';
+    console.log('Is male hormone check + general health check search:', isTestosteroneFullHormoneGeneralHealth);
+    
 
     
 
@@ -1888,39 +1951,77 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
         });
         console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after testosterone-only filtering`);
         beforeFilter = tests.length;
-      } else if (isTestosteroneFullHormone) {
-        console.log('Applying testosterone full hormone profile filter');
-        
-        // Define the required biomarkers for full hormone profile
-        const requiredBiomarkers = ['Testosterone', 'Oestradiol', 'Free testosterone', 'SHBG'];
-        
-        tests = tests.filter(test => {
-          const testBiomarkerNames = test.biomarker_names || [];
+              } else if (isTestosteroneFullHormone) {
+          console.log('Applying male hormone check + general health check filter (no biomarker count restrictions)');
           
-          // Check if the test has 9 or fewer biomarkers total
-          const hasNineOrFewerBiomarkers = testBiomarkerNames.length <= 9;
+          // For male hormone check + general health check, just filter by required biomarkers
+          // NO biomarker count restrictions - show ALL tests with the required biomarkers
+          tests = tests.filter(test => {
+            const testBiomarkerNames = test.biomarker_names || [];
+            const requiredBiomarkers = ['Testosterone', 'Free testosterone', 'SHBG'];
+            
+            const hasAllRequiredBiomarkers = requiredBiomarkers.every(requiredBiomarker => {
+              return testBiomarkerNames.some(testBiomarker => {
+                if (!testBiomarker) return false;
+                const normalizedTest = testBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
+                const normalizedRequired = requiredBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
+                
+                // More precise matching to avoid false positives
+                if (normalizedRequired === 'testosterone') {
+                  // For "Testosterone", require exact match or starts with "testosterone"
+                  return normalizedTest === 'testosterone' || normalizedTest.startsWith('testosterone');
+                } else if (normalizedRequired === 'free testosterone') {
+                  // For "Free testosterone", require exact match or starts with "free testosterone"
+                  return normalizedTest === 'free testosterone' || normalizedTest.startsWith('free testosterone');
+                } else if (normalizedRequired === 'shbg') {
+                  // For "SHBG", require exact match
+                  return normalizedTest === 'shbg';
+                }
+                return false;
+              });
+            });
+            
+            if (!hasAllRequiredBiomarkers) {
+              console.log(`Filtering out test "${test.name}" - missing required biomarkers. Test has:`, testBiomarkerNames, 'Looking for:', requiredBiomarkers);
+            }
+            return hasAllRequiredBiomarkers;
+          });
+          console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after male hormone check + general health check filtering`);
+          beforeFilter = tests.length;
+        } else if (isTestosteroneFullHormoneOnly) {
+          console.log('Applying male hormone check only filter (≤10 biomarkers)');
           
-          // Check if the test has ALL the required biomarkers
-          const hasAllRequiredBiomarkers = requiredBiomarkers.every(requiredBiomarker => 
-            testBiomarkerNames.some(biomarker => 
-              biomarker && biomarker.toLowerCase().includes(requiredBiomarker.toLowerCase())
-            )
-          );
+          // Use the shared filtering function which includes the ≤10 biomarker limit
+          tests = applyMaleHormoneCheckFilter(tests);
+          console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after male hormone check only filtering`);
+          beforeFilter = tests.length;
+        } else if (isTestosteroneFullHormoneGeneralHealth) {
+          console.log('Applying male hormone check + general health check filter (no biomarker count restrictions)');
           
-          const isFullHormoneProfile = hasNineOrFewerBiomarkers && hasAllRequiredBiomarkers;
-          
-          if (isFullHormoneProfile) {
-            console.log(`✅ SEARCH RESULTS INCLUDED: Test "${test.name}" (ID: ${test.id})`);
-          } else {
-            console.log(`❌ SEARCH RESULTS EXCLUDED: Test "${test.name}" (ID: ${test.id}) - hasAllRequired: ${hasAllRequiredBiomarkers}, hasNineOrFewer: ${hasNineOrFewerBiomarkers}, biomarkers: ${testBiomarkerNames}`);
-          }
-          return isFullHormoneProfile;
-        });
-        console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after testosterone full hormone profile filtering`);
-        beforeFilter = tests.length;
-
-      } else {
-        // Regular biomarker filtering
+          // For male hormone check + general health check, just filter by required biomarkers
+          // NO biomarker count restrictions - show ALL tests with the required biomarkers
+          tests = tests.filter(test => {
+            const testBiomarkerNames = test.biomarker_names || [];
+            const requiredBiomarkers = ['Testosterone', 'Free testosterone', 'SHBG'];
+            
+            const hasAllRequiredBiomarkers = requiredBiomarkers.every(requiredBiomarker => {
+              return testBiomarkerNames.some(testBiomarker => {
+                if (!testBiomarker) return false;
+                const normalizedTest = testBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
+                const normalizedRequired = requiredBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
+                return normalizedTest.includes(normalizedRequired) || normalizedRequired.includes(normalizedTest);
+              });
+            });
+            
+            if (!hasAllRequiredBiomarkers) {
+              console.log(`Filtering out test "${test.name}" - missing required biomarkers. Test has:`, testBiomarkerNames, 'Looking for:', requiredBiomarkers);
+            }
+            return hasAllRequiredBiomarkers;
+          });
+          console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after male hormone check + general health check filtering`);
+          beforeFilter = tests.length;
+        } else {
+          // Regular biomarker filtering
         tests = tests.filter(test => {
           const testBiomarkerNames = test.biomarker_names || [];
           const hasAllBiomarkers = selectedBiomarkers.every(selectedBiomarker => {

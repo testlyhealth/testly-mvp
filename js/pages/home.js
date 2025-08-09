@@ -3,6 +3,7 @@ import { $, $all } from '../dom.js';
 import { blogPosts } from '../blog-data.js';
 import { CardService } from '../services/cardService.js';
 import { supabase } from '../api/supabase.js';
+import { applyMaleHormoneCheckFilter } from '../general-health.js';
 
 // Function to get count of tests in men's health and hormones category
 async function getMensHealthTestCount() {
@@ -171,45 +172,7 @@ async function getMaxPriceTestCountForTests(price, testIds) {
   }
 }
 
-// Function to get all providers from men's health and hormones category
-async function getProvidersInCategory() {
-  try {
-    const { data, error } = await supabase
-      .from('blood_test_category_link_table')
-      .select(`
-        provider_blood_test_id,
-        provider_blood_tests!inner (
-          provider_id,
-          providers!inner (
-            name
-          )
-        )
-      `)
-      .eq('blood_test_category_id', 3);
-    
-    if (error) {
-      console.error('Error fetching providers:', error);
-      return [];
-    }
-    
-    // Count tests per provider
-    const providerCounts = {};
-    data.forEach(item => {
-      const providerName = item.provider_blood_tests.providers.name;
-      providerCounts[providerName] = (providerCounts[providerName] || 0) + 1;
-    });
-    
-    // Convert to array and sort by provider name
-    const providersWithCounts = Object.entries(providerCounts)
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-    
-    return providersWithCounts;
-  } catch (error) {
-    console.error('Error getting providers:', error);
-    return [];
-  }
-}
+
 
 // Function to get all blood taking methods from men's health and hormones category
 async function getMethodsInCategory() {
@@ -264,25 +227,7 @@ async function getMethodsInCategory() {
   }
 }
 
-// Function to update provider dropdown
-async function updateProviderDropdown() {
-  try {
-    const providers = await getProvidersInCategory();
-    const providerSelect = document.querySelector('.dropdown-select-3');
-    
-    if (providerSelect) {
-      providerSelect.innerHTML = '<option value="">Provider</option>';
-      providers.forEach(provider => {
-        const option = document.createElement('option');
-        option.value = provider.name;
-        option.textContent = `${provider.name} (${provider.count})`;
-        providerSelect.appendChild(option);
-      });
-    }
-  } catch (error) {
-    console.error('Error updating provider dropdown:', error);
-  }
-}
+
 
 // Function to update method dropdown
 async function updateMethodDropdown() {
@@ -391,42 +336,34 @@ export function getHomePageContent() {
       <div class="hero-side-box">
         <div class="side-box-content">
           <h3>Find your <span style="color: #1E88E5;">testosterone</span> solution</h3>
-          <div class="search-tabs">
-            <div class="tab-toggle">
-              <button class="tab-button active" data-tab="blood-tests">Blood tests</button>
-              <button class="tab-button" data-tab="clinics">Clinics</button>
+                      <div class="search-tabs">
+              <div class="tab-toggle">
+                <button class="tab-button active" data-tab="blood-tests">Help me choose</button>
+                <button class="tab-button" data-tab="clinics">Let me pick</button>
+              </div>
             </div>
-          </div>
           
           <!-- Testosterone options dropdown -->
           <div class="form-group" style="margin: 5px 0 20px 0;">
             <select class="testosterone-options-select" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
               <option value="">Choose your testosterone options</option>
               <option value="browse-all">All</option>
-              <option value="testosterone-only">Testosterone only</option>
-                             <option value="testosterone-full-hormone">Testosterone full hormone profile</option>
-
-               <option value="testosterone-general-health">Testosterone only + related general health tests</option>
-               <option value="testosterone-full-hormone-general-health">Testosterone full hormone profile + related general health tests</option>
+                            <option value="testosterone-only">Testosterone only</option>
+              <option value="testosterone-full-hormone-only">Male hormone check only (includes testosterone)</option>
+              <option value="testosterone-full-hormone">Male hormone check + general health check</option>
+              <option value="trt-monitoring">TRT monitoring</option>
             </select>
           </div>
           
           <div class="search-form">
             <!-- Blood tests form -->
             <div class="form-content blood-tests-form">
-              <!-- First row of side-by-side dropdowns -->
+              <!-- Method dropdown -->
               <div class="form-group dropdown-row">
-                <div class="dropdown-container">
-                  <select class="dropdown-select-3">
-                    <option value="">Provider</option>
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
-                  </select>
-                </div>
                 <div class="dropdown-container">
                   <select class="dropdown-select-4">
                     <option value="">Method</option>
+                    <option value="All">All</option>
                     <option value="option1">Option 1</option>
                     <option value="option2">Option 2</option>
                     <option value="option3">Option 3</option>
@@ -662,7 +599,6 @@ export function initializeHomePage() {
   setupSearchTabs();
   setupOptionCardSelection();
   updateSearchButtonCount(); // Update search button count
-  updateProviderDropdown(); // Update provider dropdown
   updateMethodDropdown(); // Update method dropdown
   updatePriceDropdowns(); // Update price dropdowns
   setupDynamicCountUpdate(); // Setup dynamic count updates
@@ -1392,12 +1328,11 @@ function setupNavigationHandlers() {
           // Get form values from the new form structure
           const minPrice = document.querySelector('.dropdown-select-1')?.value;
           const maxPrice = document.querySelector('.dropdown-select-2')?.value;
-          const provider = document.querySelector('.dropdown-select-3')?.value;
           const method = document.querySelector('.dropdown-select-4')?.value;
           const biomarker1 = document.querySelector('.biomarker-search-input')?.value;
           const biomarker2 = document.querySelector('.biomarker-search-input-2')?.value;
           
-          console.log('Form values:', { minPrice, maxPrice, provider, method, biomarker1, biomarker2 });
+          console.log('Form values:', { minPrice, maxPrice, method, biomarker1, biomarker2 });
           console.log('Method dropdown selected option:', document.querySelector('.dropdown-select-4 option:checked')?.textContent);
           
           // Clear previous validation errors
@@ -1414,11 +1349,6 @@ function setupNavigationHandlers() {
             searchParams.set('maxPrice', maxPrice);
           }
           
-          // Add provider filter
-          if (provider && provider !== '') {
-            searchParams.set('provider', provider);
-          }
-          
           // Add method filter
           if (method && method !== '') {
             searchParams.set('method', method);
@@ -1428,6 +1358,7 @@ function setupNavigationHandlers() {
           const biomarkerInput = document.querySelector('.biomarker-search-input');
           const isTestosteroneOnly = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-only') === 'true';
           const isTestosteroneFullHormone = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone') === 'true';
+          const isTestosteroneFullHormoneOnly = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-only') === 'true';
           const isTestosteroneFullHormoneGeneralHealth = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-general-health') === 'true';
           
           // Combine biomarkers if both are selected
@@ -1437,11 +1368,16 @@ function setupNavigationHandlers() {
           
           if (isTestosteroneFullHormone) {
             // For testosterone full hormone profile, we need to pass the required biomarkers
-            searchParams.set('biomarkers', 'Testosterone,Oestradiol,Free testosterone,SHBG');
+            searchParams.set('biomarkers', 'Testosterone,Free testosterone,SHBG');
             searchParams.set('testosteroneFullHormone', 'true');
+          } else if (isTestosteroneFullHormoneOnly) {
+            // For male hormone check only, pass the required biomarkers and set the special parameter
+            searchParams.set('biomarkers', 'Testosterone,Free testosterone,SHBG');
+            searchParams.set('testosteroneFullHormoneOnly', 'true');
           } else if (isTestosteroneFullHormoneGeneralHealth) {
-            // For testosterone full hormone profile + related general health tests, pass the biomarkers like regular search
-            searchParams.set('biomarkers', 'Testosterone,Oestradiol,Free testosterone,SHBG');
+            // For testosterone full hormone profile + related general health tests, pass the biomarkers and set the special parameter
+            searchParams.set('biomarkers', 'Testosterone,Free testosterone,SHBG');
+            searchParams.set('testosteroneFullHormoneGeneralHealth', 'true');
           } else if (biomarkers.length > 0) {
             searchParams.set('biomarkers', biomarkers.join(','));
           }
@@ -1463,12 +1399,11 @@ function setupNavigationHandlers() {
           // Get form values from the new form structure
           const minPrice = document.querySelector('.dropdown-select-1')?.value;
           const maxPrice = document.querySelector('.dropdown-select-2')?.value;
-          const provider = document.querySelector('.dropdown-select-3')?.value;
           const method = document.querySelector('.dropdown-select-4')?.value;
           const biomarker1 = document.querySelector('.biomarker-search-input')?.value;
           const biomarker2 = document.querySelector('.biomarker-search-input-2')?.value;
           
-          console.log('Form values:', { minPrice, maxPrice, provider, method, biomarker1, biomarker2 });
+          console.log('Form values:', { minPrice, maxPrice, method, biomarker1, biomarker2 });
           
           // Clear previous validation errors
           clearValidationErrors();
@@ -1484,11 +1419,6 @@ function setupNavigationHandlers() {
             searchParams.set('maxPrice', maxPrice);
           }
           
-          // Add provider filter
-          if (provider && provider !== '') {
-            searchParams.set('provider', provider);
-          }
-          
           // Add method filter
           if (method && method !== '') {
             searchParams.set('method', method);
@@ -1498,6 +1428,7 @@ function setupNavigationHandlers() {
           const biomarkerInput = document.querySelector('.biomarker-search-input');
           const isTestosteroneOnly = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-only') === 'true';
           const isTestosteroneFullHormone = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone') === 'true';
+          const isTestosteroneFullHormoneOnly = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-only') === 'true';
           const isTestosteroneFullHormoneGeneralHealth = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-general-health') === 'true';
           
           // Combine biomarkers if both are selected
@@ -1507,12 +1438,16 @@ function setupNavigationHandlers() {
           
           if (isTestosteroneFullHormone) {
             // For testosterone full hormone profile, we need to pass the required biomarkers
-            searchParams.set('biomarkers', 'Testosterone,Oestradiol,Free testosterone,SHBG');
+            searchParams.set('biomarkers', 'Testosterone,Free testosterone,SHBG');
             searchParams.set('testosteroneFullHormone', 'true');
-
+          } else if (isTestosteroneFullHormoneOnly) {
+            // For male hormone check only, pass the required biomarkers and set the special parameter
+            searchParams.set('biomarkers', 'Testosterone,Free testosterone,SHBG');
+            searchParams.set('testosteroneFullHormoneOnly', 'true');
           } else if (isTestosteroneFullHormoneGeneralHealth) {
-            // For testosterone full hormone profile + related general health tests, pass the biomarkers like regular search
-            searchParams.set('biomarkers', 'Testosterone,Oestradiol,Free testosterone,SHBG');
+            // For testosterone full hormone profile + related general health tests, pass the biomarkers and set the special parameter
+            searchParams.set('biomarkers', 'Testosterone,Free testosterone,SHBG');
+            searchParams.set('testosteroneFullHormoneGeneralHealth', 'true');
           } else if (biomarkers.length > 0) {
             searchParams.set('biomarkers', biomarkers.join(','));
           }
@@ -1567,6 +1502,20 @@ function setupNavigationHandlers() {
             
             console.log('Set testosterone-full-hormone filter (no biomarker value)');
 
+          } else if (selectedValue === 'testosterone-full-hormone-only') {
+            // Set the 3 required biomarkers for male hormone check only
+            if (biomarkerInput) {
+              biomarkerInput.value = 'Testosterone, Free testosterone, SHBG';
+            }
+            
+            // Add a special attribute to indicate this is "male hormone check only"
+            biomarkerInput.setAttribute('data-testosterone-full-hormone-only', 'true');
+            
+            // Update the search count
+            updateDynamicCount();
+            
+            console.log('Set male hormone check only filter with required biomarkers');
+
           } else if (selectedValue === 'testosterone-full-hormone-general-health') {
             // Don't set any biomarker value, just add the special attribute
             if (biomarkerInput) {
@@ -1587,6 +1536,7 @@ function setupNavigationHandlers() {
             if (biomarkerInput) {
               biomarkerInput.removeAttribute('data-testosterone-only');
               biomarkerInput.removeAttribute('data-testosterone-full-hormone');
+              biomarkerInput.removeAttribute('data-testosterone-full-hormone-only');
             }
             
             // Update the search count
@@ -2036,7 +1986,6 @@ function setupDynamicCountUpdate() {
   // Get form elements
   const minPriceSelect = document.querySelector('.dropdown-select-1');
   const maxPriceSelect = document.querySelector('.dropdown-select-2');
-  const providerSelect = document.querySelector('.dropdown-select-3');
   const methodSelect = document.querySelector('.dropdown-select-4');
   const biomarkerInput1 = document.querySelector('.biomarker-search-input');
   const biomarkerInput2 = document.querySelector('.biomarker-search-input-2');
@@ -2055,14 +2004,7 @@ function setupDynamicCountUpdate() {
     });
   }
   
-  // Add event listeners to provider and method dropdowns (update count AND other dropdowns)
-  if (providerSelect) {
-    providerSelect.addEventListener('change', async () => {
-      console.log('🔧 Provider dropdown changed to:', providerSelect.value);
-      await updateDynamicCount();
-      await updateDropdownsBasedOnSelections();
-    });
-  }
+  // Add event listener to method dropdown (update count AND other dropdowns)
   if (methodSelect) {
     methodSelect.addEventListener('change', async () => {
       console.log('🔧 Method dropdown changed to:', methodSelect.value);
@@ -2119,49 +2061,22 @@ async function updateDynamicCount() {
   // Get current form values
   const minPrice = document.querySelector('.dropdown-select-1')?.value;
   const maxPrice = document.querySelector('.dropdown-select-2')?.value;
-  const provider = document.querySelector('.dropdown-select-3')?.value;
   const method = document.querySelector('.dropdown-select-4')?.value;
   const biomarker1 = document.querySelector('.biomarker-search-input')?.value;
   const biomarker2 = document.querySelector('.biomarker-search-input-2')?.value;
   
-  console.log('🔧 Current form values:', { minPrice, maxPrice, provider, method, biomarker1, biomarker2 });
+  console.log('🔧 Current form values:', { minPrice, maxPrice, method, biomarker1, biomarker2 });
   
   try {
-    // Start with all tests in the men's health category
-    let testCount = await getMensHealthTestCount();
-    console.log('Initial test count:', testCount);
-    
-    // Apply filters one by one and get updated counts
-    if (minPrice && minPrice !== '') {
-      const minPriceValue = parseFloat(minPrice.replace('£', ''));
-      testCount = await getMinPriceTestCount(minPriceValue);
-      console.log('After min price filter:', testCount);
-    }
-    
-    if (maxPrice && maxPrice !== '') {
-      const maxPriceValue = parseFloat(maxPrice.replace('£', ''));
-      testCount = await getMaxPriceTestCount(maxPriceValue);
-      console.log('After max price filter:', testCount);
-    }
-    
-    if (provider && provider !== '') {
-      // Get provider-specific count
-      testCount = await getProviderTestCount(provider);
-      console.log('After provider filter:', testCount);
-    }
-    
-    if (method && method !== '') {
-      // Get method-specific count
-      testCount = await getMethodTestCount(method);
-      console.log('After method filter:', testCount);
-    }
-    
-    // Check for special testosterone options first
+    // Check for special testosterone options first - these should override the initial count
     const biomarkerInput = document.querySelector('.biomarker-search-input');
     const isTestosteroneOnly = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-only') === 'true';
     const isTestosteroneFullHormone = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone') === 'true';
+    const isTestosteroneFullHormoneOnly = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-only') === 'true';
     const isTestosteroneFullHormoneGeneralHealth = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-general-health') === 'true';
     console.log('🔧 updateDynamicCount: isTestosteroneFullHormoneGeneralHealth =', isTestosteroneFullHormoneGeneralHealth);
+    
+    let testCount;
     
     if (isTestosteroneOnly && biomarker1 === 'Testosterone') {
       // Get testosterone-only count (tests that contain ONLY testosterone)
@@ -2171,13 +2086,39 @@ async function updateDynamicCount() {
       // Get testosterone full hormone profile count
       testCount = await getTestosteroneFullHormoneTestCount();
       console.log('After testosterone-full-hormone filter:', testCount);
-
+    } else if (isTestosteroneFullHormoneOnly) {
+      // Get male hormone check only count (tests with required biomarkers AND 10 or fewer total biomarkers)
+      testCount = await getMaleHormoneCheckOnlyCount();
+      console.log('After male hormone check only filter:', testCount);
     } else if (isTestosteroneFullHormoneGeneralHealth) {
       console.log('🔧 updateDynamicCount: Processing testosterone-full-hormone-general-health option');
       // Get testosterone full hormone profile + related general health tests count (same as regular biomarker search)
-      testCount = await getBiomarkerTestCount(['Testosterone', 'Oestradiol', 'Free testosterone', 'SHBG']);
+      testCount = await getBiomarkerTestCount(['Testosterone', 'Free testosterone', 'SHBG']);
       console.log('After testosterone-full-hormone-general-health filter:', testCount);
     } else {
+      // Start with all tests in the men's health category for regular filtering
+      testCount = await getMensHealthTestCount();
+      console.log('Initial test count:', testCount);
+      
+      // Apply filters one by one and get updated counts
+      if (minPrice && minPrice !== '') {
+        const minPriceValue = parseFloat(minPrice.replace('£', ''));
+        testCount = await getMinPriceTestCount(minPriceValue);
+        console.log('After min price filter:', testCount);
+      }
+      
+      if (maxPrice && maxPrice !== '') {
+        const maxPriceValue = parseFloat(maxPrice.replace('£', ''));
+        testCount = await getMaxPriceTestCount(maxPriceValue);
+        console.log('After max price filter:', testCount);
+      }
+      
+      if (method && method !== '') {
+        // Get method-specific count
+        testCount = await getMethodTestCount(method);
+        console.log('After method filter:', testCount);
+      }
+      
       // Apply regular biomarker filtering
       const selectedBiomarkers = [];
       if (biomarker1 && biomarker1 !== '') {
@@ -2334,10 +2275,9 @@ async function getTestosteroneOnlyTestCount() {
 // Get test count for testosterone full hormone profile tests
 async function getTestosteroneFullHormoneTestCount() {
   try {
-    console.log('🔍 Getting testosterone full hormone profile test count...');
+    console.log('🔍 Getting male hormone check test count...');
     
-    // Define the required biomarkers for full hormone profile
-    const requiredBiomarkers = ['Testosterone', 'Oestradiol', 'Free testosterone', 'SHBG'];
+
     
     // Get tests in men's health category (same approach as search results page)
     const { data: linkRows, error: linkError } = await supabase
@@ -2453,90 +2393,147 @@ async function getTestosteroneFullHormoneTestCount() {
       console.log(`🔍 Test ${test.id} (${test.name}): enriched with ${biomarkerNames.length} biomarkers: ${biomarkerNames}`);
     });
     
-    // Count tests that have the required biomarkers and 9 or fewer total biomarkers
-    const fullHormoneProfileTests = tests.filter(test => {
-      const biomarkerNames = test.biomarker_names || [];
+    // Count tests that have the required biomarkers WITHOUT the ≤10 biomarker restriction
+    // This is for "Male hormone check + general health check" - should show ALL tests with required biomarkers
+    console.log('🔍 Filtering tests for required biomarkers (no biomarker count restrictions)');
+    
+    const maleHormoneCheckTests = tests.filter(test => {
+      const testBiomarkerNames = test.biomarker_names || [];
+      const requiredBiomarkers = ['Testosterone', 'Free testosterone', 'SHBG'];
       
-      // Check if the test has 9 or fewer biomarkers total
-      const hasNineOrFewerBiomarkers = biomarkerNames.length <= 9;
+      const hasAllRequiredBiomarkers = requiredBiomarkers.every(requiredBiomarker => {
+        return testBiomarkerNames.some(testBiomarker => {
+          if (!testBiomarker) return false;
+          const normalizedTest = testBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
+          const normalizedRequired = requiredBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
+          
+          // More precise matching to avoid false positives (same logic as search results page)
+          if (normalizedRequired === 'testosterone') {
+            // For "Testosterone", require exact match or starts with "testosterone"
+            return normalizedTest === 'testosterone' || normalizedTest.startsWith('testosterone');
+          } else if (normalizedRequired === 'free testosterone') {
+            // For "Free testosterone", require exact match or starts with "free testosterone"
+            return normalizedTest === 'free testosterone' || normalizedTest.startsWith('free testosterone');
+          } else if (normalizedRequired === 'shbg') {
+            // For "SHBG", require exact match
+            return normalizedTest === 'shbg';
+          }
+          return false;
+        });
+      });
       
-      // Check if the test has ALL the required biomarkers
-      const hasAllRequiredBiomarkers = requiredBiomarkers.every(requiredBiomarker => 
-        biomarkerNames.some(name => 
-          name && name.toLowerCase().includes(requiredBiomarker.toLowerCase())
-        )
-      );
-      
-      const isFullHormoneProfile = hasNineOrFewerBiomarkers && hasAllRequiredBiomarkers;
-      
-      console.log(`🔍 Test ${test.id} (${test.name}): biomarkers=${biomarkerNames.length}, biomarkers=${biomarkerNames}, hasAllRequired=${hasAllRequiredBiomarkers}, isFullHormoneProfile=${isFullHormoneProfile}`);
-      
-      if (isFullHormoneProfile) {
-        console.log(`✅ INCLUDED: Test "${test.name}" (ID: ${test.id})`);
+      if (hasAllRequiredBiomarkers) {
+        console.log(`✅ INCLUDED: Test "${test.name}" (ID: ${test.id}) - has required biomarkers (${testBiomarkerNames.length} total biomarkers)`);
       } else {
-        console.log(`❌ EXCLUDED: Test "${test.name}" (ID: ${test.id}) - hasAllRequired: ${hasAllRequiredBiomarkers}, hasNineOrFewer: ${hasNineOrFewerBiomarkers}`);
+        console.log(`❌ EXCLUDED: Test "${test.name}" (ID: ${test.id}) - missing required biomarkers`);
       }
       
-      return isFullHormoneProfile;
+      return hasAllRequiredBiomarkers;
     });
     
-    console.log('🔍 Testosterone full hormone profile tests found:', fullHormoneProfileTests.length);
-    console.log('🔍 Testosterone full hormone profile test names:', fullHormoneProfileTests.map(t => t.name));
-    return fullHormoneProfileTests.length;
+    console.log('🔍 Male hormone check tests found:', maleHormoneCheckTests.length);
+    console.log('🔍 Male hormone check test names:', maleHormoneCheckTests.map(t => t.name));
+    return maleHormoneCheckTests.length;
     
   } catch (error) {
-    console.error('Error getting testosterone full hormone profile test count:', error);
+    console.error('Error getting male hormone check test count:', error);
     return 0;
   }
 }
 
-
-
-// Get test count for a specific provider
-async function getProviderTestCount(providerName) {
+// Get test count for male hormone check only (tests with required biomarkers AND 10 or fewer total biomarkers)
+async function getMaleHormoneCheckOnlyCount() {
   try {
-    // Get provider ID
-    const { data: providerData, error: providerError } = await supabase
-      .from('providers')
-      .select('id')
-      .eq('name', providerName)
-      .single();
+    console.log('🔍 Getting male hormone check only test count...');
     
-    if (providerError || !providerData) {
-      console.error('Error fetching provider:', providerError);
-      return 0;
-    }
-    
-    // Get tests for this provider in men's health category
-    const { data: linkData, error: linkError } = await supabase
+    // Get tests in men's health category
+    const { data: linkRows, error: linkError } = await supabase
       .from('blood_test_category_link_table')
       .select('provider_blood_test_id')
       .eq('blood_test_category_id', 3);
     
     if (linkError) {
-      console.error('Error fetching category links:', linkError);
+      console.error('Error fetching link rows:', linkError);
       return 0;
     }
     
-    const testIds = linkData.map(row => row.provider_blood_test_id);
+    const testIds = linkRows.map(row => row.provider_blood_test_id);
+    console.log('🔍 Total test IDs in men\'s health category:', testIds.length);
     
     if (testIds.length === 0) return 0;
     
-    // Count tests for this provider
-    const { count, error: countError } = await supabase
-      .from('provider_blood_tests')
-      .select('*', { count: 'exact', head: true })
-      .eq('provider_id', providerData.id)
-      .in('id', testIds);
+    // Get biomarker IDs for the required biomarkers
+    const { data: biomarkerData, error: biomarkerError } = await supabase
+      .from('biomarkers')
+      .select('id')
+      .in('name', ['Testosterone', 'Free testosterone', 'SHBG']);
     
-    if (countError) {
-      console.error('Error counting provider tests:', countError);
+    if (biomarkerError || !biomarkerData || biomarkerData.length === 0) {
+      console.error('Error fetching required biomarkers:', biomarkerError);
       return 0;
     }
     
-    return count || 0;
+    const requiredBiomarkerIds = biomarkerData.map(b => b.id);
+    console.log('🔍 Required biomarker IDs:', requiredBiomarkerIds);
+    
+    // Get tests that contain ALL the required biomarkers
+    const { data: biomarkerLinks, error: biomarkerLinkError } = await supabase
+      .from('biomarker_link_table')
+      .select('provider_blood_test_id')
+      .in('biomarker_id', requiredBiomarkerIds)
+      .in('provider_blood_test_id', testIds);
+    
+    if (biomarkerLinkError) {
+      console.error('Error fetching biomarker links:', biomarkerLinkError);
+      return 0;
+    }
+    
+    // Group by test ID and count how many required biomarkers each test has
+    const testBiomarkerCounts = {};
+    biomarkerLinks.forEach(link => {
+      const testId = link.provider_blood_test_id;
+      testBiomarkerCounts[testId] = (testBiomarkerCounts[testId] || 0) + 1;
+    });
+    
+    // Get test IDs that have ALL the required biomarkers
+    const testsWithAllRequiredBiomarkers = Object.entries(testBiomarkerCounts)
+      .filter(([testId, count]) => count === requiredBiomarkerIds.length)
+      .map(([testId]) => testId);
+    
+    console.log('🔍 Tests with all required biomarkers:', testsWithAllRequiredBiomarkers.length);
+    
+    if (testsWithAllRequiredBiomarkers.length === 0) return 0;
+    
+    // Now get the total biomarker count for each of these tests
+    const { data: totalBiomarkerLinks, error: totalBiomarkerError } = await supabase
+      .from('biomarker_link_table')
+      .select('provider_blood_test_id')
+      .in('provider_blood_test_id', testsWithAllRequiredBiomarkers);
+    
+    if (totalBiomarkerError) {
+      console.error('Error fetching total biomarker links:', totalBiomarkerError);
+      return 0;
+    }
+    
+    // Count total biomarkers per test
+    const testTotalBiomarkerCounts = {};
+    totalBiomarkerLinks.forEach(link => {
+      const testId = link.provider_blood_test_id;
+      testTotalBiomarkerCounts[testId] = (testTotalBiomarkerCounts[testId] || 0) + 1;
+    });
+    
+    // Filter tests to only include those with 10 or fewer total biomarkers
+    const testsWithLimitedBiomarkers = Object.entries(testTotalBiomarkerCounts)
+      .filter(([testId, count]) => count <= 10)
+      .map(([testId]) => testId);
+    
+    console.log('🔍 Tests with 10 or fewer total biomarkers:', testsWithLimitedBiomarkers.length);
+    console.log('🔍 Sample test total biomarker counts:', Object.entries(testTotalBiomarkerCounts).slice(0, 5));
+    
+    return testsWithLimitedBiomarkers.length;
+    
   } catch (error) {
-    console.error('Error in getProviderTestCount:', error);
+    console.error('Error getting male hormone check only test count:', error);
     return 0;
   }
 }
@@ -2591,53 +2588,7 @@ async function getMethodTestCount(methodName) {
 }
 
 // Get test IDs for a specific provider in men's health category
-async function getProviderTestIds(providerName) {
-  try {
-    // Get provider ID
-    const { data: providerData, error: providerError } = await supabase
-      .from('providers')
-      .select('id')
-      .eq('name', providerName)
-      .single();
-    
-    if (providerError || !providerData) {
-      console.error('Error fetching provider:', providerError);
-      return [];
-    }
-    
-    // Get tests in men's health category
-    const { data: categoryLinks, error: categoryError } = await supabase
-      .from('blood_test_category_link_table')
-      .select('provider_blood_test_id')
-      .eq('blood_test_category_id', 3);
-    
-    if (categoryError) {
-      console.error('Error fetching category links:', categoryError);
-      return [];
-    }
-    
-    const categoryTestIds = categoryLinks.map(row => row.provider_blood_test_id);
-    
-    if (categoryTestIds.length === 0) return [];
-    
-    // Get tests for this provider
-    const { data: providerTests, error: providerTestError } = await supabase
-      .from('provider_blood_tests')
-      .select('id')
-      .eq('provider_id', providerData.id)
-      .in('id', categoryTestIds);
-    
-    if (providerTestError || !providerTests) {
-      console.error('Error fetching provider tests:', providerTestError);
-      return [];
-    }
-    
-    return providerTests.map(test => test.id);
-  } catch (error) {
-    console.error('Error in getProviderTestIds:', error);
-    return [];
-  }
-}
+
 
 // Get test IDs for a specific method in men's health category
 async function getMethodTestIds(methodName) {
@@ -2713,23 +2664,15 @@ async function updateDropdownsBasedOnSelections() {
   console.log('🔧 updateDropdownsBasedOnSelections called');
   
   // Get current selections
-  const provider = document.querySelector('.dropdown-select-3')?.value;
   const method = document.querySelector('.dropdown-select-4')?.value;
   const minPrice = document.querySelector('.dropdown-select-1')?.value;
   const maxPrice = document.querySelector('.dropdown-select-2')?.value;
   
-  console.log('🔧 Current selections - Provider:', provider, 'Method:', method, 'MinPrice:', minPrice, 'MaxPrice:', maxPrice);
+  console.log('🔧 Current selections - Method:', method, 'MinPrice:', minPrice, 'MaxPrice:', maxPrice);
   
   try {
-    // Update price dropdowns based on provider/method selections (not price selections)
-    if (provider && provider !== '') {
-      console.log('🔧 Updating price dropdowns for provider:', provider);
-      // Get test IDs for this provider only
-      const providerTestIds = await getProviderTestIds(provider);
-      if (providerTestIds.length > 0) {
-        await updatePriceDropdownsForTests(providerTestIds);
-      }
-    } else if (method && method !== '') {
+    // Update price dropdowns based on method selections (not price selections)
+    if (method && method !== '') {
       console.log('🔧 Updating price dropdowns for method:', method);
       // Get test IDs for this method only
       const methodTestIds = await getMethodTestIds(method);
@@ -2738,29 +2681,11 @@ async function updateDropdownsBasedOnSelections() {
       }
     } else {
       console.log('🔧 Updating price dropdowns for all tests');
-      // No provider or method selected, use all tests
+      // No method selected, use all tests
       const allTestIds = await getAllTestIds();
       if (allTestIds.length > 0) {
         await updatePriceDropdownsForTests(allTestIds);
       }
-    }
-    
-    // Update method dropdown
-    if (provider && provider !== '') {
-      console.log('🔧 Updating method dropdown for provider:', provider);
-      await updateMethodDropdownForProvider(provider);
-    } else {
-      console.log('🔧 No provider selected - keeping method dropdown as is');
-      // Don't reset method dropdown when no provider is selected
-    }
-    
-    // Update provider dropdown (if method is selected, show only providers with that method)
-    if (method && method !== '') {
-      console.log('🔧 Updating provider dropdown for method:', method);
-      await updateProviderDropdownForMethod(method);
-    } else {
-      console.log('🔧 No method selected - keeping provider dropdown as is');
-      // Don't reset provider dropdown when no method is selected
     }
     
   } catch (error) {
@@ -2769,7 +2694,7 @@ async function updateDropdownsBasedOnSelections() {
 }
 
 // Get filtered test IDs based on current selections
-async function getFilteredTestIds(provider, method, minPrice, maxPrice) {
+async function getFilteredTestIds(method, minPrice, maxPrice) {
   try {
     // Start with all tests in men's health category
     const { data: categoryLinks, error: categoryError } = await supabase
@@ -2783,27 +2708,6 @@ async function getFilteredTestIds(provider, method, minPrice, maxPrice) {
     }
     
     let testIds = categoryLinks.map(row => row.provider_blood_test_id);
-    
-    // Apply provider filter
-    if (provider && provider !== '') {
-      const { data: providerData, error: providerError } = await supabase
-        .from('providers')
-        .select('id')
-        .eq('name', provider)
-        .single();
-      
-      if (!providerError && providerData) {
-        const { data: providerTests, error: providerTestError } = await supabase
-          .from('provider_blood_tests')
-          .select('id')
-          .eq('provider_id', providerData.id)
-          .in('id', testIds);
-        
-        if (!providerTestError && providerTests) {
-          testIds = providerTests.map(test => test.id);
-        }
-      }
-    }
     
     // Apply method filter
     if (method && method !== '') {
