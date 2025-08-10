@@ -1142,21 +1142,21 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
         // Check if filtered tests are provided directly (for price/provider filtering)
         if (filterState.filteredTests) {
           
-                      // Re-enrich the filtered tests with biomarker data
-            const testIds = filterState.filteredTests.map(t => t.id);
-            
-            // Fetch biomarker data for these specific tests
+          // Re-enrich the filtered tests with biomarker data
+          const testIds = filterState.filteredTests.map(t => t.id);
+          
+          // Fetch biomarker data for these specific tests
           const enriched = await fetchAndEnrichTests({ categoryId: 3 }); // Fetch all tests in category
           const enrichedMap = new Map(enriched.map(t => [t.id, t]));
           
           // Replace the filtered tests with their enriched versions
           const reEnrichedTests = filterState.filteredTests.map(test => {
-                          const enrichedTest = enrichedMap.get(test.id);
-              if (enrichedTest) {
-                // Test re-enriched successfully
-              } else {
-                // No enriched data found for this test
-              }
+            const enrichedTest = enrichedMap.get(test.id);
+            if (enrichedTest) {
+              // Test re-enriched successfully
+            } else {
+              // No enriched data found for this test
+            }
             return enrichedTest || test; // Fallback to original if not found
           });
           
@@ -1187,9 +1187,8 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
         // For now, handle multiple categories by fetching each one and combining results
         let allEnrichedTests = [];
         
-
-        
         if (selectedCategories.length > 0) {
+          // Fetch tests from categories - fetchAndEnrichTests will handle TRT monitoring filtering
           for (const category of selectedCategories) {
             const enriched = await fetchAndEnrichTests({ 
               category: category,
@@ -1226,12 +1225,20 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
         
         // Apply biomarker filtering if biomarkers are selected
         if (selectedBiomarkers.length > 0) {
-          console.log('Applying biomarker filter to', allEnrichedTests.length, 'tests');
-          console.log('Looking for biomarkers:', selectedBiomarkers);
+          console.log('🔍 SEARCH RESULTS: Applying biomarker filter to', allEnrichedTests.length, 'tests');
+          console.log('🔍 SEARCH RESULTS: Looking for biomarkers:', selectedBiomarkers);
+          
+          // Log all tests before filtering
+          console.log('🔍 SEARCH RESULTS: All tests before biomarker filtering:', allEnrichedTests.map(t => ({
+            id: t.id,
+            name: t.name,
+            provider: t.provider?.name,
+            biomarker_names: t.biomarker_names || []
+          })));
           
           allEnrichedTests = allEnrichedTests.filter(test => {
             const testBiomarkers = test.biomarker_names || [];
-            console.log(`Test "${test.name}" has biomarkers:`, testBiomarkers);
+            console.log(`🔍 SEARCH RESULTS: Test "${test.name}" has biomarkers:`, testBiomarkers);
             
             const hasAllBiomarkers = selectedBiomarkers.every(searchBiomarker => {
               // Normalize the search biomarker (replace + with space, lowercase)
@@ -1247,18 +1254,27 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
               });
               
               if (!hasMatch) {
-                console.log(`  Missing biomarker: "${searchBiomarker}" (normalized: "${normalizedSearch}")`);
-                console.log(`  Available test biomarkers:`, testBiomarkers.map(b => b.toLowerCase().replace(/\+/g, ' ').trim()));
+                console.log(`  🔍 SEARCH RESULTS: Missing biomarker: "${searchBiomarker}" (normalized: "${normalizedSearch}")`);
+                console.log(`  🔍 SEARCH RESULTS: Available test biomarkers:`, testBiomarkers.map(b => b.toLowerCase().replace(/\+/g, ' ').trim()));
               }
               return hasMatch;
             });
             
             if (!hasAllBiomarkers) {
-              console.log(`Filtering out test "${test.name}" - missing biomarkers. Test has:`, testBiomarkers, 'Looking for:', selectedBiomarkers);
+              console.log(`🔍 SEARCH RESULTS: Filtering out test "${test.name}" - missing biomarkers. Test has:`, testBiomarkers, 'Looking for:', selectedBiomarkers);
             }
             return hasAllBiomarkers;
           });
-          console.log('After biomarker filtering:', allEnrichedTests.length, 'tests remaining');
+          
+          console.log('🔍 SEARCH RESULTS: After biomarker filtering:', allEnrichedTests.length, 'tests remaining');
+          
+          // Log the exact tests that passed the biomarker filter
+          console.log('🔍 SEARCH RESULTS: Tests that passed biomarker filter:', allEnrichedTests.map(t => ({
+            id: t.id,
+            name: t.name,
+            provider: t.provider?.name,
+            biomarker_names: t.biomarker_names || []
+          })));
         }
         
         // Apply blood taking method filtering if methods are selected
@@ -1288,7 +1304,13 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
         
         const enriched = allEnrichedTests;
         
-        console.log('Final enriched tests:', enriched.length);
+        console.log('🔍 SEARCH RESULTS: Final enriched tests:', enriched.length);
+        console.log('🔍 SEARCH RESULTS: Final test details:', enriched.map(t => ({
+          id: t.id,
+          name: t.name,
+          provider: t.provider?.name,
+          biomarker_names: t.biomarker_names || []
+        })));
         
         filteredTests = enriched;
         sortAscending = true;
@@ -1550,6 +1572,19 @@ async function fetchAndEnrichTests({ category = null, categoryId = null, provide
         name: t.name,
         provider: t.provider?.name
       })));
+      
+      // Check if this is a TRT monitoring search and apply the filter
+      const hash = window.location.hash;
+      const trtMonitoringMatch = hash.match(/[?&]trtMonitoring=([^&]+)/);
+      const isTRTMonitoring = trtMonitoringMatch && decodeURIComponent(trtMonitoringMatch[1]) === 'true';
+      
+      if (isTRTMonitoring) {
+        console.log('TRT monitoring search detected in fetchAndEnrichTests - applying TRT monitoring filter');
+        const trtMonitoringTestIds = [44, 52, 409, 20, 411, 405, 418, 413, 417, 407];
+        const beforeTRTFilter = tests.length;
+        tests = tests.filter(test => trtMonitoringTestIds.includes(test.id));
+        console.log(`Filtered from ${beforeTRTFilter} to ${tests.length} tests after TRT monitoring filter in fetchAndEnrichTests`);
+      }
       
       // Debug: Check if problematic tests are in the initial fetch
       const problematicTestNames = ['Testosterone Check', 'Testosterone Plus Profile', 'Well Man Premier Plus Profile', 'Sports Hormone Profile'];
@@ -1838,9 +1873,99 @@ async function fetchAndEnrichTests({ category = null, categoryId = null, provide
   return tests;
 }
 
+// Function to initialize filter panel with search parameters
+async function initializeFilterPanelWithParameters(searchParams) {
+  try {
+    console.log('🔍 Initializing filter panel with parameters:', searchParams);
+    
+    // Wait for the filter panel to be fully rendered
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    const filterPanel = document.querySelector('.filter-panel-content');
+    if (!filterPanel) {
+      console.log('🔍 Filter panel not found, waiting...');
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return;
+    }
+    
+    // Set method selection if specified
+    if (searchParams.method) {
+      const methodCheckboxes = filterPanel.querySelectorAll('input[name="blood-method"]');
+      methodCheckboxes.forEach(checkbox => {
+        if (checkbox.value === searchParams.method) {
+          checkbox.checked = true;
+          console.log('🔍 Set method checkbox:', searchParams.method);
+        } else {
+          checkbox.checked = false;
+        }
+      });
+    }
+    
+    // Set price range if specified
+    if (searchParams.minPrice || searchParams.maxPrice) {
+      const priceMinSlider = filterPanel.querySelector('#price-min');
+      const priceMaxSlider = filterPanel.querySelector('#price-max');
+      const priceMinValue = filterPanel.querySelector('#price-min-value');
+      const priceMaxValue = filterPanel.querySelector('#price-max-value');
+      
+      if (priceMinSlider && searchParams.minPrice) {
+        const minPrice = parseFloat(searchParams.minPrice.replace('£', ''));
+        priceMinSlider.value = minPrice;
+        if (priceMinValue) priceMinValue.textContent = `£${minPrice}`;
+        console.log('🔍 Set min price:', minPrice);
+      }
+      
+      if (priceMaxSlider && searchParams.maxPrice) {
+        const maxPrice = parseFloat(searchParams.maxPrice.replace('£', ''));
+        priceMaxSlider.value = maxPrice;
+        if (priceMaxValue) priceMaxValue.textContent = `£${maxPrice}`;
+        console.log('🔍 Set max price:', maxPrice);
+      }
+    }
+    
+    // Update filter tags to reflect the applied filters
+    const filterTagsContainer = document.querySelector('.filter-tags');
+    if (filterTagsContainer) {
+      // Trigger a filter update to refresh the display
+      const filterCallback = window._filterCallback;
+      if (filterCallback) {
+        console.log('🔍 Triggering filter update to refresh display');
+        await filterCallback({
+          priceRange: {
+            min: searchParams.minPrice ? parseFloat(searchParams.minPrice.replace('£', '')) : null,
+            max: searchParams.maxPrice ? parseFloat(searchParams.maxPrice.replace('£', '')) : null
+          },
+          bloodTakingMethods: searchParams.method ? [searchParams.method] : [],
+          biomarkers: searchParams.biomarkers || []
+        });
+      }
+    }
+    
+    console.log('🔍 Filter panel initialization complete');
+  } catch (error) {
+    console.error('🔍 Error initializing filter panel with parameters:', error);
+  }
+}
+
 // Export the main function
 export async function displayGeneralHealthPage(skipFilterPanel = false) {
   try {
+    // --- Check localStorage for "Let me pick" search parameters ---
+    console.log('🔍 Checking localStorage for search parameters...');
+    const storedBiomarker1 = localStorage.getItem('selectedBiomarker1');
+    const storedBiomarker2 = localStorage.getItem('selectedBiomarker2');
+    const storedMinPrice = localStorage.getItem('selectedMinPrice');
+    const storedMaxPrice = localStorage.getItem('selectedMaxPrice');
+    const storedMethod = localStorage.getItem('selectedMethod');
+    
+    console.log('📦 Stored parameters from localStorage:', {
+      biomarker1: storedBiomarker1,
+      biomarker2: storedBiomarker2,
+      minPrice: storedMinPrice,
+      maxPrice: storedMaxPrice,
+      method: storedMethod
+    });
+    
     // --- Parse URL parameters from hash ---
     const hash = window.location.hash;
     let selectedBiomarkers = [];
@@ -1885,6 +2010,39 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
       console.log('Selected method from URL:', selectedMethod);
     }
     
+    // --- Use localStorage parameters if no URL parameters found ---
+    if (selectedBiomarkers.length === 0 && (storedBiomarker1 || storedBiomarker2)) {
+      console.log('🔄 No URL biomarkers found, using localStorage biomarkers');
+      if (storedBiomarker1) selectedBiomarkers.push(storedBiomarker1);
+      if (storedBiomarker2) selectedBiomarkers.push(storedBiomarker2);
+      console.log('✅ Updated selectedBiomarkers from localStorage:', selectedBiomarkers);
+    }
+    
+    if (!selectedMinPrice && storedMinPrice) {
+      console.log('🔄 No URL minPrice found, using localStorage minPrice');
+      selectedMinPrice = storedMinPrice;
+      console.log('✅ Updated selectedMinPrice from localStorage:', selectedMinPrice);
+    }
+    
+    if (!selectedMaxPrice && storedMaxPrice) {
+      console.log('🔄 No URL maxPrice found, using localStorage maxPrice');
+      selectedMaxPrice = storedMaxPrice;
+      console.log('✅ Updated selectedMaxPrice from localStorage:', selectedMaxPrice);
+    }
+    
+    if (!selectedMethod && storedMethod) {
+      console.log('🔄 No URL method found, using localStorage method');
+      selectedMethod = storedMethod;
+      console.log('✅ Updated selectedMethod from localStorage:', selectedMinPrice);
+    }
+    
+    console.log('🎯 Final selected parameters:', {
+      biomarkers: selectedBiomarkers,
+      minPrice: selectedMinPrice,
+      maxPrice: selectedMaxPrice,
+      method: selectedMethod
+    });
+    
     // Check if filters should be opened
     const openFiltersMatch = hash.match(/[?&]openFilters=([^&]+)/);
     const shouldOpenFilters = openFiltersMatch && decodeURIComponent(openFiltersMatch[1]) === 'true';
@@ -1910,9 +2068,20 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     const isTestosteroneFullHormoneGeneralHealth = testosteroneFullHormoneGeneralHealthMatch && decodeURIComponent(testosteroneFullHormoneGeneralHealthMatch[1]) === 'true';
     console.log('Is male hormone check + general health check search:', isTestosteroneFullHormoneGeneralHealth);
     
-
+    // Check if this is a TRT monitoring search
+    const trtMonitoringMatch = hash.match(/[?&]trtMonitoring=([^&]+)/);
+    const isTRTMonitoring = trtMonitoringMatch && decodeURIComponent(trtMonitoringMatch[1]) === 'true';
+    console.log('Is TRT monitoring search:', isTRTMonitoring);
     
-
+    // Store the final parameters for filter panel initialization
+    window._searchParameters = {
+      biomarkers: selectedBiomarkers,
+      minPrice: selectedMinPrice,
+      maxPrice: selectedMaxPrice,
+      method: selectedMethod,
+      shouldOpenFilters: shouldOpenFilters
+    };
+    
     // --- Fetch and enrich tests ---
     let tests;
     // Always fetch from men's health and hormones category (ID 3)
@@ -2020,6 +2189,20 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
           });
           console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after male hormone check + general health check filtering`);
           beforeFilter = tests.length;
+        } else if (isTRTMonitoring) {
+          console.log('Applying TRT monitoring filter (specific hardcoded tests)');
+          
+          // For TRT monitoring, filter to only show the specific hardcoded test IDs
+          const trtMonitoringTestIds = [44, 52, 409, 20, 411, 405, 418, 413, 417, 407];
+          tests = tests.filter(test => {
+            const isTRTTest = trtMonitoringTestIds.includes(test.id);
+            if (!isTRTTest) {
+              console.log(`Filtering out test "${test.name}" (ID: ${test.id}) - not in TRT monitoring list`);
+            }
+            return isTRTTest;
+          });
+          console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after TRT monitoring filtering`);
+          beforeFilter = tests.length;
         } else {
           // Regular biomarker filtering
         tests = tests.filter(test => {
@@ -2102,8 +2285,14 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
         // Add a custom event listener for when the content is rendered
         document.addEventListener('contentRendered', async () => {
           if (window._allGeneralHealthTests) {
-            // Set up the filter panel properly
+            // Set up the filter panel properly with search parameters
             initializePageElements(window._allGeneralHealthTests, null, false);
+            
+            // Initialize filter panel with search parameters if they exist
+            if (window._searchParameters) {
+              console.log('🔍 Initializing filter panel with search parameters:', window._searchParameters);
+              await initializeFilterPanelWithParameters(window._searchParameters);
+            }
           
           // Open filter panel if requested
           if (shouldOpenFilters) {

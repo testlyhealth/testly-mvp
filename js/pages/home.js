@@ -234,18 +234,20 @@ async function updateMethodDropdown() {
   try {
     const methods = await getMethodsInCategory();
     console.log('Available methods for dropdown:', methods);
-    const methodSelect = document.querySelector('.dropdown-select-4');
+    const methodSelects = document.querySelectorAll('.dropdown-select-4');
     
-    if (methodSelect) {
-      methodSelect.innerHTML = '<option value="">Method</option>';
-      methods.forEach(method => {
-        const option = document.createElement('option');
-        option.value = method.name;
-        option.textContent = `${method.name} (${method.count})`;
-        methodSelect.appendChild(option);
-      });
-      console.log('Method dropdown populated with options:', methodSelect.options.length - 1);
-    }
+    methodSelects.forEach(methodSelect => {
+      if (methodSelect) {
+        methodSelect.innerHTML = '<option value="">Method</option>';
+        methods.forEach(method => {
+          const option = document.createElement('option');
+          option.value = method.name;
+          option.textContent = `${method.name} (${method.count})`;
+          methodSelect.appendChild(option);
+        });
+        console.log('Method dropdown populated with options:', methodSelect.options.length - 1);
+      }
+    });
   } catch (error) {
     console.error('Error updating method dropdown:', error);
   }
@@ -269,42 +271,46 @@ async function updatePriceDropdowns() {
     
     console.log('Generated price options:', priceOptions);
     
-    // Update min price dropdown
-    const minPriceSelect = document.querySelector('.dropdown-select-1');
-    if (minPriceSelect) {
-      console.log('Found min price select element');
-      minPriceSelect.innerHTML = '<option value="">Min price</option>';
-      
-      for (const price of priceOptions) {
-        const count = await getMinPriceTestCount(price);
-        const option = document.createElement('option');
-        option.value = price;
-        option.textContent = `£${price} (${count})`;
-        minPriceSelect.appendChild(option);
-      }
-    } else {
-      console.log('Min price select element not found');
-    }
-    
-    // Update max price dropdown
-    const maxPriceSelect = document.querySelector('.dropdown-select-2');
-    if (maxPriceSelect) {
-      console.log('Found max price select element');
-      maxPriceSelect.innerHTML = '<option value="">Max price</option>';
-      
-      for (const price of priceOptions) {
-        // Skip £0 for max price dropdown
-        if (price === 0) continue;
+    // Update min price dropdowns on both sides
+    const minPriceSelects = document.querySelectorAll('.dropdown-select-1');
+    minPriceSelects.forEach(async (minPriceSelect) => {
+      if (minPriceSelect) {
+        console.log('Found min price select element');
+        minPriceSelect.innerHTML = '<option value="">Min price</option>';
         
-        const count = await getMaxPriceTestCount(price);
-        const option = document.createElement('option');
-        option.value = price;
-        option.textContent = `£${price} (${count})`;
-        maxPriceSelect.appendChild(option);
+        for (const price of priceOptions) {
+          const count = await getMinPriceTestCount(price);
+          const option = document.createElement('option');
+          option.value = price;
+          option.textContent = `£${price} (${count})`;
+          minPriceSelect.appendChild(option);
+        }
+      } else {
+        console.log('Min price select element not found');
       }
-    } else {
-      console.log('Max price select element not found');
-    }
+    });
+    
+    // Update max price dropdowns on both sides
+    const maxPriceSelects = document.querySelectorAll('.dropdown-select-2');
+    maxPriceSelects.forEach(async (maxPriceSelect) => {
+      if (maxPriceSelect) {
+        console.log('Found max price select element');
+        maxPriceSelect.innerHTML = '<option value="">Max price</option>';
+        
+        for (const price of priceOptions) {
+          // Skip £0 for max price dropdown
+          if (price === 0) continue;
+          
+          const count = await getMaxPriceTestCount(price);
+          const option = document.createElement('option');
+          option.value = price;
+          option.textContent = `£${price} (${count})`;
+          maxPriceSelect.appendChild(option);
+        }
+      } else {
+        console.log('Max price select element not found');
+      }
+    });
   } catch (error) {
     console.error('Error updating price dropdowns:', error);
   }
@@ -322,10 +328,21 @@ export function getHomePageContent() {
       <div class="hero-bg-banner"></div>
       <div class="hero-content">
         <h1 class="hero-title">
-          <span style="color: #1E88E5;">Health</span> comparison<br>made simple
+          <div class="hero-title-line">
+            <span class="checkmark">✓</span>
+            <span class="title-word blue">Compare</span>
+          </div>
+          <div class="hero-title-line">
+            <span class="checkmark">✓</span>
+            <span class="title-word">Book</span>
+          </div>
+          <div class="hero-title-line">
+            <span class="checkmark">✓</span>
+            <span class="title-word">Track</span>
+          </div>
         </h1>
         <p class="hero-subtitle">
-          Compare <span style="color: #1E88E5;">testosterone</span> blood tests<br>and clinics
+          <span style="color: #1E88E5;">Health comparison</span> made simple
         </p>
 
         <div class="hero-cta">
@@ -335,29 +352,28 @@ export function getHomePageContent() {
       
       <div class="hero-side-box">
         <div class="side-box-content">
-          <h3>Find your <span style="color: #1E88E5;">testosterone</span> solution</h3>
+          <h3>Find <span style="color: #1E88E5; text-decoration: underline;">testosterone</span> solutions</h3>
                       <div class="search-tabs">
               <div class="tab-toggle">
                 <button class="tab-button active" data-tab="blood-tests">Help me choose</button>
-                <button class="tab-button" data-tab="clinics">Let me pick</button>
+                <button class="tab-button" data-tab="let-me-pick">Let me pick</button>
               </div>
             </div>
-          
-          <!-- Testosterone options dropdown -->
-          <div class="form-group" style="margin: 5px 0 20px 0;">
-            <select class="testosterone-options-select" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
-              <option value="">Choose your testosterone options</option>
-              <option value="browse-all">All</option>
-                            <option value="testosterone-only">Testosterone only</option>
-              <option value="testosterone-full-hormone-only">Male hormone check only (includes testosterone)</option>
-              <option value="testosterone-full-hormone">Male hormone check + general health check</option>
-              <option value="trt-monitoring">TRT monitoring</option>
-            </select>
-          </div>
           
           <div class="search-form">
             <!-- Blood tests form -->
             <div class="form-content blood-tests-form">
+              <!-- Testosterone options dropdown -->
+              <div class="form-group" style="margin: 5px 0 20px 0;">
+                <select class="testosterone-options-select">
+                  <option value="">Choose your testosterone options</option>
+                  <option value="browse-all">All</option>
+                  <option value="testosterone-only">Testosterone only</option>
+                  <option value="testosterone-full-hormone-only">Male hormone check only (includes testosterone)</option>
+                  <option value="testosterone-full-hormone">Male hormone check + general health check</option>
+                  <option value="trt-monitoring">TRT monitoring</option>
+                </select>
+              </div>
               <!-- Method dropdown -->
               <div class="form-group dropdown-row">
                 <div class="dropdown-container">
@@ -391,16 +407,6 @@ export function getHomePageContent() {
                 </div>
               </div>
               
-              <!-- Biomarker search box -->
-              <div class="form-group">
-                <div class="biomarker-search-container">
-                  <input type="text" class="biomarker-search-input" placeholder="Add a biomarker">
-                  <div class="biomarker-dropdown" style="display: none;">
-                    <!-- Results will be populated here -->
-                  </div>
-                </div>
-              </div>
-              
               <button class="search-button">
                 Search <span class="test-count">0</span> tests
                 <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -419,29 +425,68 @@ export function getHomePageContent() {
             
             <!-- Problem form -->
             <div class="form-content problem-form" style="opacity: 0; visibility: hidden; position: absolute;">
+              <!-- Add a biomarker box -->
               <div class="form-group">
-                <label>What's your symptom or health aim?</label>
-                <select class="symptom-select">
-                  <option value="">Choose an option</option>
-                  <!-- Problem options will be loaded from database -->
-                </select>
-              </div>
-              <div class="form-group" style="visibility: hidden;">
-                <label>Placeholder</label>
                 <div class="biomarker-search-container">
-                  <input type="text" placeholder="Placeholder">
+                  <input type="text" class="biomarker-search-input" placeholder="Add a biomarker">
+                  <div class="biomarker-dropdown" style="display: none;">
+                    <!-- Results will be populated here -->
+                  </div>
                 </div>
               </div>
-              <div class="form-group" style="visibility: hidden;">
-                <label>Placeholder</label>
-                <input type="text" placeholder="Placeholder">
+              
+              <!-- Add another biomarker box -->
+              <div class="form-group second-biomarker-section">
+                <div class="biomarker-search-container">
+                  <input type="text" class="biomarker-search-input-2" placeholder="Add another biomarker">
+                  <div class="biomarker-dropdown-2" style="display: none;">
+                    <!-- Results will be populated here -->
+                  </div>
+                </div>
               </div>
+              
+              <!-- Method dropdown -->
+              <div class="form-group">
+                <select class="dropdown-select-4">
+                  <option value="">Method</option>
+                  <!-- Method options will be loaded dynamically -->
+                </select>
+              </div>
+
+              <!-- Side by side dropdown boxes -->
+              <div class="form-group dropdown-row">
+                <div class="dropdown-container">
+                  <select class="dropdown-select-1">
+                    <option value="">Min price</option>
+                    <option value="option1">Option 1</option>
+                    <option value="option2">Option 2</option>
+                    <option value="option3">Option 3</option>
+                  </select>
+                </div>
+                <div class="dropdown-container">
+                  <select class="dropdown-select-2">
+                    <option value="">Max price</option>
+                    <option value="option1">Option 1</option>
+                    <option value="option2">Option 2</option>
+                    <option value="option3">Option 3</option>
+                  </select>
+                </div>
+              </div>
+
               <button class="search-button">
-                Find Solutions
+                Search <span class="test-count">0</span> tests
                 <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </button>
+              <div class="form-links-container">
+                <div class="reset-filters-link">
+                  <a href="#" class="reset-filters">Reset filters</a>
+                </div>
+                <div class="advanced-search-link">
+                  <a href="#" class="advanced-search-text" id="advanced-search-link">Advanced search</a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -598,10 +643,15 @@ export function initializeHomePage() {
   setupCTAButtons();
   setupSearchTabs();
   setupOptionCardSelection();
-  updateSearchButtonCount(); // Update search button count
+      updateSearchButtonCountSimple('default'); // Update search button count using new simple function
   updateMethodDropdown(); // Update method dropdown
   updatePriceDropdowns(); // Update price dropdowns
   setupDynamicCountUpdate(); // Setup dynamic count updates
+  
+  // Set initial count for all search buttons
+  setTimeout(() => {
+    updateSearchButtonCountSimple('default');
+  }, 100);
   
   // Make scrollToQuickSearch function globally available
   window.scrollToQuickSearch = scrollToQuickSearch;
@@ -1148,16 +1198,86 @@ function setupNavigationHandlers() {
                 problemForm.style.opacity = '0';
                 problemForm.style.visibility = 'hidden';
                 problemForm.style.position = 'absolute';
-              } else if (tabType === 'clinics') {
+                
+                // Reset the blood tests form
+                resetForm(bloodTestsForm);
+                
+                // Sync price selections from problem form to blood tests form
+                syncPriceSelections(problemForm, bloodTestsForm);
+              } else if (tabType === 'let-me-pick') {
                 bloodTestsForm.style.opacity = '0';
                 bloodTestsForm.style.visibility = 'hidden';
                 bloodTestsForm.style.position = 'absolute';
                 problemForm.style.opacity = '1';
                 problemForm.style.visibility = 'visible';
                 problemForm.style.position = 'relative';
+                
+                // Reset the problem form
+                resetForm(problemForm);
+                
+                // Sync price selections from blood tests form to problem form
+                syncPriceSelections(bloodTestsForm, problemForm);
+                
+                // Populate the method dropdown when Let me pick side becomes visible
+                updateMethodDropdown();
               }
+              
+              // Update the count after switching tabs
+              updateSearchButtonCountSimple('default');
             });
           });
+        }
+        
+        // Function to reset form fields
+        function resetForm(form) {
+          // Reset all dropdowns to first option
+          const dropdowns = form.querySelectorAll('select');
+          dropdowns.forEach(dropdown => {
+            if (dropdown.options.length > 0) {
+              dropdown.selectedIndex = 0;
+            }
+          });
+          
+          // Reset all text inputs
+          const inputs = form.querySelectorAll('input[type="text"]');
+          inputs.forEach(input => {
+            input.value = '';
+          });
+          
+          // Clear any biomarker selections
+          const biomarkerInputs = form.querySelectorAll('.biomarker-search-input, .biomarker-search-input-2');
+          biomarkerInputs.forEach(input => {
+            input.value = '';
+            // Remove any data attributes
+            input.removeAttribute('data-testosterone-only');
+            input.removeAttribute('data-testosterone-full-hormone');
+            input.removeAttribute('data-testosterone-full-hormone-only');
+            input.removeAttribute('data-testosterone-full-hormone-general-health');
+            input.removeAttribute('data-trt-monitoring');
+          });
+          
+          // Clear any biomarker dropdowns
+          const biomarkerDropdowns = form.querySelectorAll('.biomarker-dropdown');
+          biomarkerDropdowns.forEach(dropdown => {
+            dropdown.innerHTML = '';
+            dropdown.style.display = 'none';
+          });
+        }
+        
+        // Function to sync price selections between forms
+        function syncPriceSelections(sourceForm, targetForm) {
+          const sourceMinPrice = sourceForm.querySelector('.dropdown-select-1')?.value;
+          const sourceMaxPrice = sourceForm.querySelector('.dropdown-select-2')?.value;
+          
+          const targetMinPrice = targetForm.querySelector('.dropdown-select-1');
+          const targetMaxPrice = targetForm.querySelector('.dropdown-select-2');
+          
+          if (sourceMinPrice && targetMinPrice) {
+            targetMinPrice.value = sourceMinPrice;
+          }
+          if (sourceMaxPrice && targetMaxPrice) {
+            targetMaxPrice.value = sourceMaxPrice;
+          }
         }
         
         function setupQuickSearchForm() {
@@ -1186,57 +1306,59 @@ function setupNavigationHandlers() {
             console.log('All buttons in blood tests form:', document.querySelectorAll('.blood-tests-form button'));
           }
           
-          // Setup problem form submission
-          const problemSearchButton = document.querySelector('.problem-form .search-button');
-          console.log('Problem search button found:', !!problemSearchButton);
-          console.log('Problem search button element:', problemSearchButton);
-          if (problemSearchButton) {
-            console.log('Adding click listener to problem search button');
-            console.log('Button text content:', problemSearchButton.textContent);
-            console.log('Button HTML:', problemSearchButton.outerHTML);
-            console.log('Button onclick attribute:', problemSearchButton.onclick);
-            console.log('Button event listeners:', problemSearchButton.onclick);
+          // Setup problem form submission - REDONE for reliability
+          console.log('🔍 Setting up problem search button...');
+          
+          // Function to setup the problem search button
+          function setupProblemSearchButton() {
+            const problemSearchButton = document.querySelector('.problem-form .search-button');
+            console.log('🔍 Problem search button found:', !!problemSearchButton);
             
-            // Add multiple event listeners to catch any issues
-            problemSearchButton.addEventListener('click', (e) => {
-              console.log('=== PROBLEM SEARCH BUTTON CLICKED ===');
-              console.log('Event:', e);
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('About to call handleProblemSearch');
-              handleProblemSearch();
-              console.log('handleProblemSearch called');
-            });
-            
-            problemSearchButton.addEventListener('mousedown', (e) => {
-              console.log('=== PROBLEM SEARCH BUTTON MOUSEDOWN ===');
-            });
-            
-            // Also try adding to the parent form
-            const problemForm = document.querySelector('.problem-form');
-            if (problemForm) {
-              problemForm.addEventListener('submit', (e) => {
-                console.log('=== PROBLEM FORM SUBMIT ===');
+            if (problemSearchButton) {
+              console.log('✅ Setting up click listener for problem search button');
+              
+              // Remove any existing listeners to avoid duplicates
+              const newButton = problemSearchButton.cloneNode(true);
+              problemSearchButton.parentNode.replaceChild(newButton, problemSearchButton);
+              
+              // Add the click listener
+              newButton.addEventListener('click', function(e) {
+                console.log('🎯 PROBLEM SEARCH BUTTON CLICKED!');
                 e.preventDefault();
+                e.stopPropagation();
                 handleProblemSearch();
               });
+              
+              // Also add onclick as backup
+              newButton.onclick = function(e) {
+                console.log('🎯 PROBLEM SEARCH BUTTON CLICKED (onclick)!');
+                e.preventDefault();
+                e.stopPropagation();
+                handleProblemSearch();
+              };
+              
+              console.log('✅ Problem search button setup complete');
+            } else {
+              console.error('❌ Problem search button not found!');
+              console.log('Available .search-button elements:', document.querySelectorAll('.search-button'));
+              console.log('Available .problem-form elements:', document.querySelectorAll('.problem-form'));
             }
-          } else {
-            console.error('Problem search button not found!');
-            console.log('Available .search-button elements:', document.querySelectorAll('.search-button'));
-            console.log('Available .problem-form elements:', document.querySelectorAll('.problem-form'));
-            console.log('All buttons in problem form:', document.querySelectorAll('.problem-form button'));
-            console.log('All buttons with text "Find Solutions":', Array.from(document.querySelectorAll('button')).filter(btn => btn.textContent.includes('Find Solutions')));
           }
           
-          // Setup reset filters functionality
-          const resetFiltersLink = document.querySelector('.reset-filters');
-          if (resetFiltersLink) {
-            resetFiltersLink.addEventListener('click', (e) => {
+          // Setup the button immediately
+          setupProblemSearchButton();
+          
+          // Also try again after a short delay to ensure DOM is ready
+          setTimeout(setupProblemSearchButton, 100);
+          
+          // Setup reset filters functionality for both sides
+          const resetFiltersLinks = document.querySelectorAll('.reset-filters');
+          resetFiltersLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
               e.preventDefault();
               resetHomePageForm();
             });
-          }
+          });
           
           // Setup advanced search functionality
           const advancedSearchLink = document.querySelector('#advanced-search-link');
@@ -1360,6 +1482,9 @@ function setupNavigationHandlers() {
           const isTestosteroneFullHormone = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone') === 'true';
           const isTestosteroneFullHormoneOnly = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-only') === 'true';
           const isTestosteroneFullHormoneGeneralHealth = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-general-health') === 'true';
+          const isTRTMonitoring = biomarkerInput && biomarkerInput.getAttribute('data-trt-monitoring') === 'true';
+          console.log('🔧 updateDynamicCount: isTestosteroneFullHormoneGeneralHealth =', isTestosteroneFullHormoneGeneralHealth);
+          console.log('🔧 updateDynamicCount: isTRTMonitoring =', isTRTMonitoring);
           
           // Combine biomarkers if both are selected
           const biomarkers = [];
@@ -1384,6 +1509,10 @@ function setupNavigationHandlers() {
           
           if (isTestosteroneOnly) {
             searchParams.set('testosteroneOnly', 'true');
+          }
+          
+          if (isTRTMonitoring) {
+            searchParams.set('trtMonitoring', 'true');
           }
           
           // Always navigate to the search results page
@@ -1430,6 +1559,7 @@ function setupNavigationHandlers() {
           const isTestosteroneFullHormone = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone') === 'true';
           const isTestosteroneFullHormoneOnly = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-only') === 'true';
           const isTestosteroneFullHormoneGeneralHealth = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-general-health') === 'true';
+          const isTRTMonitoring = biomarkerInput && biomarkerInput.getAttribute('data-trt-monitoring') === 'true';
           
           // Combine biomarkers if both are selected
           const biomarkers = [];
@@ -1456,6 +1586,10 @@ function setupNavigationHandlers() {
             searchParams.set('testosteroneOnly', 'true');
           }
           
+          if (isTRTMonitoring) {
+            searchParams.set('trtMonitoring', 'true');
+          }
+          
           // Add parameter to indicate filter panel should be open
           searchParams.set('openFilters', 'true');
           
@@ -1465,17 +1599,86 @@ function setupNavigationHandlers() {
           window.location.hash = url;
         }
         
-        function handleTestosteroneOptionChange(selectedValue) {
-          console.log('Testosterone option changed to:', selectedValue);
-          console.log('🔧 handleTestosteroneOptionChange called with value:', selectedValue);
+        async function handleTestosteroneOptionChange(selectedValue) {
+          // Simple test to see if we can even execute basic JavaScript
+          console.log('🚨🚨🚨 BASIC TEST - Function can execute JavaScript');
+          
+          // Test console object access
+          try {
+            console.log('🚨🚨🚨 BASIC TEST - Console object accessible');
+          } catch (error) {
+            console.error('🚨🚨🚨 ERROR accessing console object:', error);
+            return;
+          }
+          
+          // Test parameter access with error handling
+          try {
+            console.log('🚨🚨🚨 BASIC TEST - selectedValue parameter:', selectedValue);
+            console.log('🚨🚨🚨 BASIC TEST - typeof selectedValue:', typeof selectedValue);
+          } catch (error) {
+            console.error('🚨🚨🚨 ERROR accessing selectedValue parameter:', error);
+            console.error('🚨🚨🚨 Error stack:', error.stack);
+            return;
+          }
+          
+          try {
+            console.log('TESTOSTERONE OPTION CHANGED TO:', selectedValue);
+            console.log('🔧 handleTestosteroneOptionChange called with value:', selectedValue);
+            console.log('🔧 Stack trace:', new Error().stack);
+            console.log('🚨🚨🚨 Function entered successfully - about to check DOM elements');
+          } catch (error) {
+            console.error('🚨🚨🚨 Error in initial logging:', error);
+            return;
+          }
+          
+          // Check which side is currently active
+          let bloodTestsForm, problemForm;
+          try {
+            console.log('🚨🚨🚨 About to query DOM elements...');
+            bloodTestsForm = document.querySelector('.blood-tests-form');
+            problemForm = document.querySelector('.problem-form');
+            
+            console.log('🚨🚨🚨 Form detection - bloodTestsForm:', bloodTestsForm);
+            console.log('🚨🚨🚨 Form detection - problemForm:', problemForm);
+            console.log('🚨🚨🚨 Form detection - bloodTestsForm style:', bloodTestsForm?.style?.opacity, bloodTestsForm?.style?.visibility);
+            console.log('🚨🚨🚨 Form detection - problemForm style:', problemForm?.style?.opacity, problemForm?.style?.visibility);
+          } catch (error) {
+            console.error('🚨🚨🚨 Error querying DOM elements:', error);
+            console.error('🚨🚨🚨 Error stack:', error.stack);
+            return;
+          }
+          
+          // Only proceed if we're on the "Help me choose" side
+          if (bloodTestsForm.style.opacity === '0' || bloodTestsForm.style.visibility === 'hidden') {
+            console.log('🔧 Testosterone options only work on "Help me choose" side, ignoring selection');
+            console.log('🚨🚨🚨 EARLY RETURN - Form is hidden or has opacity 0');
+            return;
+          }
+          
+          console.log('🚨🚨🚨 Form check passed - proceeding with testosterone option change');
           
           // Clear the biomarker input
           const biomarkerInput = document.querySelector('.biomarker-search-input');
+          console.log('🚨🚨🚨 Biomarker input search result:', biomarkerInput);
+          console.log('🚨🚨🚨 All biomarker inputs on page:', document.querySelectorAll('.biomarker-search-input'));
+          
           if (biomarkerInput) {
             biomarkerInput.value = '';
+            console.log('🚨🚨🚨 Cleared biomarker input value');
+          } else {
+            console.log('🚨🚨🚨 WARNING: No biomarker input found!');
           }
           
           if (selectedValue === 'testosterone-only') {
+            // Clear any existing data attributes first
+            if (biomarkerInput) {
+              biomarkerInput.removeAttribute('data-testosterone-only');
+              biomarkerInput.removeAttribute('data-testosterone-full-hormone');
+              biomarkerInput.removeAttribute('data-testosterone-full-hormone-only');
+              biomarkerInput.removeAttribute('data-testosterone-full-hormone-general-health');
+              biomarkerInput.removeAttribute('data-trt-monitoring');
+            }
+            
             // Set "Testosterone" as the biomarker and add a special tag
             if (biomarkerInput) {
               biomarkerInput.value = 'Testosterone';
@@ -1484,11 +1687,33 @@ function setupNavigationHandlers() {
             // Add a special class or data attribute to indicate this is "testosterone only"
             biomarkerInput.setAttribute('data-testosterone-only', 'true');
             
-            // Update the search count
-            updateDynamicCount();
+            console.log('🚨🚨🚨 SET data-testosterone-only = true on biomarker input:', biomarkerInput);
+            console.log('🚨🚨🚨 Biomarker input now has attributes:', biomarkerInput.getAttributeNames());
+            
+                        // Update the search count using the new simple function
+            console.log('🚀 Calling new simple count update function');
+            try {
+              const result = await updateSearchButtonCountSimple('testosterone-only');
+              console.log('🚀 Simple count update completed with result:', result);
+            } catch (error) {
+              console.error('🚀 Error in simple count update:', error);
+            }
+            
+            console.log('🚨🚨🚨 AFTER updateDynamicCount - biomarker input value:', biomarkerInput?.value);
+            console.log('🚨🚨🚨 AFTER updateDynamicCount - biomarker input attributes:', biomarkerInput?.getAttributeNames());
+            console.log('🚨🚨🚨 AFTER updateDynamicCount - biomarker input data-testosterone-only:', biomarkerInput?.getAttribute('data-testosterone-only'));
             
             console.log('Set biomarker to "Testosterone" with testosterone-only filter');
           } else if (selectedValue === 'testosterone-full-hormone') {
+            // Clear any existing data attributes first
+            if (biomarkerInput) {
+              biomarkerInput.removeAttribute('data-testosterone-only');
+              biomarkerInput.removeAttribute('data-testosterone-full-hormone');
+              biomarkerInput.removeAttribute('data-testosterone-full-hormone-only');
+              biomarkerInput.removeAttribute('data-testosterone-full-hormone-general-health');
+              biomarkerInput.removeAttribute('data-trt-monitoring');
+            }
+            
             // Don't set any biomarker value, just add the special attribute
             if (biomarkerInput) {
               biomarkerInput.value = '';
@@ -1497,11 +1722,20 @@ function setupNavigationHandlers() {
             // Add a special class or data attribute to indicate this is "testosterone full hormone profile"
             biomarkerInput.setAttribute('data-testosterone-full-hormone', 'true');
             
-            // Update the search count
-            updateDynamicCount();
+            // Update the search count using the new simple function
+            console.log('🚀 Calling new simple count update function for full-hormone');
+            try {
+              const result = await updateSearchButtonCountSimple('testosterone-full-hormone');
+              console.log('🚀 Simple count update completed with result:', result);
+            } catch (error) {
+              console.error('🚀 Error in simple count update for full-hormone:', error);
+            }
+            
+            console.log('🚨🚨🚨 AFTER updateDynamicCount - biomarker input value:', biomarkerInput?.value);
+            console.log('🚨🚨🚨 AFTER updateDynamicCount - biomarker input attributes:', biomarkerInput?.getAttributeNames());
+            console.log('🚨🚨🚨 AFTER updateDynamicCount - biomarker input data-testosterone-full-hormone:', biomarkerInput?.getAttribute('data-testosterone-full-hormone'));
             
             console.log('Set testosterone-full-hormone filter (no biomarker value)');
-
           } else if (selectedValue === 'testosterone-full-hormone-only') {
             // Set the 3 required biomarkers for male hormone check only
             if (biomarkerInput) {
@@ -1511,11 +1745,16 @@ function setupNavigationHandlers() {
             // Add a special attribute to indicate this is "male hormone check only"
             biomarkerInput.setAttribute('data-testosterone-full-hormone-only', 'true');
             
-            // Update the search count
-            updateDynamicCount();
+            // Update the search count using the new simple function
+            console.log('🚀 Calling new simple count update function for full-hormone-only');
+            try {
+              const result = await updateSearchButtonCountSimple('testosterone-full-hormone-only');
+              console.log('🚀 Simple count update completed with result:', result);
+            } catch (error) {
+              console.error('🚀 Error in simple count update for full-hormone-only:', error);
+            }
             
             console.log('Set male hormone check only filter with required biomarkers');
-
           } else if (selectedValue === 'testosterone-full-hormone-general-health') {
             // Don't set any biomarker value, just add the special attribute
             if (biomarkerInput) {
@@ -1526,31 +1765,72 @@ function setupNavigationHandlers() {
             biomarkerInput.setAttribute('data-testosterone-full-hormone-general-health', 'true');
             console.log('🔧 Set data-testosterone-full-hormone-general-health attribute to true');
             
-            // Update the search count
-            updateDynamicCount();
+            // Update the search count using the new simple function
+            console.log('🚀 Calling new simple count update function for general-health');
+            try {
+              const result = await updateSearchButtonCountSimple('testosterone-full-hormone-general-health');
+              console.log('🚀 Simple count update completed with result:', result);
+            } catch (error) {
+              console.error('🚀 Error in simple count update for general-health:', error);
+            }
             
             console.log('Set testosterone-full-hormone-general-health filter (no biomarker value)');
             console.log('🔧 Calling updateDynamicCount for testosterone-full-hormone-general-health');
+          } else if (selectedValue === 'trt-monitoring') {
+            // Don't set any biomarker value, just add the special attribute
+            if (biomarkerInput) {
+              biomarkerInput.value = '';
+            }
+            
+            // Add a special attribute to indicate this is "TRT monitoring"
+            biomarkerInput.setAttribute('data-trt-monitoring', 'true');
+            console.log('🔧 Set data-trt-monitoring attribute to true');
+            
+            // Update the search count using the new simple function
+            console.log('🚀 Calling new simple count update function for TRT monitoring');
+            try {
+              const result = await updateSearchButtonCountSimple('trt-monitoring');
+              console.log('🚀 Simple count update completed with result:', result);
+            } catch (error) {
+              console.error('🚀 Error in simple count update for TRT monitoring:', error);
+            }
+            
+            console.log('Set TRT monitoring filter (no biomarker value)');
+            console.log('🔧 Calling updateDynamicCount for TRT monitoring');
           } else {
             // Clear any special attributes
             if (biomarkerInput) {
               biomarkerInput.removeAttribute('data-testosterone-only');
               biomarkerInput.removeAttribute('data-testosterone-full-hormone');
               biomarkerInput.removeAttribute('data-testosterone-full-hormone-only');
+              biomarkerInput.removeAttribute('data-testosterone-full-hormone-general-health');
+              biomarkerInput.removeAttribute('data-trt-monitoring');
             }
             
-            // Update the search count
-            updateDynamicCount();
+            // Update the search count using the new simple function
+            console.log('🚀 Calling new simple count update function for clear');
+            try {
+              const result = await updateSearchButtonCountSimple('default');
+              console.log('🚀 Simple count update completed with result:', result);
+            } catch (error) {
+              console.error('🚀 Error in simple count update for clear:', error);
+            }
           }
         }
         
         function handleProblemSearch() {
       
-          const selectedProblem = document.querySelector('.symptom-select')?.value;
-          
+          const biomarker1 = document.querySelector('.problem-form .biomarker-search-input')?.value;
+          const biomarker2 = document.querySelector('.problem-form .biomarker-search-input-2')?.value;
+          const minPrice = document.querySelector('.problem-form .dropdown-select-1')?.value;
+          const maxPrice = document.querySelector('.problem-form .dropdown-select-2')?.value;
+          const method = document.querySelector('.problem-form .dropdown-select-4')?.value;
       
-          console.log('Selected problem value:', selectedProblem);
-          console.log('Selected problem text:', document.querySelector('.symptom-select option:checked')?.textContent);
+          console.log('Selected biomarker 1:', biomarker1);
+          console.log('Selected biomarker 2:', biomarker2);
+          console.log('Selected min price:', minPrice);
+          console.log('Selected max price:', maxPrice);
+          console.log('Selected method:', method);
           
           // Clear previous validation errors
           clearValidationErrors();
@@ -1558,9 +1838,9 @@ function setupNavigationHandlers() {
           // Validate required fields
           let hasErrors = false;
           
-          // Check if a problem is selected
-          if (!selectedProblem) {
-            showValidationError('.symptom-select', 'Please select a symptom or health aim');
+          // Check if at least one biomarker is selected
+          if (!biomarker1 && !biomarker2) {
+            showValidationError('.problem-form .biomarker-search-input', 'Please select at least one biomarker');
             hasErrors = true;
           }
           
@@ -1569,13 +1849,36 @@ function setupNavigationHandlers() {
             return;
           }
           
-          // Store the selected problem in localStorage for the general health page to pick up
-          localStorage.setItem('selectedProblem', selectedProblem);
-          console.log('Stored selected problem in localStorage:', selectedProblem);
+          // Build search parameters for URL instead of localStorage
+          const searchParams = new URLSearchParams();
           
-          // Navigate to the general health page
-          console.log('Navigating to general health page');
-          window.location.hash = '#/search-results';
+          // Add biomarkers
+          const biomarkers = [];
+          if (biomarker1) biomarkers.push(biomarker1);
+          if (biomarker2) biomarkers.push(biomarker2);
+          if (biomarkers.length > 0) {
+            searchParams.set('biomarkers', biomarkers.join(','));
+          }
+          
+          // Add price filters
+          if (minPrice && minPrice !== '') {
+            searchParams.set('minPrice', minPrice);
+          }
+          if (maxPrice && maxPrice !== '') {
+            searchParams.set('maxPrice', maxPrice);
+          }
+          
+          // Add method filter
+          if (method && method !== '') {
+            searchParams.set('method', method);
+          }
+          
+          console.log('🔍 Built search parameters:', searchParams.toString());
+          
+          // Navigate to the search results page with parameters
+          const url = `#/search-results${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+          console.log('🔍 Navigating to:', url);
+          window.location.hash = url;
         }
         
         // Function to show validation error
@@ -1601,7 +1904,7 @@ function setupNavigationHandlers() {
         // Function to clear validation errors
         function clearValidationErrors() {
           // Remove red borders
-          const elements = document.querySelectorAll('.product-category-select, .category-select');
+          const elements = document.querySelectorAll('.product-category-select, .category-select, .biomarker-search-input');
           elements.forEach(element => {
             element.style.borderColor = '';
             element.style.borderWidth = '';
@@ -1983,60 +2286,104 @@ function scrollToQuickSearch() {
 function setupDynamicCountUpdate() {
   console.log('🔧 Setting up dynamic count updates');
   
-  // Get form elements
-  const minPriceSelect = document.querySelector('.dropdown-select-1');
-  const maxPriceSelect = document.querySelector('.dropdown-select-2');
-  const methodSelect = document.querySelector('.dropdown-select-4');
-  const biomarkerInput1 = document.querySelector('.biomarker-search-input');
-  const biomarkerInput2 = document.querySelector('.biomarker-search-input-2');
+  // Get form elements from both sides
+  const minPriceSelects = document.querySelectorAll('.dropdown-select-1');
+  const maxPriceSelects = document.querySelectorAll('.dropdown-select-2');
+  const methodSelects = document.querySelectorAll('.dropdown-select-4');
+  const biomarkerInputs1 = document.querySelectorAll('.biomarker-search-input');
+  const biomarkerInputs2 = document.querySelectorAll('.biomarker-search-input-2');
   
-  // Add event listeners to price dropdowns (only update count, not other dropdowns)
-  if (minPriceSelect) {
-    minPriceSelect.addEventListener('change', () => {
-      console.log('🔧 Min price dropdown changed');
-      updateDynamicCount();
-    });
-  }
-  if (maxPriceSelect) {
-    maxPriceSelect.addEventListener('change', () => {
-      console.log('🔧 Max price dropdown changed');
-      updateDynamicCount();
-    });
-  }
+  // Add event listeners to price dropdowns on both sides
+  minPriceSelects.forEach(minPriceSelect => {
+    if (minPriceSelect) {
+      minPriceSelect.addEventListener('change', () => {
+        console.log('🔧 Min price dropdown changed on side:', minPriceSelect.closest('.form-content')?.classList.contains('blood-tests-form') ? 'Help me choose' : 'Let me pick');
+        updateDynamicCount();
+        // Also update the other side's price dropdowns to stay in sync
+        updatePriceDropdownsOnOtherSide(minPriceSelect);
+      });
+    }
+  });
   
-  // Add event listener to method dropdown (update count AND other dropdowns)
-  if (methodSelect) {
-    methodSelect.addEventListener('change', async () => {
-      console.log('🔧 Method dropdown changed to:', methodSelect.value);
-      await updateDynamicCount();
-      await updateDropdownsBasedOnSelections();
-    });
-  }
+  maxPriceSelects.forEach(maxPriceSelect => {
+    if (maxPriceSelect) {
+      maxPriceSelect.addEventListener('change', () => {
+        console.log('🔧 Max price dropdown changed on side:', maxPriceSelect.closest('.form-content')?.classList.contains('blood-tests-form') ? 'Help me choose' : 'Let me pick');
+        updateDynamicCount();
+        // Also update the other side's price dropdowns to stay in sync
+        updatePriceDropdownsOnOtherSide(maxPriceSelect);
+      });
+    }
+  });
   
-  // Add event listeners to biomarker inputs (debounced)
-  if (biomarkerInput1) {
-    biomarkerInput1.addEventListener('input', debounce(() => {
-      console.log('🔧 Biomarker input 1 changed');
-      updateDynamicCount();
-    }, 500));
-    
-    // Also listen for when the input is cleared
-    biomarkerInput1.addEventListener('change', () => {
-      console.log('🔧 Biomarker input 1 value changed to:', biomarkerInput1.value);
-      updateDynamicCount();
-    });
+  // Add event listener to method dropdowns on both sides
+  methodSelects.forEach(methodSelect => {
+    if (methodSelect) {
+      methodSelect.addEventListener('change', async () => {
+        console.log('🔧 Method dropdown changed to:', methodSelect.value, 'on side:', methodSelect.closest('.form-content')?.classList.contains('blood-tests-form') ? 'Help me choose' : 'Let me pick');
+        await updateDynamicCount();
+        await updateDropdownsBasedOnSelections();
+      });
+    }
+  });
+  
+  // Add event listeners to biomarker inputs on both sides (debounced)
+  biomarkerInputs1.forEach(biomarkerInput1 => {
+    if (biomarkerInput1) {
+      biomarkerInput1.addEventListener('input', debounce(() => {
+        console.log('🔧 Biomarker input 1 changed on side:', biomarkerInput1.closest('.form-content')?.classList.contains('blood-tests-form') ? 'Help me choose' : 'Let me pick');
+        updateDynamicCount();
+      }, 500));
+      
+      // Also listen for when the input is cleared
+      biomarkerInput1.addEventListener('change', () => {
+        console.log('🔧 Biomarker input 1 value changed to:', biomarkerInput1.value, 'on side:', biomarkerInput1.closest('.form-content')?.classList.contains('blood-tests-form') ? 'Help me choose' : 'Let me pick');
+        updateDynamicCount();
+      });
+    }
+  });
+  
+  biomarkerInputs2.forEach(biomarkerInput2 => {
+    if (biomarkerInput2) {
+      biomarkerInput2.addEventListener('input', debounce(() => {
+        console.log('🔧 Biomarker input 2 changed on side:', biomarkerInput2.closest('.form-content')?.classList.contains('blood-tests-form') ? 'Help me choose' : 'Let me pick');
+        updateDynamicCount();
+      }, 500));
+      
+      // Also listen for when the input is cleared
+      biomarkerInput2.addEventListener('change', () => {
+        console.log('🔧 Biomarker input 2 value changed to:', biomarkerInput2.value, 'on side:', biomarkerInput2.closest('.form-content')?.classList.contains('blood-tests-form') ? 'Help me Choose' : 'Let me pick');
+        updateDynamicCount();
+      });
+    }
+  });
+}
+
+// Function to update price dropdowns on the other side when one side changes
+async function updatePriceDropdownsOnOtherSide(changedSelect) {
+  const currentSide = changedSelect.closest('.form-content');
+  const isBloodTestsForm = currentSide.classList.contains('blood-tests-form');
+  
+  // Get the other side's form
+  const otherSide = isBloodTestsForm ? 
+    document.querySelector('.problem-form') : 
+    document.querySelector('.blood-tests-form');
+  
+  if (!otherSide) return;
+  
+  // Get the current price selections from the changed side
+  const currentMinPrice = changedSelect.closest('.form-content').querySelector('.dropdown-select-1')?.value;
+  const currentMaxPrice = changedSelect.closest('.form-content').querySelector('.dropdown-select-2')?.value;
+  
+  // Update the other side's price dropdowns to match
+  const otherMinPriceSelect = otherSide.querySelector('.dropdown-select-1');
+  const otherMaxPriceSelect = otherSide.querySelector('.dropdown-select-2');
+  
+  if (otherMinPriceSelect && currentMinPrice) {
+    otherMinPriceSelect.value = currentMinPrice;
   }
-  if (biomarkerInput2) {
-    biomarkerInput2.addEventListener('input', debounce(() => {
-      console.log('🔧 Biomarker input 2 changed');
-      updateDynamicCount();
-    }, 500));
-    
-    // Also listen for when the input is cleared
-    biomarkerInput2.addEventListener('change', () => {
-      console.log('🔧 Biomarker input 2 value changed to:', biomarkerInput2.value);
-      updateDynamicCount();
-    });
+  if (otherMaxPriceSelect && currentMaxPrice) {
+    otherMaxPriceSelect.value = currentMaxPrice;
   }
 }
 
@@ -2055,71 +2402,32 @@ function debounce(func, wait) {
 
 // Update the count based on current form selections
 async function updateDynamicCount() {
-  console.log('🔧 updateDynamicCount called');
+  console.log('updateDynamicCount STARTED');
+  console.log('updateDynamicCount called');
   console.log('🔧 Stack trace:', new Error().stack);
+  // Get current form values from the currently visible side
+  const visibleForm = document.querySelector('.form-content[style*="opacity: 1"], .form-content[style*="visibility: visible"]') || 
+                     document.querySelector('.blood-tests-form'); // fallback to blood-tests-form
   
-  // Get current form values
-  const minPrice = document.querySelector('.dropdown-select-1')?.value;
-  const maxPrice = document.querySelector('.dropdown-select-2')?.value;
-  const method = document.querySelector('.dropdown-select-4')?.value;
-  const biomarker1 = document.querySelector('.biomarker-search-input')?.value;
-  const biomarker2 = document.querySelector('.biomarker-search-input-2')?.value;
+  if (!visibleForm) {
+    console.log('🔧 No visible form found');
+    return;
+  }
   
-  console.log('🔧 Current form values:', { minPrice, maxPrice, method, biomarker1, biomarker2 });
+  const minPrice = visibleForm.querySelector('.dropdown-select-1')?.value;
+  const maxPrice = visibleForm.querySelector('.dropdown-select-2')?.value;
+  const method = visibleForm.querySelector('.dropdown-select-4')?.value;
+  const biomarker1 = visibleForm.querySelector('.biomarker-search-input')?.value;
+  const biomarker2 = visibleForm.querySelector('.biomarker-search-input-2')?.value;
+  
+  console.log('🔧 Current form values from', visibleForm.classList.contains('blood-tests-form') ? 'Help me choose' : 'Let me pick', 'side:', { minPrice, maxPrice, method, biomarker1, biomarker2 });
   
   try {
-    // Check for special testosterone options first - these should override the initial count
-    const biomarkerInput = document.querySelector('.biomarker-search-input');
-    const isTestosteroneOnly = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-only') === 'true';
-    const isTestosteroneFullHormone = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone') === 'true';
-    const isTestosteroneFullHormoneOnly = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-only') === 'true';
-    const isTestosteroneFullHormoneGeneralHealth = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-general-health') === 'true';
-    console.log('🔧 updateDynamicCount: isTestosteroneFullHormoneGeneralHealth =', isTestosteroneFullHormoneGeneralHealth);
-    
     let testCount;
     
-    if (isTestosteroneOnly && biomarker1 === 'Testosterone') {
-      // Get testosterone-only count (tests that contain ONLY testosterone)
-      testCount = await getTestosteroneOnlyTestCount();
-      console.log('After testosterone-only filter:', testCount);
-    } else if (isTestosteroneFullHormone) {
-      // Get testosterone full hormone profile count
-      testCount = await getTestosteroneFullHormoneTestCount();
-      console.log('After testosterone-full-hormone filter:', testCount);
-    } else if (isTestosteroneFullHormoneOnly) {
-      // Get male hormone check only count (tests with required biomarkers AND 10 or fewer total biomarkers)
-      testCount = await getMaleHormoneCheckOnlyCount();
-      console.log('After male hormone check only filter:', testCount);
-    } else if (isTestosteroneFullHormoneGeneralHealth) {
-      console.log('🔧 updateDynamicCount: Processing testosterone-full-hormone-general-health option');
-      // Get testosterone full hormone profile + related general health tests count (same as regular biomarker search)
-      testCount = await getBiomarkerTestCount(['Testosterone', 'Free testosterone', 'SHBG']);
-      console.log('After testosterone-full-hormone-general-health filter:', testCount);
-    } else {
-      // Start with all tests in the men's health category for regular filtering
-      testCount = await getMensHealthTestCount();
-      console.log('Initial test count:', testCount);
-      
-      // Apply filters one by one and get updated counts
-      if (minPrice && minPrice !== '') {
-        const minPriceValue = parseFloat(minPrice.replace('£', ''));
-        testCount = await getMinPriceTestCount(minPriceValue);
-        console.log('After min price filter:', testCount);
-      }
-      
-      if (maxPrice && maxPrice !== '') {
-        const maxPriceValue = parseFloat(maxPrice.replace('£', ''));
-        testCount = await getMaxPriceTestCount(maxPriceValue);
-        console.log('After max price filter:', testCount);
-      }
-      
-      if (method && method !== '') {
-        // Get method-specific count
-        testCount = await getMethodTestCount(method);
-        console.log('After method filter:', testCount);
-      }
-      
-      // Apply regular biomarker filtering
+    // Check if this is the "let me pick" side (problem-form)
+    if (visibleForm.classList.contains('problem-form')) {
+      // Handle "let me pick" side logic
       const selectedBiomarkers = [];
       if (biomarker1 && biomarker1 !== '') {
         selectedBiomarkers.push(biomarker1);
@@ -2129,21 +2437,233 @@ async function updateDynamicCount() {
       }
       
       if (selectedBiomarkers.length > 0) {
-        // Get biomarker-specific count
+        // Start with biomarker-specific count
         testCount = await getBiomarkerTestCount(selectedBiomarkers);
         console.log('After biomarker filter:', testCount);
+        
+        // Apply additional filters if selected
+        if (method && method !== '') {
+          // Get method-specific count for the selected biomarkers
+          const methodTestIds = await getMethodTestIds(method);
+          if (methodTestIds.length > 0) {
+            // Filter the biomarker results by method
+            const filteredCount = await getBiomarkerTestCount(selectedBiomarkers, methodTestIds);
+            testCount = filteredCount;
+            console.log('After method filter:', testCount);
+          }
+        }
+        
+        if (minPrice && minPrice !== '') {
+          const minPriceValue = parseFloat(minPrice.replace('£', ''));
+          // Get the current test IDs that match the biomarkers
+          const currentTestIds = await getBiomarkerTestIds(selectedBiomarkers);
+          if (currentTestIds.length > 0) {
+            testCount = await getMinPriceTestCountForTests(minPriceValue, currentTestIds);
+            console.log('After min price filter:', testCount);
+          }
+        }
+        
+        if (maxPrice && maxPrice !== '') {
+          const maxPriceValue = parseFloat(maxPrice.replace('£', ''));
+          // Get the current test IDs that match the biomarkers
+          const currentTestIds = await getBiomarkerTestIds(selectedBiomarkers);
+          if (currentTestIds.length > 0) {
+            testCount = await getMaxPriceTestCountForTests(maxPriceValue, currentTestIds);
+            console.log('After max price filter:', testCount);
+          }
+        }
+      } else {
+        // No biomarkers selected, start with all tests
+        testCount = await getMensHealthTestCount();
+        console.log('Initial test count (no biomarkers):', testCount);
+        
+        // Apply filters one by one
+        if (minPrice && minPrice !== '') {
+          const minPriceValue = parseFloat(minPrice.replace('£', ''));
+          testCount = await getMinPriceTestCount(minPriceValue);
+          console.log('After min price filter:', testCount);
+        }
+        
+        if (maxPrice && maxPrice !== '') {
+          const maxPriceValue = parseFloat(maxPrice.replace('£', ''));
+          testCount = await getMaxPriceTestCount(maxPriceValue);
+          console.log('After max price filter:', testCount);
+        }
+        
+        if (method && method !== '') {
+          testCount = await getMethodTestCount(method);
+          console.log('After method filter:', testCount);
+        }
+      }
+    } else {
+      // Handle "help me choose" side logic (existing code)
+      const biomarkerInput = visibleForm.querySelector('.biomarker-search-input');
+      console.log('🚨🚨🚨 Found biomarker input:', biomarkerInput);
+      console.log('🚨🚨🚨 Biomarker input value:', biomarkerInput?.value);
+      console.log('🚨🚨🚨 Biomarker input attributes:', biomarkerInput?.getAttributeNames());
+      
+      const isTestosteroneOnly = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-only') === 'true';
+      const isTestosteroneFullHormone = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone') === 'true';
+      const isTestosteroneFullHormoneOnly = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-only') === 'true';
+      const isTestosteroneFullHormoneGeneralHealth = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-general-health') === 'true';
+      const isTRTMonitoring = biomarkerInput && biomarkerInput.getAttribute('data-trt-monitoring') === 'true';
+      
+      console.log('🚨🚨🚨 updateDynamicCount: biomarkerInput found:', !!biomarkerInput);
+      console.log('🚨🚨🚨 updateDynamicCount: biomarkerInput element:', biomarkerInput);
+      console.log('🚨🚨🚨 updateDynamicCount: isTestosteroneOnly =', isTestosteroneOnly);
+      console.log('🚨🚨🚨 updateDynamicCount: isTestosteroneFullHormone =', isTestosteroneFullHormone);
+      console.log('🚨🚨🚨 updateDynamicCount: isTestosteroneFullHormoneOnly =', isTestosteroneFullHormoneOnly);
+      console.log('🚨🚨🚨 updateDynamicCount: isTestosteroneFullHormoneGeneralHealth =', isTestosteroneFullHormoneGeneralHealth);
+      console.log('🚨🚨🚨 updateDynamicCount: isTRTMonitoring =', isTRTMonitoring);
+      console.log('🚨🚨🚨 updateDynamicCount: isTestosteroneOnly =', isTestosteroneOnly);
+      console.log('🚨🚨🚨 updateDynamicCount: isTestosteroneFullHormone =', isTestosteroneFullHormone);
+      console.log('🚨🚨🚨 updateDynamicCount: isTestosteroneFullHormoneGeneralHealth =', isTestosteroneFullHormoneGeneralHealth);
+      console.log('🚨🚨🚨 updateDynamicCount: isTRTMonitoring =', isTRTMonitoring);
+      if (biomarkerInput) {
+        console.log('🔧 updateDynamicCount: biomarkerInput data attributes:', {
+          'data-testosterone-only': biomarkerInput.getAttribute('data-testosterone-only'),
+          'data-testosterone-full-hormone': biomarkerInput.getAttribute('data-testosterone-full-hormone'),
+          'data-testosterone-full-hormone-only': biomarkerInput.getAttribute('data-testosterone-full-hormone-only'),
+          'data-testosterone-full-hormone-general-health': biomarkerInput.getAttribute('data-testosterone-full-hormone-general-health'),
+          'data-trt-monitoring': biomarkerInput.getAttribute('data-trt-monitoring')
+        });
+      }
+      
+      if (isTestosteroneOnly) {
+        console.log('🚨🚨🚨 updateDynamicCount: Processing testosterone-only option');
+        testCount = await getTestosteroneOnlyTestCount();
+        console.log('🚨🚨🚨 After testosterone-only filter:', testCount);
+      } else if (isTestosteroneFullHormone) {
+        testCount = await getTestosteroneFullHormoneTestCount();
+        console.log('After testosterone-full-hormone filter:', testCount);
+      } else if (isTestosteroneFullHormoneOnly) {
+        testCount = await getMaleHormoneCheckOnlyCount();
+        console.log('After male hormone check only filter:', testCount);
+      } else if (isTestosteroneFullHormoneGeneralHealth) {
+        console.log('🔧 updateDynamicCount: Processing testosterone-full-hormone-general-health option');
+        testCount = await getBiomarkerTestCount(['Testosterone', 'Free testosterone', 'SHBG']);
+        console.log('After testosterone-full-hormone-general-health filter:', testCount);
+      } else if (isTRTMonitoring) {
+        console.log('🔧 updateDynamicCount: Processing TRT monitoring option');
+        testCount = await getTRTMonitoringTestCount();
+        console.log('After TRT monitoring filter:', testCount);
+      } else {
+        testCount = await getMensHealthTestCount();
+        console.log('Initial test count:', testCount);
+        
+        const selectedBiomarkers = [];
+        if (biomarker1 && biomarker1 !== '') {
+          selectedBiomarkers.push(biomarker1);
+        }
+        if (biomarker2 && biomarker2 !== '') {
+          selectedBiomarkers.push(biomarker2);
+        }
+        
+        if (selectedBiomarkers.length > 0) {
+          testCount = await getBiomarkerTestCount(selectedBiomarkers);
+          console.log('After biomarker filter:', testCount);
+        }
+      }
+      
+      // Apply price and method filters to ALL results (including testosterone options)
+      if (minPrice && minPrice !== '') {
+        const minPriceValue = parseFloat(minPrice.replace('£', ''));
+        // For testosterone options, we need to filter the existing results, not start over
+        if (isTestosteroneOnly || isTestosteroneFullHormone || isTestosteroneFullHormoneOnly || isTestosteroneFullHormoneGeneralHealth || isTRTMonitoring) {
+          // Get the current test IDs and apply price filter to them
+          let currentTestIds;
+          if (isTestosteroneOnly) {
+            currentTestIds = await getTestosteroneOnlyTestIds();
+          } else if (isTestosteroneFullHormone) {
+            currentTestIds = await getTestosteroneFullHormoneTestIds();
+          } else if (isTestosteroneFullHormoneOnly) {
+            currentTestIds = await getMaleHormoneCheckOnlyTestIds();
+          } else if (isTestosteroneFullHormoneGeneralHealth) {
+            currentTestIds = await getBiomarkerTestIds(['Testosterone', 'Free testosterone', 'SHBG']);
+          } else if (isTRTMonitoring) {
+            currentTestIds = await getTRTMonitoringTestIds();
+          }
+          if (currentTestIds && currentTestIds.length > 0) {
+            testCount = await getMinPriceTestCountForTests(minPriceValue, currentTestIds);
+          }
+        } else {
+          testCount = await getMinPriceTestCount(minPriceValue);
+        }
+        console.log('After min price filter:', testCount);
+      }
+      
+      if (maxPrice && maxPrice !== '') {
+        const maxPriceValue = parseFloat(maxPrice.replace('£', ''));
+        // For testosterone options, we need to filter the existing results, not start over
+        if (isTestosteroneOnly || isTestosteroneFullHormone || isTestosteroneFullHormoneOnly || isTestosteroneFullHormoneGeneralHealth || isTRTMonitoring) {
+          // Get the current test IDs and apply price filter to them
+          let currentTestIds;
+          if (isTestosteroneOnly) {
+            currentTestIds = await getTestosteroneOnlyTestIds();
+          } else if (isTestosteroneFullHormone) {
+            currentTestIds = await getTestosteroneFullHormoneTestIds();
+          } else if (isTestosteroneFullHormoneOnly) {
+            currentTestIds = await getMaleHormoneCheckOnlyTestIds();
+          } else if (isTestosteroneFullHormoneGeneralHealth) {
+            currentTestIds = await getBiomarkerTestIds(['Testosterone', 'Free testosterone', 'SHBG']);
+          } else if (isTRTMonitoring) {
+            currentTestIds = await getTRTMonitoringTestIds();
+          }
+          if (currentTestIds && currentTestIds.length > 0) {
+            testCount = await getMaxPriceTestCountForTests(maxPriceValue, currentTestIds);
+          }
+        } else {
+          testCount = await getMaxPriceTestCount(maxPriceValue);
+        }
+        console.log('After max price filter:', testCount);
+      }
+      
+      if (method && method !== '') {
+        // For testosterone options, we need to filter the existing results, not start over
+        if (isTestosteroneOnly || isTestosteroneFullHormone || isTestosteroneFullHormoneOnly || isTestosteroneFullHormoneGeneralHealth || isTRTMonitoring) {
+          // Get the current test IDs and apply method filter to them
+          let currentTestIds;
+          if (isTestosteroneOnly) {
+            currentTestIds = await getTestosteroneOnlyTestIds();
+          } else if (isTestosteroneFullHormone) {
+            currentTestIds = await getTestosteroneFullHormoneTestIds();
+          } else if (isTestosteroneFullHormoneOnly) {
+            currentTestIds = await getMaleHormoneCheckOnlyTestIds();
+          } else if (isTestosteroneFullHormoneGeneralHealth) {
+            currentTestIds = await getBiomarkerTestIds(['Testosterone', 'Free testosterone', 'SHBG']);
+          } else if (isTRTMonitoring) {
+            currentTestIds = await getTRTMonitoringTestIds();
+          }
+          if (currentTestIds && currentTestIds.length > 0) {
+            const methodTestIds = await getMethodTestIds(method);
+            if (methodTestIds.length > 0) {
+              // Find intersection: tests that have BOTH testosterone criteria AND method
+              const intersectionTestIds = currentTestIds.filter(id => methodTestIds.includes(id));
+              testCount = intersectionTestIds.length;
+            }
+          }
+        } else {
+          testCount = await getMethodTestCount(method);
+        }
+        console.log('After method filter:', testCount);
       }
     }
     
-    // Update the search button count
-    const searchButton = document.querySelector('.search-button');
+    // Update the search button count for the currently visible form
+    const searchButton = visibleForm.querySelector('.search-button');
     if (searchButton) {
       const countSpan = searchButton.querySelector('.test-count');
       if (countSpan) {
         countSpan.textContent = testCount;
+        console.log('Updated search button count to:', testCount);
+      } else {
+        console.log('No count span found in search button');
       }
+    } else {
+      console.log('No search button found in visible form');
     }
     
+    console.log('updateDynamicCount COMPLETED successfully');
     console.log('Final test count:', testCount);
     
   } catch (error) {
@@ -2151,8 +2671,8 @@ async function updateDynamicCount() {
   }
 }
 
-// Get test count for specific biomarkers
-async function getBiomarkerTestCount(biomarkerNames) {
+// Get test IDs for specific biomarkers
+async function getBiomarkerTestIds(biomarkerNames) {
   try {
     // Get biomarker IDs
     const { data: biomarkerData, error: biomarkerError } = await supabase
@@ -2162,7 +2682,7 @@ async function getBiomarkerTestCount(biomarkerNames) {
     
     if (biomarkerError || !biomarkerData || biomarkerData.length === 0) {
       console.error('Error fetching biomarkers:', biomarkerError);
-      return 0;
+      return [];
     }
     
     const biomarkerIds = biomarkerData.map(b => b.id);
@@ -2175,12 +2695,12 @@ async function getBiomarkerTestCount(biomarkerNames) {
     
     if (linkError) {
       console.error('Error fetching category links:', linkError);
-      return 0;
+      return [];
     }
     
     const categoryTestIds = linkData.map(row => row.provider_blood_test_id);
     
-    if (categoryTestIds.length === 0) return 0;
+    if (categoryTestIds.length === 0) return [];
     
     // Get tests that contain ALL the selected biomarkers
     const { data: biomarkerLinks, error: biomarkerLinkError } = await supabase
@@ -2191,7 +2711,7 @@ async function getBiomarkerTestCount(biomarkerNames) {
     
     if (biomarkerLinkError) {
       console.error('Error fetching biomarker links:', biomarkerLinkError);
-      return 0;
+      return [];
     }
     
     // Group by test ID and count how many biomarkers each test has
@@ -2201,12 +2721,53 @@ async function getBiomarkerTestCount(biomarkerNames) {
       testBiomarkerCounts[testId] = (testBiomarkerCounts[testId] || 0) + 1;
     });
     
-    // Count tests that have ALL the selected biomarkers
+    // Return test IDs that have ALL the selected biomarkers
     const testsWithAllBiomarkers = Object.entries(testBiomarkerCounts)
       .filter(([testId, count]) => count === biomarkerNames.length)
       .map(([testId]) => testId);
     
-    return testsWithAllBiomarkers.length;
+    return testsWithAllBiomarkers;
+    
+  } catch (error) {
+    console.error('Error getting biomarker test IDs:', error);
+    return [];
+  }
+}
+
+// Get test count for specific biomarkers
+async function getBiomarkerTestCount(biomarkerNames, testIds = null) {
+  try {
+    console.log('🔍 HOMEPAGE: getBiomarkerTestCount called with biomarkers:', biomarkerNames);
+    
+    // Get the test IDs that match the biomarkers
+    let matchingTestIds = await getBiomarkerTestIds(biomarkerNames);
+    
+    console.log('🔍 HOMEPAGE: Raw matching test IDs:', matchingTestIds);
+    
+    // If testIds are provided, filter the matching tests to only include those
+    if (testIds && testIds.length > 0) {
+      matchingTestIds = matchingTestIds.filter(id => testIds.includes(id));
+      console.log('🔍 HOMEPAGE: After additional filtering:', matchingTestIds);
+    }
+    
+    // Get the actual test details to see what we're counting
+    if (matchingTestIds.length > 0) {
+      const { data: testDetails, error: testError } = await supabase
+        .from('provider_blood_tests')
+        .select('id, name, provider:providers(name)')
+        .in('id', matchingTestIds);
+      
+      if (!testError && testDetails) {
+        console.log('🔍 HOMEPAGE: Tests being counted:', testDetails.map(t => ({
+          id: t.id,
+          name: t.name,
+          provider: t.provider?.name
+        })));
+      }
+    }
+    
+    console.log('🔍 HOMEPAGE: Final count:', matchingTestIds.length);
+    return matchingTestIds.length;
     
   } catch (error) {
     console.error('Error getting biomarker test count:', error);
@@ -2218,6 +2779,7 @@ async function getBiomarkerTestCount(biomarkerNames) {
 async function getTestosteroneOnlyTestCount() {
   try {
     console.log('🔍 Getting testosterone-only test count...');
+    console.log('🔍 Function called from:', new Error().stack);
     
     // Get tests in men's health category with enriched biomarker data
     const { data: tests, error } = await supabase
@@ -2538,6 +3100,99 @@ async function getMaleHormoneCheckOnlyCount() {
   }
 }
 
+// Get test count for TRT monitoring tests (specific hardcoded test IDs)
+async function getTRTMonitoringTestCount() {
+  try {
+    console.log('🔍 Getting TRT monitoring test count...');
+    
+    // Hardcoded TRT monitoring test IDs as provided
+    const trtMonitoringTestIds = [44, 52, 409, 20, 411, 405, 418, 413, 417, 407];
+    console.log('🔍 TRT monitoring test IDs:', trtMonitoringTestIds);
+    
+    // Verify these tests exist and are in the men's health category
+    const { data: tests, error } = await supabase
+      .from('provider_blood_tests')
+      .select(`
+        id,
+        name,
+        price,
+        blood_test_category_link_table!inner (
+          blood_test_category_id
+        )
+      `)
+      .in('id', trtMonitoringTestIds)
+      .eq('blood_test_category_link_table.blood_test_category_id', 3);
+    
+    if (error) {
+      console.error('Error fetching TRT monitoring tests:', error);
+      return 0;
+    }
+    
+    console.log('🔍 TRT monitoring tests found:', tests.length);
+    console.log('🔍 TRT monitoring test names:', tests.map(t => t.name));
+    
+    return tests.length;
+    
+  } catch (error) {
+    console.error('Error getting TRT monitoring test count:', error);
+    return 0;
+  }
+}
+
+// Get TRT monitoring test data for display purposes
+async function getTRTMonitoringTests() {
+  try {
+    console.log('🔍 Getting TRT monitoring test data...');
+    
+    // Hardcoded TRT monitoring test IDs as provided
+    const trtMonitoringTestIds = [44, 52, 409, 20, 411, 405, 418, 413, 417, 407];
+    console.log('🔍 TRT monitoring test IDs:', trtMonitoringTestIds);
+    
+    // Fetch the complete test data including provider information
+    const { data: tests, error } = await supabase
+      .from('provider_blood_tests')
+      .select(`
+        id,
+        name,
+        price,
+        description,
+        provider_id,
+        providers (
+          name,
+          logo_url
+        ),
+        biomarker_link_table (
+          biomarkers (
+            id,
+            name,
+            description
+          )
+        ),
+        blood_taking_method_link_table (
+          blood_taking_methods (
+            id,
+            name
+          )
+        )
+      `)
+      .in('id', trtMonitoringTestIds);
+    
+    if (error) {
+      console.error('Error fetching TRT monitoring test data:', error);
+      return [];
+    }
+    
+    console.log('🔍 TRT monitoring tests data fetched:', tests.length);
+    console.log('🔍 TRT monitoring test names:', tests.map(t => t.name));
+    
+    return tests;
+    
+  } catch (error) {
+    console.error('Error getting TRT monitoring test data:', error);
+    return [];
+  }
+}
+
 // Get test count for a specific method
 async function getMethodTestCount(methodName) {
   try {
@@ -2663,12 +3318,20 @@ async function getAllTestIds() {
 async function updateDropdownsBasedOnSelections() {
   console.log('🔧 updateDropdownsBasedOnSelections called');
   
-  // Get current selections
-  const method = document.querySelector('.dropdown-select-4')?.value;
-  const minPrice = document.querySelector('.dropdown-select-1')?.value;
-  const maxPrice = document.querySelector('.dropdown-select-2')?.value;
+  // Get current selections from the currently visible side
+  const visibleForm = document.querySelector('.form-content[style*="opacity: 1"], .form-content[style*="visibility: visible"]') || 
+                     document.querySelector('.blood-tests-form'); // fallback to blood-tests-form
   
-  console.log('🔧 Current selections - Method:', method, 'MinPrice:', minPrice, 'MaxPrice:', maxPrice);
+  if (!visibleForm) {
+    console.log('🔧 No visible form found for updating dropdowns');
+    return;
+  }
+  
+  const method = visibleForm.querySelector('.dropdown-select-4')?.value;
+  const minPrice = visibleForm.querySelector('.dropdown-select-1')?.value;
+  const maxPrice = visibleForm.querySelector('.dropdown-select-2')?.value;
+  
+  console.log('🔧 Current selections from', visibleForm.classList.contains('blood-tests-form') ? 'Help me choose' : 'Let me pick', 'side - Method:', method, 'MinPrice:', minPrice, 'MaxPrice:', maxPrice);
   
   try {
     // Update price dropdowns based on method selections (not price selections)
@@ -2788,10 +3451,10 @@ async function updatePriceDropdownsForTests(testIds) {
     
     console.log('Price range for filtered tests:', minPrice, 'to', maxPrice);
     
-    // Update min price dropdown
+    // Update min price dropdowns on both sides
     await updateMinPriceDropdown(minPrice, maxPrice, testIds);
     
-    // Update max price dropdown
+    // Update max price dropdowns on both sides
     await updateMaxPriceDropdown(minPrice, maxPrice, testIds);
     
   } catch (error) {
@@ -2801,62 +3464,68 @@ async function updatePriceDropdownsForTests(testIds) {
 
 // Update min price dropdown
 async function updateMinPriceDropdown(minPrice, maxPrice, testIds = null) {
-  const minPriceSelect = document.querySelector('.dropdown-select-1');
-  if (!minPriceSelect) return;
+  // Get min price selects from both sides
+  const minPriceSelects = document.querySelectorAll('.dropdown-select-1');
   
-  // Store current selection
-  const currentSelection = minPriceSelect.value;
-  
-  // Clear existing options
-  minPriceSelect.innerHTML = '<option value="">Min price</option>';
-  
-  // Generate price options from min to max in £50 increments
-  for (let price = 0; price <= maxPrice; price += 50) {
-    if (price >= minPrice) {
-      const count = testIds ? await getMinPriceTestCountForTests(price, testIds) : await getMinPriceTestCount(price);
-      const option = document.createElement('option');
-      option.value = `£${price}`;
-      option.textContent = `£${price} (${count})`;
-      minPriceSelect.appendChild(option);
+  minPriceSelects.forEach(minPriceSelect => {
+    if (!minPriceSelect) return;
+    
+    // Store current selection
+    const currentSelection = minPriceSelect.value;
+    
+    // Clear existing options
+    minPriceSelect.innerHTML = '<option value="">Min price</option>';
+    
+    // Generate price options from min to max in £50 increments
+    for (let price = 0; price <= maxPrice; price += 50) {
+      if (price >= minPrice) {
+        const option = document.createElement('option');
+        option.value = `£${price}`;
+        option.textContent = `£${price}`;
+        minPriceSelect.appendChild(option);
+      }
     }
-  }
-  
-  // Restore selection if it's still valid
-  if (currentSelection && currentSelection !== '') {
-    const optionExists = Array.from(minPriceSelect.options).some(option => option.value === currentSelection);
-    if (optionExists) {
-      minPriceSelect.value = currentSelection;
+    
+    // Restore selection if it's still valid
+    if (currentSelection && currentSelection !== '') {
+      const optionExists = Array.from(minPriceSelect.options).some(option => option.value === currentSelection);
+      if (optionExists) {
+        minPriceSelect.value = currentSelection;
+      }
     }
-  }
+  });
 }
 
 // Update max price dropdown
 async function updateMaxPriceDropdown(minPrice, maxPrice, testIds = null) {
-  const maxPriceSelect = document.querySelector('.dropdown-select-2');
-  if (!maxPriceSelect) return;
+  // Get max price selects from both sides
+  const maxPriceSelects = document.querySelectorAll('.dropdown-select-2');
   
-  // Store current selection
-  const currentSelection = maxPriceSelect.value;
-  
-  // Clear existing options
-  maxPriceSelect.innerHTML = '<option value="">Max price</option>';
-  
-  // Generate price options from min to max in £50 increments
-  for (let price = minPrice; price <= maxPrice; price += 50) {
-    const count = testIds ? await getMaxPriceTestCountForTests(price, testIds) : await getMaxPriceTestCount(price);
-    const option = document.createElement('option');
-    option.value = `£${price}`;
-    option.textContent = `£${price} (${count})`;
-    maxPriceSelect.appendChild(option);
-  }
-  
-  // Restore selection if it's still valid
-  if (currentSelection && currentSelection !== '') {
-    const optionExists = Array.from(maxPriceSelect.options).some(option => option.value === currentSelection);
-    if (optionExists) {
-      maxPriceSelect.value = currentSelection;
+  maxPriceSelects.forEach(maxPriceSelect => {
+    if (!maxPriceSelect) return;
+    
+    // Store current selection
+    const currentSelection = maxPriceSelect.value;
+    
+    // Clear existing options
+    maxPriceSelect.innerHTML = '<option value="">Max price</option>';
+    
+    // Generate price options from min to max in £50 increments
+    for (let price = minPrice; price <= maxPrice; price += 50) {
+      const option = document.createElement('option');
+      option.value = `£${price}`;
+      option.textContent = `£${price}`;
+      maxPriceSelect.appendChild(option);
     }
-  }
+    
+    // Restore selection if it's still valid
+    if (currentSelection && currentSelection !== '') {
+      const optionExists = Array.from(maxPriceSelect.options).some(option => option.value === currentSelection);
+      if (optionExists) {
+        maxPriceSelect.value = currentSelection;
+      }
+    }
+  });
 }
 
 // Update method dropdown for specific provider
@@ -3063,19 +3732,25 @@ async function updateProviderDropdownForMethod(methodName) {
 function resetHomePageForm() {
   console.log('🔄 Resetting homepage form...');
   
-  // Reset all dropdown selects
-  const dropdownSelects = document.querySelectorAll('.blood-tests-form select');
-  dropdownSelects.forEach(select => {
+  // Reset all dropdown selects on both sides
+  const allDropdownSelects = document.querySelectorAll('.blood-tests-form select, .problem-form select');
+  allDropdownSelects.forEach(select => {
     select.value = '';
   });
   
-  // Reset biomarker search inputs
+  // Reset biomarker search inputs on both sides
   const biomarkerInputs = document.querySelectorAll('.biomarker-search-input, .biomarker-search-input-2');
   biomarkerInputs.forEach(input => {
     input.value = '';
+    // Clear any data attributes
+    input.removeAttribute('data-testosterone-only');
+    input.removeAttribute('data-testosterone-full-hormone');
+    input.removeAttribute('data-testosterone-full-hormone-only');
+    input.removeAttribute('data-testosterone-full-hormone-general-health');
+    input.removeAttribute('data-trt-monitoring');
   });
   
-  // Hide biomarker dropdowns
+  // Hide biomarker dropdowns on both sides
   const biomarkerDropdowns = document.querySelectorAll('.biomarker-dropdown, .biomarker-dropdown-2');
   biomarkerDropdowns.forEach(dropdown => {
     dropdown.style.display = 'none';
@@ -3084,11 +3759,11 @@ function resetHomePageForm() {
   // Clear any validation errors
   clearValidationErrors();
   
-  // Reset test count
-  const testCountElement = document.querySelector('.test-count');
-  if (testCountElement) {
-    testCountElement.textContent = '0';
-  }
+  // Reset test count on both sides
+  const testCountElements = document.querySelectorAll('.test-count');
+  testCountElements.forEach(element => {
+    element.textContent = '0';
+  });
   
   // Reset problem form if visible
   const problemForm = document.querySelector('.problem-form');
@@ -3099,5 +3774,324 @@ function resetHomePageForm() {
     }
   }
   
+  // Re-populate price dropdowns with default values
+  updatePriceDropdowns().catch(console.error);
+  
+  // Update the dynamic count after reset
+  updateDynamicCount();
+  
   console.log('✅ Homepage form reset complete');
-} 
+}
+
+// Get test IDs for testosterone-only tests (tests that contain ONLY testosterone)
+async function getTestosteroneOnlyTestIds() {
+  try {
+    console.log('🔍 Getting testosterone-only test IDs...');
+    
+    // Get tests in men's health category with enriched biomarker data
+    const { data: tests, error } = await supabase
+      .from('blood_test_category_link_table')
+      .select(`
+        provider_blood_test_id,
+        provider_blood_tests!inner (
+          id,
+          name,
+          biomarker_link_table (
+            biomarkers (
+              name
+            )
+          )
+        )
+      `)
+      .eq('blood_test_category_id', 3);
+    
+    if (error) {
+      console.error('Error fetching tests:', error);
+      return [];
+    }
+    
+    console.log('🔍 Total tests in men\'s health category:', tests.length);
+    
+    // Filter tests that have ONLY testosterone
+    const testosteroneOnlyTests = tests.filter(test => {
+      const biomarkerLinks = test.provider_blood_tests.biomarker_link_table || [];
+      const biomarkerNames = biomarkerLinks
+        .map(link => link.biomarkers?.name)
+        .filter(Boolean);
+      
+      // Check if the test has exactly one biomarker and it's testosterone
+      const hasOnlyOneBiomarker = biomarkerNames.length === 1;
+      const hasOnlyTestosterone = biomarkerNames.some(name => 
+        name && name.toLowerCase().includes('testosterone')
+      );
+      const isTestosteroneOnly = hasOnlyOneBiomarker && hasOnlyTestosterone;
+      
+      return isTestosteroneOnly;
+    });
+    
+    const testIds = testosteroneOnlyTests.map(test => test.provider_blood_test_id);
+    console.log('🔍 Testosterone-only test IDs found:', testIds.length);
+    return testIds;
+    
+  } catch (error) {
+    console.error('Error getting testosterone-only test IDs:', error);
+    return [];
+  }
+}
+
+// Get test IDs for testosterone full hormone profile tests
+async function getTestosteroneFullHormoneTestIds() {
+  try {
+    console.log('🔍 Getting testosterone full hormone test IDs...');
+    
+    // Get tests in men's health category
+    const { data: linkRows, error: linkError } = await supabase
+      .from('blood_test_category_link_table')
+      .select('provider_blood_test_id')
+      .eq('blood_test_category_id', 3);
+    
+    if (linkError) {
+      console.error('Error fetching link rows:', linkError);
+      return [];
+    }
+    
+    const testIds = linkRows.map(row => row.provider_blood_test_id);
+    if (testIds.length === 0) return [];
+    
+    // Fetch tests with biomarker info
+    const { data: tests, error: testError } = await supabase
+      .from('provider_blood_tests')
+      .select(`
+        id,
+        biomarker_link_table (
+          biomarkers (
+            name
+          )
+        )
+      `)
+      .in('id', testIds);
+    
+    if (testError) {
+      console.error('Error fetching tests:', testError);
+      return [];
+    }
+    
+    // Filter tests that have testosterone AND other hormone-related biomarkers
+    const hormoneTests = tests.filter(test => {
+      const biomarkerLinks = test.biomarker_link_table || [];
+      const biomarkerNames = biomarkerLinks
+        .map(link => link.biomarkers?.name)
+        .filter(Boolean);
+      
+      const hasTestosterone = biomarkerNames.some(name => 
+        name && name.toLowerCase().includes('testosterone')
+      );
+      const hasOtherHormones = biomarkerNames.some(name => 
+        name && (name.toLowerCase().includes('shbg') || 
+                name.toLowerCase().includes('free testosterone') ||
+                name.toLowerCase().includes('lh') ||
+                name.toLowerCase().includes('fsh'))
+      );
+      
+      return hasTestosterone && hasOtherHormones;
+    });
+    
+    const hormoneTestIds = hormoneTests.map(test => test.id);
+    console.log('🔍 Testosterone full hormone test IDs found:', hormoneTestIds.length);
+    return hormoneTestIds;
+    
+  } catch (error) {
+    console.error('Error getting testosterone full hormone test IDs:', error);
+    return [];
+  }
+}
+
+// Get test IDs for male hormone check only tests
+async function getMaleHormoneCheckOnlyTestIds() {
+  try {
+    console.log('🔍 Getting male hormone check only test IDs...');
+    
+    // Get tests in men's health category
+    const { data: linkRows, error: linkError } = await supabase
+      .from('blood_test_category_link_table')
+      .select('provider_blood_test_id')
+      .eq('blood_test_category_id', 3);
+    
+    if (linkError) {
+      console.error('Error fetching link rows:', linkError);
+      return [];
+    }
+    
+    const testIds = linkRows.map(row => row.provider_blood_test_id);
+    if (testIds.length === 0) return [];
+    
+    // Fetch tests with biomarker info
+    const { data: tests, error: testError } = await supabase
+      .from('provider_blood_tests')
+      .select(`
+        id,
+        biomarker_link_table (
+          biomarkers (
+            name
+          )
+        )
+      `)
+      .in('id', testIds);
+    
+    if (testError) {
+      console.error('Error fetching tests:', testError);
+      return [];
+    }
+    
+    // Filter tests that have testosterone, free testosterone, and SHBG
+    const hormoneCheckTests = tests.filter(test => {
+      const biomarkerLinks = test.biomarker_link_table || [];
+      const biomarkerNames = biomarkerLinks
+        .map(link => link.biomarkers?.name)
+        .filter(Boolean);
+      
+      const hasTestosterone = biomarkerNames.some(name => 
+        name && name.toLowerCase().includes('testosterone')
+      );
+      const hasFreeTestosterone = biomarkerNames.some(name => 
+        name && name.toLowerCase().includes('free testosterone')
+      );
+      const hasSHBG = biomarkerNames.some(name => 
+        name && name.toLowerCase().includes('shbg')
+      );
+      
+      return hasTestosterone && hasFreeTestosterone && hasSHBG;
+    });
+    
+    const hormoneCheckTestIds = hormoneCheckTests.map(test => test.id);
+    console.log('🔍 Male hormone check only test IDs found:', hormoneCheckTestIds.length);
+    return hormoneCheckTestIds;
+    
+  } catch (error) {
+    console.error('Error getting male hormone check only test IDs:', error);
+    return [];
+  }
+}
+
+// Get test IDs for TRT monitoring tests
+async function getTRTMonitoringTestIds() {
+  try {
+    console.log('🔍 Getting TRT monitoring test IDs...');
+    
+    // Get tests in men's health category
+    const { data: linkRows, error: linkError } = await supabase
+      .from('blood_test_category_link_table')
+      .select('provider_blood_test_id')
+      .eq('blood_test_category_id', 3);
+    
+    if (linkError) {
+      console.error('Error fetching link rows:', linkError);
+      return [];
+    }
+    
+    const testIds = linkRows.map(row => row.provider_blood_test_id);
+    if (testIds.length === 0) return [];
+    
+    // Fetch tests with biomarker info
+    const { data: tests, error: testError } = await supabase
+      .from('provider_blood_tests')
+      .select(`
+        id,
+        biomarker_link_table (
+          biomarkers (
+            name
+          )
+        )
+      `)
+      .in('id', testIds);
+    
+    if (testError) {
+      console.error('Error fetching tests:', testError);
+      return [];
+    }
+    
+    // Filter tests that have testosterone and other TRT monitoring biomarkers
+    const trtTests = tests.filter(test => {
+      const biomarkerLinks = test.biomarker_link_table || [];
+      const biomarkerNames = biomarkerLinks
+        .map(link => link.biomarkers?.name)
+        .filter(Boolean);
+      
+      const hasTestosterone = biomarkerNames.some(name => 
+        name && name.toLowerCase().includes('testosterone')
+      );
+      const hasTRTMarkers = biomarkerNames.some(name => 
+        name && (name.toLowerCase().includes('estradiol') || 
+                name.toLowerCase().includes('psa') ||
+                name.toLowerCase().includes('hemoglobin') ||
+                name.toLowerCase().includes('hematocrit'))
+      );
+      
+      return hasTestosterone && hasTRTMarkers;
+    });
+    
+    const trtTestIds = trtTests.map(test => test.id);
+    console.log('🔍 TRT monitoring test IDs found:', trtTestIds.length);
+    return trtTestIds;
+    
+  } catch (error) {
+    console.error('Error getting TRT monitoring test IDs:', error);
+    return [];
+  }
+}
+
+// BRAND NEW SIMPLE COUNT UPDATE FUNCTION
+async function updateSearchButtonCountSimple(selectedValue) {
+  console.log('🚀 NEW SIMPLE COUNT UPDATE - Starting with value:', selectedValue);
+  
+  try {
+    let testCount = 0;
+    
+    // Get the count based on the selected testosterone option
+    switch (selectedValue) {
+      case 'testosterone-only':
+        testCount = await getTestosteroneOnlyTestCount();
+        break;
+      case 'testosterone-full-hormone':
+        testCount = await getTestosteroneFullHormoneTestCount();
+        break;
+      case 'testosterone-full-hormone-only':
+        testCount = await getMaleHormoneCheckOnlyCount();
+        break;
+      case 'testosterone-full-hormone-general-health':
+        testCount = await getBiomarkerTestCount(['Testosterone', 'Free testosterone', 'SHBG']);
+        break;
+      case 'trt-monitoring':
+        testCount = await getTRTMonitoringTestCount();
+        break;
+      default:
+        testCount = await getMensHealthTestCount();
+        break;
+    }
+    
+    console.log('🚀 NEW SIMPLE COUNT UPDATE - Calculated count:', testCount);
+    
+    // Update ALL search buttons on the page
+    const allSearchButtons = document.querySelectorAll('.search-button');
+    console.log('🚀 NEW SIMPLE COUNT UPDATE - Found search buttons:', allSearchButtons.length);
+    
+    allSearchButtons.forEach((button, index) => {
+      const countSpan = button.querySelector('.test-count');
+      if (countSpan) {
+        countSpan.textContent = testCount;
+        console.log(`🚀 NEW SIMPLE COUNT UPDATE - Updated button ${index + 1} to:`, testCount);
+      } else {
+        console.log(`🚀 NEW SIMPLE COUNT UPDATE - No count span found in button ${index + 1}`);
+      }
+    });
+    
+    console.log('🚀 NEW SIMPLE COUNT UPDATE - COMPLETED SUCCESSFULLY');
+    return testCount;
+    
+  } catch (error) {
+    console.error('🚀 NEW SIMPLE COUNT UPDATE - Error:', error);
+    return 0;
+  }
+}
+
+// ... existing code ...

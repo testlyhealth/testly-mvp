@@ -1679,6 +1679,8 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
     let filteredTests = tests;
     let availableTests = tests;
 
+
+    
     // If categories are selected, fetch matching tests from Supabase
     if (currentFilters.categories.length > 0) {
       // 1. Get all category IDs
@@ -1695,6 +1697,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
           .in('blood_test_category_id', categoryIds);
         if (!linkError && linkRows && linkRows.length > 0) {
           const testIds = [...new Set(linkRows.map(row => row.provider_blood_test_id))];
+          
           // 3. Get all blood tests with those IDs
           const { data: supaTests, error: testError } = await supabase
             .from('provider_blood_tests')
@@ -1703,6 +1706,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
           if (!testError && supaTests) {
             availableTests = supaTests;
             filteredTests = supaTests;
+            console.log(`Fetched ${availableTests.length} tests from database`);
           } else {
             availableTests = [];
             filteredTests = [];
@@ -1725,6 +1729,9 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       // Always use the initial filtered tests when no categories are selected
       availableTests = tests;
       filteredTests = []; // Start with empty array, will be populated by filtering logic
+      
+
+      
       console.log('Final availableTests length:', availableTests.length);
     }
 
