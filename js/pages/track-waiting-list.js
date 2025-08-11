@@ -70,9 +70,9 @@ export function getTrackWaitingListPageContent() {
                 <div class="progress-section">
                     <h3>Development Progress</h3>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: 75%"></div>
+                        <div class="progress-fill" style="width: 78%"></div>
                     </div>
-                    <p class="progress-text">We're 75% of the way there! Expected launch: <strong>September 2025</strong></p>
+                    <p class="progress-text">We're 78% of the way there! Expected launch: <strong>September 2025</strong></p>
                 </div>
             </div>
         </section>

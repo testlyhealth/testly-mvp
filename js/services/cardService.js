@@ -649,30 +649,8 @@ export class CardService {
     console.log('Updated comparison count:', count);
   }
 
-  static getProviderLogo(providerName) {
-    const logoMap = {
-      'London Health Company': 'london health company.png',
-      'Numan': 'numan.png',
-      'Medichecks': 'medichecks.png',
-      'London Medical Laboratory': 'london medical laboratory.png',
-      'Superdrug': 'superdrug.png',
-      'Bluecrest': 'bluecrest.png',
-      'Thriva': 'thriva.png',
-      'Forth': 'forth.png',
-      'Nuffield Health': 'nuffield.png',
-      'Lloyds Pharmacy': 'lloyds pharmacy.png',
-      'Selph': 'selph.png',
-      'Lola': 'lola.png',
-      'Randox': 'randox.png',
-      'One day tests': 'one day tests.png'
-    };
-    
-    return logoMap[providerName] || `${providerName.toLowerCase().replace(/ |-/g, '')}.png`;
-  }
-
   static async updateComparisonGrid() {
     console.log('=== FIRST updateComparisonGrid method called ===');
-    // This is the basic comparison grid method
     let comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
     console.log('Comparison tests from localStorage:', comparisonTests);
     
@@ -719,7 +697,8 @@ export class CardService {
           const providerName = (test.provider?.name || test.provider || '').trim();
           let providerLogo = 'medichecks.png'; // Default logo
           if (providerName) {
-            providerLogo = CardService.getProviderLogo(providerName);
+            const normalized = providerName.toLowerCase().replace(/ |-/g, '');
+            providerLogo = `${normalized}.png`;
           }
           
           const trustpilotData = (() => {
@@ -1000,7 +979,8 @@ export class CardService {
           const providerName = (test.provider?.name || test.provider || '').trim();
           let providerLogo = 'medichecks.png'; // Default logo
           if (providerName) {
-            providerLogo = CardService.getProviderLogo(providerName);
+            const normalized = providerName.toLowerCase().replace(/ |-/g, '');
+            providerLogo = `${normalized}.png`;
           }
           
           const trustpilotData = (() => {
