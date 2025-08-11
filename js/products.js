@@ -73,7 +73,7 @@ async function updateTestsGrid(tests) {
   $all('.blood-test-card').forEach(card => {
     card.addEventListener('click', (e) => {
       // Don't trigger selection if clicking on buttons or interactive elements
-      if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.toggle-biomarkers') || e.target.closest('.toggle-all-biomarkers')) {
+      if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.toggle-biomarkers') || e.target.closest('.toggle-all-biomarkers') || e.target.closest('.add-to-compare-checkbox') || e.target.closest('.add-to-compare-label')) {
         return;
       }
       

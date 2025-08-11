@@ -224,7 +224,22 @@ export default class Router {
       } else if (hash.startsWith('/category/')) {
         console.log('Handling category route:', hash);
         const categoryId = hash.split('/')[2];
-        // Always render the general health page with men's health and hormones category
+        
+        // Check if there are URL parameters that should be preserved
+        const urlParams = new URLSearchParams(hash.split('?')[1] || '');
+        if (urlParams.toString()) {
+          console.log('Category route has URL parameters, redirecting to search-results to preserve them');
+          // Redirect to search-results with the same parameters to preserve filters
+          const searchParams = new URLSearchParams();
+          for (const [key, value] of urlParams.entries()) {
+            searchParams.set(key, value);
+          }
+          const url = `#/search-results${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+          window.location.hash = url;
+          return; // Exit early since we're redirecting
+        }
+        
+        // No URL parameters, render the general health page normally
         const content = await displayGeneralHealthPage();
         await this.render(content);
       } else {

@@ -615,7 +615,7 @@ export function getHomePageContent() {
           <h2>Have test results from <span style="color: #1E88E5;">multiple providers</span>?</h2>
           <p>Track your results <strong>in one single place</strong> and gain insights into your health.</p>
           <div class="multi-provider-image">
-            <img src="images/laptop-data.jpg" alt="Laptop showing data and results" />
+            <img src="images/graph_my_results.png" alt="Blood test results table showing hormone data across multiple dates" />
           </div>
           <div class="multi-provider-cta">
             <button class="multi-provider-button">Track my results</button>
@@ -660,12 +660,6 @@ export function getHomePageContent() {
         </div>
         <div class="featured-cta">
           <button class="secondary-cta-button">
-            View all blood tests
-            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <button class="secondary-cta-button">
             Graph my results
             <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -683,7 +677,7 @@ export function initializeHomePage() {
   loadProblemList(); // Load problem list from database
   setupNavigationHandlers();
   setupCategoryCards();
-  setupCTAButtons();
+
   setupSearchTabs();
   setupOptionCardSelection();
       updateSearchButtonCountSimple('default'); // Update search button count using new simple function
@@ -744,6 +738,22 @@ function setupStepCardInteractions() {
     });
     
     // Remove the mouseleave event listener so the last hovered card stays highlighted
+  });
+  
+  // Add click handlers for the step buttons
+  const stepButtons = document.querySelectorAll('.step-cta-button');
+  stepButtons.forEach((button, index) => {
+    if (index === 0) {
+      // First button (Compare now) - scroll to form
+      button.addEventListener('click', () => {
+        scrollToForm();
+      });
+    } else if (index === 2) {
+      // Third button (Track results) - go to track waiting list
+      button.addEventListener('click', () => {
+        window.location.hash = '#/track-waiting-list';
+      });
+    }
   });
 }
 
@@ -1225,30 +1235,7 @@ function setupCategoryCards() {
   });
 }
 
-// Setup CTA button navigation
-function setupCTAButtons() {
-  const primaryCTAs = document.querySelectorAll('.primary-cta-button');
-  const secondaryCTAs = document.querySelectorAll('.secondary-cta-button');
-  
-  primaryCTAs.forEach(primaryCTA => {
-    primaryCTA.addEventListener('click', () => {
-      window.location.hash = '#/compare';
-    });
-  });
-  
-  secondaryCTAs.forEach((secondaryCTA, index) => {
-    secondaryCTA.addEventListener('click', () => {
-      // First button (View all blood tests) goes to General Health
-      if (index === 0) {
-        window.location.hash = '#/category/General%20health?filter=General%20health';
-      }
-      // Second button (Graph my results) goes to graph page
-      else if (index === 1) {
-        window.location.hash = '#/graph';
-      }
-    });
-  });
-}
+
 
 // Setup navigation handlers
 function setupNavigationHandlers() {
@@ -1257,6 +1244,14 @@ function setupNavigationHandlers() {
   if (multiProviderButton) {
     multiProviderButton.addEventListener('click', () => {
       window.location.hash = '#/track-waiting-list';
+    });
+  }
+  
+  // Add click handler for the Graph my results button
+  const graphResultsButton = document.querySelector('.secondary-cta-button');
+  if (graphResultsButton) {
+    graphResultsButton.addEventListener('click', () => {
+      window.location.hash = '#/graph';
     });
   }
 }

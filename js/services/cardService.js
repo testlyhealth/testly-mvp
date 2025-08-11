@@ -159,8 +159,8 @@ export class CardService {
           ${showDetails ? `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.2rem; margin-bottom: 0.5rem; padding-right: 1rem;">
               <div class="add-to-compare-container" style="margin: 0;">
-                <input type="checkbox" class="add-to-compare-checkbox" id="add-to-compare-${encodeURIComponent(test.name)}" />
-                <label for="add-to-compare-${encodeURIComponent(test.name)}" class="add-to-compare-label" style="margin-left: 0.5rem; font-size: 0.95rem; color: #222; cursor: pointer;">Add to compare</label>
+                <input type="checkbox" class="add-to-compare-checkbox" id="add-to-compare-${options.rank || 'unknown'}" data-test-id="${test.id}" data-test-name="${encodeURIComponent(test.name)}" />
+                <label for="add-to-compare-${options.rank || 'unknown'}" class="add-to-compare-label" style="margin-left: 0.5rem; font-size: 0.95rem; color: #222; cursor: pointer;">Add to compare</label>
               </div>
               <div style="color: #1E88E5; font-size: 0.9rem; font-weight: 500; cursor: pointer; white-space: nowrap;">Learn more>></div>
             </div>
@@ -297,27 +297,34 @@ export class CardService {
       comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
     } catch (e) { comparisonTests = []; }
 
-    checkboxes.forEach(checkbox => {
+    checkboxes.forEach((checkbox, index) => {
       // Set checked state if this test is in comparisonTests
-      const testId = checkbox.id.replace('add-to-compare-', '');
-      const decodedTestName = decodeURIComponent(testId);
-      if (comparisonTests.find(t => t.name === decodedTestName)) {
+      const testId = checkbox.dataset.testId;
+      
+      console.log(`Setting up checkbox ${index}:`, {
+        testId,
+        checkboxId: checkbox.id,
+        checkboxElement: checkbox
+      });
+      
+      if (comparisonTests.find(t => t.id == testId)) {
         checkbox.checked = true;
       } else {
         checkbox.checked = false;
       }
+      
       // Attach event listener
       checkbox.addEventListener('change', (e) => {
-        const testId = e.target.id.replace('add-to-compare-', '');
-        const decodedTestName = decodeURIComponent(testId);
-        const test = tests.find(t => t.name === decodedTestName);
+        const testId = e.target.dataset.testId;
+        const test = tests.find(t => t.id == testId);
         
         console.log('Checkbox changed:', {
+          checkboxIndex: index,
           testId,
-          decodedTestName,
           foundTest: test,
           checked: e.target.checked,
-          allTestNames: tests.map(t => t.name)
+          allTestIds: tests.map(t => t.id),
+          testsArrayLength: tests.length
         });
         
         if (test) {
@@ -329,8 +336,9 @@ export class CardService {
             CardService.removeTestFromComparison(test);
           }
         } else {
-          console.error('Test not found for:', decodedTestName);
-          console.error('Available tests:', tests.map(t => t.name));
+          console.error('Test not found for ID:', testId);
+          console.error('Available test IDs:', tests.map(t => t.id));
+          console.error('Tests array:', tests);
         }
       });
     });
@@ -568,7 +576,7 @@ export class CardService {
     let comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
     
     // Check if test is already in comparison
-    if (!comparisonTests.find(t => t.name === test.name)) {
+    if (!comparisonTests.find(t => t.id === test.id)) {
       // Ensure the test has complete biomarker data
       const testWithBiomarkers = {
         ...test,
@@ -599,15 +607,15 @@ export class CardService {
       // Dispatch event for UI update
       window.dispatchEvent(new Event('comparisonTestsUpdated'));
     } else {
-      console.log('Test already in comparison:', test.name);
+      console.log('Test already in comparison:', test.id);
     }
   }
 
   static async removeTestFromComparison(test) {
     let comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
-    comparisonTests = comparisonTests.filter(t => t.name !== test.name);
+    comparisonTests = comparisonTests.filter(t => t.id !== test.id);
     localStorage.setItem('comparisonTests', JSON.stringify(comparisonTests));
-    console.log('Removed test from comparison:', test.name);
+    console.log('Removed test from comparison:', test.id);
     
     // Update comparison page if we're on it
     if (window.location.hash === '#/compare') {
@@ -615,17 +623,63 @@ export class CardService {
     }
     // Dispatch event for UI update
     window.dispatchEvent(new Event('comparisonTestsUpdated'));
+    
+    // Update comparison count in UI
+    CardService.updateComparisonCount();
+  }
+
+  static updateComparisonCount() {
+    const compareBtn = document.querySelector('.compare-btn');
+    if (!compareBtn) return;
+    
+    let count = 0;
+    try {
+      const comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
+      count = Array.isArray(comparisonTests) ? comparisonTests.length : 0;
+    } catch (e) { 
+      count = 0; 
+    }
+    
+    if (count > 0) {
+      compareBtn.textContent = `Compare (${count})`;
+    } else {
+      compareBtn.textContent = 'Compare';
+    }
+    
+    console.log('Updated comparison count:', count);
+  }
+
+  static getProviderLogo(providerName) {
+    const logoMap = {
+      'London Health Company': 'london health company.png',
+      'Numan': 'numan.png',
+      'Medichecks': 'medichecks.png',
+      'London Medical Laboratory': 'london medical laboratory.png',
+      'Superdrug': 'superdrug.png',
+      'Bluecrest': 'bluecrest.png',
+      'Thriva': 'thriva.png',
+      'Forth': 'forth.png',
+      'Nuffield Health': 'nuffield.png',
+      'Lloyds Pharmacy': 'lloyds pharmacy.png',
+      'Selph': 'selph.png',
+      'Lola': 'lola.png',
+      'Randox': 'randox.png',
+      'One day tests': 'one day tests.png'
+    };
+    
+    return logoMap[providerName] || `${providerName.toLowerCase().replace(/ |-/g, '')}.png`;
   }
 
   static async updateComparisonGrid() {
     console.log('=== FIRST updateComparisonGrid method called ===');
+    // This is the basic comparison grid method
     let comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
     console.log('Comparison tests from localStorage:', comparisonTests);
     
     // Refresh biomarker counts, grouped biomarkers, and lab accreditations from the current test data
     if (window._allGeneralHealthTests) {
       comparisonTests = comparisonTests.map(storedTest => {
-        const currentTest = window._allGeneralHealthTests.find(t => t.name === storedTest.name);
+        const currentTest = window._allGeneralHealthTests.find(t => t.id === storedTest.id);
         if (currentTest) {
           return {
             ...storedTest,
@@ -665,8 +719,7 @@ export class CardService {
           const providerName = (test.provider?.name || test.provider || '').trim();
           let providerLogo = 'medichecks.png'; // Default logo
           if (providerName) {
-            const normalized = providerName.toLowerCase().replace(/ |-/g, '');
-            providerLogo = `${normalized}.png`;
+            providerLogo = CardService.getProviderLogo(providerName);
           }
           
           const trustpilotData = (() => {
@@ -947,8 +1000,7 @@ export class CardService {
           const providerName = (test.provider?.name || test.provider || '').trim();
           let providerLogo = 'medichecks.png'; // Default logo
           if (providerName) {
-            const normalized = providerName.toLowerCase().replace(/ |-/g, '');
-            providerLogo = `${normalized}.png`;
+            providerLogo = CardService.getProviderLogo(providerName);
           }
           
           const trustpilotData = (() => {

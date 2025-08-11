@@ -26,7 +26,8 @@ const providerLogoMap = {
   'Medichecks': 'medichecks.png',
   'Blue horizon blood tests': 'blue horizon blood tests.png',
   'Blood Tests London': 'bloodtestslondon.png',
-  'Goodbody Clinic': 'goodbodyclinic.png'
+  'Goodbody Clinic': 'goodbodyclinic.png',
+  'One day tests': 'one day tests.png'
 };
 
 // Store sort direction and test lists globally
@@ -445,7 +446,7 @@ function attachEventListeners() {
     
     card.addEventListener('click', (e) => {
       // Don't trigger selection if clicking on buttons or interactive elements
-      if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.toggle-biomarkers') || e.target.closest('.toggle-all-biomarkers')) {
+      if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.toggle-biomarkers') || e.target.closest('.toggle-all-biomarkers') || e.target.closest('.add-to-compare-checkbox') || e.target.closest('.add-to-compare-label')) {
         return;
       }
       
@@ -662,8 +663,8 @@ function injectMobileFiltersButton(retryCount = 0) {
 
 // Function to initialize page elements
 async function initializePageElements(tests, selectedProblem = null, skipFilterPanel = false) {
-  console.log('Initializing page elements with', tests.length, 'tests');
-  console.log('Selected problem passed to initializePageElements:', selectedProblem);
+  console.log('🔍 INITIALIZE PAGE ELEMENTS - Starting with', tests.length, 'tests');
+  console.log('🔍 Selected problem passed to initializePageElements:', selectedProblem);
   const testsGrid = $('.products-grid');
   if (!testsGrid) {
     console.error('Products grid not found');
@@ -673,8 +674,11 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
   // Set up global sort callback
   window.sortCallback = handleSortChange;
   
+  console.log('🔍 BEFORE SORTING - Tests count:', tests.length);
   filteredTests = tests;
   currentTests = sortTests(filteredTests, sortAscending);
+  console.log('🔍 AFTER SORTING - Current tests count:', currentTests.length);
+  console.log('🔍 ABOUT TO CREATE CARDS - Tests count:', currentTests.length);
   const cards = await cardService.createCards(currentTests);
   testsGrid.innerHTML = cards;
   
@@ -1125,18 +1129,20 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
 
     // Import setupFilterPanel function
     const { setupFilterPanel } = await import('./filter-panel.js');
-    console.log('setupFilterPanel imported, calling it with', currentTests.length, 'tests');
+    console.log('🔍 setupFilterPanel imported, calling it with', currentTests.length, 'tests');
     
     // Simple test to see if this code is running
-    console.log('Filter panel setup code is executing!');
+    console.log('🔍 Filter panel setup code is executing!');
     
           // Define the callback function
       const filterCallback = async (filterState) => {
+        console.log('🔍 FILTER CALLBACK TRIGGERED with filterState:', filterState);
       
       // Handle filter state object (new approach)
       if (!Array.isArray(filterState)) {
         // New case: filterState is an object with categories, providers, etc.
         const selectedCategories = filterState.categories || [];
+        console.log('🔍 Selected categories in filter callback:', selectedCategories);
         const selectedProviders = filterState.providers || [];
         
         // Check if filtered tests are provided directly (for price/provider filtering)
@@ -1209,9 +1215,9 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
           console.log('Fetched tests for categories:', allEnrichedTests.length);
         } else {
           // No categories selected, use the initially filtered tests instead of fetching all
-          console.log('No categories selected, using initial filtered tests');
+          console.log('🔍 No categories selected, using initial filtered tests');
           allEnrichedTests = window._allGeneralHealthTests || [];
-          console.log('Using initial filtered tests:', allEnrichedTests.length);
+          console.log('🔍 Using initial filtered tests:', allEnrichedTests.length);
           
           // Apply provider filter if specified
           if (selectedProviders.length > 0) {
@@ -1327,11 +1333,16 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
         updateTestGridContent(currentTests);
       } else {
         // Legacy case: filterState is an array of filtered tests
+        console.log('🔍 LEGACY CASE - filterState is not an object, treating as array:', filterState);
+        console.log('🔍 LEGACY CASE - filterState type:', typeof filterState);
+        console.log('🔍 LEGACY CASE - filterState value:', filterState);
         filteredTests = filterState;
+        console.log('🔍 LEGACY CASE - Setting filteredTests to:', filteredTests);
         sortAscending = true;
         window.sortAscending = sortAscending;
         updateSortButtonText(sortAscending);
         currentTests = sortTests(filteredTests, sortAscending);
+        console.log('🔍 LEGACY CASE - After sorting, currentTests count:', currentTests.length);
         updateTestGridContent(currentTests);
       }
     };
@@ -1342,12 +1353,13 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
     console.log('currentTests length:', currentTests.length);
     
     // Test the callback directly
-    console.log('Testing callback function...');
+    console.log('🔍 Testing callback function...');
     try {
+      console.log('🔍 CALLBACK TEST - About to call filterCallback with test object');
       filterCallback({ test: 'test' });
-      console.log('Callback test successful');
+      console.log('🔍 CALLBACK TEST - Callback test successful');
     } catch (error) {
-      console.error('Callback test failed:', error);
+      console.error('🔍 CALLBACK TEST - Callback test failed:', error);
     }
     
     console.log('Calling setupFilterPanel...');
@@ -1968,6 +1980,7 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     
     // --- Parse URL parameters from hash ---
     const hash = window.location.hash;
+    console.log('🔍 Parsing URL parameters from hash:', hash);
     let selectedBiomarkers = [];
     let selectedMinPrice = null;
     let selectedMaxPrice = null;
@@ -2093,13 +2106,15 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     console.log('Fetching from men\'s health category');
     tests = await fetchAndEnrichTests({ categoryId: 3 });
     console.log('Tests fetched from category:', tests.length);
+    console.log('🔍 BEFORE ANY FILTERING - Test count:', tests.length);
     
     // Apply filters
     let beforeFilter = tests.length;
+    console.log('🔍 STARTING FILTERING PROCESS - Initial count:', beforeFilter);
     
     // Apply biomarker filtering
     if (selectedBiomarkers.length > 0) {
-      console.log('Applying biomarker filter for:', selectedBiomarkers);
+      console.log('🔍 APPLYING BIOMARKER FILTER for:', selectedBiomarkers);
       
       if (isTestosteroneOnly && selectedBiomarkers.includes('Testosterone')) {
         console.log('Applying testosterone-only filter');
@@ -2205,6 +2220,7 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
           beforeFilter = tests.length;
         } else {
           // Regular biomarker filtering
+          console.log('🔍 APPLYING REGULAR BIOMARKER FILTERING');
         tests = tests.filter(test => {
           const testBiomarkerNames = test.biomarker_names || [];
           const hasAllBiomarkers = selectedBiomarkers.every(selectedBiomarker => {
@@ -2230,23 +2246,29 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
         console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after biomarker filtering`);
         beforeFilter = tests.length;
       }
+    } else {
+      console.log('🔍 NO BIOMARKER FILTERS APPLIED - keeping all tests');
     }
     
     // Apply price filtering
     if (selectedMinPrice && selectedMinPrice !== '') {
       const minPrice = parseFloat(selectedMinPrice.replace('£', ''));
-      console.log('Applying min price filter:', minPrice);
+      console.log('🔍 APPLYING MIN PRICE FILTER:', minPrice);
       tests = tests.filter(test => test.price >= minPrice);
-      console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after min price filtering`);
+      console.log(`🔍 Filtered from ${beforeFilter} to ${tests.length} tests after min price filtering`);
       beforeFilter = tests.length;
+    } else {
+      console.log('🔍 NO MIN PRICE FILTER APPLIED');
     }
     
     if (selectedMaxPrice && selectedMaxPrice !== '') {
       const maxPrice = parseFloat(selectedMaxPrice.replace('£', ''));
-      console.log('Applying max price filter:', maxPrice);
+      console.log('🔍 APPLYING MAX PRICE FILTER:', maxPrice);
       tests = tests.filter(test => test.price <= maxPrice);
-      console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after max price filtering`);
+      console.log(`🔍 Filtered from ${beforeFilter} to ${tests.length} tests after max price filtering`);
       beforeFilter = tests.length;
+    } else {
+      console.log('🔍 NO MAX PRICE FILTER APPLIED');
     }
     
     // Apply provider filtering
@@ -2259,8 +2281,8 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     
     // Apply method filtering
     if (selectedMethod && selectedMethod !== '') {
-      console.log('Applying method filter:', selectedMethod);
-      console.log('Sample tests with blood taking methods:', tests.slice(0, 3).map(t => ({
+      console.log('🔍 APPLYING METHOD FILTER:', selectedMethod);
+      console.log('🔍 Sample tests with blood taking methods:', tests.slice(0, 3).map(t => ({
         name: t.name,
         blood_taking_methods: t.blood_taking_methods
       })));
@@ -2268,23 +2290,30 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
         const testMethods = test.blood_taking_methods || [];
         const hasMethod = testMethods.some(method => method === selectedMethod);
         if (!hasMethod) {
-          console.log(`Filtering out test "${test.name}" - method "${selectedMethod}" not found in:`, testMethods);
+          console.log(`🔍 Filtering out test "${test.name}" - method "${selectedMethod}" not found in:`, testMethods);
         }
         return hasMethod;
       });
-      console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after method filtering`);
+      console.log(`🔍 Filtered from ${beforeFilter} to ${tests.length} tests after method filtering`);
       beforeFilter = tests.length;
+    } else {
+      console.log('🔍 NO METHOD FILTER APPLIED');
     }
     window._allGeneralHealthTests = tests;
     
+    console.log(`🎯 Final test count after all filtering: ${tests.length}`);
+    
     // Create filter panel with tests data - hide categories and problems for men's health page
           try {
+        console.log('🔍 ABOUT TO CREATE FILTER PANEL - Tests count:', tests.length);
         const filterPanel = await createFilterPanel(tests, { hideCategories: true, hideProblems: true });
+        console.log('🔍 FILTER PANEL CREATED - Tests count still:', tests.length);
         // Create and return the page structure
         const content = createPageStructure(filterPanel, null);
         // Add a custom event listener for when the content is rendered
         document.addEventListener('contentRendered', async () => {
           if (window._allGeneralHealthTests) {
+            console.log('🔍 CONTENT RENDERED - Tests count in window._allGeneralHealthTests:', window._allGeneralHealthTests.length);
             // Set up the filter panel properly with search parameters
             initializePageElements(window._allGeneralHealthTests, null, false);
             

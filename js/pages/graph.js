@@ -19,9 +19,9 @@ export function getGraphPageContent() {
                                     Biomarker<br>
                                     <span class="reference-range-text">Reference range (min - max)</span>
                                 </th>
-                                <th class="table-header">Result 1</th>
-                                <th class="table-header">Result 2</th>
-                                <th class="table-header">Result 3</th>
+                                <th class="table-header"><span class="date-header">5th July 2023</span></th>
+                                <th class="table-header"><span class="date-header">29th August 2024</span></th>
+                                <th class="table-header"><span class="date-header">14th June 2025</span></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -29,43 +29,43 @@ export function getGraphPageContent() {
                                 <td class="table-cell section-header" colspan="4">Hormones</td>
                             </tr>
                             <tr>
-                                <td class="table-cell">Total Testosterone (TT)<br><span class="reference-range-text">nmol/L (15 - 30)</span></td>
-                                <td class="table-cell">22.4</td>
-                                <td class="table-cell">21.8</td>
-                                <td class="table-cell">17.3</td>
+                                <td class="table-cell"><span class="biomarker-abbreviation">TT</span><br><span class="reference-range-text">(Total Testosterone)</span><br><span class="reference-range-text">nmol/L (15 - 30)</span></td>
+                                <td class="table-cell">22.4 <span class="reference-range-text percentage-change-positive">+0%</span></td>
+                                <td class="table-cell">21.8 <span class="reference-range-text percentage-change">-2.7%</span></td>
+                                <td class="table-cell">17.3 <span class="reference-range-text percentage-change">-20.7%</span></td>
                             </tr>
                             <tr>
-                                <td class="table-cell">Free Testosterone (FT)<br><span class="reference-range-text">mmol/L (0.225 - 0.700)</span></td>
+                                <td class="table-cell"><span class="biomarker-abbreviation">FT</span><br><span class="reference-range-text">(Free Testosterone)</span><br><span class="reference-range-text">mmol/L (0.225 - 0.700)</span></td>
                                 <td class="table-cell">0.481</td>
                                 <td class="table-cell">0.465</td>
                                 <td class="table-cell">0.39</td>
                             </tr>
                             <tr>
-                                <td class="table-cell">Oestradial (E2)<br><span class="reference-range-text">pmol/L (41 - 159)</span></td>
+                                <td class="table-cell"><span class="biomarker-abbreviation">E2</span><br><span class="reference-range-text">(Oestradial)</span><br><span class="reference-range-text">pmol/L (41 - 159)</span></td>
                                 <td class="table-cell">124</td>
                                 <td class="table-cell">118</td>
                                 <td class="table-cell">142</td>
                             </tr>
                             <tr>
-                                <td class="table-cell">Leutenising Hormone (LH)<br><span class="reference-range-text">IU/L (1.7 - 8.6)</span></td>
+                                <td class="table-cell"><span class="biomarker-abbreviation">LH</span><br><span class="reference-range-text">(Leutenising Hormone)</span><br><span class="reference-range-text">IU/L (1.7 - 8.6)</span></td>
                                 <td class="table-cell">4.5</td>
                                 <td class="table-cell">4.2</td>
                                 <td class="table-cell">4.8</td>
                             </tr>
                             <tr>
-                                <td class="table-cell">Folicle Stimulating Hormone (FSH)<br><span class="reference-range-text">IU/L (1.5 - 12.499)</span></td>
+                                <td class="table-cell"><span class="biomarker-abbreviation">FSH</span><br><span class="reference-range-text">(Folicle Stimulating Hormone)</span><br><span class="reference-range-text">IU/L (1.5 - 12.499)</span></td>
                                 <td class="table-cell out-of-range">0.92 <span class="reference-range-text">(-0.58)</span></td>
                                 <td class="table-cell">1.6</td>
                                 <td class="table-cell">2.1</td>
                             </tr>
                             <tr>
-                                <td class="table-cell">Sex Hormone Binding Globulin (SHBG)<br><span class="reference-range-text">nmol/L (18 - 39.99)</span></td>
+                                <td class="table-cell"><span class="biomarker-abbreviation">SHBG</span><br><span class="reference-range-text">(Sex Hormone Binding Globulin)</span><br><span class="reference-range-text">nmol/L (18 - 39.99)</span></td>
                                 <td class="table-cell">39</td>
                                 <td class="table-cell">41</td>
                                 <td class="table-cell">38</td>
                             </tr>
                             <tr>
-                                <td class="table-cell">Prolactin (PRL)<br><span class="reference-range-text">mU/L (86 - 324)</span></td>
+                                <td class="table-cell"><span class="biomarker-abbreviation">PRL</span><br><span class="reference-range-text">(Prolactin)</span><br><span class="reference-range-text">mU/L (86 - 324)</span></td>
                                 <td class="table-cell">285</td>
                                 <td class="table-cell">276</td>
                                 <td class="table-cell">295</td>

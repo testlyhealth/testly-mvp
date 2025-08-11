@@ -34,14 +34,17 @@ export class BloodTestOverlay {
             <div class="test-info">
              <div class="test-price"></div>
              <div class="test-description"></div>
-                           <div class="test-details">
-                              <div class="detail-item">
-                  <p class="sample-type"></p>
+                                                       <div class="test-details">
+                               <div class="detail-item">
+                   <p class="sample-type"></p>
+                 </div>
+                <div class="detail-item">
+                  <p class="results-time"></p>
                 </div>
-               <div class="detail-item">
-                 <p class="results-time"></p>
-               </div>
-             </div>
+                <div class="detail-item">
+                  <p class="doctors-report"></p>
+                </div>
+              </div>
                          <div class="biomarkers-section">
                <h4 class="biomarkers-header">Biomarkers Included</h4>
                <div class="biomarkers-list"></div>
@@ -202,11 +205,10 @@ export class BloodTestOverlay {
         color: #374151;
       }
 
-                           .overlay-body {
-          padding: 0 40px 40px 40px;
-          max-height: calc(90vh - 100px);
-          overflow-y: auto;
-        }
+                                  .overlay-body {
+         padding: 0 40px 40px 40px;
+         max-height: calc(90vh - 100px);
+       }
 
              .test-info {
          display: flex;
@@ -276,11 +278,11 @@ export class BloodTestOverlay {
          margin-left: 8px;
        }
 
-             .test-details {
-         display: grid;
-         grid-template-columns: 1fr 1fr;
-         gap: 16px;
-       }
+                           .test-details {
+          display: grid;
+          grid-template-columns: 1.5fr 1fr 1fr;
+          gap: 16px;
+        }
 
              .detail-item {
          display: flex;
@@ -304,18 +306,19 @@ export class BloodTestOverlay {
          font-size: 14px;
        }
 
-      .biomarkers-section {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
+             .biomarkers-section {
+         display: flex;
+         flex-direction: column;
+         gap: 3px;
+       }
 
-      .biomarkers-section h4 {
-        margin: 0;
-        font-size: 16px;
-        font-weight: 600;
-        color: #1f2937;
-      }
+             .biomarkers-section h4 {
+         margin: 0;
+         font-size: 14px;
+         font-weight: 600;
+         color: #1f2937;
+         text-transform: lowercase;
+       }
 
       .biomarkers-list {
         display: flex;
@@ -365,13 +368,12 @@ export class BloodTestOverlay {
          margin-left: 1.5rem;
        }
 
-      .overlay-actions {
-        display: flex;
-        gap: 12px;
-        margin-top: 24px;
-        padding-top: 24px;
-        border-top: 1px solid #e5e7eb;
-      }
+             .overlay-actions {
+         display: flex;
+         gap: 12px;
+         margin-top: 6px;
+         padding-top: 6px;
+       }
 
              .book-test-overlay {
          flex: 1;
@@ -494,7 +496,8 @@ export class BloodTestOverlay {
        'Medichecks': 'medichecks.png',
        'Blue horizon blood tests': 'blue horizon blood tests.png',
        'Blood Tests London': 'bloodtestslondon.png',
-       'Goodbody Clinic': 'goodbodyclinic.png'
+       'Goodbody Clinic': 'goodbodyclinic.png',
+       'One day tests': 'one day tests.png'
      };
 
      // Handle provider - it's a nested object from the database
@@ -561,17 +564,25 @@ export class BloodTestOverlay {
        
        overlay.querySelector('.sample-type').innerHTML = `Sample type: ${bloodMethods}` || 'Sample type: N/A';
     
-         // Handle results time - check for range or single value (using same logic as cardService)
-           const resultsTimeText = (() => {
-        if (test.results_returned_time_days) {
-          return `Results returned in: ${test.results_returned_time_days} days`;
-        } else if (test.results_returned_time_min && test.results_returned_time_max) {
-          return `Results returned in: ${test.results_returned_time_min} - ${test.results_returned_time_max} days`;
-        } else {
-          return 'Results returned in: N/A days';
-        }
-      })();
-     overlay.querySelector('.results-time').textContent = resultsTimeText;
+               // Handle results time - check for range or single value (using same logic as cardService)
+        const resultsTimeText = (() => {
+       if (test.results_returned_time_days) {
+         return `Results in: ${test.results_returned_time_days} days`;
+       } else if (test.results_returned_time_min && test.results_returned_time_max) {
+         return `Results in: ${test.results_returned_time_min} - ${test.results_returned_time_max} days`;
+       } else {
+         return 'Results in: N/A days';
+       }
+     })();
+           overlay.querySelector('.results-time').textContent = resultsTimeText;
+      
+      // Handle doctors report
+      const doctorsReportElement = overlay.querySelector('.doctors-report');
+      if (test.doctors_report) {
+        doctorsReportElement.innerHTML = `Doctors report: <span style="color: #059669; font-weight: 600;">✓</span>`;
+      } else {
+        doctorsReportElement.innerHTML = `Doctors report: <span style="color: #dc2626; font-weight: 600;">✗</span>`;
+      }
 
                    // Biomarkers - use grouped style like compare page
       const biomarkersList = overlay.querySelector('.biomarkers-list');
@@ -607,12 +618,12 @@ export class BloodTestOverlay {
           }
         }
         
-        biomarkersHeader.textContent = `${totalBiomarkers} Biomarkers Included`;
-        biomarkersList.innerHTML = html;
-      } else {
-                 biomarkersHeader.textContent = '0 Biomarkers Included';
-         biomarkersList.innerHTML = '<div class="biomarker-item">No biomarker information available</div>';
-       }
+                 biomarkersHeader.textContent = `${totalBiomarkers} biomarkers tested`;
+         biomarkersList.innerHTML = html;
+       } else {
+                  biomarkersHeader.textContent = '0 biomarkers tested';
+          biomarkersList.innerHTML = '<div class="biomarker-item">No biomarker information available</div>';
+        }
        
        // Set the book test URL
        const bookTestLink = overlay.querySelector('.book-test-overlay');

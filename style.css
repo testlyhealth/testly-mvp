@@ -8113,6 +8113,263 @@ body {
     }
   }
 
+  .step p {
+    font-size: 1.1rem;
+    color: #4a5568;
+    line-height: 1.6;
+    max-width: 250px;
+    margin: 0 auto;
+  }
+}
+
+/* Track Waiting List Page Styles */
+.track-waiting-list-section {
+  padding: 4rem 0;
+  background: var(--background);
+}
+
+.waiting-list-hero {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.waiting-list-hero .page-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.waiting-list-hero .page-subtitle {
+  font-size: 1.3rem;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+.waiting-list-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  margin-bottom: 4rem;
+  align-items: start;
+}
+
+.feature-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.feature-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+.feature-description h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+.feature-description p {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+}
+
+.feature-list li {
+  font-size: 1rem;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+  padding-left: 0;
+}
+
+.feature-list li:before {
+  content: none;
+}
+
+.waiting-list-form-container {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 4px 20px var(--card-shadow);
+  border: 1px solid var(--border);
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.form-header h3 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.75rem;
+}
+
+.form-header p {
+  font-size: 1rem;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+.waiting-list-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.waiting-list-form .form-group label {
+  display: block;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.waiting-list-form .form-group input,
+.waiting-list-form .form-group textarea {
+  width: 100%;
+  padding: 0.875rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: var(--white);
+}
+
+.waiting-list-form .form-group input:focus,
+.waiting-list-form .form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.waiting-list-form .form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.waiting-list-form .form-group small {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.submit-button {
+  width: 100%;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.submit-button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.submit-button:disabled {
+  background: var(--text-light);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.progress-section {
+  text-align: center;
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px var(--card-shadow);
+  border: 1px solid var(--border);
+}
+
+.progress-section h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background: var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+  border-radius: 6px;
+  transition: width 1s ease;
+}
+
+.progress-text {
+  font-size: 1rem;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+.progress-text strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .waiting-list-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .waiting-list-hero .page-title {
+    font-size: 2.5rem;
+  }
+  
+  .waiting-list-hero .page-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .waiting-list-form-container {
+    padding: 1.5rem;
+  }
+  
+  .form-header h3 {
+    font-size: 1.5rem;
+  }
+  
+  .progress-section {
+    padding: 1.5rem;
+  }
+  
+  .progress-section h3 {
+    font-size: 1.3rem;
+  }
+}
+
   @media (max-width: 768px) {
     .container {
       padding: 0 1rem;
@@ -9568,7 +9825,7 @@ body {
 .results-table-container {
   margin: 2rem 0;
   overflow-x: auto;
-  border-radius: 8px;
+  border-radius: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -9579,6 +9836,7 @@ body {
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   table-layout: fixed;
+  border-radius: 0;
 }
 
 .results-table th,
@@ -9591,22 +9849,39 @@ body {
   max-width: 50px;
   height: 40px;
   vertical-align: middle;
+  border-radius: 0 !important;
+}
+
+/* Thicker border between first and second columns */
+.results-table th:nth-child(2),
+.results-table td:nth-child(2) {
+  border-left: 3px solid #666;
+}
+
+/* Pale green pastel background for result cells */
+.results-table td:not(:first-child):not(.section-header) {
+  background-color: #e8f5e8;
 }
 
 .results-table th {
-  background-color: #f0f0f0;
+  background-color: white;
   font-weight: 600;
   color: #333;
   border-bottom: 3px solid #c0c0c0;
+  font-size: 14px;
 }
 
 .results-table td {
   background-color: white;
   color: #333;
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .results-table tbody tr:hover {
   background-color: #f8f9fa;
+  outline: 2px solid #1E88E5;
+  outline-offset: -2px;
 }
 
 .results-table tbody tr:hover td {
@@ -9621,17 +9896,59 @@ body {
 
 .reference-range-text {
   font-style: italic;
-  font-size: 10px;
-  color: #666;
+  font-size: 12px;
+  color: #000;
   font-weight: normal;
 }
 
+/* Red percentage text for TT row */
+.percentage-change {
+  color: #dc3545 !important;
+}
+
+/* Green percentage text for positive changes */
+.percentage-change-positive {
+  color: #28a745 !important;
+}
+
+.date-header {
+  font-style: normal;
+  font-size: 12px;
+  color: #000;
+  font-weight: bold;
+}
+
+.biomarker-abbreviation {
+  font-weight: bold;
+  font-size: 16px;
+  color: #000;
+}
+
 .section-header {
-  background-color: #f8f9fa !important;
+  background-color: #e3f2fd !important;
   font-weight: 600 !important;
   color: #333 !important;
   text-align: center !important;
   font-size: 14px !important;
+}
+
+/* Alternating row colors - light grey for every other row */
+.results-table tbody tr:nth-child(odd) .table-cell:not(.section-header) {
+  background-color: #f8f9fa;
+}
+
+.results-table tbody tr:nth-child(odd) .table-cell:not(.section-header):hover {
+  background-color: #e9ecef;
+}
+
+/* Pale grey background for first, third, fifth data rows (TT, E2, SHBG, etc.) */
+.results-table tbody tr:nth-child(odd) td:not(:first-child):not(.section-header) {
+  background-color: #f8f9fa;
+}
+
+/* White background for second, fourth, sixth data rows (FT, LH, PRL, etc.) */
+.results-table tbody tr:nth-child(even) td:not(:first-child):not(.section-header) {
+  background-color: white;
 }
 
 .out-of-range {
@@ -9885,6 +10202,12 @@ body {
   height: auto;
   border-radius: 12px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.multi-provider-image img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
 .multi-provider-cta {

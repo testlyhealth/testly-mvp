@@ -19,13 +19,13 @@ export function getTrackWaitingListPageContent() {
                         </div>
                         <div class="feature-description">
                             <h2>What's Coming Soon</h2>
-                            <p>We're building a powerful tool that will allow you to:</p>
                             <ul class="feature-list">
-                                <li>📊 Upload screenshots of your blood test results</li>
-                                <li>🤖 Use AI to automatically extract and parse your data</li>
-                                <li>📈 Create beautiful charts and track trends over time</li>
-                                <li>🔒 Keep all your health data private and secure</li>
-                                <li>📱 Access your results from any device</li>
+                                <li>📄 Upload an anonymised screenshot or PDF of your blood test results</li>
+                                <li>📊 The system will convert these into tables</li>
+                                <li>🔄 Track data from multiple providers over time</li>
+                                <li>📈 Get key data charts and insights</li>
+                                <li>🔒 Keep all data private and secure</li>
+                                <li>📱 Access your results from any device, any time</li>
                             </ul>
                         </div>
                     </div>
@@ -36,7 +36,7 @@ export function getTrackWaitingListPageContent() {
                             <p>Be the first to know when this feature launches. We'll also send you exclusive early access and special pricing.</p>
                         </div>
                         
-                        <form class="waiting-list-form" id="waitingListForm" action="https://formspree.io/f/mjkokabk" method="POST">
+                        <form class="waiting-list-form" id="trackWaitingListForm" action="https://formspree.io/f/mjkokabk" method="POST">
                             <input type="hidden" name="subject" value="Track Results Waiting List Signup">
                             <input type="hidden" name="message" value="User joined track results waiting list">
                             
@@ -54,6 +54,13 @@ export function getTrackWaitingListPageContent() {
                             <button type="submit" class="submit-button">
                                 Join Waiting List
                             </button>
+                            
+                            <!-- Fallback for when JavaScript is disabled -->
+                            <noscript>
+                                <p style="color: #666; font-size: 0.9rem; margin-top: 1rem;">
+                                    JavaScript is disabled. The form will submit normally to Formspree.
+                                </p>
+                            </noscript>
                         </form>
                         
                         <div id="waitingListMessage" class="message-display" style="display: none;"></div>
@@ -65,7 +72,7 @@ export function getTrackWaitingListPageContent() {
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: 75%"></div>
                     </div>
-                    <p class="progress-text">We're 75% of the way there! Expected launch: <strong>Q1 2024</strong></p>
+                    <p class="progress-text">We're 75% of the way there! Expected launch: <strong>September 2025</strong></p>
                 </div>
             </div>
         </section>
@@ -74,22 +81,32 @@ export function getTrackWaitingListPageContent() {
 
 // Track Waiting List page initialization
 export function initializeTrackWaitingListPage() {
-    initializeWaitingListForm();
+    // Small delay to ensure DOM is fully ready
+    setTimeout(() => {
+        initializeWaitingListForm();
+    }, 100);
     console.log('Track Waiting List page initialized');
 }
 
 // Form handling for waiting list
 function initializeWaitingListForm() {
-    const form = document.getElementById('waitingListForm');
+    const form = document.getElementById('trackWaitingListForm');
     const messageDiv = document.getElementById('waitingListMessage');
     
+    console.log('Initializing waiting list form, form element:', form);
+    
     if (form) {
+        console.log('Form found, adding submit listener');
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            console.log('Form submitted, preventing default');
             
             const formData = new FormData(form);
             const email = formData.get('email');
             const featureSuggestions = formData.get('feature_suggestions');
+            
+            console.log('Form data:', { email, featureSuggestions });
+            console.log('Form action URL:', form.action);
             
             // Show loading state
             const submitBtn = form.querySelector('.submit-button');
@@ -98,6 +115,7 @@ function initializeWaitingListForm() {
             submitBtn.disabled = true;
             
             try {
+                console.log('Submitting to Formspree...');
                 // Submit to Formspree
                 const response = await fetch(form.action, {
                     method: 'POST',
@@ -107,23 +125,39 @@ function initializeWaitingListForm() {
                     }
                 });
                 
+                console.log('Formspree response status:', response.status);
+                console.log('Formspree response ok:', response.ok);
+                
                 if (response.ok) {
-                    // Show success message
-                    showMessage('Thank you! You\'ve been added to our waiting list. We\'ll notify you as soon as the feature is ready!', 'success');
+                    const responseData = await response.json();
+                    console.log('Formspree response data:', responseData);
+                    console.log('Full Formspree response:', response);
+                    
+                    // Show success message with more details
+                    showMessage(`Thank you! You've been added to our waiting list. We'll notify you as soon as the feature is ready! (Formspree ID: ${responseData.next || 'N/A'})`, 'success');
                     form.reset();
+                    
+                    // Also log to console for debugging
+                    console.log('✅ Form submitted successfully to Formspree');
+                    console.log('📧 Email:', email);
+                    console.log('💡 Suggestions:', featureSuggestions);
                 } else {
-                    throw new Error('Failed to submit');
+                    const errorText = await response.text();
+                    console.error('Formspree error response:', errorText);
+                    throw new Error(`Failed to submit: ${response.status} ${response.statusText}`);
                 }
                 
             } catch (error) {
                 console.error('Error submitting form:', error);
-                showMessage('Sorry, there was an error. Please try again.', 'error');
+                showMessage(`Sorry, there was an error: ${error.message}. Please try again.`, 'error');
             } finally {
                 // Reset button
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
             }
         });
+    } else {
+        console.error('Waiting list form not found!');
     }
     
     function showMessage(text, type) {
