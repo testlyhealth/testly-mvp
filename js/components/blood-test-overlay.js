@@ -131,7 +131,7 @@ export class BloodTestOverlay {
           max-width: 90vw;
           max-height: 90vh;
           width: 600px;
-          overflow: hidden;
+          overflow-y: auto;
           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
           animation: overlaySlideIn 0.3s ease-out;
         }
@@ -207,7 +207,6 @@ export class BloodTestOverlay {
 
                                   .overlay-body {
          padding: 0 40px 40px 40px;
-         max-height: calc(90vh - 100px);
        }
 
              .test-info {

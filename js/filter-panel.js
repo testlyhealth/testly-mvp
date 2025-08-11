@@ -856,10 +856,16 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       const isTestosteroneOnly = testosteroneOnlyMatch && decodeURIComponent(testosteroneOnlyMatch[1]) === 'true';
       
       // Check if this is a testosterone full hormone profile search
-          const testosteroneFullHormoneMatch = hash.match(/[?&]testosteroneFullHormone=([^&]+)/);
-    const isTestosteroneFullHormone = testosteroneFullHormoneMatch && decodeURIComponent(testosteroneFullHormoneMatch[1]) === 'true';
-    
-
+      const testosteroneFullHormoneMatch = hash.match(/[?&]testosteroneFullHormone=([^&]+)/);
+      const isTestosteroneFullHormone = testosteroneFullHormoneMatch && decodeURIComponent(testosteroneFullHormoneMatch[1]) === 'true';
+      
+      // Check if this is a male hormone check only search
+      const testosteroneFullHormoneOnlyMatch = hash.match(/[?&]testosteroneFullHormoneOnly=([^&]+)/);
+      const isTestosteroneFullHormoneOnly = testosteroneFullHormoneOnlyMatch && decodeURIComponent(testosteroneFullHormoneOnlyMatch[1]) === 'true';
+      
+      // Check if this is a male hormone check + general health check search
+      const testosteroneFullHormoneGeneralHealthMatch = hash.match(/[?&]testosteroneFullHormoneGeneralHealth=([^&]+)/);
+      const isTestosteroneFullHormoneGeneralHealth = testosteroneFullHormoneGeneralHealthMatch && decodeURIComponent(testosteroneFullHormoneGeneralHealthMatch[1]) === 'true';
       
       if (isTestosteroneOnly && selectedBiomarkers.includes('Testosterone')) {
         // Create special "Testosterone only" filter tag
@@ -870,14 +876,21 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
           </div>
         `);
       } else if (isTestosteroneFullHormone) {
+        // Create special "Male hormone check + general health check" filter tag
+        tags.push(`
+          <div class="filter-tag" data-type="male-hormone-check" data-value="male-hormone-check">
+            <span>Male hormone check + general health check</span>
+            <button class="remove-tag" aria-label="Remove biomarker">×</button>
+          </div>
+        `);
+      } else if (isTestosteroneFullHormoneOnly) {
         // Create special "Male hormone check" filter tag
         tags.push(`
-          <div class="filter-tag" data-type="biomarker" data-value="Testosterone">
+          <div class="filter-tag" data-type="male-hormone-check" data-value="male-hormone-check">
             <span>Male hormone check</span>
             <button class="remove-tag" aria-label="Remove biomarker">×</button>
           </div>
         `);
-
       } else {
         // Regular biomarker filter tags
         selectedBiomarkers.forEach(biomarker => {
@@ -891,6 +904,20 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
           `);
         });
       }
+    }
+    
+    // Check for TRT monitoring outside of biomarker block (since it might not set biomarkers)
+    const trtMonitoringMatch = hash.match(/[?&]trtMonitoring=([^&]+)/);
+    const isTRTMonitoring = trtMonitoringMatch && decodeURIComponent(trtMonitoringMatch[1]) === 'true';
+    
+    if (isTRTMonitoring) {
+      // Create special "TRT monitoring" filter tag
+      tags.push(`
+        <div class="filter-tag" data-type="male-hormone-check" data-value="male-hormone-check">
+          <span>TRT monitoring</span>
+          <button class="remove-tag" aria-label="Remove biomarker">×</button>
+        </div>
+      `);
     }
     
     // Create the filter tags container with results count and sort button
@@ -1631,6 +1658,15 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
           params.delete('maxPrice');
         } else if (type === 'method') {
           params.delete('method');
+        } else if (type === 'male-hormone-check') {
+          // Special handling for "Male hormone check" - remove ALL biomarkers and special parameters
+          console.log('🎯 FILTER PANEL - MALE HORMONE CHECK TAG REMOVAL TRIGGERED');
+          params.delete('biomarkers');
+          params.delete('testosteroneFullHormoneOnly');
+          params.delete('testosteroneFullHormone');
+          params.delete('testosteroneOnly');
+          params.delete('trtMonitoring');
+          console.log('🎯 FILTER PANEL - Parameters after removal:', params.toString());
         }
         // Remove empty params
         for (const [key, val] of params.entries()) {
@@ -1638,6 +1674,7 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
         }
         // Rebuild hash
         const newHash = params.toString() ? `${base}?${params.toString()}` : base;
+        console.log('🎯 FILTER PANEL - Final hash:', newHash);
         window.location.hash = newHash;
       });
     }

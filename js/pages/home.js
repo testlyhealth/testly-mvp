@@ -1451,14 +1451,14 @@ function setupNavigationHandlers() {
             });
           });
           
-          // Setup advanced search functionality
-          const advancedSearchLink = document.querySelector('#advanced-search-link');
-          if (advancedSearchLink) {
-            advancedSearchLink.addEventListener('click', (e) => {
+          // Setup advanced search functionality for both sides
+          const advancedSearchLinks = document.querySelectorAll('.advanced-search-text');
+          advancedSearchLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
               e.preventDefault();
               handleAdvancedSearch(e);
             });
-          }
+          });
           
           // Setup testosterone options dropdown
           const testosteroneOptionsSelect = document.querySelector('.testosterone-options-select');
@@ -1615,15 +1615,23 @@ function setupNavigationHandlers() {
         function handleAdvancedSearch(event) {
           event.preventDefault();
       
+          // Determine which side is currently visible
+          const bloodTestsForm = document.querySelector('.blood-tests-form');
+          const problemForm = document.querySelector('.problem-form');
+          const isBloodTestsFormVisible = bloodTestsForm && bloodTestsForm.style.opacity === '1';
+          const isProblemFormVisible = problemForm && problemForm.style.opacity === '1';
           
-          // Get form values from the new form structure
-          const minPrice = document.querySelector('.dropdown-select-1')?.value;
-          const maxPrice = document.querySelector('.dropdown-select-2')?.value;
-          const method = document.querySelector('.dropdown-select-4')?.value;
-          const biomarker1 = document.querySelector('.biomarker-search-input')?.value;
-          const biomarker2 = document.querySelector('.biomarker-search-input-2')?.value;
+          console.log('Advanced search clicked from:', isBloodTestsFormVisible ? 'Help me choose' : 'Let me pick', 'side');
           
-          console.log('Form values:', { minPrice, maxPrice, method, biomarker1, biomarker2 });
+          // Get form values from the currently visible side
+          const visibleForm = isBloodTestsFormVisible ? bloodTestsForm : problemForm;
+          const minPrice = visibleForm.querySelector('.dropdown-select-1')?.value;
+          const maxPrice = visibleForm.querySelector('.dropdown-select-2')?.value;
+          const method = visibleForm.querySelector('.dropdown-select-4')?.value;
+          const biomarker1 = visibleForm.querySelector('.biomarker-search-input')?.value;
+          const biomarker2 = visibleForm.querySelector('.biomarker-search-input-2')?.value;
+          
+          console.log('Form values from', isBloodTestsFormVisible ? 'Help me choose' : 'Let me pick', 'side:', { minPrice, maxPrice, method, biomarker1, biomarker2 });
           
           // Clear previous validation errors
           clearValidationErrors();
@@ -1644,41 +1652,42 @@ function setupNavigationHandlers() {
             searchParams.set('method', method);
           }
           
-          // Check if this is a testosterone-only case
-          const biomarkerInput = document.querySelector('.biomarker-search-input');
-          const isTestosteroneOnly = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-only') === 'true';
-          const isTestosteroneFullHormone = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone') === 'true';
-          const isTestosteroneFullHormoneOnly = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-only') === 'true';
-          const isTestosteroneFullHormoneGeneralHealth = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-general-health') === 'true';
-          const isTRTMonitoring = biomarkerInput && biomarkerInput.getAttribute('data-trt-monitoring') === 'true';
-          
-          // Combine biomarkers if both are selected
-          const biomarkers = [];
-          if (biomarker1) biomarkers.push(biomarker1);
-          if (biomarker2) biomarkers.push(biomarker2);
-          
-          if (isTestosteroneFullHormone) {
-            // For testosterone full hormone profile, we need to pass the required biomarkers
-            searchParams.set('biomarkers', 'Testosterone,Free testosterone,SHBG');
-            searchParams.set('testosteroneFullHormone', 'true');
-          } else if (isTestosteroneFullHormoneOnly) {
-            // For male hormone check only, pass the required biomarkers and set the special parameter
-            searchParams.set('biomarkers', 'Testosterone,Free testosterone,SHBG');
-            searchParams.set('testosteroneFullHormoneOnly', 'true');
-          } else if (isTestosteroneFullHormoneGeneralHealth) {
-            // For testosterone full hormone profile + related general health tests, pass the biomarkers and set the special parameter
-            searchParams.set('biomarkers', 'Testosterone,Free testosterone,SHBG');
-            searchParams.set('testosteroneFullHormoneGeneralHealth', 'true');
-          } else if (biomarkers.length > 0) {
-            searchParams.set('biomarkers', biomarkers.join(','));
-          }
-          
-          if (isTestosteroneOnly) {
-            searchParams.set('testosteroneOnly', 'true');
-          }
-          
-          if (isTRTMonitoring) {
-            searchParams.set('trtMonitoring', 'true');
+          // Handle biomarkers based on which side is visible
+          if (isBloodTestsFormVisible) {
+            // Help me choose side - check for testosterone options
+            const biomarkerInput = visibleForm.querySelector('.biomarker-search-input');
+            const isTestosteroneOnly = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-only') === 'true';
+            const isTestosteroneFullHormone = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone') === 'true';
+            const isTestosteroneFullHormoneOnly = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-only') === 'true';
+            const isTestosteroneFullHormoneGeneralHealth = biomarkerInput && biomarkerInput.getAttribute('data-testosterone-full-hormone-general-health') === 'true';
+            const isTRTMonitoring = biomarkerInput && biomarkerInput.getAttribute('data-trt-monitoring') === 'true';
+            
+            if (isTestosteroneFullHormone) {
+              // For testosterone full hormone profile, we need to pass the required biomarkers
+              searchParams.set('biomarkers', 'Testosterone,Free testosterone,SHBG');
+              searchParams.set('testosteroneFullHormone', 'true');
+            } else if (isTestosteroneFullHormoneOnly) {
+              // For male hormone check only, pass the required biomarkers and set the special parameter
+              searchParams.set('biomarkers', 'Testosterone,Free testosterone,SHBG');
+              searchParams.set('testosteroneFullHormoneOnly', 'true');
+            } else if (isTestosteroneFullHormoneGeneralHealth) {
+              // For testosterone full hormone profile + related general health tests, pass the biomarkers and set the special parameter
+              searchParams.set('biomarkers', 'Testosterone,Free testosterone,SHBG');
+              searchParams.set('testosteroneFullHormoneGeneralHealth', 'true');
+            } else if (isTestosteroneOnly) {
+              searchParams.set('testosteroneOnly', 'true');
+            } else if (isTRTMonitoring) {
+              searchParams.set('trtMonitoring', 'true');
+            }
+          } else {
+            // Let me pick side - handle regular biomarkers
+            const biomarkers = [];
+            if (biomarker1) biomarkers.push(biomarker1);
+            if (biomarker2) biomarkers.push(biomarker2);
+            
+            if (biomarkers.length > 0) {
+              searchParams.set('biomarkers', biomarkers.join(','));
+            }
           }
           
           // Add parameter to indicate filter panel should be open

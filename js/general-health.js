@@ -840,7 +840,7 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
         } else if (type === 'method') {
           params.delete('method');
         } else if (type === 'biomarker') {
-          // Remove specific biomarker from biomarkers parameter
+          // Remove specific biomarker from biomarkers parameter - FIRST INSTANCE - DEBUGGING
           let biomarkerVal = params.get('biomarkers') || '';
           let biomarkers = biomarkerVal.split(',').map(b => b.trim()).filter(Boolean);
           biomarkers = biomarkers.filter(b => b !== value);
@@ -849,6 +849,29 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
           } else {
             params.delete('biomarkers');
           }
+          
+          // Special handling for "Male hormone check" - remove the special parameters
+          if (value === 'Testosterone') {
+            // Check if this is a male hormone check by looking at the URL parameters
+            const hash = window.location.hash;
+            if (hash.includes('testosteroneFullHormoneOnly=true')) {
+              params.delete('testosteroneFullHormoneOnly');
+            }
+            if (hash.includes('testosteroneFullHormone=true')) {
+              params.delete('testosteroneFullHormone');
+            }
+            if (hash.includes('testosteroneOnly=true')) {
+              params.delete('testosteroneOnly');
+            }
+          }
+        } else if (type === 'male-hormone-check') {
+          console.log('🎯 MALE HORMONE CHECK TAG REMOVAL TRIGGERED');
+          // Special handling for "Male hormone check" - remove ALL biomarkers and special parameters
+          params.delete('biomarkers');
+          params.delete('testosteroneFullHormoneOnly');
+          params.delete('testosteroneFullHormone');
+          params.delete('testosteroneOnly');
+          console.log('🎯 Parameters after removal:', params.toString());
         } else if (type === 'category') {
           // Remove specific category from filter parameter
           let filterVal = params.get('filter') || '';
@@ -1045,19 +1068,28 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
     // Re-attach event listeners
     const filterTagsList = filterTagsContainer.querySelector('.filter-tags-list');
     if (filterTagsList) {
+      // FIRST INSTANCE - DEBUGGING
       filterTagsList.addEventListener('click', (e) => {
+        console.log('🔍 FIRST INSTANCE - Filter tag clicked:', e.target);
         const button = e.target.closest('.remove-tag');
-        if (!button) return;
+        if (!button) {
+          console.log('🔍 FIRST INSTANCE - No remove button found');
+          return;
+        }
+        console.log('🔍 FIRST INSTANCE - Remove button clicked');
         
         e.preventDefault();
         e.stopPropagation();
         
         const tag = button.closest('.filter-tag');
-        if (!tag) return;
+        if (!tag) {
+          console.log('🔍 FIRST INSTANCE - No filter tag found');
+          return;
+        }
         
         const type = tag.dataset.type;
         const value = tag.dataset.value;
-        console.log('Removing filter tag:', type, value);
+        console.log('🔍 FIRST INSTANCE - Removing filter tag:', type, value);
         
         // Parse current URL parameters
         let [base, paramStr] = window.location.hash.split('?');
@@ -1074,7 +1106,7 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
         } else if (type === 'method') {
           params.delete('method');
         } else if (type === 'biomarker') {
-          // Remove specific biomarker from biomarkers parameter
+          // Remove specific biomarker from biomarkers parameter - SECOND INSTANCE
           let biomarkerVal = params.get('biomarkers') || '';
           let biomarkers = biomarkerVal.split(',').map(b => b.trim()).filter(Boolean);
           biomarkers = biomarkers.filter(b => b !== value);
@@ -1083,6 +1115,29 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
           } else {
             params.delete('biomarkers');
           }
+          
+          // Special handling for "Male hormone check" - remove the special parameters
+          if (value === 'Testosterone') {
+            // Check if this is a male hormone check by looking at the URL parameters
+            const hash = window.location.hash;
+            if (hash.includes('testosteroneFullHormoneOnly=true')) {
+              params.delete('testosteroneFullHormoneOnly');
+            }
+            if (hash.includes('testosteroneFullHormone=true')) {
+              params.delete('testosteroneFullHormone');
+            }
+            if (hash.includes('testosteroneOnly=true')) {
+              params.delete('testosteroneOnly');
+            }
+          }
+        } else if (type === 'male-hormone-check') {
+          console.log('🎯 MALE HORMONE CHECK TAG REMOVAL TRIGGERED - SECOND INSTANCE');
+          // Special handling for "Male hormone check" - remove ALL biomarkers and special parameters
+          params.delete('biomarkers');
+          params.delete('testosteroneFullHormoneOnly');
+          params.delete('testosteroneFullHormone');
+          params.delete('testosteroneOnly');
+          console.log('🎯 Parameters after removal (second):', params.toString());
         } else if (type === 'category') {
           // Remove specific category from filter parameter
           let filterVal = params.get('filter') || '';

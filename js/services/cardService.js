@@ -570,19 +570,21 @@ export class CardService {
     console.log('Test biomarker data:', {
       biomarker_count: test.biomarker_count,
       grouped_biomarkers: test.grouped_biomarkers,
-      biomarker_names: test.biomarker_names
+      biomarker_names: test.biomarker_names,
+      blood_taking_methods: test.blood_taking_methods
     });
     
     let comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
     
     // Check if test is already in comparison
     if (!comparisonTests.find(t => t.id === test.id)) {
-      // Ensure the test has complete biomarker data
+      // Ensure the test has complete data including biomarkers and blood taking methods
       const testWithBiomarkers = {
         ...test,
         biomarker_count: test.biomarker_count || 0,
         grouped_biomarkers: test.grouped_biomarkers || {},
-        biomarker_names: test.biomarker_names || []
+        biomarker_names: test.biomarker_names || [],
+        blood_taking_methods: test.blood_taking_methods || []
       };
       
       comparisonTests.push(testWithBiomarkers);
@@ -597,8 +599,10 @@ export class CardService {
       console.log('Test biomarker data in comparison:', {
         biomarker_count: testWithBiomarkers.biomarker_count,
         grouped_biomarkers: testWithBiomarkers.grouped_biomarkers,
-        biomarker_names: testWithBiomarkers.biomarker_names
+        biomarker_names: testWithBiomarkers.biomarker_names,
+        blood_taking_methods: testWithBiomarkers.blood_taking_methods
       });
+      console.log('Full test object stored:', testWithBiomarkers);
       
       // Update comparison page if we're on it
       if (window.location.hash === '#/compare') {
@@ -653,6 +657,11 @@ export class CardService {
     console.log('=== FIRST updateComparisonGrid method called ===');
     let comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
     console.log('Comparison tests from localStorage:', comparisonTests);
+    console.log('Comparison tests details:', comparisonTests.map(t => ({
+      id: t.id,
+      name: t.name,
+      blood_taking_methods: t.blood_taking_methods
+    })));
     
     // Refresh biomarker counts, grouped biomarkers, and lab accreditations from the current test data
     if (window._allGeneralHealthTests) {
@@ -664,7 +673,8 @@ export class CardService {
             biomarker_count: currentTest.biomarker_count,
             grouped_biomarkers: currentTest.grouped_biomarkers || storedTest.grouped_biomarkers,
             biomarker_names: currentTest.biomarker_names || storedTest.biomarker_names,
-            "lab accreditations": currentTest["lab accreditations"] || storedTest["lab accreditations"]
+            "lab accreditations": currentTest["lab accreditations"] || storedTest["lab accreditations"],
+            blood_taking_methods: currentTest.blood_taking_methods || storedTest.blood_taking_methods
           };
         }
         return storedTest;
@@ -673,6 +683,12 @@ export class CardService {
       // Update localStorage with refreshed data
       localStorage.setItem('comparisonTests', JSON.stringify(comparisonTests));
     }
+    
+    console.log('Comparison tests after refresh:', comparisonTests.map(t => ({
+      id: t.id,
+      name: t.name,
+      blood_taking_methods: t.blood_taking_methods
+    })));
     
     for (let i = 1; i <= 3; i++) {
       const test = comparisonTests[i - 1];
@@ -777,24 +793,26 @@ export class CardService {
           `;
         }
         
-        // Update blood method
+        // Update blood method - FIRST METHOD
         const bloodMethodCell = document.getElementById(`blood-method-${i}`);
         if (bloodMethodCell) {
-          const allMethods = ['Home test', 'Clinic visit', 'Phlebotomist to home', 'Self arrange'];
+          console.log(`FIRST METHOD - Updating blood method for column ${i}, test: ${test.name}`);
+          console.log(`FIRST METHOD - Test blood_taking_methods:`, test.blood_taking_methods);
+          const allMethods = ['Finger prick', 'Venous at clinic', 'Phlebotomist to home', 'Self arrange'];
           const availableMethods = Array.isArray(test.blood_taking_methods) ? test.blood_taking_methods : [];
           
           const bloodMethod = allMethods.map(method => {
             const isAvailable = availableMethods.includes(method);
             const emojiMap = {
-              'Home test': '🏠',
-              'Clinic visit': '🏥',
+              'Finger prick': '👆',
+              'Venous at clinic': '🏥',
               'Phlebotomist to home': '👩🏼‍⚕️',
               'Self arrange': '🙋🏼'
             };
             
             const displayTextMap = {
-              'Home test': 'Home test/ finger prick',
-              'Clinic visit': 'Clinic visit full venous test',
+              'Finger prick': 'Home test/ finger prick',
+              'Venous at clinic': 'Clinic visit full venous test',
               'Phlebotomist to home': 'Phlebotomist to home',
               'Self arrange': 'Self arrange'
             };
@@ -1059,24 +1077,26 @@ export class CardService {
           `;
         }
         
-        // Update blood method
+        // Update blood method - SECOND METHOD
         const bloodMethodCell = document.getElementById(`blood-method-${i}`);
         if (bloodMethodCell) {
-          const allMethods = ['Home test', 'Clinic visit', 'Phlebotomist to home', 'Self arrange'];
+          console.log(`SECOND METHOD - Updating blood method for column ${i}, test: ${test.name}`);
+          console.log(`SECOND METHOD - Test blood_taking_methods:`, test.blood_taking_methods);
+          const allMethods = ['Finger prick', 'Venous at clinic', 'Phlebotomist to home', 'Self arrange'];
           const availableMethods = Array.isArray(test.blood_taking_methods) ? test.blood_taking_methods : [];
           
           const bloodMethod = allMethods.map(method => {
             const isAvailable = availableMethods.includes(method);
             const emojiMap = {
-              'Home test': '🏠',
-              'Clinic visit': '🏥',
+              'Finger prick': '👆',
+              'Venous at clinic': '🏥',
               'Phlebotomist to home': '👩🏼‍⚕️',
               'Self arrange': '🙋🏼'
             };
             
             const displayTextMap = {
-              'Home test': 'Home test/ finger prick',
-              'Clinic visit': 'Clinic visit full venous test',
+              'Finger prick': 'Home test/ finger prick',
+              'Venous at clinic': 'Clinic visit full venous test',
               'Phlebotomist to home': 'Phlebotomist to home',
               'Self arrange': 'Self arrange'
             };
