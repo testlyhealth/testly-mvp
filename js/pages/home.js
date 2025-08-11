@@ -323,7 +323,7 @@ const cardService = new CardService();
 export function getHomePageContent() {
     return `
         <!-- Hero Section -->
-    <section class="hero-section">
+    <section class="hero-section" id="hero-form">
       <div class="hero-bg-color-banner"></div>
       <div class="hero-bg-banner"></div>
       <div class="hero-content">
@@ -493,26 +493,67 @@ export function getHomePageContent() {
       </div>
     </section>
 
-    <!-- Video Section -->
-    <section class="video-section">
+    <!-- How It Works Section -->
+    <section class="how-it-works-section">
       <div class="container">
-        <div class="video-placeholder">
-          <div class="video-container">
-            <div class="video-placeholder-content">
-              <div class="play-button">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M8 5v14l11-7z" fill="currentColor"/>
+        <div class="how-it-works-content">
+          <h2 class="how-it-works-title">How does it work?</h2>
+          <div class="how-it-works-steps">
+            <div class="step active">
+              <div class="step-corner-icon compare-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="3" width="18" height="18" rx="2" stroke="white" stroke-width="2" fill="none"/>
+                  <line x1="9" y1="3" x2="9" y2="21" stroke="white" stroke-width="2"/>
+                  <line x1="15" y1="3" x2="15" y2="21" stroke="white" stroke-width="2"/>
+                  <line x1="3" y1="9" x2="21" y2="9" stroke="white" stroke-width="2"/>
+                  <line x1="3" y1="15" x2="21" y2="15" stroke="white" stroke-width="2"/>
                 </svg>
               </div>
-              <h3>Watch our introduction video</h3>
-              <p>Learn how Testly can help you make informed health decisions</p>
+              <h3>Compare</h3>
+              <p>Compare prices and providers to <strong>find the best</strong> option for you - and your <strong>budget</strong></p>
+                               <div class="step-button">
+                   <button class="step-cta-button" onclick="scrollToForm()">Compare now</button>
+                 </div>
+            </div>
+            <div class="step">
+              <div class="step-corner-icon book-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 3h18v18H3z" stroke="white" stroke-width="2" fill="none"/>
+                  <path d="M7 7h10v2H7z" fill="white"/>
+                  <path d="M7 11h8v2H7z" fill="white"/>
+                  <path d="M7 15h6v2H7z" fill="white"/>
+                  <circle cx="17" cy="17" r="2" fill="white"/>
+                  <path d="M15 15l4 4" stroke="#1E88E5" stroke-width="2"/>
+                </svg>
+              </div>
+              <h3>Book</h3>
+              <p>Book your test or treatment directly with the provider of your choice</p>
+                               <div class="step-button">
+                   <button class="step-cta-button" onclick="scrollToForm()">Find tests</button>
+                 </div>
+            </div>
+            <div class="step">
+              <div class="step-corner-icon track-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 21h18" stroke="white" stroke-width="2"/>
+                  <path d="M3 3v18" stroke="white" stroke-width="2"/>
+                  <path d="M7 14l3-3 3 3 4-4" stroke="white" stroke-width="2" fill="none"/>
+                  <path d="M19 7l-4 4" stroke="white" stroke-width="2" fill="none"/>
+                  <path d="M15 11l4-4" stroke="white" stroke-width="2" fill="none"/>
+                </svg>
+              </div>
+              <h3>Track</h3>
+              <p><strong>Anonymously</strong> upload your results from <strong>any provider</strong> and track them all in one place - upload past results too!</p>
+              <div class="step-button">
+                <button class="step-cta-button">Track results</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Trust Indicators Section -->
+        <!-- Trust Indicators Section -->
     <section class="trust-section">
       <div class="container">
         <div class="trust-content">
@@ -546,36 +587,38 @@ export function getHomePageContent() {
                   <h4>Doctor-led</h4>
                   <p>Services and content written and chosen by doctors</p>
                 </div>
-          </div>
+              </div>
               <div class="trust-feature">
                 <div class="feature-icon">✓</div>
                 <div class="feature-text">
                   <h4>Expert guidance</h4>
                   <p>Professional advice to help you choose the right tests</p>
-        </div>
-      </div>
+                </div>
+              </div>
               <div class="trust-feature">
                 <div class="feature-icon">✓</div>
                 <div class="feature-text">
                   <h4>Easy booking</h4>
                   <p>Simple and straightforward booking process</p>
-          </div>
-        </div>
-      </div>
-
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- New Floating Section -->
-    <section class="floating-section">
+    <!-- Multi-Provider Results Section -->
+    <section class="multi-provider-section">
       <div class="container">
-        <div class="floating-square">
-          <div class="square-content">
-            <h2>Talk to a doctor</h2>
-            <p>Discuss your symptoms or health goals with one of our doctors and find a solution that works for you</p>
-            <button class="waiting-list-btn">Join our waiting list</button>
+        <div class="multi-provider-content">
+          <h2>Have test results from <span style="color: #1E88E5;">multiple providers</span>?</h2>
+          <p>Track your results <strong>in one single place</strong> and gain insights into your health.</p>
+          <div class="multi-provider-image">
+            <img src="images/laptop-data.jpg" alt="Laptop showing data and results" />
+          </div>
+          <div class="multi-provider-cta">
+            <button class="multi-provider-button">Track my results</button>
           </div>
         </div>
       </div>
@@ -587,10 +630,10 @@ export function getHomePageContent() {
         <div class="new-banner-content">
           <div class="banner-text">
             <h2>Ready to take control of your health?</h2>
-            <p>Join thousands of people who are already making informed health decisions with Testly</p>
+            <p>Make informed health decisions with Testly</p>
           </div>
           <div class="banner-actions">
-            <button class="banner-cta-button">
+            <button class="banner-cta-button" onclick="scrollToForm()">
               Get started today
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -630,8 +673,8 @@ export function getHomePageContent() {
           </button>
         </div>
       </div>
-    </section>
-    `;
+        </section>
+  `;
 }
 
 // Homepage-specific functionality
@@ -653,8 +696,55 @@ export function initializeHomePage() {
     updateSearchButtonCountSimple('default');
   }, 100);
   
+  // Setup step card interactions
+  setTimeout(() => {
+    setupStepCardInteractions();
+  }, 200);
+  
   // Make scrollToQuickSearch function globally available
   window.scrollToQuickSearch = scrollToQuickSearch;
+  
+  // Make scrollToForm function globally available
+  window.scrollToForm = scrollToForm;
+}
+
+// Function to scroll to form and highlight it briefly
+function scrollToForm() {
+  const formSection = document.getElementById('hero-form');
+  if (formSection) {
+    // Scroll to the form section
+    formSection.scrollIntoView({ behavior: 'smooth' });
+    
+    // Add highlight class briefly
+    formSection.classList.add('form-highlight');
+    
+    // Remove highlight after 2 seconds
+    setTimeout(() => {
+      formSection.classList.remove('form-highlight');
+    }, 2000);
+  }
+}
+
+// Setup step card interactions for the "How it works" section
+function setupStepCardInteractions() {
+  const stepCards = document.querySelectorAll('.step');
+  
+  if (stepCards.length === 0) {
+    // If cards aren't loaded yet, try again in a bit
+    setTimeout(setupStepCardInteractions, 100);
+    return;
+  }
+  
+  stepCards.forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      // Remove active class from all cards
+      stepCards.forEach(c => c.classList.remove('active'));
+      // Add active class to hovered card
+      card.classList.add('active');
+    });
+    
+    // Remove the mouseleave event listener so the last hovered card stays highlighted
+  });
 }
 
 // Load featured blood tests from database
@@ -1162,7 +1252,13 @@ function setupCTAButtons() {
 
 // Setup navigation handlers
 function setupNavigationHandlers() {
-  // Add any additional navigation setup here
+  // Add click handler for the multi-provider button
+  const multiProviderButton = document.querySelector('.multi-provider-button');
+  if (multiProviderButton) {
+    multiProviderButton.addEventListener('click', () => {
+      window.location.hash = '#/track-waiting-list';
+    });
+  }
 }
 
 

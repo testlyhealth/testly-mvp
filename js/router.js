@@ -22,6 +22,7 @@ import { displayComingSoonPage } from './pages/coming-soon.js';
 import { displayWeightLossPage, initializeWeightLossPage } from './pages/weight-loss.js';
 import { displayAdminPage, initializeAdminPage } from './pages/admin.js';
 import { getGraphPageContent, initializeGraphPage } from './pages/graph.js';
+import { getTrackWaitingListPageContent, initializeTrackWaitingListPage } from './pages/track-waiting-list.js';
 
 // Router class to handle SPA navigation
 export default class Router {
@@ -198,6 +199,11 @@ export default class Router {
         const content = await displayWeightLossPage();
         await this.render(content);
         initializeWeightLossPage();
+      } else if (hash === '/track-waiting-list') {
+        console.log('Handling track waiting list route');
+        const content = getTrackWaitingListPageContent();
+        await this.render(content);
+        initializeTrackWaitingListPage();
       } else if (hash.startsWith('/coming-soon/')) {
         console.log('Handling coming soon route');
         const categoryName = decodeURIComponent(hash.split('/')[2]);
