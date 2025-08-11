@@ -6759,7 +6759,7 @@ body {
 
   .hero-side-box {
     position: absolute;
-    top: 40px;
+    top: 30px;
     right: 6rem;
     transform: translateY(0);
     background: white;
@@ -6795,6 +6795,7 @@ body {
     color: #2d3748;
     margin-bottom: 1.5rem;
     flex-shrink: 0;
+    text-align: center;
   }
 
   .search-tabs {
