@@ -4631,19 +4631,22 @@ body {
   .mobile-filter-slide {
     position: fixed;
     top: 0;
-    right: -100%;
-    width: 100%;
-    height: 100%;
+    left: 100%;
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
     background: white;
     z-index: 10000;
-    transition: right 0.3s ease;
+    transition: left 0.3s ease;
     overflow-y: auto;
     overflow-x: hidden;
     display: none;
+    box-sizing: border-box;
   }
 
   .mobile-filter-slide.active {
-    right: 0;
+    left: 0;
     display: block;
   }
 
@@ -4658,6 +4661,7 @@ body {
     align-items: center;
     z-index: 10001;
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
   }
 
@@ -4696,22 +4700,32 @@ body {
 
   .mobile-filter-content {
     padding: 1rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   /* Emergency close button - guaranteed to work */
   .emergency-close-btn {
     position: absolute !important;
-    top: 20px !important;
-    right: 20px !important;
-    background: #ff0000 !important;
-    color: white !important;
-    border: 3px solid #000000 !important;
-    padding: 10px 20px !important;
-    font-size: 16px !important;
+    top: 5px !important;
+    right: 15px !important;
+    background: none !important;
+    color: #000000 !important;
+    border: none !important;
+    padding: 8px !important;
+    font-size: 24px !important;
     font-weight: bold !important;
     cursor: pointer !important;
     z-index: 10003 !important;
-    border-radius: 8px !important;
+    border-radius: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 40px !important;
+    height: 40px !important;
+    line-height: 1 !important;
   }
 
   /* Desktop Filters Overlay (keep for larger screens) */

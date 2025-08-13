@@ -1023,9 +1023,26 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       console.error('Mobile content container not found!');
     }
 
-    // Show the panel
-    mobilePanel.classList.add('active');
-    console.log('Mobile panel activated');
+          // Show the panel
+      mobilePanel.classList.add('active');
+      console.log('Mobile panel activated');
+      
+      // Debug panel dimensions and position
+      const panelRect = mobilePanel.getBoundingClientRect();
+      console.log('Mobile panel dimensions:', {
+        top: panelRect.top,
+        left: panelRect.left,
+        width: panelRect.width,
+        height: panelRect.height,
+        right: panelRect.right,
+        bottom: panelRect.bottom
+      });
+      
+      // Check viewport dimensions
+      console.log('Viewport dimensions:', {
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
 
     // Add event listeners
     setupMobileFilterEvents(filterContent);
