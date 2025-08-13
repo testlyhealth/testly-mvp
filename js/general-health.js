@@ -559,13 +559,7 @@ function createPageStructure(filterPanel, testsGrid) {
             ${filterPanel}
           </div>
         </aside><div class="main-content">
-          <div class="mobile-filter-buttons">
-            <div class="left-buttons">
-              <button class="filters-btn mobile-only" aria-label="Open filters">Filters</button>
-              <button class="sort-btn mobile-only" aria-label="Sort results">Sort: Price &#8593;</button>
-            </div>
-            <button class="advanced-search-btn mobile-only" aria-label="Advanced search">Advanced search</button>
-          </div>
+
           <div class="products-grid"></div>
         </div>
       </div>
