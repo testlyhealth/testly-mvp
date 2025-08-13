@@ -3666,12 +3666,43 @@ body {
     overflow: visible;
   }
 
+  /* Mobile responsive products grid */
+  @media (max-width: 768px) {
+    .products-grid {
+      grid-template-columns: 1fr !important;
+      gap: 1rem !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .products-grid {
+      gap: 0.75rem !important;
+    }
+  }
+
   /* Compact card styles for three-column layout */
   .products-grid .blood-test-card {
     padding: 1rem 1rem 0.5rem 1rem;
     border-radius: 8px;
     position: relative;
     overflow: visible;
+  }
+
+  /* Mobile responsive blood test cards */
+  @media (max-width: 768px) {
+    .products-grid .blood-test-card {
+      padding: 1.25rem !important;
+      border-radius: 12px !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .products-grid .blood-test-card {
+      padding: 1rem !important;
+      border-radius: 10px !important;
+    }
   }
 
   .products-grid .provider-name {
@@ -3694,6 +3725,27 @@ body {
   .products-grid .toggle-details {
     padding: 0.6rem 1rem;
     font-size: 0.85rem;
+  }
+
+  /* Mobile responsive buttons */
+  @media (max-width: 768px) {
+    .products-grid .add-to-basket,
+    .products-grid .toggle-biomarkers,
+    .products-grid .toggle-details {
+      padding: 0.75rem 1.25rem;
+      font-size: 0.9rem;
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .products-grid .add-to-basket,
+    .products-grid .toggle-biomarkers,
+    .products-grid .toggle-details {
+      padding: 0.7rem 1rem;
+      font-size: 0.85rem;
+    }
   }
 
   .products-grid .blood-test-card p {
