@@ -154,6 +154,13 @@ body {
     margin-top: 64px;
     padding: 2rem;
   }
+
+  /* Mobile responsive - remove top margin so page loads at top */
+  @media (max-width: 768px) {
+    main.product-grid {
+      margin-top: 0;
+    }
+  }
   
   /* Responsive adjustments */
   @media (max-width: 768px) {
