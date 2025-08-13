@@ -6319,6 +6319,9 @@ body {
     background-position: right 0.75rem center;
     background-size: 16px;
     padding-right: 2.5rem;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .form-group input:focus,
@@ -6942,7 +6945,8 @@ body {
     border-radius: 8px;
     font-size: 0.9rem;
     background-color: white;
-    color: #000000;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
     transition: border-color 0.2s ease;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -6952,6 +6956,7 @@ body {
     background-position: right 0.75rem center;
     background-size: 16px;
     padding-right: 2.5rem;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .dropdown-container select:focus {
