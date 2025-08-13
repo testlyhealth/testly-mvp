@@ -953,12 +953,135 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
 
   // Function to show filters overlay
   function showFiltersOverlay() {
-
+    // Check if we're on mobile or desktop
+    const isMobile = window.innerWidth <= 768;
     
+    if (isMobile) {
+      // Use mobile slide-in panel
+      showMobileFilterPanel();
+    } else {
+      // Use desktop overlay
+      showDesktopFilterOverlay();
+    }
+  }
+
+  // Mobile filter panel functions
+  function showMobileFilterPanel() {
+    console.log('showMobileFilterPanel called');
+    
+    const mobilePanel = document.querySelector('.mobile-filter-slide');
+    console.log('Mobile panel found:', !!mobilePanel);
+    if (!mobilePanel) {
+      console.error('Mobile filter panel not found');
+      return;
+    }
+
+    // Get the original filter panel content
+    const originalFilterPanel = document.querySelector('.filter-panel');
+    console.log('Original filter panel found:', !!originalFilterPanel);
+    if (!originalFilterPanel) {
+      console.error('Original filter panel not found');
+      return;
+    }
+
+    // Clone and clean the content
+    const filterContent = originalFilterPanel.cloneNode(true);
+    cleanFilterContent(filterContent);
+    console.log('Filter content cleaned, length:', filterContent.innerHTML.length);
+
+    // Populate mobile panel
+    const mobileContent = mobilePanel.querySelector('.mobile-filter-content');
+    console.log('Mobile content container found:', !!mobileContent);
+    if (mobileContent) {
+      // Clear only the content area, preserve the header
+      mobileContent.innerHTML = '';
+      mobileContent.appendChild(filterContent);
+      console.log('Filter content appended to mobile panel');
+      
+      // Verify the close button still exists after content population
+      const closeBtn = mobilePanel.querySelector('.mobile-filter-close');
+      console.log('Close button after content population:', !!closeBtn);
+      if (closeBtn) {
+        console.log('Close button HTML:', closeBtn.outerHTML);
+        console.log('Close button position:', closeBtn.getBoundingClientRect());
+        
+        // Check computed styles
+        const computedStyle = window.getComputedStyle(closeBtn);
+        console.log('Close button display:', computedStyle.display);
+        console.log('Close button visibility:', computedStyle.visibility);
+        console.log('Close button opacity:', computedStyle.opacity);
+        console.log('Close button z-index:', computedStyle.zIndex);
+      }
+      
+      // Also check the header structure
+      const header = mobilePanel.querySelector('.mobile-filter-header');
+      console.log('Header after content population:', !!header);
+      if (header) {
+        console.log('Header HTML:', header.outerHTML);
+      }
+    } else {
+      console.error('Mobile content container not found!');
+    }
+
+    // Show the panel
+    mobilePanel.classList.add('active');
+    console.log('Mobile panel activated');
+
+    // Add event listeners
+    setupMobileFilterEvents(filterContent);
+  }
+
+  function hideMobileFilterPanel() {
+    const mobilePanel = document.querySelector('.mobile-filter-slide');
+    if (mobilePanel) {
+      mobilePanel.classList.remove('active');
+    }
+  }
+
+  function setupMobileFilterEvents(filterContent) {
+    // Setup toggle buttons
+    const toggleButtons = filterContent.querySelectorAll('.filter-toggle-btn');
+    toggleButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const section = this.closest('.filter-section');
+        const options = section.querySelector('.filter-options');
+        const icon = this.querySelector('.toggle-icon');
+        
+        if (options) {
+          const isExpanded = options.style.display !== 'none';
+          options.style.display = isExpanded ? 'none' : 'block';
+          icon.textContent = isExpanded ? '▼' : '▲';
+          this.setAttribute('aria-expanded', !isExpanded);
+        }
+      });
+    });
+
+    // Setup checkboxes
+    const checkboxes = filterContent.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        if (updateCallback) {
+          updateCallback();
+        }
+      });
+    });
+
+    // Setup close button
+    const closeBtn = document.querySelector('.mobile-filter-close');
+    console.log('Mobile close button found:', !!closeBtn);
+    if (closeBtn) {
+      closeBtn.addEventListener('click', hideMobileFilterPanel);
+      console.log('Close button event listener added');
+    } else {
+      console.error('Mobile close button not found!');
+    }
+  }
+
+  // Desktop filter overlay functions
+  function showDesktopFilterOverlay() {
     // Create overlay if it doesn't exist
     let overlay = document.querySelector('.filters-overlay');
     if (!overlay) {
-      console.log('Creating new overlay');
       overlay = document.createElement('div');
       overlay.className = 'filters-overlay';
       overlay.innerHTML = `
@@ -979,95 +1102,80 @@ export function setupFilterPanel(tests, updateCallback, rootPanel = null) {
       
       // Add event listeners
       const closeBtn = overlay.querySelector('.filters-close-btn');
-      closeBtn.addEventListener('click', hideFiltersOverlay);
+      closeBtn.addEventListener('click', hideDesktopFilterOverlay);
       
       // Close when clicking outside
       overlay.addEventListener('click', (e) => {
         if (e.target === overlay) {
-          hideFiltersOverlay();
+          hideDesktopFilterOverlay();
         }
       });
-    } else {
-      console.log('Using existing overlay');
     }
     
-    // Copy the filter panel content (excluding compare section)
+    // Copy the filter panel content
     const originalFilterPanel = document.querySelector('.filter-panel');
     const overlayPanel = overlay.querySelector('.filters-overlay-panel');
     
-    console.log('Original filter panel found:', !!originalFilterPanel);
-    console.log('Overlay panel found:', !!overlayPanel);
-    
     if (originalFilterPanel && overlayPanel) {
-      console.log('Cloning filter panel content');
-      // Clone the filter panel content
       const filterContent = originalFilterPanel.cloneNode(true);
+      cleanFilterContent(filterContent);
       
-      console.log('Filter content cloned, length:', filterContent.innerHTML.length);
-      
-      // Remove the compare section if it exists
-      const compareSection = filterContent.querySelector('.comparison-section');
-      if (compareSection) {
-        console.log('Removing comparison section');
-        compareSection.remove();
-      }
-      
-      // Remove the compare tests button if it exists
-      const compareButton = filterContent.querySelector('.compare-tests-btn');
-      if (compareButton) {
-        console.log('Removing compare tests button');
-        compareButton.remove();
-      }
-      
-      // Remove the entire "Compare Tests" filter section
-      const filterSections = filterContent.querySelectorAll('.filter-section');
-      console.log('Found filter sections:', filterSections.length);
-      filterSections.forEach((section, index) => {
-        const compareHeader = section.querySelector('h4');
-        if (compareHeader && compareHeader.textContent.trim() === 'Compare Tests') {
-          console.log('Removing Compare Tests section at index:', index);
-          section.remove();
-        }
-      });
-      
-      // Remove any other compare-related elements
-      const compareElements = filterContent.querySelectorAll('[class*="compare"]');
-      console.log('Found compare elements:', compareElements.length);
-      compareElements.forEach(element => {
-        if (element.classList.contains('compare-tests-btn') || 
-            element.classList.contains('comparison-section') ||
-            element.classList.contains('compare-tests-container') ||
-            element.classList.contains('clear-compare-btn') ||
-            element.classList.contains('compare-btn')) {
-          console.log('Removing compare element:', element.className);
-          element.remove();
-        }
-      });
-      
-      // Clear and append the filtered content
       overlayPanel.innerHTML = '';
       overlayPanel.appendChild(filterContent);
-      console.log('Filter content appended to overlay');
       
-      // Re-initialize any necessary event listeners for the copied content
-      console.log('Initializing overlay filter events');
+      // Re-initialize events
       initializeOverlayFilterEvents(filterContent, updateCallback);
-    } else {
-      console.error('Missing required elements:', {
-        originalFilterPanel: !!originalFilterPanel,
-        overlayPanel: !!overlayPanel
-      });
     }
     
     overlay.classList.add('visible');
-    console.log('Overlay made visible');
+  }
+
+  function hideDesktopFilterOverlay() {
+    const overlay = document.querySelector('.filters-overlay');
+    if (overlay) {
+      overlay.classList.remove('visible');
+    }
+  }
+
+  // Helper function to clean filter content
+  function cleanFilterContent(filterContent) {
+    // Remove compare sections
+    const compareSection = filterContent.querySelector('.comparison-section');
+    if (compareSection) compareSection.remove();
+    
+    const compareButton = filterContent.querySelector('.compare-tests-btn');
+    if (compareButton) compareButton.remove();
+    
+    // Remove compare filter sections
+    const filterSections = filterContent.querySelectorAll('.filter-section');
+    filterSections.forEach(section => {
+      const compareHeader = section.querySelector('h4');
+      if (compareHeader && compareHeader.textContent.trim() === 'Compare Tests') {
+        section.remove();
+      }
+    });
+    
+    // Remove other compare elements
+    const compareElements = filterContent.querySelectorAll('[class*="compare"]');
+    compareElements.forEach(element => {
+      if (element.classList.contains('compare-tests-btn') || 
+          element.classList.contains('comparison-section') ||
+          element.classList.contains('compare-tests-container') ||
+          element.classList.contains('clear-compare-btn') ||
+          element.classList.contains('compare-btn')) {
+        element.remove();
+      }
+    });
   }
   
   // Function to hide filters overlay
   function hideFiltersOverlay() {
-    const overlay = document.querySelector('.filters-overlay');
-    if (overlay) {
-      overlay.classList.remove('visible');
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+      hideMobileFilterPanel();
+    } else {
+      hideDesktopFilterOverlay();
     }
   }
   
@@ -3543,5 +3651,24 @@ function selectFilterPanelBiomarker(option, inputElement, dropdownElement) {
   const newHash = params.toString() ? `${base}?${params.toString()}` : base;
   window.location.hash = newHash;
 }
+
+// Handle window resize to switch between mobile and desktop filter modes
+window.addEventListener('resize', () => {
+  const isMobile = window.innerWidth <= 768;
+  const mobilePanel = document.querySelector('.mobile-filter-slide');
+  const desktopOverlay = document.querySelector('.filters-overlay');
+  
+  if (isMobile) {
+    // Hide desktop overlay if switching to mobile
+    if (desktopOverlay) {
+      desktopOverlay.classList.remove('visible');
+    }
+  } else {
+    // Hide mobile panel if switching to desktop
+    if (mobilePanel) {
+      mobilePanel.classList.remove('active');
+    }
+  }
+});
 
  

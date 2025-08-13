@@ -109,58 +109,9 @@ function initializeUI() {
     }
 }
 
-// Mobile filter panel logic
-function setupMobileFilterPanel() {
-  const filtersBtn = document.querySelector('.filters-btn.mobile-only');
-  const mobilePanel = document.querySelector('.mobile-filter-panel');
-  const closeBtn = document.querySelector('.close-mobile-filter');
-  const filterPanel = document.querySelector('.filter-panel');
-  const mobileContent = document.querySelector('.mobile-filter-content');
 
-  if (!filtersBtn || !mobilePanel || !closeBtn || !filterPanel || !mobileContent) return;
 
-  // Remove any existing event listeners
-  const newFiltersBtn = filtersBtn.cloneNode(true);
-  filtersBtn.parentNode.replaceChild(newFiltersBtn, filtersBtn);
-  const newCloseBtn = closeBtn.cloneNode(true);
-  closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
 
-  function openPanel() {
-    // Clone the filter panel to avoid DOM manipulation issues
-    const clonedPanel = filterPanel.cloneNode(true);
-    mobileContent.innerHTML = '';
-    mobileContent.appendChild(clonedPanel);
-    
-    // Show the panel
-    mobilePanel.classList.remove('hidden');
-    requestAnimationFrame(() => {
-      mobilePanel.classList.add('visible');
-      document.body.style.overflow = 'hidden';
-    });
-  }
-
-  function closePanel() {
-    mobilePanel.classList.remove('visible');
-    setTimeout(() => {
-      mobilePanel.classList.add('hidden');
-      document.body.style.overflow = '';
-    }, 300); // Match transition duration
-  }
-
-  newFiltersBtn.addEventListener('click', openPanel);
-  newCloseBtn.addEventListener('click', closePanel);
-
-  // Close on overlay click
-  mobilePanel.addEventListener('click', (e) => {
-    if (e.target === mobilePanel) closePanel();
-  });
-}
-
-// Only set up once
-if (!window._mobileFilterPanelSetup) {
-  window.addEventListener('DOMContentLoaded', setupMobileFilterPanel);
-  window._mobileFilterPanelSetup = true;
-}
 
 // Setup header scroll behavior
 function setupHeaderScrollBehavior() {
