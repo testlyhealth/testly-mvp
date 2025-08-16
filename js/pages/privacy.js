@@ -48,12 +48,17 @@ export async function displayPrivacyPage() {
           <div class="privacy-section">
             <h3>4. Cookies and Tracking</h3>
             <p><strong>Affiliate Cookies:</strong> Some links on this site are affiliate links provided by Awin or other networks. These links use cookies to track when you click through and make a purchase, so we can earn a commission.</p>
-            <p><strong>Analytics:</strong> At present, we do not use analytics tools like Google Analytics. If we add analytics in future, we will update this policy.</p>
+            <p><strong>Analytics Cookies:</strong> We use Google Analytics 4 (GA4) to understand how visitors use our website and improve our services. GA4 collects information such as pages visited, time spent on site, browser type, device type, and general geographic location (city-level). Your IP address is anonymised before storage, and data is stored for a maximum of 14 months.</p>
+            <p>Analytics cookies and tracking will only be activated if you provide consent via our cookie banner.</p>
+            
+            <h4>Local Storage</h4>
+            <p>We use your browser's local storage to remember your cookie preferences and certain on-site settings (e.g., form selections). This information is stored locally on your device and is not transmitted to our servers.</p>
           </div>
           
           <div class="privacy-section">
             <h3>5. Third Parties</h3>
             <p>When you click on an affiliate link, you are redirected to the provider's website. These providers may collect and process your data in line with their own privacy policies. We recommend reading those policies when visiting external sites.</p>
+            <p><strong>Google Analytics:</strong> We use Google Analytics 4, provided by Google LLC, to gather statistical data about website usage. Data may be processed outside the UK/EU. You can learn more in Google's Privacy Policy: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">https://policies.google.com/privacy</a>.</p>
           </div>
           
           <div class="privacy-section">
@@ -65,6 +70,7 @@ export async function displayPrivacyPage() {
               <li>Withdraw consent to data processing (e.g., via cookies).</li>
             </ul>
             <p>To make a request, contact us at <a href="mailto:testlyhealth@gmail.com">testlyhealth@gmail.com</a>.</p>
+            <p>You can withdraw consent for analytics tracking at any time by adjusting your cookie settings via the "Cookie Settings" link at the bottom of our site.</p>
           </div>
           
           <div class="privacy-section">

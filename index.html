@@ -22,14 +22,43 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
   <script type="module" src="/js/main.js"></script>
   
+  <!-- Set default consent before GTM loads -->
+  <script>
+    // Default: no analytics until user opts in
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+
+    gtag('consent', 'default', {
+      analytics_storage: 'denied'
+      // add ad_storage: 'denied' later if you start ads
+    });
+  </script>
+
+  <!-- Apply saved consent when page loads -->
+  <script>
+    (function() {
+      try {
+        var saved = JSON.parse(localStorage.getItem('gdpr-consent') || '{}');
+        if (typeof saved.analytics === 'boolean') {
+          var state = saved.analytics ? 'granted' : 'denied';
+          gtag('consent', 'update', { analytics_storage: state });
+          dataLayer.push({
+            event: 'gdpr_consent_update',
+            analytics_storage: state
+          });
+        }
+      } catch(e) { /* ignore */ }
+    })();
+  </script>
+  
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-L7N7DD13RV"></script>
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
 
-    gtag('config', 'G-L7N7DD13RV');
+    gtag('config', 'G-L7N7DD13RV', {
+      'send_page_view': false // Will be enabled if user consents
+    });
   </script>
 </head>
 <body>
@@ -62,6 +91,59 @@
     </div>
   </header>
 
+  <!-- GDPR Consent Banner -->
+  <div id="gdpr-banner" class="gdpr-banner hidden">
+    <div class="gdpr-content">
+      <div class="gdpr-header">
+        <h3>Cookie Preferences</h3>
+        <p>We use cookies to enhance your experience and analyze site usage. Choose your preferences below.</p>
+      </div>
+      
+      <div class="gdpr-actions">
+        <button class="gdpr-btn gdpr-btn-accept" data-action="accept">Accept All</button>
+        <button class="gdpr-btn gdpr-btn-reject" data-action="reject">Essential Only</button>
+        <button class="gdpr-btn gdpr-btn-manage" data-action="manage">Manage Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GDPR Manage Settings Modal -->
+  <div id="gdpr-manage-modal" class="gdpr-modal hidden">
+    <div class="gdpr-modal-content">
+      <div class="gdpr-modal-header">
+        <h3>Cookie Settings</h3>
+        <button class="gdpr-modal-close" aria-label="Close settings">×</button>
+      </div>
+      
+      <div class="gdpr-modal-body">
+        <div class="gdpr-option">
+          <div class="gdpr-option-info">
+            <h4>Strictly Necessary</h4>
+            <p>Essential for the website to function properly. These cookies cannot be disabled.</p>
+          </div>
+          <div class="gdpr-toggle disabled">
+            <input type="checkbox" checked disabled>
+            <span class="toggle-slider"></span>
+          </div>
+        </div>
+        
+        <div class="gdpr-option">
+          <div class="gdpr-option-info">
+            <h4>Analytics</h4>
+            <p>Help us understand how visitors interact with our website by collecting anonymous usage data.</p>
+          </div>
+          <div class="gdpr-toggle">
+            <input type="checkbox" id="analytics-toggle">
+            <span class="toggle-slider"></span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="gdpr-modal-footer">
+        <button class="gdpr-btn gdpr-btn-save">Save Preferences</button>
+      </div>
+    </div>
+  </div>
 
 
   <!-- Blood Tests Menu -->
@@ -141,6 +223,7 @@
           <ul>
             <li><a href="#/privacy">Privacy Policy</a></li>
             <li><a href="#/cookies">Cookie Policy</a></li>
+            <li><a href="#" id="cookie-settings-link">Cookie Settings</a></li>
             <li><a href="#/disclaimer">Disclaimer</a></li>
           </ul>
         </div>

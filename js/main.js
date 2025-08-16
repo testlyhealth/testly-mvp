@@ -10,6 +10,7 @@ import { initUserDropdown } from './user-dropdown.js';
 import Router from './router.js';
 import store from './store.js';
 import { supabase } from './api/supabase.js';
+import './gdpr.js';
 
 // Define routes
 const routes = [
