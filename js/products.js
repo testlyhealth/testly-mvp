@@ -1,6 +1,5 @@
 import { $, $all } from './dom.js';
 import { categories } from './data.js';
-import { createFilterPanel, setupFilterPanel } from './filter-panel.js';
 import { basket } from './basket.js';
 import { CardService } from './services/cardService.js';
 import { getUrl } from './config.js';
@@ -114,8 +113,7 @@ export async function displayCategoryProducts(categoryId) {
         </div>
       `;
 
-      // Create the filter panel
-      const filterPanel = createFilterPanel(tests);
+
 
       // Create the tests grid container with empty grid first
       const testsGridContainer = `
@@ -128,25 +126,14 @@ export async function displayCategoryProducts(categoryId) {
               <div class="results-count">
                 <span>${tests.length} result${tests.length !== 1 ? 's' : ''}</span>
               </div>
-              <button class="filters-btn" aria-label="Toggle filters panel">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
-                </svg>
-                Filters
-              </button>
+
             </div>
           </div>
         </div>
         <div class="results-container">
-          <div class="filter-panel">
-            ${filterPanel}
-          </div>
           <div class="main-content">
             ${categoryHeader}
-            <div class="mobile-filter-buttons">
-              <button class="filters-btn mobile-only" aria-label="Open filters">Filters</button>
-              <button class="advanced-search-btn mobile-only" aria-label="Advanced search">Advanced search</button>
-            </div>
+
             <div class="products-grid" id="tests-grid"></div>
           </div>
         </div>
@@ -157,14 +144,6 @@ export async function displayCategoryProducts(categoryId) {
 
       // Wait for the next frame to ensure DOM is updated
       requestAnimationFrame(() => {
-        // Setup filter panel functionality after DOM is updated
-        setupFilterPanel(tests, async (filteredTests) => {
-          const testsGrid = $('#tests-grid');
-          if (testsGrid) {
-            await updateTestsGrid(filteredTests);
-          }
-        });
-
         // Initial grid update
         updateTestsGrid(tests);
       });
@@ -172,11 +151,6 @@ export async function displayCategoryProducts(categoryId) {
     } catch (error) {
       console.error('Error loading blood tests:', error);
       mainContent.innerHTML = `
-        <div class="filter-panel">
-          <div class="error-message">
-            <p>Error loading filters</p>
-          </div>
-        </div>
         <div class="main-content">
           <div class="category-header">
             <h2>General Health Blood Tests</h2>

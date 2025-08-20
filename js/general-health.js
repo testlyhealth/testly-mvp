@@ -1,6 +1,5 @@
 import { $, $all } from './dom.js';
 import { CardService } from './services/cardService.js';
-import { createFilterPanel, setupFilterPanel } from './filter-panel.js';
 import { basket } from './basket.js';
 import { getUrl } from './config.js';
 import { supabase } from './api/supabase.js';
@@ -554,12 +553,8 @@ function createPageStructure(filterPanel, testsGrid) {
     <div class="page-container">
       ${createGeneralHealthTitle()}
       <div class="filter-tags"></div>
-      <div class="results-container"><aside class="filter-panel">
-          <div class="filter-panel-content">
-            ${filterPanel}
-          </div>
-        </aside><div class="main-content">
-
+      <div class="results-container">
+        <div class="main-content">
           <div class="products-grid"></div>
         </div>
       </div>
@@ -577,83 +572,8 @@ function createErrorContent() {
   `;
 }
 
-// Function to inject the Filters button on mobile
-function injectMobileFiltersButton(retryCount = 0) {
-  if (window.innerWidth > 768) return;
-  const mainContent = document.querySelector('.main-content');
-  if (!mainContent) return;
-  // Prevent duplicate button
-  if (mainContent.querySelector('.filters-btn.mobile-only')) return;
-  const btn = document.createElement('button');
-  btn.className = 'filters-btn mobile-only';
-  btn.setAttribute('aria-label', 'Open filters');
-  btn.textContent = 'Filters';
-  // Insert button after the title section
-  const titleSection = mainContent.querySelector('.general-health-title-section');
-  if (titleSection && titleSection.nextSibling) {
-    mainContent.insertBefore(btn, titleSection.nextSibling);
-  } else {
-    mainContent.appendChild(btn);
-  }
-  console.log('[injectMobileFiltersButton] Injected Filters button');
 
-  // Setup open/close logic for the mobile filter panel
-  const mobilePanel = document.querySelector('.mobile-filter-panel');
-  const closeBtn = document.querySelector('.close-mobile-filter');
-  const filterPanel = document.querySelector('.filter-panel');
-  const mobileContent = document.querySelector('.mobile-filter-content');
-  if (!mobilePanel || !closeBtn || !mobileContent) {
-    console.log('[injectMobileFiltersButton] Missing mobilePanel, closeBtn, or mobileContent');
-    return;
-  }
-  if (!filterPanel) {
-    console.log('[injectMobileFiltersButton] .filter-panel not found, retryCount:', retryCount);
-    // Retry up to 10 times with a short delay
-    if (retryCount < 10) {
-      setTimeout(() => injectMobileFiltersButton(retryCount + 1), 100);
-    }
-    return;
-  }
-  console.log('[injectMobileFiltersButton] Found .filter-panel, setting up open/close logic');
 
-  // Store the original parent and next sibling of the filter panel
-  const originalParent = filterPanel.parentNode;
-  const originalNextSibling = filterPanel.nextSibling;
-
-  function openPanel() {
-    console.log('[openPanel] Moving filterPanel into mobile overlay');
-    // Move the filter panel into the mobile overlay
-    mobileContent.appendChild(filterPanel);
-    mobilePanel.classList.remove('hidden');
-    mobilePanel.classList.add('visible');
-    document.body.style.overflow = 'hidden';
-  }
-  function closePanel() {
-    console.log('[closePanel] Moving filterPanel back to original location');
-    // Move the filter panel back to its original location
-    if (originalNextSibling) {
-      originalParent.insertBefore(filterPanel, originalNextSibling);
-    } else {
-      originalParent.appendChild(filterPanel);
-    }
-    mobilePanel.classList.remove('visible');
-    mobilePanel.classList.add('hidden');
-    document.body.style.overflow = '';
-  }
-
-  btn.addEventListener('click', () => {
-    if (mobilePanel.classList.contains('visible')) {
-      closePanel();
-    } else {
-      openPanel();
-    }
-  });
-  closeBtn.addEventListener('click', closePanel);
-  // Optional: close on overlay click
-  mobilePanel.addEventListener('click', (e) => {
-    if (e.target === mobilePanel) closePanel();
-  });
-}
 
 // Function to initialize page elements
 async function initializePageElements(tests, selectedProblem = null, skipFilterPanel = false) {
@@ -694,24 +614,7 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
     const hash = window.location.hash;
     const appliedFilters = [];
     
-    // Check for applied filters from homepage form
-    const minPriceMatch = hash.match(/[?&]minPrice=([^&]+)/);
-    if (minPriceMatch) {
-      appliedFilters.push({
-        type: 'minPrice',
-        value: decodeURIComponent(minPriceMatch[1]),
-        display: `Min price: ${decodeURIComponent(minPriceMatch[1])}`
-      });
-    }
-    
-    const maxPriceMatch = hash.match(/[?&]maxPrice=([^&]+)/);
-    if (maxPriceMatch) {
-      appliedFilters.push({
-        type: 'maxPrice',
-        value: decodeURIComponent(maxPriceMatch[1]),
-        display: `Max price: ${decodeURIComponent(maxPriceMatch[1])}`
-      });
-    }
+
     
     const providerMatch = hash.match(/[?&]provider=([^&]+)/);
     if (providerMatch) {
@@ -723,26 +626,9 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
       });
     }
     
-    const methodMatch = hash.match(/[?&]method=([^&]+)/);
-    if (methodMatch) {
-      appliedFilters.push({
-        type: 'method',
-        value: decodeURIComponent(methodMatch[1]),
-        display: `Method: ${decodeURIComponent(methodMatch[1])}`
-      });
-    }
+
     
-    const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
-    if (biomarkerMatch) {
-      const biomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean);
-      biomarkers.forEach(biomarker => {
-        appliedFilters.push({
-          type: 'biomarker',
-          value: biomarker,
-          display: biomarker.replace(/\+/g, ' ')
-        });
-      });
-    }
+
     
     // Check for filter panel filters
     const filterMatch = hash.match(/[?&]filter=([^&]+)/);
@@ -778,12 +664,6 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
           <div class="results-count">
             <span>${tests.length} result${tests.length !== 1 ? 's' : ''}</span>
           </div>
-          <button class="filters-btn" aria-label="Toggle filters panel">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
-            </svg>
-            Filters
-          </button>
           <div class="sort-dropdown desktop-only">
             <button class="sort-btn" aria-label="Sort results" aria-expanded="false">
               Sort: Relevance
@@ -798,9 +678,9 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
       </div>
     `;
     
-    console.log('Setting filter tags container HTML');
+    console.log('🔍 FIRST INSTANCE - Setting filter tags container HTML');
     filterTagsContainer.innerHTML = resultsCountHTML;
-    console.log('Filter tags container HTML set');
+    console.log('🔍 FIRST INSTANCE - Filter tags container HTML set');
     
     // Set up event delegation for remove tag buttons
     const filterTagsList = filterTagsContainer.querySelector('.filter-tags-list');
@@ -844,23 +724,10 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
             params.delete('biomarkers');
           }
           
-          // Special handling for "Male hormone check" - remove the special parameters
-          if (value === 'Testosterone') {
-            // Check if this is a male hormone check by looking at the URL parameters
-            const hash = window.location.hash;
-            if (hash.includes('testosteroneFullHormoneOnly=true')) {
-              params.delete('testosteroneFullHormoneOnly');
-            }
-            if (hash.includes('testosteroneFullHormone=true')) {
-              params.delete('testosteroneFullHormone');
-            }
-            if (hash.includes('testosteroneOnly=true')) {
-              params.delete('testosteroneOnly');
-            }
-          }
+          // Note: Special handling for testosterone options is now done via the testosterone-option type
         } else if (type === 'male-hormone-check') {
-          console.log('🎯 MALE HORMONE CHECK TAG REMOVAL TRIGGERED');
-          // Special handling for "Male hormone check" - remove ALL biomarkers and special parameters
+          console.log('🎯 MALE HORMONE CHECK TAG REMOVAL TRIGGERED - LEGACY CODE');
+          // Legacy handling - remove ALL biomarkers and special parameters
           params.delete('biomarkers');
           params.delete('testosteroneFullHormoneOnly');
           params.delete('testosteroneFullHormone');
@@ -888,660 +755,8 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
         window.location.hash = newHash;
       });
     }
-    
-    // Add event listener to filters button
-    const filtersBtn = filterTagsContainer.querySelector('.filters-btn');
-    if (filtersBtn) {
-      filtersBtn.addEventListener('click', () => {
-        const filterPanel = document.querySelector('.filter-panel');
-        if (filterPanel) {
-          filterPanel.classList.toggle('visible');
-        }
-      });
-    }
-  }
-  
-  // Set up a function to update filter tags when URL changes
-  function updateFilterTagsFromURL() {
-    const filterTagsContainer = document.querySelector('.filter-tags');
-    if (!filterTagsContainer) return;
-    
-    // Get URL parameters to show applied filters
-    const hash = window.location.hash;
-    const appliedFilters = [];
-    
-    // Check for applied filters from homepage form
-    const minPriceMatch = hash.match(/[?&]minPrice=([^&]+)/);
-    if (minPriceMatch) {
-      appliedFilters.push({
-        type: 'minPrice',
-        value: decodeURIComponent(minPriceMatch[1]),
-        display: `Min price: ${decodeURIComponent(minPriceMatch[1])}`
-      });
-    }
-    
-    const maxPriceMatch = hash.match(/[?&]maxPrice=([^&]+)/);
-    if (maxPriceMatch) {
-      appliedFilters.push({
-        type: 'maxPrice',
-        value: decodeURIComponent(maxPriceMatch[1]),
-        display: `Max price: ${decodeURIComponent(maxPriceMatch[1])}`
-      });
-    }
-    
-    const providerMatch = hash.match(/[?&]provider=([^&]+)/);
-    if (providerMatch) {
-      const providerValue = decodeURIComponent(providerMatch[1]).replace(/\+/g, ' ');
-      appliedFilters.push({
-        type: 'provider',
-        value: providerValue,
-        display: `Provider: ${providerValue}`
-      });
-    }
-    
-    const methodMatch = hash.match(/[?&]method=([^&]+)/);
-    if (methodMatch) {
-      appliedFilters.push({
-        type: 'method',
-        value: decodeURIComponent(methodMatch[1]),
-        display: `Method: ${decodeURIComponent(methodMatch[1])}`
-      });
-    }
-    
-    const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
-    if (biomarkerMatch) {
-      const biomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean);
-      
-      // Check if this is a testosterone-only search
-      const testosteroneOnlyMatch = hash.match(/[?&]testosteroneOnly=([^&]+)/);
-      const isTestosteroneOnly = testosteroneOnlyMatch && decodeURIComponent(testosteroneOnlyMatch[1]) === 'true';
-      
-      // Check if this is a testosterone full hormone profile search
-      const testosteroneFullHormoneMatch = hash.match(/[?&]testosteroneFullHormone=([^&]+)/);
-      const isTestosteroneFullHormone = testosteroneFullHormoneMatch && decodeURIComponent(testosteroneFullHormoneMatch[1]) === 'true';
-      
-      console.log('🔍 Filter tag debug:', {
-        hash: hash,
-        biomarkers: biomarkers,
-        testosteroneOnlyMatch: testosteroneOnlyMatch,
-        isTestosteroneOnly: isTestosteroneOnly,
-        testosteroneFullHormoneMatch: testosteroneFullHormoneMatch,
-        isTestosteroneFullHormone: isTestosteroneFullHormone,
-        hasTestosterone: biomarkers.includes('Testosterone')
-      });
-      
-      if (isTestosteroneOnly && biomarkers.includes('Testosterone')) {
-        console.log('🔍 Creating "Testosterone only" filter tag');
-        // Create special "Testosterone only" filter tag
-        appliedFilters.push({
-          type: 'biomarker',
-          value: 'Testosterone',
-          display: 'Testosterone only'
-        });
-      } else if (isTestosteroneFullHormone) {
-        console.log('🔍 Creating "Male hormone check" filter tag');
-        // Create special "Male hormone check" filter tag
-        appliedFilters.push({
-          type: 'biomarker',
-          value: 'Testosterone',
-          display: 'Male hormone check'
-        });
-      } else if (isTestosteroneFullHormoneGeneralHealth) {
-        console.log('🔍 Creating "Male hormone check + general health check" filter tag');
-        // Create special "Male hormone check + general health check" filter tag
-        appliedFilters.push({
-          type: 'biomarker',
-          value: 'Testosterone',
-          display: 'Male hormone check + general health check'
-        });
-      } else {
-        console.log('🔍 Creating regular biomarker filter tags');
-        // Regular biomarker filter tags
-        biomarkers.forEach(biomarker => {
-          appliedFilters.push({
-            type: 'biomarker',
-            value: biomarker,
-            display: biomarker.replace(/\+/g, ' ')
-          });
-        });
-      }
-    }
-    
-    // Check for filter panel filters
-    const filterMatch = hash.match(/[?&]filter=([^&]+)/);
-    if (filterMatch) {
-      const filters = decodeURIComponent(filterMatch[1]).split(',').map(f => f.trim()).filter(Boolean);
-      filters.forEach(filter => {
-        appliedFilters.push({
-          type: 'category',
-          value: filter,
-          display: `Category: ${filter}`
-        });
-      });
-    }
-    
-    // Create filter tags HTML with proper data attributes
-    const filterTagsHTML = appliedFilters.map(filter => `
-      <div class="filter-tag" data-type="${filter.type}" data-value="${filter.value}">
-        <span>${filter.display}</span>
-        <button class="remove-tag" aria-label="Remove filter">×</button>
-      </div>
-    `).join('');
-    
-    const resultsCountHTML = `
-      <div class="filter-tags-container">
-        <div class="filter-tags-list">
-          ${filterTagsHTML}
-        </div>
-        <div class="results-controls">
-          <div class="results-count">
-            <span>${tests.length} result${tests.length !== 1 ? 's' : ''}</span>
-          </div>
-          <button class="filters-btn" aria-label="Toggle filters panel">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
-            </svg>
-            Filters
-          </button>
-          <div class="sort-dropdown desktop-only">
-            <button class="sort-btn" aria-label="Sort results" aria-expanded="false">
-              Sort: Relevance
-            </button>
-            <div class="sort-dropdown-menu" style="display: none;">
-              <button class="sort-option" data-sort="relevance">Sort by relevance</button>
-              <button class="sort-option" data-sort="price-asc">Sort by price: Low to high</button>
-              <button class="sort-option" data-sort="price-desc">Sort by price: High to low</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-    
-    filterTagsContainer.innerHTML = resultsCountHTML;
-    
-    // Re-attach event listeners
-    const filterTagsList = filterTagsContainer.querySelector('.filter-tags-list');
-    if (filterTagsList) {
-      // FIRST INSTANCE - DEBUGGING
-      filterTagsList.addEventListener('click', (e) => {
-        console.log('🔍 FIRST INSTANCE - Filter tag clicked:', e.target);
-        const button = e.target.closest('.remove-tag');
-        if (!button) {
-          console.log('🔍 FIRST INSTANCE - No remove button found');
-          return;
-        }
-        console.log('🔍 FIRST INSTANCE - Remove button clicked');
-        
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const tag = button.closest('.filter-tag');
-        if (!tag) {
-          console.log('🔍 FIRST INSTANCE - No filter tag found');
-          return;
-        }
-        
-        const type = tag.dataset.type;
-        const value = tag.dataset.value;
-        console.log('🔍 FIRST INSTANCE - Removing filter tag:', type, value);
-        
-        // Parse current URL parameters
-        let [base, paramStr] = window.location.hash.split('?');
-        base = base || '#/search-results';
-        let params = new URLSearchParams(paramStr || '');
-        
-        // Remove the specific filter
-        if (type === 'minPrice') {
-          params.delete('minPrice');
-        } else if (type === 'maxPrice') {
-          params.delete('maxPrice');
-        } else if (type === 'provider') {
-          params.delete('provider');
-        } else if (type === 'method') {
-          params.delete('method');
-        } else if (type === 'biomarker') {
-          // Remove specific biomarker from biomarkers parameter - SECOND INSTANCE
-          let biomarkerVal = params.get('biomarkers') || '';
-          let biomarkers = biomarkerVal.split(',').map(b => b.trim()).filter(Boolean);
-          biomarkers = biomarkers.filter(b => b !== value);
-          if (biomarkers.length > 0) {
-            params.set('biomarkers', biomarkers.join(','));
-          } else {
-            params.delete('biomarkers');
-          }
-          
-          // Special handling for "Male hormone check" - remove the special parameters
-          if (value === 'Testosterone') {
-            // Check if this is a male hormone check by looking at the URL parameters
-            const hash = window.location.hash;
-            if (hash.includes('testosteroneFullHormoneOnly=true')) {
-              params.delete('testosteroneFullHormoneOnly');
-            }
-            if (hash.includes('testosteroneFullHormone=true')) {
-              params.delete('testosteroneFullHormone');
-            }
-            if (hash.includes('testosteroneOnly=true')) {
-              params.delete('testosteroneOnly');
-            }
-          }
-        } else if (type === 'male-hormone-check') {
-          console.log('🎯 MALE HORMONE CHECK TAG REMOVAL TRIGGERED - SECOND INSTANCE');
-          // Special handling for "Male hormone check" - remove ALL biomarkers and special parameters
-          params.delete('biomarkers');
-          params.delete('testosteroneFullHormoneOnly');
-          params.delete('testosteroneFullHormone');
-          params.delete('testosteroneOnly');
-          console.log('🎯 Parameters after removal (second):', params.toString());
-        } else if (type === 'category') {
-          // Remove specific category from filter parameter
-          let filterVal = params.get('filter') || '';
-          let filters = filterVal.split(',').map(f => f.trim()).filter(Boolean);
-          filters = filters.filter(f => f !== value);
-          if (filters.length > 0) {
-            params.set('filter', filters.join(','));
-          } else {
-            params.delete('filter');
-          }
-        }
-        
-        // Remove empty params
-        for (const [key, val] of params.entries()) {
-          if (!val) params.delete(key);
-        }
-        
-        // Rebuild hash and navigate
-        const newHash = params.toString() ? `${base}?${params.toString()}` : base;
-        window.location.hash = newHash;
-      });
-    }
-    
-    // Re-attach filters button event listener
-    const filtersBtn = filterTagsContainer.querySelector('.filters-btn');
-    if (filtersBtn) {
-      filtersBtn.addEventListener('click', () => {
-        const filterPanel = document.querySelector('.filter-panel');
-        if (filterPanel) {
-          filterPanel.classList.toggle('visible');
-        }
-      });
-    }
-  }
-  
-  // Set up hash change listener to update filter tags
-  window.addEventListener('hashchange', updateFilterTagsFromURL);
-  
-  
-  console.log('Passing selectedProblem to setupFilterPanel:', selectedProblem);
-  console.log('Current tests length being passed to setupFilterPanel:', currentTests.length);
-  
-  if (!skipFilterPanel) {
-
-    // Import setupFilterPanel function
-    const { setupFilterPanel } = await import('./filter-panel.js');
-    console.log('🔍 setupFilterPanel imported, calling it with', currentTests.length, 'tests');
-    
-    // Simple test to see if this code is running
-    console.log('🔍 Filter panel setup code is executing!');
-    
-          // Define the callback function
-      const filterCallback = async (filterState) => {
-        console.log('🔍 FILTER CALLBACK TRIGGERED with filterState:', filterState);
-      
-      // Handle filter state object (new approach)
-      if (!Array.isArray(filterState)) {
-        // New case: filterState is an object with categories, providers, etc.
-        const selectedCategories = filterState.categories || [];
-        console.log('🔍 Selected categories in filter callback:', selectedCategories);
-        const selectedProviders = filterState.providers || [];
-        
-        // Check if filtered tests are provided directly (for price/provider filtering)
-        if (filterState.filteredTests) {
-          
-          // Re-enrich the filtered tests with biomarker data
-          const testIds = filterState.filteredTests.map(t => t.id);
-          
-          // Fetch biomarker data for these specific tests
-          const enriched = await fetchAndEnrichTests({ categoryId: 3 }); // Fetch all tests in category
-          const enrichedMap = new Map(enriched.map(t => [t.id, t]));
-          
-          // Replace the filtered tests with their enriched versions
-          const reEnrichedTests = filterState.filteredTests.map(test => {
-            const enrichedTest = enrichedMap.get(test.id);
-            if (enrichedTest) {
-              // Test re-enriched successfully
-            } else {
-              // No enriched data found for this test
-            }
-            return enrichedTest || test; // Fallback to original if not found
-          });
-          
-          filteredTests = reEnrichedTests;
-          sortAscending = true;
-          window.sortAscending = sortAscending;
-          updateSortButtonText(sortAscending);
-          currentTests = sortTests(filteredTests, sortAscending);
-          
-          // Update the global tests to match what we're displaying
-          window._allGeneralHealthTests = reEnrichedTests;
-          
-          updateTestGridContent(currentTests);
-          return; // Exit early since we're using the provided filtered tests
-        }
-        
-        console.log('Fetching tests for categories:', selectedCategories, 'providers:', selectedProviders);
-        
-        // Get current biomarker filter from URL
-        const hash = window.location.hash;
-        const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
-        const selectedBiomarkers = biomarkerMatch ? 
-          decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim()).filter(Boolean) : [];
-        
-        console.log('Current biomarker filter:', selectedBiomarkers);
-        
-        // Fetch and enrich tests based on the filter state
-        // For now, handle multiple categories by fetching each one and combining results
-        let allEnrichedTests = [];
-        
-        if (selectedCategories.length > 0) {
-          // Fetch tests from categories - fetchAndEnrichTests will handle TRT monitoring filtering
-          for (const category of selectedCategories) {
-            const enriched = await fetchAndEnrichTests({ 
-              category: category,
-              provider: selectedProviders.length > 0 ? selectedProviders[0] : null 
-            });
-            allEnrichedTests = allEnrichedTests.concat(enriched);
-          }
-          // Remove duplicates based on test ID
-          const uniqueTests = [];
-          const seenIds = new Set();
-          allEnrichedTests.forEach(test => {
-            if (!seenIds.has(test.id)) {
-              seenIds.add(test.id);
-              uniqueTests.push(test);
-            }
-          });
-          allEnrichedTests = uniqueTests;
-          console.log('Fetched tests for categories:', allEnrichedTests.length);
-        } else {
-          // No categories selected, use the initially filtered tests instead of fetching all
-          console.log('🔍 No categories selected, using initial filtered tests');
-          allEnrichedTests = window._allGeneralHealthTests || [];
-          console.log('🔍 Using initial filtered tests:', allEnrichedTests.length);
-          
-          // Apply provider filter if specified
-          if (selectedProviders.length > 0) {
-            console.log('Applying provider filter to initial tests:', selectedProviders);
-            allEnrichedTests = allEnrichedTests.filter(test => 
-              selectedProviders.includes(test.provider?.name || test.provider)
-            );
-            console.log('Tests after provider filtering:', allEnrichedTests.length);
-          }
-        }
-        
-        // Apply biomarker filtering if biomarkers are selected
-        if (selectedBiomarkers.length > 0) {
-          console.log('🔍 SEARCH RESULTS: Applying biomarker filter to', allEnrichedTests.length, 'tests');
-          console.log('🔍 SEARCH RESULTS: Looking for biomarkers:', selectedBiomarkers);
-          
-          // Log all tests before filtering
-          console.log('🔍 SEARCH RESULTS: All tests before biomarker filtering:', allEnrichedTests.map(t => ({
-            id: t.id,
-            name: t.name,
-            provider: t.provider?.name,
-            biomarker_names: t.biomarker_names || []
-          })));
-          
-          allEnrichedTests = allEnrichedTests.filter(test => {
-            const testBiomarkers = test.biomarker_names || [];
-            console.log(`🔍 SEARCH RESULTS: Test "${test.name}" has biomarkers:`, testBiomarkers);
-            
-            const hasAllBiomarkers = selectedBiomarkers.every(searchBiomarker => {
-              // Normalize the search biomarker (replace + with space, lowercase)
-              const normalizedSearch = searchBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
-              
-              // Check if any test biomarker matches (case insensitive, handle + vs space)
-              const hasMatch = testBiomarkers.some(testBiomarker => {
-                if (!testBiomarker) return false;
-                const normalizedTest = testBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
-                const exactMatch = normalizedTest === normalizedSearch;
-                const containsMatch = normalizedTest.includes(normalizedSearch) || normalizedSearch.includes(normalizedTest);
-                return exactMatch || containsMatch;
-              });
-              
-              if (!hasMatch) {
-                console.log(`  🔍 SEARCH RESULTS: Missing biomarker: "${searchBiomarker}" (normalized: "${normalizedSearch}")`);
-                console.log(`  🔍 SEARCH RESULTS: Available test biomarkers:`, testBiomarkers.map(b => b.toLowerCase().replace(/\+/g, ' ').trim()));
-              }
-              return hasMatch;
-            });
-            
-            if (!hasAllBiomarkers) {
-              console.log(`🔍 SEARCH RESULTS: Filtering out test "${test.name}" - missing biomarkers. Test has:`, testBiomarkers, 'Looking for:', selectedBiomarkers);
-            }
-            return hasAllBiomarkers;
-          });
-          
-          console.log('🔍 SEARCH RESULTS: After biomarker filtering:', allEnrichedTests.length, 'tests remaining');
-          
-          // Log the exact tests that passed the biomarker filter
-          console.log('🔍 SEARCH RESULTS: Tests that passed biomarker filter:', allEnrichedTests.map(t => ({
-            id: t.id,
-            name: t.name,
-            provider: t.provider?.name,
-            biomarker_names: t.biomarker_names || []
-          })));
-        }
-        
-        // Apply blood taking method filtering if methods are selected
-        const selectedBloodMethods = filterState.bloodTakingMethods || [];
-        if (selectedBloodMethods.length > 0) {
-  
-          console.log('Applying blood taking method filter to', allEnrichedTests.length, 'tests');
-          console.log('Looking for methods:', selectedBloodMethods);
-          
-          allEnrichedTests = allEnrichedTests.filter(test => {
-            const testMethods = Array.isArray(test.blood_taking_methods) ? test.blood_taking_methods : [];
-            console.log(`Test "${test.name}" has blood taking methods:`, testMethods);
-            
-            const hasMatchingMethod = testMethods.some(method => 
-              selectedBloodMethods.includes(method)
-            );
-            
-            if (!hasMatchingMethod) {
-              console.log(`Filtering out test "${test.name}" - no matching blood taking methods. Test has:`, testMethods, 'Looking for:', selectedBloodMethods);
-            }
-            return hasMatchingMethod;
-          });
-          console.log('After blood taking method filtering:', allEnrichedTests.length, 'tests remaining');
-        } else {
-          console.log('No biomarker filter applied');
-        }
-        
-        const enriched = allEnrichedTests;
-        
-        console.log('🔍 SEARCH RESULTS: Final enriched tests:', enriched.length);
-        console.log('🔍 SEARCH RESULTS: Final test details:', enriched.map(t => ({
-          id: t.id,
-          name: t.name,
-          provider: t.provider?.name,
-          biomarker_names: t.biomarker_names || []
-        })));
-        
-        filteredTests = enriched;
-        sortAscending = true;
-        window.sortAscending = sortAscending;
-        updateSortButtonText(sortAscending);
-        currentTests = sortTests(filteredTests, sortAscending);
-        
-        // Update the global tests to match what we're displaying
-        window._allGeneralHealthTests = enriched;
-
-        console.log('Updated window._allGeneralHealthTests to', enriched.length, 'tests');
-        console.log('Test names:', enriched.map(t => t.name));
-        
-        updateTestGridContent(currentTests);
-      } else {
-        // Legacy case: filterState is an array of filtered tests
-        console.log('🔍 LEGACY CASE - filterState is not an object, treating as array:', filterState);
-        console.log('🔍 LEGACY CASE - filterState type:', typeof filterState);
-        console.log('🔍 LEGACY CASE - filterState value:', filterState);
-        filteredTests = filterState;
-        console.log('🔍 LEGACY CASE - Setting filteredTests to:', filteredTests);
-        sortAscending = true;
-        window.sortAscending = sortAscending;
-        updateSortButtonText(sortAscending);
-        currentTests = sortTests(filteredTests, sortAscending);
-        console.log('🔍 LEGACY CASE - After sorting, currentTests count:', currentTests.length);
-        updateTestGridContent(currentTests);
-      }
-    };
-    
-    console.log('About to call setupFilterPanel with callback');
-    console.log('filterCallback type:', typeof filterCallback);
-    console.log('filterCallback is function:', typeof filterCallback === 'function');
-    console.log('currentTests length:', currentTests.length);
-    
-    // Test the callback directly
-    console.log('🔍 Testing callback function...');
-    try {
-      console.log('🔍 CALLBACK TEST - About to call filterCallback with test object');
-      filterCallback({ test: 'test' });
-      console.log('🔍 CALLBACK TEST - Callback test successful');
-    } catch (error) {
-      console.error('🔍 CALLBACK TEST - Callback test failed:', error);
-    }
-    
-    console.log('Calling setupFilterPanel...');
-    console.log('Callback function defined:', typeof filterCallback);
-    try {
-      setupFilterPanel(currentTests, filterCallback);
-      console.log('setupFilterPanel called successfully');
-    } catch (error) {
-      console.error('=== ERROR: setupFilterPanel failed ===');
-      console.error('Error:', error);
-      console.error('Error stack:', error.stack);
-    }
-    
-    setTimeout(() => {
-      document.dispatchEvent(new Event('filterPanelReady'));
-    }, 0);
   }
 }
-
-// Listen for the filterPanelReady event to set up mobile filter logic
-if (!window._mobileFilterPanelSetup) {
-  document.addEventListener('filterPanelReady', () => {
-    // Always attach to the correct Filters button
-    const filtersBtn = document.querySelector('.filters-btn.mobile-only');
-    const mobilePanel = document.querySelector('.mobile-filter-panel');
-    const closeBtn = document.querySelector('.close-mobile-filter');
-    const filterPanel = document.querySelector('.filter-panel');
-    const mobileContent = document.querySelector('.mobile-filter-content');
-    if (!filtersBtn || !mobilePanel || !closeBtn || !filterPanel || !mobileContent) return;
-
-    // Remove previous event listeners by cloning
-    const newFiltersBtn = filtersBtn.cloneNode(true);
-    filtersBtn.parentNode.replaceChild(newFiltersBtn, filtersBtn);
-    const newCloseBtn = closeBtn.cloneNode(true);
-    closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
-
-    function openPanel() {
-      mobileContent.appendChild(filterPanel);
-      mobilePanel.classList.remove('hidden');
-      mobilePanel.classList.add('visible');
-      document.body.style.overflow = 'hidden';
-    }
-    function closePanel() {
-      mobilePanel.classList.remove('visible');
-      mobilePanel.classList.add('hidden');
-      document.body.style.overflow = '';
-    }
-    newFiltersBtn.addEventListener('click', () => {
-      if (mobilePanel.classList.contains('visible')) {
-        closePanel();
-      } else {
-        openPanel();
-      }
-    });
-    newCloseBtn.addEventListener('click', closePanel);
-    mobilePanel.addEventListener('click', (e) => {
-      if (e.target === mobilePanel) closePanel();
-    });
-  });
-  window._mobileFilterPanelSetup = true;
-
-  // Setup floating filter container behavior
-  function setupFloatingFilterContainer() {
-    const filterContainer = document.querySelector('.filter-tags-container');
-    
-    if (!filterContainer) {
-      console.log('Filter container not found');
-      return;
-    }
-
-    console.log('Found filter container:', filterContainer);
-
-    // Wait for the container to be properly positioned
-    setTimeout(() => {
-      let containerTop = filterContainer.offsetTop;
-      let isFloating = false;
-      
-      console.log('Container top position:', containerTop);
-
-      function handleScroll() {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        console.log('Scroll position:', scrollTop, 'Container top:', containerTop);
-        
-        // Check if we've scrolled past the filter container's original position
-        if (scrollTop > containerTop) {
-          if (!isFloating) {
-            console.log('Making container float');
-            filterContainer.classList.add('floating');
-            document.body.classList.add('filter-container-floating');
-            isFloating = true;
-          }
-        } else {
-          if (isFloating) {
-            console.log('Removing float');
-            filterContainer.classList.remove('floating');
-            document.body.classList.remove('filter-container-floating');
-            isFloating = false;
-          }
-        }
-      }
-
-      // Add scroll event listener
-      window.addEventListener('scroll', handleScroll);
-      
-      // Handle window resize to recalculate positions
-      window.addEventListener('resize', () => {
-        containerTop = filterContainer.offsetTop;
-        console.log('Recalculated container top:', containerTop);
-      });
-    }, 500); // Increased timeout to ensure page is fully loaded
-  }
-
-  // Initialize floating behavior
-  setupFloatingFilterContainer();
-}
-
-// SPA-safe: Use MutationObserver to watch for .filter-panel
-function observeFilterPanelForMobile() {
-  if (window.innerWidth > 768) return;
-  const observer = new MutationObserver((mutations, obs) => {
-    const filterPanel = document.querySelector('.filter-panel');
-    if (filterPanel) {
-      console.log('[MutationObserver] .filter-panel detected in DOM');
-      injectMobileFiltersButton();
-      obs.disconnect();
-    }
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
-  console.log('[observeFilterPanelForMobile] Started observing for .filter-panel');
-}
-
-// Call the observer on script load (or after navigation)
-observeFilterPanelForMobile();
 
 // --- New: Fetch and enrich tests with biomarkers and groupings ---
 async function fetchAndEnrichTests({ category = null, categoryId = null, provider = null } = {}) {
@@ -1934,80 +1149,6 @@ async function fetchAndEnrichTests({ category = null, categoryId = null, provide
   return tests;
 }
 
-// Function to initialize filter panel with search parameters
-async function initializeFilterPanelWithParameters(searchParams) {
-  try {
-    console.log('🔍 Initializing filter panel with parameters:', searchParams);
-    
-    // Wait for the filter panel to be fully rendered
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    const filterPanel = document.querySelector('.filter-panel-content');
-    if (!filterPanel) {
-      console.log('🔍 Filter panel not found, waiting...');
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return;
-    }
-    
-    // Set method selection if specified
-    if (searchParams.method) {
-      const methodCheckboxes = filterPanel.querySelectorAll('input[name="blood-method"]');
-      methodCheckboxes.forEach(checkbox => {
-        if (checkbox.value === searchParams.method) {
-          checkbox.checked = true;
-          console.log('🔍 Set method checkbox:', searchParams.method);
-        } else {
-          checkbox.checked = false;
-        }
-      });
-    }
-    
-    // Set price range if specified
-    if (searchParams.minPrice || searchParams.maxPrice) {
-      const priceMinSlider = filterPanel.querySelector('#price-min');
-      const priceMaxSlider = filterPanel.querySelector('#price-max');
-      const priceMinValue = filterPanel.querySelector('#price-min-value');
-      const priceMaxValue = filterPanel.querySelector('#price-max-value');
-      
-      if (priceMinSlider && searchParams.minPrice) {
-        const minPrice = parseFloat(searchParams.minPrice.replace('£', ''));
-        priceMinSlider.value = minPrice;
-        if (priceMinValue) priceMinValue.textContent = `£${minPrice}`;
-        console.log('🔍 Set min price:', minPrice);
-      }
-      
-      if (priceMaxSlider && searchParams.maxPrice) {
-        const maxPrice = parseFloat(searchParams.maxPrice.replace('£', ''));
-        priceMaxSlider.value = maxPrice;
-        if (priceMaxValue) priceMaxValue.textContent = `£${maxPrice}`;
-        console.log('🔍 Set max price:', maxPrice);
-      }
-    }
-    
-    // Update filter tags to reflect the applied filters
-    const filterTagsContainer = document.querySelector('.filter-tags');
-    if (filterTagsContainer) {
-      // Trigger a filter update to refresh the display
-      const filterCallback = window._filterCallback;
-      if (filterCallback) {
-        console.log('🔍 Triggering filter update to refresh display');
-        await filterCallback({
-          priceRange: {
-            min: searchParams.minPrice ? parseFloat(searchParams.minPrice.replace('£', '')) : null,
-            max: searchParams.maxPrice ? parseFloat(searchParams.maxPrice.replace('£', '')) : null
-          },
-          bloodTakingMethods: searchParams.method ? [searchParams.method] : [],
-          biomarkers: searchParams.biomarkers || []
-        });
-      }
-    }
-    
-    console.log('🔍 Filter panel initialization complete');
-  } catch (error) {
-    console.error('🔍 Error initializing filter panel with parameters:', error);
-  }
-}
-
 // Export the main function
 export async function displayGeneralHealthPage(skipFilterPanel = false) {
   try {
@@ -2110,30 +1251,25 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     const shouldOpenFilters = openFiltersMatch && decodeURIComponent(openFiltersMatch[1]) === 'true';
     console.log('Should open filters:', shouldOpenFilters);
     
-    // Check if this is a testosterone-only search
-    const testosteroneOnlyMatch = hash.match(/[?&]testosteroneOnly=([^&]+)/);
-    const isTestosteroneOnly = testosteroneOnlyMatch && decodeURIComponent(testosteroneOnlyMatch[1]) === 'true';
-    console.log('Is testosterone-only search:', isTestosteroneOnly);
+    // Get the selected testosterone option (new cleaner approach)
+    const testosteroneOptionMatch = hash.match(/[?&]testosteroneOption=([^&]+)/);
+    const selectedTestosteroneOption = testosteroneOptionMatch ? decodeURIComponent(testosteroneOptionMatch[1]) : null;
+    console.log('Selected testosterone option:', selectedTestosteroneOption);
     
-    // Check if this is a testosterone full hormone profile search
-    const testosteroneFullHormoneMatch = hash.match(/[?&]testosteroneFullHormone=([^&]+)/);
-    const isTestosteroneFullHormone = testosteroneFullHormoneMatch && decodeURIComponent(testosteroneFullHormoneMatch[1]) === 'true';
-    console.log('Is testosterone full hormone profile search:', isTestosteroneFullHormone);
+    // Parse the testosterone option for easier filtering logic
+    const isTestosteroneOnly = selectedTestosteroneOption === 'testosterone-only';
+    const isTestosteroneFullHormone = selectedTestosteroneOption === 'testosterone-full-hormone';
+    const isTestosteroneFullHormoneOnly = selectedTestosteroneOption === 'testosterone-full-hormone-only';
+    const isTestosteroneFullHormoneGeneralHealth = selectedTestosteroneOption === 'testosterone-full-hormone';
+    const isTRTMonitoring = selectedTestosteroneOption === 'trt-monitoring';
     
-    // Check if this is a male hormone check only search
-    const testosteroneFullHormoneOnlyMatch = hash.match(/[?&]testosteroneFullHormoneOnly=([^&]+)/);
-    const isTestosteroneFullHormoneOnly = testosteroneFullHormoneOnlyMatch && decodeURIComponent(testosteroneFullHormoneOnlyMatch[1]) === 'true';
-    console.log('Is male hormone check only search:', isTestosteroneFullHormoneOnly);
-    
-    // Check if this is a male hormone check + general health check search
-    const testosteroneFullHormoneGeneralHealthMatch = hash.match(/[?&]testosteroneFullHormoneGeneralHealth=([^&]+)/);
-    const isTestosteroneFullHormoneGeneralHealth = testosteroneFullHormoneGeneralHealthMatch && decodeURIComponent(testosteroneFullHormoneGeneralHealthMatch[1]) === 'true';
-    console.log('Is male hormone check + general health check search:', isTestosteroneFullHormoneGeneralHealth);
-    
-    // Check if this is a TRT monitoring search
-    const trtMonitoringMatch = hash.match(/[?&]trtMonitoring=([^&]+)/);
-    const isTRTMonitoring = trtMonitoringMatch && decodeURIComponent(trtMonitoringMatch[1]) === 'true';
-    console.log('Is TRT monitoring search:', isTRTMonitoring);
+    console.log('Parsed testosterone options:', {
+      isTestosteroneOnly,
+      isTestosteroneFullHormone,
+      isTestosteroneFullHormoneOnly,
+      isTestosteroneFullHormoneGeneralHealth,
+      isTRTMonitoring
+    });
     
     // Store the final parameters for filter panel initialization
     window._searchParameters = {
@@ -2352,60 +1488,23 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     
     console.log(`🎯 Final test count after all filtering: ${tests.length}`);
     
-    // Create filter panel with tests data - hide categories and problems for men's health page
-          try {
-        console.log('🔍 ABOUT TO CREATE FILTER PANEL - Tests count:', tests.length);
-        const filterPanel = await createFilterPanel(tests, { hideCategories: true, hideProblems: true });
-        console.log('🔍 FILTER PANEL CREATED - Tests count still:', tests.length);
-        // Create and return the page structure
-        const content = createPageStructure(filterPanel, null);
+    // Create and return the page structure without filter panel
+    try {
+      const content = createPageStructure(null, null);
         // Add a custom event listener for when the content is rendered
         document.addEventListener('contentRendered', async () => {
           if (window._allGeneralHealthTests) {
             console.log('🔍 CONTENT RENDERED - Tests count in window._allGeneralHealthTests:', window._allGeneralHealthTests.length);
-            // Set up the filter panel properly with search parameters
-            initializePageElements(window._allGeneralHealthTests, null, false);
-            
-            // Initialize filter panel with search parameters if they exist
-            if (window._searchParameters) {
-              console.log('🔍 Initializing filter panel with search parameters:', window._searchParameters);
-              await initializeFilterPanelWithParameters(window._searchParameters);
-            }
-          
-          // Open filter panel if requested
-          if (shouldOpenFilters) {
-            console.log('=== FILTER DEBUG: Should open filters is true ===');
-            
-            // On desktop, just show the filter panel overlay
-            setTimeout(() => {
-              const filterPanel = document.querySelector('.filter-panel');
-              console.log('=== FILTER DEBUG: Looking for filter panel ===');
-              console.log('=== FILTER DEBUG: Filter panel found:', !!filterPanel);
-              
-              if (filterPanel) {
-                console.log('=== FILTER DEBUG: Making filter panel visible ===');
-                // Show the filter panel by triggering the same event as the Filters button
-                const filtersBtn = document.querySelector('.filters-btn');
-                if (filtersBtn) {
-                  console.log('=== FILTER DEBUG: Found desktop filters button, clicking it ===');
-                  filtersBtn.click();
-                } else {
-                  console.log('=== FILTER DEBUG: Desktop filters button not found ===');
-                }
-              } else {
-                console.log('=== FILTER DEBUG: Filter panel not found ===');
-              }
-            }, 500);
-          }
+          // Set up the page elements without filter panel
+          initializePageElements(window._allGeneralHealthTests, null, true);
         } else {
           console.error('window._allGeneralHealthTests is not set!');
         }
       }, { once: true });
       
-      
       return content;
     } catch (error) {
-      console.error('=== ERROR: createFilterPanel failed ===');
+      console.error('=== ERROR: Failed to create page ===');
       console.error('Error:', error);
       console.error('Error stack:', error.stack);
       throw error;
