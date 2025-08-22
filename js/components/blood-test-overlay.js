@@ -435,6 +435,10 @@ export class BloodTestOverlay {
   open(test) {
     console.log('BloodTestOverlay.open called with test:', test);
     
+    // Remove any existing overlays first
+    const existingOverlays = document.querySelectorAll('.blood-test-overlay');
+    existingOverlays.forEach(existing => document.body.removeChild(existing));
+    
     // Create a completely new overlay element every time
     const overlay = document.createElement('div');
     overlay.className = 'blood-test-overlay';
@@ -444,7 +448,8 @@ export class BloodTestOverlay {
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(4px);
       z-index: 10000;
       display: flex;
       align-items: center;
@@ -452,15 +457,15 @@ export class BloodTestOverlay {
     `;
     
     overlay.innerHTML = `
-      <div class="overlay-backdrop"></div>
       <div class="overlay-content" style="
         position: relative;
         background: white;
         border-radius: 12px;
         max-width: 90vw;
-        max-height: 90vh;
+        max-height: 95vh;
         width: 600px;
-        overflow-y: auto;
+        height: auto;
+        overflow-y: visible;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       ">
         <div class="overlay-header" style="
@@ -479,13 +484,13 @@ export class BloodTestOverlay {
               margin: 0;
               font-size: 28px;
               font-weight: 600;
-              color: #2563eb;
+              color: #000000;
             ">${test.name}</h2>
             <p class="overlay-subtitle" style="
               margin: 0;
               font-size: 16px;
               font-weight: 500;
-              color: #6b7280;
+              color: #2563eb;
             ">${test.provider?.name || 'Provider'}</p>
           </div>
           <div class="header-right" style="
@@ -497,7 +502,13 @@ export class BloodTestOverlay {
               display: flex;
               align-items: center;
             ">
-              <img src="images/logos/${test.provider?.name?.toLowerCase().replace(/ /g, '')}.png" alt="Provider logo" class="provider-logo" style="
+              <img src="images/logos/${(() => {
+                const providerName = test.provider?.name || '';
+                if (providerName.toLowerCase().includes('one day')) {
+                  return 'one day tests.png';
+                }
+                return providerName.toLowerCase().replace(/ /g, '') + '.png';
+              })()}" alt="Provider logo" class="provider-logo" style="
                 width: 80px;
                 height: 80px;
                 object-fit: contain;
@@ -507,7 +518,7 @@ export class BloodTestOverlay {
           </div>
         </div>
         
-        <div class="overlay-body" style="padding: 0 40px 40px 40px;">
+        <div class="overlay-body" style="padding: 0 40px 20px 40px;">
           <div class="test-info" style="
             display: flex;
             flex-direction: column;
@@ -521,6 +532,7 @@ export class BloodTestOverlay {
               display: flex;
               align-items: baseline;
               gap: 12px;
+              margin-bottom: 8px;
             ">£${test.price}</div>
             
             <div class="test-description" style="
@@ -553,7 +565,25 @@ export class BloodTestOverlay {
                   margin: 0;
                   color: #4b5563;
                   font-size: 14px;
-                ">${test.blood_taking_methods && test.blood_taking_methods.length > 0 ? test.blood_taking_methods.join(', ') : 'Not specified'}</p>
+                                                  ">${(() => {
+                    const allMethods = ['Finger prick', 'Venous at clinic', 'Phlebotomist to home', 'Self arrange'];
+                    const availableMethods = Array.isArray(test.blood_taking_methods) ? test.blood_taking_methods : [];
+                    
+                    const emojiMap = {
+                      'Finger prick': '👆',
+                      'Venous at clinic': '🏥',
+                      'Phlebotomist to home': '👩🏼‍⚕️',
+                      'Self arrange': '🙋🏼'
+                    };
+                    
+                    const bloodMethods = allMethods.map(method => {
+                      const isAvailable = availableMethods.includes(method);
+                      const icon = isAvailable ? (emojiMap[method] || '❓') : '✗';
+                      return isAvailable ? `<span title="${method}" style="cursor: help;">${icon}</span>` : null;
+                    }).filter(Boolean).join(' ');
+                    
+                    return bloodMethods || 'Not specified';
+                  })()}</p>
               </div>
               <div class="detail-item" style="
                 display: flex;
@@ -597,35 +627,32 @@ export class BloodTestOverlay {
               </div>
             </div>
             
-            <div class="biomarkers-section" style="margin-bottom: 24px;">
+            <div class="biomarkers-section" style="margin-bottom: 12px;">
               <h4 style="
-                margin: 0 0 16px 0;
+                margin: 0 0 4px 0;
                 color: #1f2937;
-                font-size: 18px;
+                font-size: 12px;
                 font-weight: 600;
-              ">Biomarkers Included</h4>
+              ">${test.biomarker_names && test.biomarker_names.length > 0 ? test.biomarker_names.length : 0} biomarkers included</h4>
               <div class="biomarkers-list" style="
                 display: flex;
-                flex-wrap: wrap;
-                gap: 8px;
+                flex-direction: column;
+                gap: 2px;
               ">${test.biomarker_names && test.biomarker_names.length > 0 ? test.biomarker_names.map(biomarker => 
                 `<span style="
-                  background: #e0e7ff;
-                  color: #3730a3;
-                  padding: 4px 12px;
-                  border-radius: 16px;
+                  color: #4b5563;
                   font-size: 14px;
                   font-weight: 500;
                 ">${biomarker}</span>`
               ).join('') : '<span style="color: #6b7280;">No biomarkers specified</span>'}</div>
             </div>
             
-            <div class="overlay-actions" style="text-align: center;">
+            <div class="overlay-actions" style="text-align: center; margin-bottom: 0;">
               <a href="${test.url}" class="book-test-overlay" target="_blank" rel="noopener noreferrer" style="
                 display: inline-block;
                 background: #2563eb;
                 color: white;
-                padding: 12px 24px;
+                padding: 8px 16px;
                 border-radius: 8px;
                 text-decoration: none;
                 font-weight: 600;

@@ -630,13 +630,13 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
       
       // Only add biomarker tags if no testosterone option is selected (to avoid duplicates)
       if (!testosteroneOptionMatch) {
-        biomarkers.forEach(biomarker => {
-          appliedFilters.push({
-            type: 'biomarker',
-            value: biomarker,
+      biomarkers.forEach(biomarker => {
+        appliedFilters.push({
+          type: 'biomarker',
+          value: biomarker,
             display: biomarker
-          });
         });
+      });
       }
     }
     
@@ -644,7 +644,7 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
     const methodMatch = hash.match(/[?&]method=([^&]+)/);
     if (methodMatch) {
       const methodValue = decodeURIComponent(methodMatch[1]).replace(/\+/g, ' ');
-      appliedFilters.push({
+        appliedFilters.push({
         type: 'method',
         value: methodValue,
         display: methodValue
@@ -723,8 +723,8 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
           </div>
           <div class="filter-button desktop-only">
             <button class="filter-btn" aria-label="Open filters">
-              Filters
-            </button>
+            Filters
+          </button>
           </div>
           <div class="sort-button desktop-only">
             <button class="sort-btn" aria-label="Sort by price">
@@ -813,7 +813,7 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
         window.location.hash = newHash;
       });
     }
-
+    
 
     
     // Set up sort button click handler
@@ -827,7 +827,7 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
           // Currently low to high, switch to high to low
           newSortType = 'price-desc';
           sortBtn.textContent = 'Price: High to Low';
-        } else {
+            } else {
           // Currently high to low, switch to low to high
           newSortType = 'price-asc';
           sortBtn.textContent = 'Price: Low to High';
@@ -1509,30 +1509,30 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     // Apply biomarker filtering independently (for "Let me pick" side)
     if (selectedBiomarkers.length > 0 && !selectedTestosteroneOption) {
       console.log('🔍 APPLYING INDEPENDENT BIOMARKER FILTERING for "Let me pick" side');
-      tests = tests.filter(test => {
-        const testBiomarkerNames = test.biomarker_names || [];
-        const hasAllBiomarkers = selectedBiomarkers.every(selectedBiomarker => {
-          // Normalize both the search term and test biomarkers
-          const normalizedSearch = selectedBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
-          
-          return testBiomarkerNames.some(testBiomarker => {
-            if (!testBiomarker) return false;
-            const normalizedTest = testBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
-            const exactMatch = normalizedTest === normalizedSearch;
-            const containsMatch = normalizedTest.includes(normalizedSearch) || normalizedSearch.includes(normalizedTest);
-            return exactMatch || containsMatch;
+        tests = tests.filter(test => {
+          const testBiomarkerNames = test.biomarker_names || [];
+          const hasAllBiomarkers = selectedBiomarkers.every(selectedBiomarker => {
+            // Normalize both the search term and test biomarkers
+            const normalizedSearch = selectedBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
+            
+            return testBiomarkerNames.some(testBiomarker => {
+              if (!testBiomarker) return false;
+              const normalizedTest = testBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
+              const exactMatch = normalizedTest === normalizedSearch;
+              const containsMatch = normalizedTest.includes(normalizedSearch) || normalizedSearch.includes(normalizedTest);
+              return exactMatch || containsMatch;
+            });
           });
+          
+          if (!hasAllBiomarkers) {
+            console.log(`Filtering out test "${test.name}" - missing biomarkers. Test has:`, testBiomarkerNames, 'Looking for:', selectedBiomarkers);
+            console.log(`  Normalized search terms:`, selectedBiomarkers.map(b => b.toLowerCase().replace(/\+/g, ' ').trim()));
+            console.log(`  Normalized test biomarkers:`, testBiomarkerNames.map(b => b.toLowerCase().replace(/\+/g, ' ').trim()));
+          }
+          return hasAllBiomarkers;
         });
-        
-        if (!hasAllBiomarkers) {
-          console.log(`Filtering out test "${test.name}" - missing biomarkers. Test has:`, testBiomarkerNames, 'Looking for:', selectedBiomarkers);
-          console.log(`  Normalized search terms:`, selectedBiomarkers.map(b => b.toLowerCase().replace(/\+/g, ' ').trim()));
-          console.log(`  Normalized test biomarkers:`, testBiomarkerNames.map(b => b.toLowerCase().replace(/\+/g, ' ').trim()));
-        }
-        return hasAllBiomarkers;
-      });
       console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after independent biomarker filtering`);
-      beforeFilter = tests.length;
+        beforeFilter = tests.length;
     } else if (selectedBiomarkers.length === 0 && !selectedTestosteroneOption) {
       console.log('🔍 NO BIOMARKER FILTERS APPLIED - keeping all tests');
     }
