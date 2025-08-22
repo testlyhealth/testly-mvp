@@ -562,6 +562,29 @@ export class CardService {
         button.textContent = isExpanded ? 'Details' : 'Hide details';
       });
     });
+
+    // Add blood test overlay click handlers
+    $all('.blood-test-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        // Don't trigger if clicking on buttons or interactive elements
+        if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.toggle-biomarkers') || e.target.closest('.toggle-all-biomarkers') || e.target.closest('.add-to-compare-checkbox') || e.target.closest('.add-to-compare-label')) {
+          return;
+        }
+        
+        // Get the test ID and find the test data
+        const testId = card.dataset.testId;
+        const test = tests.find(t => t.id == testId);
+        
+        if (test) {
+          // Import and use bloodTestOverlay dynamically
+          import('../components/blood-test-overlay.js').then(module => {
+            const { bloodTestOverlay } = module;
+            bloodTestOverlay.create();
+            bloodTestOverlay.open(test);
+          });
+        }
+      });
+    });
   }
 
   // Static comparison methods

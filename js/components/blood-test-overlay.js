@@ -434,25 +434,250 @@ export class BloodTestOverlay {
 
   open(test) {
     console.log('BloodTestOverlay.open called with test:', test);
-    this.currentTest = test;
     
-    // Create overlay if it doesn't exist
-    if (!this.overlay) {
-      console.log('Creating new overlay');
-      this.create();
-      document.body.appendChild(this.overlay);
-    }
-
-    // Populate overlay with test data
-    this.populateOverlay(test);
-
-    // Show overlay
-    this.overlay.classList.add('open');
-    this.isOpen = true;
-
-    // Prevent body scroll
+    // Create a completely new overlay element every time
+    const overlay = document.createElement('div');
+    overlay.className = 'blood-test-overlay';
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
+    
+    overlay.innerHTML = `
+      <div class="overlay-backdrop"></div>
+      <div class="overlay-content" style="
+        position: relative;
+        background: white;
+        border-radius: 12px;
+        max-width: 90vw;
+        max-height: 90vh;
+        width: 600px;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      ">
+        <div class="overlay-header" style="
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          padding: 40px 40px 0 40px;
+          margin-bottom: 8px;
+        ">
+          <div class="overlay-title-container" style="
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+          ">
+            <h2 class="overlay-title" style="
+              margin: 0;
+              font-size: 28px;
+              font-weight: 600;
+              color: #2563eb;
+            ">${test.name}</h2>
+            <p class="overlay-subtitle" style="
+              margin: 0;
+              font-size: 16px;
+              font-weight: 500;
+              color: #6b7280;
+            ">${test.provider?.name || 'Provider'}</p>
+          </div>
+          <div class="header-right" style="
+            display: flex;
+            align-items: center;
+            gap: 16px;
+          ">
+            <div class="provider-logo-container" style="
+              display: flex;
+              align-items: center;
+            ">
+              <img src="images/logos/${test.provider?.name?.toLowerCase().replace(/ /g, '')}.png" alt="Provider logo" class="provider-logo" style="
+                width: 80px;
+                height: 80px;
+                object-fit: contain;
+                border-radius: 6px;
+              " onerror="this.style.display='none'">
+            </div>
+          </div>
+        </div>
+        
+        <div class="overlay-body" style="padding: 0 40px 40px 40px;">
+          <div class="test-info" style="
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+          ">
+            <div class="test-price" style="
+              font-size: 32px;
+              font-weight: 700;
+              color: #059669;
+              display: flex;
+              align-items: baseline;
+              gap: 12px;
+            ">£${test.price}</div>
+            
+            <div class="test-description" style="
+              color: #4b5563;
+              line-height: 1.6;
+              font-size: 14px;
+              font-style: normal;
+            ">${test.description || 'No description available'}</div>
+            
+            <div class="test-details" style="
+              display: grid;
+              grid-template-columns: 1.5fr 1fr 1fr;
+              gap: 16px;
+            ">
+              <div class="detail-item" style="
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                margin-left: 0;
+                padding-left: 0;
+              ">
+                <h4 style="
+                  margin: 0;
+                  font-size: 14px;
+                  font-weight: 600;
+                  color: #6b7280;
+                  letter-spacing: 0.5px;
+                ">Sample Type</h4>
+                <p style="
+                  margin: 0;
+                  color: #4b5563;
+                  font-size: 14px;
+                ">${test.blood_taking_methods && test.blood_taking_methods.length > 0 ? test.blood_taking_methods.join(', ') : 'Not specified'}</p>
+              </div>
+              <div class="detail-item" style="
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                margin-left: 0;
+                padding-left: 0;
+              ">
+                <h4 style="
+                  margin: 0;
+                  font-size: 14px;
+                  font-weight: 600;
+                  color: #6b7280;
+                  letter-spacing: 0.5px;
+                ">Results Time</h4>
+                <p style="
+                  margin: 0;
+                  color: #4b5563;
+                  font-size: 14px;
+                ">${test.results_returned_time_min && test.results_returned_time_max ? `${test.results_returned_time_min}-${test.results_returned_time_max} days` : test.results_returned_time_days ? `${test.results_returned_time_days} days` : 'Not specified'}</p>
+              </div>
+              <div class="detail-item" style="
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                margin-left: 0;
+                padding-left: 0;
+              ">
+                <h4 style="
+                  margin: 0;
+                  font-size: 14px;
+                  font-weight: 600;
+                  color: #6b7280;
+                  letter-spacing: 0.5px;
+                ">Doctors Report</h4>
+                <p style="
+                  margin: 0;
+                  color: #4b5563;
+                  font-size: 14px;
+                ">${test.doctors_report ? 'Yes' : 'No'}</p>
+              </div>
+            </div>
+            
+            <div class="biomarkers-section" style="margin-bottom: 24px;">
+              <h4 style="
+                margin: 0 0 16px 0;
+                color: #1f2937;
+                font-size: 18px;
+                font-weight: 600;
+              ">Biomarkers Included</h4>
+              <div class="biomarkers-list" style="
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+              ">${test.biomarker_names && test.biomarker_names.length > 0 ? test.biomarker_names.map(biomarker => 
+                `<span style="
+                  background: #e0e7ff;
+                  color: #3730a3;
+                  padding: 4px 12px;
+                  border-radius: 16px;
+                  font-size: 14px;
+                  font-weight: 500;
+                ">${biomarker}</span>`
+              ).join('') : '<span style="color: #6b7280;">No biomarkers specified</span>'}</div>
+            </div>
+            
+            <div class="overlay-actions" style="text-align: center;">
+              <a href="${test.url}" class="book-test-overlay" target="_blank" rel="noopener noreferrer" style="
+                display: inline-block;
+                background: #2563eb;
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                text-decoration: none;
+                font-weight: 600;
+                transition: background-color 0.2s;
+              ">Book Test</a>
+            </div>
+          </div>
+        </div>
+        
+        <button class="overlay-close" style="
+          position: absolute;
+          top: 0;
+          right: 0;
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 16px;
+          border-radius: 6px;
+          color: #6b7280;
+          transition: all 0.2s;
+          z-index: 10;
+          font-size: 28px;
+          font-weight: bold;
+          min-width: 48px;
+          min-height: 48px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        ">&times;</button>
+      </div>
+    `;
+    
+    // Add close functionality
+    const closeBtn = overlay.querySelector('.overlay-close');
+    closeBtn.addEventListener('click', () => {
+      document.body.removeChild(overlay);
+      document.body.style.overflow = '';
+    });
+    
+    // Close on backdrop click
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        document.body.removeChild(overlay);
+        document.body.style.overflow = '';
+      }
+    });
+    
+    // Add to DOM
+    document.body.appendChild(overlay);
     document.body.style.overflow = 'hidden';
-    console.log('Overlay should now be visible');
+    
+    console.log('Simple overlay created and added to DOM');
   }
 
   close() {

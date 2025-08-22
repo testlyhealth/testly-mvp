@@ -1448,12 +1448,7 @@ function setupNavigationHandlers() {
           if (selectedTestosteroneOption && selectedTestosteroneOption !== 'browse-all') {
             searchParams.set('testosteroneOption', selectedTestosteroneOption);
             
-            // Set appropriate biomarkers based on testosterone option
-            if (selectedTestosteroneOption === 'testosterone-only') {
-              searchParams.set('biomarkers', 'Testosterone');
-            } else if (['testosterone-full-hormone-only', 'testosterone-full-hormone', 'trt-monitoring'].includes(selectedTestosteroneOption)) {
-              searchParams.set('biomarkers', 'Testosterone,Free testosterone,SHBG');
-            }
+
           } else if (biomarkers.length > 0) {
             // Regular biomarker search (Let me pick side)
             searchParams.set('biomarkers', biomarkers.join(','));
@@ -1517,12 +1512,7 @@ function setupNavigationHandlers() {
             if (selectedTestosteroneOption && selectedTestosteroneOption !== 'browse-all') {
               searchParams.set('testosteroneOption', selectedTestosteroneOption);
               
-              // Set appropriate biomarkers based on testosterone option
-              if (selectedTestosteroneOption === 'testosterone-only') {
-                searchParams.set('biomarkers', 'Testosterone');
-              } else if (['testosterone-full-hormone-only', 'testosterone-full-hormone', 'trt-monitoring'].includes(selectedTestosteroneOption)) {
-                searchParams.set('biomarkers', 'Testosterone,Free testosterone,SHBG');
-              }
+
             }
           } else {
             // Let me pick side - handle regular biomarkers

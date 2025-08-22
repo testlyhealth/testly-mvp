@@ -444,54 +444,30 @@ function attachEventListeners() {
     });
     
     card.addEventListener('click', (e) => {
-      // Don't trigger selection if clicking on buttons or interactive elements
+      // Don't trigger if clicking on buttons or interactive elements
       if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.toggle-biomarkers') || e.target.closest('.toggle-all-biomarkers') || e.target.closest('.add-to-compare-checkbox') || e.target.closest('.add-to-compare-label')) {
         return;
       }
       
-      hasInteracted = true;
-      
-      // Remove selection from all cards
-      $all('.blood-test-card').forEach(c => c.classList.remove('selected'));
-      
-      // Add selection to clicked card
-      card.classList.add('selected');
-      lastHoveredCard = card;
-
-      // Open overlay with test details
+      // Get the test ID and find the test data
       const testId = card.dataset.testId;
-      console.log('Card clicked, testId:', testId);
-      console.log('currentTests:', currentTests);
+      console.log('🔍 Card clicked! testId:', testId);
+      console.log('🔍 window._allGeneralHealthTests:', window._allGeneralHealthTests);
       
-      // Log the structure of the first test to see what properties it has
-      if (currentTests.length > 0) {
-        console.log('First test object:', currentTests[0]);
-        console.log('Available properties:', Object.keys(currentTests[0]));
-      }
+      const test = window._allGeneralHealthTests.find(t => t.id == testId);
+      console.log('🔍 Found test:', test);
       
-      // Log all test IDs to see what we're working with
-      console.log('All test IDs in currentTests:');
-      currentTests.forEach((t, index) => {
-        console.log(`Test ${index}: id=${t.id}, test_name="${t.test_name}", name="${t.name}"`);
-      });
-      
-      // Try to find test by ID first, then by name as fallback
-      let test = currentTests.find(t => t.id == testId);
-      if (!test) {
-        // Fallback to name matching for backward compatibility
-        test = currentTests.find(t => 
-          t.test_name === testId || 
-          t.name === testId || 
-          t.title === testId ||
-          t.testName === testId
-        );
-      }
-      console.log('Found test:', test);
       if (test) {
-        console.log('Opening overlay for test ID:', test.id, 'Name:', test.test_name || test.name || test.title || test.testName);
+        console.log('🔍 Opening overlay for:', test.name);
+        // Make sure overlay is created before opening
+        if (!bloodTestOverlay.overlay) {
+          console.log('🔍 Creating overlay...');
+          bloodTestOverlay.create();
+        }
+        console.log('🔍 About to call bloodTestOverlay.open...');
         bloodTestOverlay.open(test);
       } else {
-        console.log('No test found for testId:', testId);
+        console.log('🔍 No test found for ID:', testId);
       }
     });
   });
@@ -596,6 +572,9 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
   const cards = await cardService.createCards(currentTests);
   testsGrid.innerHTML = cards;
   
+  // Set up event handlers for the newly created cards
+  cardService.setupCardEventHandlers(currentTests);
+  
   // Create or update filter tags container
   let filterTagsContainer = document.querySelector('.filter-tags');
   if (!filterTagsContainer) {
@@ -614,7 +593,85 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
     const hash = window.location.hash;
     const appliedFilters = [];
     
-
+    // Check for testosterone option (always show first if present)
+    const testosteroneOptionMatch = hash.match(/[?&]testosteroneOption=([^&]+)/);
+    if (testosteroneOptionMatch) {
+      const selectedTestosteroneOption = decodeURIComponent(testosteroneOptionMatch[1]);
+      let displayText = '';
+      
+      switch (selectedTestosteroneOption) {
+        case 'testosterone-only':
+          displayText = 'Testosterone only';
+          break;
+        case 'testosterone-full-hormone-only':
+          displayText = 'Male hormone check only (includes testosterone)';
+          break;
+        case 'testosterone-full-hormone':
+          displayText = 'Male hormone check + general health check';
+          break;
+        case 'trt-monitoring':
+          displayText = 'TRT monitoring';
+          break;
+        default:
+          displayText = selectedTestosteroneOption.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      }
+      
+      appliedFilters.push({
+        type: 'testosterone-option',
+        value: selectedTestosteroneOption,
+        display: displayText
+      });
+    }
+    
+    // Check for biomarkers (individual selections from "Let me pick" side)
+    const biomarkerMatch = hash.match(/[?&]biomarkers=([^&]+)/);
+    if (biomarkerMatch) {
+      const biomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim().replace(/\+/g, ' ')).filter(Boolean);
+      
+      // Only add biomarker tags if no testosterone option is selected (to avoid duplicates)
+      if (!testosteroneOptionMatch) {
+        biomarkers.forEach(biomarker => {
+          appliedFilters.push({
+            type: 'biomarker',
+            value: biomarker,
+            display: biomarker
+          });
+        });
+      }
+    }
+    
+    // Check for method filter
+    const methodMatch = hash.match(/[?&]method=([^&]+)/);
+    if (methodMatch) {
+      const methodValue = decodeURIComponent(methodMatch[1]).replace(/\+/g, ' ');
+      appliedFilters.push({
+        type: 'method',
+        value: methodValue,
+        display: methodValue
+      });
+    }
+    
+    // Check for min price filter
+    const minPriceMatch = hash.match(/[?&]minPrice=([^&]+)/);
+    if (minPriceMatch) {
+      const minPriceValue = decodeURIComponent(minPriceMatch[1]);
+      appliedFilters.push({
+        type: 'minPrice',
+        value: minPriceValue,
+        display: `Min: £${minPriceValue}`
+      });
+    }
+    
+    // Check for max price filter
+    const maxPriceMatch = hash.match(/[?&]maxPrice=([^&]+)/);
+    if (maxPriceMatch) {
+      const maxPriceValue = decodeURIComponent(maxPriceMatch[1]);
+      appliedFilters.push({
+        type: 'maxPrice',
+        value: maxPriceValue,
+        display: `Max: £${maxPriceValue}`
+      });
+    }
     
     const providerMatch = hash.match(/[?&]provider=([^&]+)/);
     if (providerMatch) {
@@ -664,15 +721,15 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
           <div class="results-count">
             <span>${tests.length} result${tests.length !== 1 ? 's' : ''}</span>
           </div>
-          <div class="sort-dropdown desktop-only">
-            <button class="sort-btn" aria-label="Sort results" aria-expanded="false">
-              Sort: Relevance
+          <div class="filter-button desktop-only">
+            <button class="filter-btn" aria-label="Open filters">
+              Filters
             </button>
-            <div class="sort-dropdown-menu" style="display: none;">
-              <button class="sort-option" data-sort="relevance">Sort by relevance</button>
-              <button class="sort-option" data-sort="price-asc">Sort by price: Low to high</button>
-              <button class="sort-option" data-sort="price-desc">Sort by price: High to low</button>
-            </div>
+          </div>
+          <div class="sort-button desktop-only">
+            <button class="sort-btn" aria-label="Sort by price">
+              Price: Low to High
+            </button>
           </div>
         </div>
       </div>
@@ -713,8 +770,11 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
           params.delete('provider');
         } else if (type === 'method') {
           params.delete('method');
+        } else if (type === 'testosterone-option') {
+          // Remove testosterone option
+          params.delete('testosteroneOption');
         } else if (type === 'biomarker') {
-          // Remove specific biomarker from biomarkers parameter - FIRST INSTANCE - DEBUGGING
+          // Remove specific biomarker from biomarkers parameter
           let biomarkerVal = params.get('biomarkers') || '';
           let biomarkers = biomarkerVal.split(',').map(b => b.trim()).filter(Boolean);
           biomarkers = biomarkers.filter(b => b !== value);
@@ -723,8 +783,6 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
           } else {
             params.delete('biomarkers');
           }
-          
-          // Note: Special handling for testosterone options is now done via the testosterone-option type
         } else if (type === 'male-hormone-check') {
           console.log('🎯 MALE HORMONE CHECK TAG REMOVAL TRIGGERED - LEGACY CODE');
           // Legacy handling - remove ALL biomarkers and special parameters
@@ -753,6 +811,46 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
         // Rebuild hash and navigate
         const newHash = params.toString() ? `${base}?${params.toString()}` : base;
         window.location.hash = newHash;
+      });
+    }
+
+
+    
+    // Set up sort button click handler
+    const sortBtn = filterTagsContainer.querySelector('.sort-btn');
+    if (sortBtn) {
+      sortBtn.addEventListener('click', () => {
+        const currentText = sortBtn.textContent;
+        let newSortType;
+        
+        if (currentText.includes('Low to High')) {
+          // Currently low to high, switch to high to low
+          newSortType = 'price-desc';
+          sortBtn.textContent = 'Price: High to Low';
+        } else {
+          // Currently high to low, switch to low to high
+          newSortType = 'price-asc';
+          sortBtn.textContent = 'Price: Low to High';
+        }
+        
+        // Sort the tests
+        const sortedTests = sortTests(window._allGeneralHealthTests, newSortType === 'price-asc');
+        
+        // Update the test grid with sorted results
+        updateTestGridContent(sortedTests);
+        
+        console.log(`Sorted tests by ${newSortType}, showing ${sortedTests.length} results`);
+      });
+    }
+    
+    // Set up filter button click handler
+    const filterBtn = filterTagsContainer.querySelector('.filter-btn');
+    if (filterBtn) {
+      filterBtn.addEventListener('click', () => {
+        const filterOverlay = document.querySelector('.filter-overlay');
+        if (filterOverlay) {
+          filterOverlay.style.display = 'flex';
+        }
       });
     }
   }
@@ -1297,11 +1395,11 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     let beforeFilter = tests.length;
     console.log('🔍 STARTING FILTERING PROCESS - Initial count:', beforeFilter);
     
-    // Apply biomarker filtering
-    if (selectedBiomarkers.length > 0) {
-      console.log('🔍 APPLYING BIOMARKER FILTER for:', selectedBiomarkers);
+    // Apply testosterone option filtering (regardless of biomarkers parameter)
+    if (selectedTestosteroneOption && selectedTestosteroneOption !== 'browse-all') {
+      console.log('🔍 APPLYING TESTOSTERONE OPTION FILTER for:', selectedTestosteroneOption);
       
-      if (isTestosteroneOnly && selectedBiomarkers.includes('Testosterone')) {
+      if (isTestosteroneOnly) {
         console.log('Applying testosterone-only filter');
         
         tests = tests.filter(test => {
@@ -1404,34 +1502,38 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
           console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after TRT monitoring filtering`);
           beforeFilter = tests.length;
         } else {
-          // Regular biomarker filtering
-          console.log('🔍 APPLYING REGULAR BIOMARKER FILTERING');
-        tests = tests.filter(test => {
-          const testBiomarkerNames = test.biomarker_names || [];
-          const hasAllBiomarkers = selectedBiomarkers.every(selectedBiomarker => {
-            // Normalize both the search term and test biomarkers
-            const normalizedSearch = selectedBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
-            
-            return testBiomarkerNames.some(testBiomarker => {
-              if (!testBiomarker) return false;
-              const normalizedTest = testBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
-              const exactMatch = normalizedTest === normalizedSearch;
-              const containsMatch = normalizedTest.includes(normalizedSearch) || normalizedSearch.includes(normalizedTest);
-              return exactMatch || containsMatch;
-            });
-          });
-          
-          if (!hasAllBiomarkers) {
-            console.log(`Filtering out test "${test.name}" - missing biomarkers. Test has:`, testBiomarkerNames, 'Looking for:', selectedBiomarkers);
-            console.log(`  Normalized search terms:`, selectedBiomarkers.map(b => b.toLowerCase().replace(/\+/g, ' ').trim()));
-            console.log(`  Normalized test biomarkers:`, testBiomarkerNames.map(b => b.toLowerCase().replace(/\+/g, ' ').trim()));
-          }
-          return hasAllBiomarkers;
-        });
-        console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after biomarker filtering`);
-        beforeFilter = tests.length;
+          console.log('🔍 NO TESTOSTERONE OPTION FILTERS APPLIED');
+        }
       }
-    } else {
+    
+    // Apply biomarker filtering independently (for "Let me pick" side)
+    if (selectedBiomarkers.length > 0 && !selectedTestosteroneOption) {
+      console.log('🔍 APPLYING INDEPENDENT BIOMARKER FILTERING for "Let me pick" side');
+      tests = tests.filter(test => {
+        const testBiomarkerNames = test.biomarker_names || [];
+        const hasAllBiomarkers = selectedBiomarkers.every(selectedBiomarker => {
+          // Normalize both the search term and test biomarkers
+          const normalizedSearch = selectedBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
+          
+          return testBiomarkerNames.some(testBiomarker => {
+            if (!testBiomarker) return false;
+            const normalizedTest = testBiomarker.toLowerCase().replace(/\+/g, ' ').trim();
+            const exactMatch = normalizedTest === normalizedSearch;
+            const containsMatch = normalizedTest.includes(normalizedSearch) || normalizedSearch.includes(normalizedTest);
+            return exactMatch || containsMatch;
+          });
+        });
+        
+        if (!hasAllBiomarkers) {
+          console.log(`Filtering out test "${test.name}" - missing biomarkers. Test has:`, testBiomarkerNames, 'Looking for:', selectedBiomarkers);
+          console.log(`  Normalized search terms:`, selectedBiomarkers.map(b => b.toLowerCase().replace(/\+/g, ' ').trim()));
+          console.log(`  Normalized test biomarkers:`, testBiomarkerNames.map(b => b.toLowerCase().replace(/\+/g, ' ').trim()));
+        }
+        return hasAllBiomarkers;
+      });
+      console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after independent biomarker filtering`);
+      beforeFilter = tests.length;
+    } else if (selectedBiomarkers.length === 0 && !selectedTestosteroneOption) {
       console.log('🔍 NO BIOMARKER FILTERS APPLIED - keeping all tests');
     }
     
@@ -1491,10 +1593,46 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     // Create and return the page structure without filter panel
     try {
       const content = createPageStructure(null, null);
-        // Add a custom event listener for when the content is rendered
-        document.addEventListener('contentRendered', async () => {
-          if (window._allGeneralHealthTests) {
-            console.log('🔍 CONTENT RENDERED - Tests count in window._allGeneralHealthTests:', window._allGeneralHealthTests.length);
+      
+      // Add filter overlay to the page
+      const filterOverlay = document.createElement('div');
+      filterOverlay.className = 'filter-overlay';
+      filterOverlay.style.display = 'none';
+      filterOverlay.innerHTML = `
+        <div class="filter-overlay-content">
+          <div class="filter-overlay-header">
+            <h3>Filters</h3>
+            <button class="filter-overlay-close" aria-label="Close filters">×</button>
+          </div>
+          <div class="filter-overlay-body">
+            <!-- Filter content will go here later -->
+            <p>Filter options coming soon...</p>
+          </div>
+        </div>
+      `;
+      
+      // Add overlay to the page
+      document.body.appendChild(filterOverlay);
+      
+      // Set up overlay close functionality
+      const closeBtn = filterOverlay.querySelector('.filter-overlay-close');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          filterOverlay.style.display = 'none';
+        });
+      }
+      
+      // Close overlay when clicking outside
+      filterOverlay.addEventListener('click', (e) => {
+        if (e.target === filterOverlay) {
+          filterOverlay.style.display = 'none';
+        }
+      });
+      
+      // Add a custom event listener for when the content is rendered
+      document.addEventListener('contentRendered', async () => {
+        if (window._allGeneralHealthTests) {
+          console.log('🔍 CONTENT RENDERED - Tests count in window._allGeneralHealthTests:', window._allGeneralHealthTests.length);
           // Set up the page elements without filter panel
           initializePageElements(window._allGeneralHealthTests, null, true);
         } else {
