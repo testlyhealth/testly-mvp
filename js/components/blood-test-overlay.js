@@ -502,13 +502,7 @@ export class BloodTestOverlay {
               display: flex;
               align-items: center;
             ">
-              <img src="images/logos/${(() => {
-                const providerName = test.provider?.name || '';
-                if (providerName.toLowerCase().includes('one day')) {
-                  return 'one day tests.png';
-                }
-                return providerName.toLowerCase().replace(/ /g, '') + '.png';
-              })()}" alt="Provider logo" class="provider-logo" style="
+              <img src="images/logos/${test.provider?.name?.toLowerCase().replace(/ /g, '') || 'provider'}.png" alt="Provider logo" class="provider-logo" style="
                 width: 80px;
                 height: 80px;
                 object-fit: contain;
@@ -637,14 +631,44 @@ export class BloodTestOverlay {
               <div class="biomarkers-list" style="
                 display: flex;
                 flex-direction: column;
-                gap: 2px;
-              ">${test.biomarker_names && test.biomarker_names.length > 0 ? test.biomarker_names.map(biomarker => 
-                `<span style="
-                  color: #4b5563;
-                  font-size: 14px;
-                  font-weight: 500;
-                ">${biomarker}</span>`
-              ).join('') : '<span style="color: #6b7280;">No biomarkers specified</span>'}</div>
+                gap: 8px;
+              ">${test.grouped_biomarkers && Object.keys(test.grouped_biomarkers).length > 0 ? 
+                Object.entries(test.grouped_biomarkers).map(([groupName, biomarkers]) => `
+                                    <div class="biomarker-group" style="margin-bottom: 8px; border: none; outline: none;">
+                    <h5 style="
+                      margin: 0 0 4px 0;
+                      color: #374151;
+                      font-size: 13px;
+                      font-weight: 600;
+                      text-transform: capitalize;
+                      text-decoration: underline;
+                    ">${groupName}</h5>
+                    <div class="biomarker-items" style="
+                      display: flex;
+                      flex-direction: row;
+                      flex-wrap: wrap;
+                      gap: 8px;
+                      margin: 0;
+                      padding: 0;
+                      border: none;
+                      outline: none;
+                    ">${biomarkers.map(biomarker => 
+                      `<span style="
+                        color: #4b5563;
+                        font-size: 14px;
+                        font-weight: 500;
+                      ">${biomarker}</span>`
+                    ).join(', ')}</div>
+                  </div>
+                `).join('') : 
+                (test.biomarker_names && test.biomarker_names.length > 0 ? test.biomarker_names.map(biomarker => 
+                  `<span style="
+                    color: #4b5563;
+                    font-size: 14px;
+                    font-weight: 500;
+                  ">${biomarker}</span>`
+                ).join('') : '<span style="color: #6b7280;">No biomarkers specified</span>')
+              }</div>
             </div>
             
             <div class="overlay-actions" style="text-align: center; margin-bottom: 0;">

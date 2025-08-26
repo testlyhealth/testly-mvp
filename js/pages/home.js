@@ -1439,10 +1439,14 @@ function setupNavigationHandlers() {
           
           console.log('🔧 Selected testosterone option:', selectedTestosteroneOption);
           
-          // Combine biomarkers if both are selected
+          // Combine biomarkers if both are selected (only use actually selected ones)
           const biomarkers = [];
-          if (biomarker1) biomarkers.push(biomarker1);
-          if (biomarker2) biomarkers.push(biomarker2);
+          if (biomarker1 && document.querySelector('.biomarker-search-input')?.dataset.selectedBiomarker === biomarker1) {
+            biomarkers.push(biomarker1);
+          }
+          if (biomarker2 && document.querySelector('.biomarker-search-input-2')?.dataset.selectedBiomarker === biomarker2) {
+            biomarkers.push(biomarker2);
+          }
           
           // Set the testosterone option parameter (cleaner than multiple boolean flags)
           if (selectedTestosteroneOption && selectedTestosteroneOption !== 'browse-all') {
@@ -1517,8 +1521,13 @@ function setupNavigationHandlers() {
           } else {
             // Let me pick side - handle regular biomarkers
             const biomarkers = [];
-            if (biomarker1) biomarkers.push(biomarker1);
-            if (biomarker2) biomarkers.push(biomarker2);
+            // Only use biomarkers that were actually selected from dropdown, not typed text
+            if (biomarker1 && visibleForm.querySelector('.biomarker-search-input')?.dataset.selectedBiomarker === biomarker1) {
+              biomarkers.push(biomarker1);
+            }
+            if (biomarker2 && visibleForm.querySelector('.biomarker-search-input-2')?.dataset.selectedBiomarker === biomarker2) {
+              biomarkers.push(biomarker2);
+            }
             
             if (biomarkers.length > 0) {
               searchParams.set('biomarkers', biomarkers.join(','));
@@ -1757,10 +1766,14 @@ function setupNavigationHandlers() {
           // Build search parameters for URL instead of localStorage
           const searchParams = new URLSearchParams();
           
-          // Add biomarkers
+          // Add biomarkers (only use actually selected ones)
           const biomarkers = [];
-          if (biomarker1) biomarkers.push(biomarker1);
-          if (biomarker2) biomarkers.push(biomarker2);
+          if (biomarker1 && document.querySelector('.problem-form .biomarker-search-input')?.dataset.selectedBiomarker === biomarker1) {
+            biomarkers.push(biomarker1);
+          }
+          if (biomarker2 && document.querySelector('.problem-form .biomarker-search-input-2')?.dataset.selectedBiomarker === biomarker2) {
+            biomarkers.push(biomarker2);
+          }
           if (biomarkers.length > 0) {
             searchParams.set('biomarkers', biomarkers.join(','));
           }
@@ -1948,6 +1961,9 @@ async function loadProblemList() {
             // Clear previous timeout
             clearTimeout(searchTimeout);
             
+            // Clear the selected biomarker flag when user types (they're no longer using selected value)
+            biomarkerInput.dataset.selectedBiomarker = '';
+            
             if (query.length < 2) {
               biomarkerDropdown.style.display = 'none';
               return;
@@ -2012,6 +2028,9 @@ async function loadProblemList() {
             
             // Clear previous timeout
             clearTimeout(searchTimeout2);
+            
+            // Clear the selected biomarker flag when user types (they're no longer using selected value)
+            biomarkerInput2.dataset.selectedBiomarker = '';
             
             if (query.length < 2) {
               biomarkerDropdown2.style.display = 'none';
@@ -2110,6 +2129,8 @@ async function loadProblemList() {
           const biomarkerDropdown = dropdownElement || document.querySelector('.biomarker-dropdown');
           
           biomarkerInput.value = option.dataset.value;
+          // Mark this input as having a selected biomarker
+          biomarkerInput.dataset.selectedBiomarker = option.dataset.value;
           biomarkerDropdown.style.display = 'none';
           biomarkerInput.focus();
           
@@ -2123,6 +2144,8 @@ async function loadProblemList() {
           const biomarkerDropdown2 = document.querySelector('.biomarker-dropdown-2');
           
           biomarkerInput2.value = option.dataset.value;
+          // Mark this input as having a selected biomarker
+          biomarkerInput2.dataset.selectedBiomarker = option.dataset.value;
           biomarkerDropdown2.style.display = 'none';
           biomarkerInput2.focus();
           
@@ -2261,10 +2284,10 @@ async function updateDynamicCount() {
     if (visibleForm.classList.contains('problem-form')) {
       // Handle "let me pick" side logic
       const selectedBiomarkers = [];
-      if (biomarker1 && biomarker1 !== '') {
+      if (biomarker1 && biomarker1 !== '' && visibleForm.querySelector('.biomarker-search-input')?.dataset.selectedBiomarker === biomarker1) {
         selectedBiomarkers.push(biomarker1);
       }
-      if (biomarker2 && biomarker2 !== '') {
+      if (biomarker2 && biomarker2 !== '' && visibleForm.querySelector('.biomarker-search-input-2')?.dataset.selectedBiomarker === biomarker2) {
         selectedBiomarkers.push(biomarker2);
       }
       
@@ -2384,10 +2407,10 @@ async function updateDynamicCount() {
         console.log('Initial test count:', testCount);
         
         const selectedBiomarkers = [];
-        if (biomarker1 && biomarker1 !== '') {
+        if (biomarker1 && biomarker1 !== '' && visibleForm.querySelector('.biomarker-search-input')?.dataset.selectedBiomarker === biomarker1) {
           selectedBiomarkers.push(biomarker1);
         }
-        if (biomarker2 && biomarker2 !== '') {
+        if (biomarker2 && biomarker2 !== '' && visibleForm.querySelector('.biomarker-search-input-2')?.dataset.selectedBiomarker === biomarker2) {
           selectedBiomarkers.push(biomarker2);
         }
         

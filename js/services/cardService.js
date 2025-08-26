@@ -5,20 +5,20 @@ import { getUrl } from '../config.js';
 export class CardService {
   constructor() {
     this.providerLogoMap = {
-      'London Health Company': 'london health company.png',
+      'London Health Company': 'londonhealthcompany.png',
       'Numan': 'numan.png',
       'Medichecks': 'medichecks.png',
-      'London Medical Laboratory': 'london medical laboratory.png',
+      'London Medical Laboratory': 'londonmedicallaboratory.png',
       'Superdrug': 'superdrug.png',
       'Bluecrest': 'bluecrest.png',
       'Thriva': 'thriva.png',
       'Forth': 'forth.png',
       'Nuffield Health': 'nuffield.png',
-      'Lloyds Pharmacy': 'lloyds pharmacy.png',
+      'Lloyds Pharmacy': 'lloydspharmacy.png',
       'Selph': 'selph.png',
       'Lola': 'lola.png',
       'Randox': 'randox.png',
-      'One day tests': 'one day tests.png'
+      'One day tests': 'onedaytests.png'
     };
   }
 
@@ -33,11 +33,26 @@ export class CardService {
 
     // Get the provider name (handle both string and object)
     const providerName = (test.provider?.name || test.provider || '').trim();
+    
+
+    
     let providerLogo = this.providerLogoMap[providerName];
     if (!providerLogo) {
-      const normalized = providerName.toLowerCase().replace(/ |-/g, '');
-      providerLogo = `${normalized}.png`;
+      // Handle specific cases that might not be in the map
+      if (providerName.toLowerCase().includes('london medical laboratory')) {
+        providerLogo = 'londonmedicallaboratory.png';
+      } else if (providerName.toLowerCase().includes('london health company')) {
+        providerLogo = 'londonhealthcompany.png';
+      } else if (providerName.toLowerCase().includes('one day')) {
+        providerLogo = 'onedaytests.png';
+      } else {
+        // Fallback to normalized name
+        const normalized = providerName.toLowerCase().replace(/ |-/g, '');
+        providerLogo = `${normalized}.png`;
+      }
     }
+    
+
     // Use the already processed grouped biomarkers from the database
     // The data is already processed in fetchAndEnrichTests function
     // No need to reprocess here since test.grouped_biomarkers is already set
@@ -244,33 +259,25 @@ export class CardService {
   }
 
   setupCardEventHandlers(tests) {
-    console.log('Setting up card event handlers...');
-    console.log('Tests passed to setupCardEventHandlers:', tests.length);
+
+
     
     // Log what elements we find
     const biomarkerGroups = $all('.biomarker-group');
     const toggleAllButtons = $all('.toggle-all-biomarkers');
     const groupHeaders = $all('.biomarker-group .group-header');
     
-    console.log('Found elements:', {
-      biomarkerGroups: biomarkerGroups.length,
-      toggleAllButtons: toggleAllButtons.length,
-      groupHeaders: groupHeaders.length
-    });
+
     
     // Remove any existing event listeners first
     biomarkerGroups.forEach((group, index) => {
       const toggleButton = group.querySelector('.toggle-biomarkers');
-      console.log(`Group ${index} cleanup:`, {
-        group: group,
-        hasToggleButton: !!toggleButton,
-        toggleButtonText: toggleButton?.textContent
-      });
+
       
       if (toggleButton) {
         const newButton = toggleButton.cloneNode(true);
         toggleButton.parentNode.replaceChild(newButton, toggleButton);
-        console.log(`Group ${index} - replaced toggle button`);
+
       }
     });
     
@@ -289,7 +296,7 @@ export class CardService {
 
     // Add event listeners to "Add to compare" checkboxes
     const checkboxes = $all('.add-to-compare-checkbox');
-    console.log('Found checkboxes:', checkboxes.length);
+
     
     // Get current comparison tests from localStorage
     let comparisonTests = [];
@@ -301,11 +308,7 @@ export class CardService {
       // Set checked state if this test is in comparisonTests
       const testId = checkbox.dataset.testId;
       
-      console.log(`Setting up checkbox ${index}:`, {
-        testId,
-        checkboxId: checkbox.id,
-        checkboxElement: checkbox
-      });
+
       
       if (comparisonTests.find(t => t.id == testId)) {
         checkbox.checked = true;
@@ -318,18 +321,21 @@ export class CardService {
         const testId = e.target.dataset.testId;
         const test = tests.find(t => t.id == testId);
         
-        console.log('Checkbox changed:', {
-          checkboxIndex: index,
-          testId,
-          foundTest: test,
-          checked: e.target.checked,
-          allTestIds: tests.map(t => t.id),
-          testsArrayLength: tests.length
-        });
+
         
         if (test) {
           if (e.target.checked) {
-            // Add to comparison
+            // Check if we're already at the limit of 3 tests
+            const currentComparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
+            if (currentComparisonTests.length >= 3) {
+              // Find the oldest test (first in the array) and uncheck its checkbox
+              const oldestTest = currentComparisonTests[0];
+              const oldestCheckbox = document.querySelector(`[data-test-id="${oldestTest.id}"]`);
+              if (oldestCheckbox) {
+                oldestCheckbox.checked = false;
+              }
+            }
+            // Add to comparison (this will automatically remove the oldest if we exceed 3)
             CardService.addTestToComparison(test);
           } else {
             // Remove from comparison
@@ -612,8 +618,9 @@ export class CardService {
       
       comparisonTests.push(testWithBiomarkers);
       
-      // Keep only the first 3 tests
+      // Keep only the first 3 tests - remove oldest if we exceed limit
       if (comparisonTests.length > 3) {
+        // Remove the oldest test (first in the array) to keep only the newest 3
         comparisonTests = comparisonTests.slice(-3);
       }
       
@@ -633,6 +640,12 @@ export class CardService {
       }
       // Dispatch event for UI update
       window.dispatchEvent(new Event('comparisonTestsUpdated'));
+      
+      // Update comparison count in UI
+      CardService.updateComparisonCount();
+      
+      // Update all checkbox states to reflect current comparison state
+      CardService.updateAllCheckboxStates();
     } else {
       console.log('Test already in comparison:', test.id);
     }
@@ -653,6 +666,9 @@ export class CardService {
     
     // Update comparison count in UI
     CardService.updateComparisonCount();
+    
+    // Update all checkbox states to reflect current comparison state
+    CardService.updateAllCheckboxStates();
   }
 
   static updateComparisonCount() {
@@ -668,12 +684,32 @@ export class CardService {
     }
     
     if (count > 0) {
-      compareBtn.textContent = `Compare (${count})`;
+      compareBtn.textContent = `Compare (${count}/3)`;
     } else {
       compareBtn.textContent = 'Compare';
     }
     
     console.log('Updated comparison count:', count);
+  }
+
+  static updateAllCheckboxStates() {
+    // Get current comparison tests from localStorage
+    let comparisonTests = [];
+    try {
+      comparisonTests = JSON.parse(localStorage.getItem('comparisonTests') || '[]');
+    } catch (e) { 
+      comparisonTests = []; 
+    }
+    
+    // Update all checkboxes to match the current state
+    const allCheckboxes = document.querySelectorAll('.add-to-compare-checkbox');
+    allCheckboxes.forEach(checkbox => {
+      const testId = checkbox.dataset.testId;
+      const isInComparison = comparisonTests.find(t => t.id == testId);
+      checkbox.checked = !!isInComparison;
+    });
+    
+    console.log('Updated all checkbox states to match comparison state');
   }
 
   static async updateComparisonGrid() {
@@ -1298,6 +1334,9 @@ export class CardService {
     }
   }
 }
+
+// Make CardService available globally
+window.CardService = CardService;
 
 // Make updateComparisonGrid available globally
 window.updateComparisonGrid = async () => {

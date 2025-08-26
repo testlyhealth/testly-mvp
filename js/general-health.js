@@ -9,13 +9,545 @@ console.log('bloodTestOverlay imported:', bloodTestOverlay);
 // Initialize card service
 const cardService = new CardService();
 
+// Helper function to populate filter overlay with existing URL values
+function populateFilterOverlayWithURLValues(filterOverlay) {
+  try {
+    console.log('🔍 Populating filter overlay with URL values...');
+    
+    let urlParams;
+    
+    // Check if we're on the search results page (hash URL) - this should be checked FIRST
+    if (window.location.hash && window.location.hash.includes('#/search-results')) {
+      // Extract parameters from hash URL (e.g., #/search-results?maxPrice=50&method=Finger%20prick)
+      const hashParams = window.location.hash.split('?')[1];
+      if (hashParams) {
+        urlParams = new URLSearchParams(hashParams);
+        console.log('🔍 Found hash URL parameters:', hashParams);
+      }
+    } else if (window.location.search) {
+      // Regular URL parameters (fallback)
+      urlParams = new URLSearchParams(window.location.search);
+      console.log('🔍 Found regular URL parameters:', window.location.search);
+    }
+    
+    if (urlParams) {
+      console.log('🔍 All URL parameters found:', Object.fromEntries(urlParams.entries()));
+      
+      // Populate min price
+      const minPrice = urlParams.get('minPrice');
+      if (minPrice) {
+        const minPriceSelect = filterOverlay.querySelector('#filter-min-price');
+        if (minPriceSelect) {
+          minPriceSelect.value = minPrice;
+          console.log('🔍 Set min price to:', minPrice);
+        }
+      }
+      
+      // Populate max price
+      const maxPrice = urlParams.get('maxPrice');
+      if (maxPrice) {
+        console.log('🔍 Found maxPrice in URL:', maxPrice);
+        const maxPriceSelect = filterOverlay.querySelector('#filter-max-price');
+        console.log('🔍 Looking for max price select with ID "filter-max-price":', maxPriceSelect);
+        
+        // Also try to find it by other means
+        const allSelects = filterOverlay.querySelectorAll('select');
+        console.log('🔍 All select elements found in overlay:', allSelects.length);
+        allSelects.forEach((select, index) => {
+          console.log(`🔍 Select ${index}:`, {
+            id: select.id,
+            name: select.name,
+            className: select.className,
+            options: Array.from(select.options).map(opt => ({ value: opt.value, text: opt.textContent }))
+          });
+        });
+        
+        if (maxPriceSelect) {
+          maxPriceSelect.value = maxPrice;
+          console.log('🔍 Set max price to:', maxPrice, 'Current value after setting:', maxPriceSelect.value);
+        } else {
+          console.log('❌ Max price select not found in overlay');
+        }
+      }
+      
+      // Populate method
+      const method = urlParams.get('method');
+      if (method) {
+        const methodSelect = filterOverlay.querySelector('#filter-method');
+        if (methodSelect) {
+          methodSelect.value = method;
+          console.log('🔍 Set method to:', method);
+        }
+      }
+      
+      // Populate testosterone option
+      const testosteroneOption = urlParams.get('testosteroneOption');
+      if (testosteroneOption) {
+        const testosteroneSelect = filterOverlay.querySelector('#filter-testosterone');
+        if (testosteroneSelect) {
+          testosteroneSelect.value = testosteroneOption;
+          console.log('🔍 Set testosterone option to:', testosteroneOption);
+        }
+      }
+      
+      // Populate results returned
+      const resultsReturned = urlParams.get('resultsReturned');
+      if (resultsReturned) {
+        const resultsSelect = filterOverlay.querySelector('#filter-results-returned');
+        if (resultsSelect) {
+          resultsSelect.value = resultsReturned;
+          console.log('🔍 Set results returned to:', resultsReturned);
+        }
+      }
+      
+      // Populate doctors report
+      const doctorsReport = urlParams.get('doctorsReport');
+      if (doctorsReport) {
+        const doctorsSelect = filterOverlay.querySelector('#filter-doctors-report');
+        if (doctorsSelect) {
+          doctorsSelect.value = doctorsReport;
+          console.log('🔍 Set doctors report to:', doctorsReport);
+        }
+      }
+      
+      // Read biomarkers (but don't display them yet - just log for debugging)
+      const biomarkers = urlParams.get('biomarkers');
+      if (biomarkers) {
+        console.log('🔍 Found biomarkers in URL:', biomarkers);
+        // Store for potential later use
+        filterOverlay.dataset.biomarkers = biomarkers;
+      }
+      
+      console.log('🔍 Filter overlay populated successfully with URL values');
+    } else {
+      console.log('🔍 No URL parameters found to populate');
+    }
+  } catch (error) {
+    console.error('❌ Error populating filter overlay:', error);
+  }
+}
+
+// Function to create and show filter overlay dynamically
+function createAndShowFilterOverlay() {
+  // Remove any existing filter overlay
+  const existingOverlay = document.querySelector('.filter-overlay');
+  if (existingOverlay) {
+    existingOverlay.remove();
+  }
+  
+  // Create new filter overlay
+  const filterOverlay = document.createElement('div');
+  filterOverlay.className = 'filter-overlay';
+  filterOverlay.style.display = 'flex';
+  
+  // Create the filter overlay HTML dynamically based on current URL state
+  filterOverlay.innerHTML = createFilterOverlayHTML();
+  
+  // Add overlay to the page
+  document.body.appendChild(filterOverlay);
+  
+  // Set up overlay close functionality
+  const closeBtn = filterOverlay.querySelector('.filter-overlay-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      filterOverlay.remove();
+    });
+  }
+  
+  // Close overlay when clicking outside
+  filterOverlay.addEventListener('click', (e) => {
+    if (e.target === filterOverlay) {
+      filterOverlay.remove();
+    }
+  });
+  
+  // Set up biomarker search functionality
+  setupFilterBiomarkerSearch(filterOverlay);
+  
+  // Set up Apply and Clear button functionality
+  const applyBtn = filterOverlay.querySelector('.filter-apply-btn');
+  if (applyBtn) {
+    applyBtn.addEventListener('click', async () => {
+      await applyFiltersAndUpdateURL(filterOverlay);
+    });
+  }
+  
+  const clearBtn = filterOverlay.querySelector('.filter-clear-btn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      clearFilterOverlay(filterOverlay);
+    });
+  }
+}
+
+// Function to apply filters and update URL
+async function applyFiltersAndUpdateURL(filterOverlay) {
+  // Read all filter values from the overlay
+  const minPrice = filterOverlay.querySelector('#filter-min-price')?.value || '';
+  const maxPrice = filterOverlay.querySelector('#filter-max-price')?.value || '';
+  const method = filterOverlay.querySelector('#filter-method')?.value || '';
+  const testosteroneOption = filterOverlay.querySelector('#filter-testosterone')?.value || '';
+  const resultsReturned = filterOverlay.querySelector('#filter-results-returned')?.value || '';
+  const doctorsReport = filterOverlay.querySelector('#filter-doctors-report')?.value || '';
+  // Only use biomarkers that were actually selected from dropdown, not typed text
+  const biomarkerInput = filterOverlay.querySelector('#filter-biomarker-search');
+  const biomarkers = biomarkerInput?.dataset.selectedBiomarker || '';
+  
+  // Create new URLSearchParams from current hash
+  const currentHash = window.location.hash;
+  const hashParams = new URLSearchParams(currentHash.split('?')[1] || '');
+  
+  // Update parameters with new filter values
+  if (minPrice) hashParams.set('minPrice', minPrice);
+  else hashParams.delete('minPrice');
+  
+  if (maxPrice) hashParams.set('maxPrice', maxPrice);
+  else hashParams.delete('maxPrice');
+  
+  if (method) hashParams.set('method', method);
+  else hashParams.delete('method');
+  
+  if (testosteroneOption) hashParams.set('testosteroneOption', testosteroneOption);
+  else hashParams.delete('testosteroneOption');
+  
+  if (resultsReturned) hashParams.set('resultsReturned', resultsReturned);
+  else hashParams.delete('resultsReturned');
+  
+  if (doctorsReport) hashParams.set('doctorsReport', doctorsReport);
+  else hashParams.delete('doctorsReport');
+  
+  if (biomarkers) hashParams.set('biomarkers', biomarkers);
+  else hashParams.delete('biomarkers');
+  
+  // Build new hash URL
+  const newHash = `#/search-results?${hashParams.toString()}`;
+  
+  // Close the overlay
+  filterOverlay.remove();
+  
+  // Update the URL and re-run search
+  window.location.hash = newHash;
+}
+
+// Function to setup biomarker search in filter overlay
+function setupFilterBiomarkerSearch(filterOverlay) {
+  const biomarkerInput = filterOverlay.querySelector('#filter-biomarker-search');
+  const biomarkerDropdown = filterOverlay.querySelector('#filter-biomarker-dropdown');
+  
+  if (!biomarkerInput || !biomarkerDropdown) return;
+  
+  let searchTimeout;
+  let selectedIndex = -1;
+  
+  // Function to update selection in filter biomarker dropdown
+  function updateFilterSelection(options) {
+    options.forEach((option, index) => {
+      if (index === selectedIndex) {
+        option.classList.add('selected');
+        option.scrollIntoView({ block: 'nearest' });
+      } else {
+        option.classList.remove('selected');
+      }
+    });
+  }
+  
+  biomarkerInput.addEventListener('input', (e) => {
+    const query = e.target.value.trim();
+    
+    // Clear previous timeout
+    clearTimeout(searchTimeout);
+    
+    // Clear the selected biomarker flag when user types (they're no longer using selected value)
+    biomarkerInput.dataset.selectedBiomarker = '';
+    
+    if (query.length < 2) {
+      biomarkerDropdown.style.display = 'none';
+      return;
+    }
+    
+    // Debounce the search
+    searchTimeout = setTimeout(() => {
+      searchFilterBiomarkers(query, biomarkerDropdown);
+    }, 300);
+  });
+  
+  biomarkerInput.addEventListener('keydown', (e) => {
+    const options = biomarkerDropdown.querySelectorAll('.biomarker-option');
+    
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        selectedIndex = Math.min(selectedIndex + 1, options.length - 1);
+        updateFilterSelection(options);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        selectedIndex = Math.max(selectedIndex - 1, -1);
+        updateFilterSelection(options);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (selectedIndex >= 0 && options[selectedIndex]) {
+          selectFilterBiomarker(options[selectedIndex], biomarkerInput, biomarkerDropdown);
+        }
+        break;
+      case 'Escape':
+        biomarkerDropdown.style.display = 'none';
+        selectedIndex = -1;
+        break;
+    }
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!biomarkerInput.contains(e.target) && !biomarkerDropdown.contains(e.target)) {
+      biomarkerDropdown.style.display = 'none';
+      selectedIndex = -1;
+    }
+  });
+}
+
+// Function to search biomarkers for filter overlay
+async function searchFilterBiomarkers(query, dropdownElement) {
+  try {
+    const { data, error } = await supabase
+      .from('biomarkers')
+      .select('name')
+      .ilike('name', `%${query}%`)
+      .order('name')
+      .limit(20);
+    
+    if (error) {
+      console.error('Error fetching biomarkers:', error);
+      return;
+    }
+    
+    const biomarkerNames = data.map(item => item.name);
+    displayFilterBiomarkerResults(biomarkerNames, dropdownElement);
+  } catch (error) {
+    console.error('Error searching biomarkers:', error);
+  }
+}
+
+// Function to display biomarker results in filter overlay
+function displayFilterBiomarkerResults(biomarkers, dropdownElement) {
+  if (biomarkers.length === 0) {
+    dropdownElement.innerHTML = '<div class="biomarker-option">No biomarkers found</div>';
+  } else {
+    dropdownElement.innerHTML = biomarkers
+      .map(biomarker => `<div class="biomarker-option" data-value="${biomarker}">${biomarker}</div>`)
+      .join('');
+    
+    // Add click event listeners
+    dropdownElement.querySelectorAll('.biomarker-option').forEach(option => {
+      option.addEventListener('click', () => {
+        const biomarkerInput = dropdownElement.parentElement.querySelector('#filter-biomarker-search');
+        selectFilterBiomarker(option, biomarkerInput, dropdownElement);
+      });
+    });
+  }
+  
+  dropdownElement.style.display = 'block';
+}
+
+// Function to select biomarker in filter overlay
+function selectFilterBiomarker(option, inputElement, dropdownElement) {
+  const biomarkerInput = inputElement;
+  const biomarkerDropdown = dropdownElement;
+  
+  biomarkerInput.value = option.dataset.value;
+  // Mark this input as having a selected biomarker
+  biomarkerInput.dataset.selectedBiomarker = option.dataset.value;
+  biomarkerDropdown.style.display = 'none';
+  biomarkerInput.focus();
+}
+
+
+
+// Function to clear all filter overlay values
+function clearFilterOverlay(filterOverlay) {
+  // Reset all dropdowns to empty
+  const dropdowns = filterOverlay.querySelectorAll('select');
+  dropdowns.forEach(dropdown => {
+    dropdown.value = '';
+  });
+  
+  // Clear biomarker input
+  const biomarkerInput = filterOverlay.querySelector('#filter-biomarker-search');
+  if (biomarkerInput) {
+    biomarkerInput.value = '';
+  }
+  
+  // Apply the cleared filters to update URL
+  applyFiltersAndUpdateURL(filterOverlay);
+}
+
+// Function to create filter overlay HTML dynamically based on current URL state
+function createFilterOverlayHTML() {
+  // Get current URL parameters
+  let urlParams;
+  if (window.location.hash && window.location.hash.includes('#/search-results')) {
+    const hashParams = window.location.hash.split('?')[1];
+    if (hashParams) {
+      urlParams = new URLSearchParams(hashParams);
+    }
+  } else if (window.location.search) {
+    urlParams = new URLSearchParams(window.location.search);
+  }
+  
+  // Get current values from URL
+  const currentMinPrice = urlParams ? urlParams.get('minPrice') || '' : '';
+  const currentMaxPrice = urlParams ? urlParams.get('maxPrice') || '' : '';
+  const currentMethod = urlParams ? urlParams.get('method') || '' : '';
+  const currentTestosterone = urlParams ? urlParams.get('testosteroneOption') || '' : '';
+  const currentResultsReturned = urlParams ? urlParams.get('resultsReturned') || '' : '';
+  const currentDoctorsReport = urlParams ? urlParams.get('doctorsReport') || '' : '';
+  const currentBiomarkers = urlParams ? urlParams.get('biomarkers') || '' : '';
+  
+  return `
+    <div class="filter-overlay-content">
+      <div class="filter-overlay-header">
+        <h3>Filters</h3>
+        <button class="filter-overlay-close" aria-label="Close filters">×</button>
+      </div>
+      <div class="filter-overlay-body">
+        <!-- Price Range Section -->
+        <div class="filter-section">
+          <h4>Price Range</h4>
+          <div class="price-inputs">
+            <div class="price-input">
+              <select id="filter-min-price">
+                <option value="">Min price</option>
+                <option value="0" ${currentMinPrice === '0' ? 'selected' : ''}>£0</option>
+                <option value="50" ${currentMinPrice === '50' ? 'selected' : ''}>£50</option>
+                <option value="100" ${currentMinPrice === '100' ? 'selected' : ''}>£100</option>
+                <option value="150" ${currentMinPrice === '150' ? 'selected' : ''}>£150</option>
+                <option value="200" ${currentMinPrice === '200' ? 'selected' : ''}>£200</option>
+                <option value="250" ${currentMinPrice === '250' ? 'selected' : ''}>£250</option>
+                <option value="300" ${currentMinPrice === '300' ? 'selected' : ''}>£300</option>
+                <option value="350" ${currentMinPrice === '350' ? 'selected' : ''}>£350</option>
+                <option value="400" ${currentMinPrice === '400' ? 'selected' : ''}>£400</option>
+                <option value="450" ${currentMinPrice === '450' ? 'selected' : ''}>£450</option>
+                <option value="500" ${currentMinPrice === '500' ? 'selected' : ''}>£500</option>
+              </select>
+            </div>
+            <div class="price-input">
+              <select id="filter-max-price">
+                <option value="">Max price</option>
+                <option value="50" ${currentMaxPrice === '50' ? 'selected' : ''}>£50</option>
+                <option value="100" ${currentMaxPrice === '100' ? 'selected' : ''}>£100</option>
+                <option value="150" ${currentMaxPrice === '150' ? 'selected' : ''}>£150</option>
+                <option value="200" ${currentMaxPrice === '200' ? 'selected' : ''}>£200</option>
+                <option value="250" ${currentMaxPrice === '250' ? 'selected' : ''}>£250</option>
+                <option value="300" ${currentMaxPrice === '300' ? 'selected' : ''}>£300</option>
+                <option value="350" ${currentMaxPrice === '350' ? 'selected' : ''}>£350</option>
+                <option value="400" ${currentMaxPrice === '400' ? 'selected' : ''}>£400</option>
+                <option value="450" ${currentMaxPrice === '450' ? 'selected' : ''}>£450</option>
+                <option value="500" ${currentMaxPrice === '500' ? 'selected' : ''}>£500</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Method Section -->
+        <div class="filter-section">
+          <h4>Sample Type</h4>
+          <select id="filter-method">
+            <option value="">All methods</option>
+            <option value="Finger prick" ${currentMethod === 'Finger prick' ? 'selected' : ''}>Finger prick</option>
+            <option value="Venous at clinic" ${currentMethod === 'Venous at clinic' ? 'selected' : ''}>Venous at clinic</option>
+            <option value="Phlebotomist to home" ${currentMethod === 'Phlebotomist to home' ? 'selected' : ''}>Phlebotomist to home</option>
+            <option value="Self arrange" ${currentMethod === 'Self arrange' ? 'selected' : ''}>Self arrange</option>
+          </select>
+        </div>
+
+        <!-- Testosterone Options Section -->
+        <div class="filter-section">
+          <h4>Testosterone Options</h4>
+          <select id="filter-testosterone">
+            <option value="">All options</option>
+            <option value="browse-all" ${currentTestosterone === 'browse-all' ? 'selected' : ''}>All</option>
+            <option value="testosterone-only" ${currentTestosterone === 'testosterone-only' ? 'selected' : ''}>Testosterone only</option>
+            <option value="testosterone-full-hormone-only" ${currentTestosterone === 'testosterone-full-hormone-only' ? 'selected' : ''}>Male hormone check only (includes testosterone)</option>
+            <option value="testosterone-full-hormone" ${currentTestosterone === 'testosterone-full-hormone' ? 'selected' : ''}>Male hormone check + general health check</option>
+            <option value="trt-monitoring" ${currentTestosterone === 'trt-monitoring' ? 'selected' : ''}>TRT monitoring</option>
+          </select>
+        </div>
+
+        <!-- Results Returned and Doctors Report Section (Side by Side) -->
+        <div class="filter-section">
+          <div class="filter-row">
+            <div class="filter-column">
+              <h4>Results Returned In</h4>
+              <select id="filter-results-returned">
+                <option value="any">Any time</option>
+                <option value="2" ${currentResultsReturned === '2' ? 'selected' : ''}>Less than 2 days</option>
+                <option value="3" ${currentResultsReturned === '3' ? 'selected' : ''}>Less than 3 days</option>
+              </select>
+            </div>
+            <div class="filter-column">
+              <h4>Doctor's Report</h4>
+              <select id="filter-doctors-report">
+                <option value="">All options</option>
+                <option value="Yes" ${currentDoctorsReport === 'Yes' ? 'selected' : ''}>Yes</option>
+                <option value="No" ${currentDoctorsReport === 'No' ? 'selected' : ''}>No</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Biomarker Search Section -->
+        <div class="filter-section">
+          <h4>Biomarkers</h4>
+          <div class="biomarker-search-container">
+            <input type="text" id="filter-biomarker-search" placeholder="Search for biomarkers (e.g., Testosterone, Vitamin D)" class="biomarker-search-input" value="${currentBiomarkers}">
+            <div id="filter-biomarker-dropdown" class="biomarker-dropdown" style="display: none;"></div>
+          </div>
+        </div>
+
+        <!-- Filter Actions -->
+        <div class="filter-actions">
+          <button type="button" class="filter-apply-btn">Apply Filters</button>
+          <button type="button" class="filter-clear-btn">Clear</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Function to set up dynamic URL update listener for filter overlay
+function setupFilterOverlayURLListener(filterOverlay) {
+  // Add a global event listener for when filter tags are updated
+  if (!window.filterOverlayUpdateListener) {
+    window.filterOverlayUpdateListener = true;
+    
+    // Listen for hash changes
+    window.addEventListener('hashchange', () => {
+      const currentOverlay = document.querySelector('.filter-overlay');
+      if (currentOverlay && currentOverlay.style.display === 'flex') {
+        // Recreate the overlay HTML with current URL state
+        currentOverlay.innerHTML = createFilterOverlayHTML();
+      }
+    });
+    
+    // Listen for popstate (back/forward buttons)
+    window.addEventListener('popstate', () => {
+      const currentOverlay = document.querySelector('.filter-overlay');
+      if (currentOverlay && currentOverlay.style.display === 'flex') {
+        // Recreate the overlay HTML with current URL state
+        currentOverlay.innerHTML = createFilterOverlayHTML();
+      }
+    });
+  }
+}
+
 // Provider logo mapping
 const providerLogoMap = {
   'Numan': 'numan.png',
   'Nuffield Health': 'nuffield.png',
-  'London Health Company': 'london health company.png',
+  'London Health Company': 'londonhealthcompany.png',
   'Lloyds Pharmacy': 'lloyds pharmacy.png',
-  'London Medical Laboratory': 'london medical laboratory.png',
+  'London Medical Laboratory': 'londonmedicallaboratory.png',
   'Selph': 'selph.png',
   'Bluecrest': 'bluecrest.png',
   'Lola': 'lola.png',
@@ -26,7 +558,7 @@ const providerLogoMap = {
   'Blue horizon blood tests': 'blue horizon blood tests.png',
   'Blood Tests London': 'bloodtestslondon.png',
   'Goodbody Clinic': 'goodbodyclinic.png',
-  'One day tests': 'one day tests.png'
+  'One day tests': 'onedaytests.png'
 };
 
 // Store sort direction and test lists globally
@@ -75,7 +607,28 @@ async function createTestCard(test, index) {
   const biomarkerNames = test.biomarker_names || [];
   const groupedBiomarkers = test.grouped_biomarkers || {};
 
-  const providerLogo = providerLogoMap[test.provider] || `${test.provider.toLowerCase().replace(/ /g, '')}.png`;
+  // Debug provider logo resolution
+  console.log('Provider logo debug:', {
+    provider: test.provider,
+    providerMapKey: providerLogoMap[test.provider],
+    fallbackLogo: `${test.provider.toLowerCase().replace(/ /g, '')}.png`
+  });
+  
+  // More robust provider logo resolution
+  let providerLogo = providerLogoMap[test.provider];
+  if (!providerLogo) {
+    // Handle specific cases that might not be in the map
+    if (test.provider && test.provider.toLowerCase().includes('london medical laboratory')) {
+      providerLogo = 'londonmedicallaboratory.png';
+    } else if (test.provider && test.provider.toLowerCase().includes('london health company')) {
+      providerLogo = 'londonhealthcompany.png';
+    } else if (test.provider && test.provider.toLowerCase().includes('one day')) {
+      providerLogo = 'onedaytests.png';
+    } else {
+      // Fallback to normalized name
+      providerLogo = `${test.provider.toLowerCase().replace(/ /g, '')}.png`;
+    }
+  }
   
   // Calculate total number of biomarkers
   const totalBiomarkers = biomarkerNames.length;
@@ -628,16 +1181,14 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
     if (biomarkerMatch) {
       const biomarkers = decodeURIComponent(biomarkerMatch[1]).split(',').map(b => b.trim().replace(/\+/g, ' ')).filter(Boolean);
       
-      // Only add biomarker tags if no testosterone option is selected (to avoid duplicates)
-      if (!testosteroneOptionMatch) {
+      // Add biomarker tags regardless of testosterone option (they work together now)
       biomarkers.forEach(biomarker => {
         appliedFilters.push({
           type: 'biomarker',
           value: biomarker,
-            display: biomarker
+          display: biomarker
         });
       });
-      }
     }
     
     // Check for method filter
@@ -718,8 +1269,15 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
           ${filterTagsHTML}
         </div>
         <div class="results-controls">
-          <div class="results-count">
-            <span>${tests.length} result${tests.length !== 1 ? 's' : ''}</span>
+          <div class="compare-button desktop-only">
+            <button class="compare-btn" aria-label="Compare selected tests">
+              Compare
+            </button>
+          </div>
+          <div class="clear-compare-button desktop-only">
+            <button class="clear-compare-btn" aria-label="Clear all selected tests">
+              Clear
+            </button>
           </div>
           <div class="filter-button desktop-only">
             <button class="filter-btn" aria-label="Open filters">
@@ -730,6 +1288,9 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
             <button class="sort-btn" aria-label="Sort by price">
               Price: Low to High
             </button>
+            </div>
+          <div class="results-count">
+            <span>${tests.length} result${tests.length !== 1 ? 's' : ''}</span>
           </div>
         </div>
       </div>
@@ -847,12 +1408,57 @@ async function initializePageElements(tests, selectedProblem = null, skipFilterP
     const filterBtn = filterTagsContainer.querySelector('.filter-btn');
     if (filterBtn) {
       filterBtn.addEventListener('click', () => {
-        const filterOverlay = document.querySelector('.filter-overlay');
-        if (filterOverlay) {
-          filterOverlay.style.display = 'flex';
-        }
+        // Create filter overlay dynamically every time it's clicked
+        createAndShowFilterOverlay();
       });
     }
+
+    // Set up compare button click handler
+    const compareBtn = filterTagsContainer.querySelector('.compare-btn');
+    if (compareBtn) {
+      compareBtn.addEventListener('click', () => {
+        window.location.hash = '#/compare';
+      });
+      
+      // Update comparison count
+      if (window.CardService && window.CardService.updateComparisonCount) {
+        window.CardService.updateComparisonCount();
+      }
+    }
+
+    // Set up clear compare button click handler
+    const clearCompareBtn = filterTagsContainer.querySelector('.clear-compare-btn');
+    if (clearCompareBtn) {
+      clearCompareBtn.addEventListener('click', () => {
+        // Clear all selected tests from localStorage
+        localStorage.removeItem('comparisonTests');
+        
+        // Uncheck all compare checkboxes
+        const compareCheckboxes = document.querySelectorAll('.add-to-compare-checkbox');
+        compareCheckboxes.forEach(checkbox => {
+          checkbox.checked = false;
+        });
+        
+        // Update the compare button text
+        if (window.CardService && window.CardService.updateComparisonCount) {
+          window.CardService.updateComparisonCount();
+        }
+        
+        console.log('All comparison selections cleared');
+      });
+    }
+
+    // Update comparison count after all handlers are set up
+    if (window.CardService && window.CardService.updateComparisonCount) {
+      window.CardService.updateComparisonCount();
+    }
+
+    // Listen for comparison updates to refresh the count
+    window.addEventListener('comparisonTestsUpdated', () => {
+      if (window.CardService && window.CardService.updateComparisonCount) {
+        window.CardService.updateComparisonCount();
+      }
+    });
   }
 }
 
@@ -1250,6 +1856,10 @@ async function fetchAndEnrichTests({ category = null, categoryId = null, provide
 // Export the main function
 export async function displayGeneralHealthPage(skipFilterPanel = false) {
   try {
+    // --- Clear comparison selections on page load ---
+    console.log('🧹 Clearing comparison selections for fresh search...');
+    localStorage.removeItem('comparisonTests');
+    
     // --- Check localStorage for "Let me pick" search parameters ---
     console.log('🔍 Checking localStorage for search parameters...');
     const storedBiomarker1 = localStorage.getItem('selectedBiomarker1');
@@ -1395,8 +2005,13 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     let beforeFilter = tests.length;
     console.log('🔍 STARTING FILTERING PROCESS - Initial count:', beforeFilter);
     
-    // Apply testosterone option filtering (regardless of biomarkers parameter)
-    if (selectedTestosteroneOption && selectedTestosteroneOption !== 'browse-all') {
+    // If openFilters=true (Advanced search), skip all filtering and show all tests
+    if (shouldOpenFilters) {
+      console.log('🔍 ADVANCED SEARCH MODE - Skipping all filtering, showing all tests');
+      console.log('🔍 Tests will be unfiltered, filter overlay will open automatically');
+    } else {
+      // Apply testosterone option filtering (regardless of biomarkers parameter)
+      if (selectedTestosteroneOption && selectedTestosteroneOption !== 'browse-all') {
       console.log('🔍 APPLYING TESTOSTERONE OPTION FILTER for:', selectedTestosteroneOption);
       
       if (isTestosteroneOnly) {
@@ -1506,9 +2121,9 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
         }
       }
     
-    // Apply biomarker filtering independently (for "Let me pick" side)
-    if (selectedBiomarkers.length > 0 && !selectedTestosteroneOption) {
-      console.log('🔍 APPLYING INDEPENDENT BIOMARKER FILTERING for "Let me pick" side');
+    // Apply biomarker filtering (works with both "Let me pick" side and testosterone options)
+    if (selectedBiomarkers.length > 0) {
+      console.log('🔍 APPLYING BIOMARKER FILTERING for:', selectedBiomarkers);
         tests = tests.filter(test => {
           const testBiomarkerNames = test.biomarker_names || [];
           const hasAllBiomarkers = selectedBiomarkers.every(selectedBiomarker => {
@@ -1531,9 +2146,9 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
           }
           return hasAllBiomarkers;
         });
-      console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after independent biomarker filtering`);
+        console.log(`Filtered from ${beforeFilter} to ${tests.length} tests after biomarker filtering`);
         beforeFilter = tests.length;
-    } else if (selectedBiomarkers.length === 0 && !selectedTestosteroneOption) {
+    } else {
       console.log('🔍 NO BIOMARKER FILTERS APPLIED - keeping all tests');
     }
     
@@ -1586,6 +2201,7 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     } else {
       console.log('🔍 NO METHOD FILTER APPLIED');
     }
+    } // Close the else block for filtering logic
     window._allGeneralHealthTests = tests;
     
     console.log(`🎯 Final test count after all filtering: ${tests.length}`);
@@ -1594,47 +2210,23 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     try {
       const content = createPageStructure(null, null);
       
-      // Add filter overlay to the page
-      const filterOverlay = document.createElement('div');
-      filterOverlay.className = 'filter-overlay';
-      filterOverlay.style.display = 'none';
-      filterOverlay.innerHTML = `
-        <div class="filter-overlay-content">
-          <div class="filter-overlay-header">
-            <h3>Filters</h3>
-            <button class="filter-overlay-close" aria-label="Close filters">×</button>
-          </div>
-          <div class="filter-overlay-body">
-            <!-- Filter content will go here later -->
-            <p>Filter options coming soon...</p>
-          </div>
-        </div>
-      `;
+      // Filter overlay will be created dynamically when filter button is clicked
       
-      // Add overlay to the page
-      document.body.appendChild(filterOverlay);
-      
-      // Set up overlay close functionality
-      const closeBtn = filterOverlay.querySelector('.filter-overlay-close');
-      if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-          filterOverlay.style.display = 'none';
-        });
-      }
-      
-      // Close overlay when clicking outside
-      filterOverlay.addEventListener('click', (e) => {
-        if (e.target === filterOverlay) {
-          filterOverlay.style.display = 'none';
-        }
-      });
-      
-      // Add a custom event listener for when the content is rendered
-      document.addEventListener('contentRendered', async () => {
-        if (window._allGeneralHealthTests) {
-          console.log('🔍 CONTENT RENDERED - Tests count in window._allGeneralHealthTests:', window._allGeneralHealthTests.length);
-          // Set up the page elements without filter panel
-          initializePageElements(window._allGeneralHealthTests, null, true);
+        // Add a custom event listener for when the content is rendered
+        document.addEventListener('contentRendered', async () => {
+          if (window._allGeneralHealthTests) {
+            console.log('🔍 CONTENT RENDERED - Tests count in window._allGeneralHealthTests:', window._allGeneralHealthTests.length);
+            // Set up the page elements without filter panel
+            initializePageElements(window._allGeneralHealthTests, null, true);
+            
+            // Check if filters should be automatically opened (from Advanced Search)
+            if (window._searchParameters && window._searchParameters.shouldOpenFilters) {
+              console.log('🔍 AUTO-OPENING FILTER PANEL from Advanced Search');
+              // Wait a moment for the page to fully render, then open filters
+            setTimeout(() => {
+                createAndShowFilterOverlay();
+            }, 500);
+          }
         } else {
           console.error('window._allGeneralHealthTests is not set!');
         }

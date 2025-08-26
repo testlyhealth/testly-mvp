@@ -253,10 +253,14 @@ function handleQuickSearch() {
     searchParams.set('productCategory', productCategory);
   }
   
-  // Combine biomarkers if both are selected
+  // Combine biomarkers if both are selected (only use actually selected ones)
   const biomarkers = [];
-  if (biomarker1) biomarkers.push(biomarker1);
-  if (biomarker2) biomarkers.push(biomarker2);
+  if (biomarker1 && document.querySelector('.biomarker-search-input')?.dataset.selectedBiomarker === biomarker1) {
+    biomarkers.push(biomarker1);
+  }
+  if (biomarker2 && document.querySelector('.biomarker-search-input-2')?.dataset.selectedBiomarker === biomarker2) {
+    biomarkers.push(biomarker2);
+  }
   
   if (biomarkers.length > 0) {
     searchParams.set('biomarkers', biomarkers.join(','));
