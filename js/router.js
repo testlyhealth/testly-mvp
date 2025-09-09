@@ -23,6 +23,8 @@ import { displayWeightLossPage, initializeWeightLossPage } from './pages/weight-
 import { displayAdminPage, initializeAdminPage } from './pages/admin.js';
 import { getGraphPageContent, initializeGraphPage } from './pages/graph.js';
 import { getTrackWaitingListPageContent, initializeTrackWaitingListPage } from './pages/track-waiting-list.js';
+import { displayWebinarTrtPage, initializeWebinarTrtPage } from './pages/webinar-trt.js';
+import { displayWebinarThankYouPage, initializeWebinarThankYouPage } from './pages/webinar-thank-you.js';
 
 // Router class to handle SPA navigation
 export default class Router {
@@ -204,6 +206,16 @@ export default class Router {
         const content = getTrackWaitingListPageContent();
         await this.render(content);
         initializeTrackWaitingListPage();
+      } else if (hash === '/webinar-trt') {
+        console.log('Handling webinar TRT route');
+        const content = await displayWebinarTrtPage();
+        await this.render(content);
+        initializeWebinarTrtPage();
+      } else if (hash === '/webinar-thank-you') {
+        console.log('Handling webinar thank you route');
+        const content = await displayWebinarThankYouPage();
+        await this.render(content);
+        initializeWebinarThankYouPage();
       } else if (hash.startsWith('/coming-soon/')) {
         console.log('Handling coming soon route');
         const categoryName = decodeURIComponent(hash.split('/')[2]);
