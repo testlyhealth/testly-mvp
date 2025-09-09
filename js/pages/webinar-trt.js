@@ -4,8 +4,8 @@ export async function displayWebinarTrtPage() {
       <div class="webinar-container">
         <!-- Hero Section -->
         <div class="webinar-hero">
-          <h1 class="webinar-headline">Thinking about TRT? Get the facts in our free webinar.</h1>
-          <p class="webinar-subheadline">What testosterone therapy is, how it works, and what to check before considering it.</p>
+          <h1 class="webinar-headline">Thinking about TRT?</h1>
+          <p class="webinar-subheadline">Get the facts in our free webinar hosted by TRT specialists<br><strong>Dr Charles Hand</strong> and <strong>Dr Adam Hill</strong>.</p>
         </div>
 
         <!-- Benefits Section -->
@@ -14,15 +14,23 @@ export async function displayWebinarTrtPage() {
           <ul class="benefits-list">
             <li>
               <i class="fas fa-check-circle"></i>
-              <span>What TRT is (and isn't) - separating fact from fiction</span>
+              <span>What is testosterone deficiency and how do I know if I have it?</span>
             </li>
             <li>
               <i class="fas fa-check-circle"></i>
-              <span>Risks & benefits explained simply - making informed decisions</span>
+              <span>What are the benefits of TRT?</span>
             </li>
             <li>
               <i class="fas fa-check-circle"></i>
-              <span>What blood tests reveal before any treatment - the essential checks</span>
+              <span>What are the risks of testosterone replacement?</span>
+            </li>
+            <li>
+              <i class="fas fa-check-circle"></i>
+              <span>How do I interpret my blood tests?</span>
+            </li>
+            <li>
+              <i class="fas fa-check-circle"></i>
+              <span>Q&A</span>
             </li>
           </ul>
         </div>
