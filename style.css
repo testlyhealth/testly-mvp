@@ -7015,6 +7015,7 @@ body {
     position: relative;
     z-index: 1;
     overflow: visible;
+    height: 500px;
   }
 
   .hero-bg-color-banner {
@@ -7023,7 +7024,7 @@ body {
     left: 0;
     right: 0;
     width: 100vw;
-    height: 650px;
+    height: 500px;
     background: #CFDDD2;
     z-index: 0;
   }
@@ -7034,7 +7035,7 @@ body {
     left: 0;
     right: 0;
     width: 100vw;
-    height: 650px;
+    height: 500px;
     background: url('images/blood-vials.jpg') no-repeat;
     background-size: 2200px auto;
     background-position: 35% 45%;
@@ -7057,7 +7058,7 @@ body {
   .hero-side-box {
     position: absolute;
     top: 30px;
-    left: 6rem;
+    left: 30px;
     transform: translateY(0);
     background: white;
     border-radius: 8px;
@@ -7490,7 +7491,7 @@ body {
     border: none;
     border-radius: 8px;
     padding: 0.75rem 1rem;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -7774,7 +7775,6 @@ body {
     font-size: 0.9rem;
     color: #4a5568;
     margin: 0;
-    margin-top: 2rem;
   }
 
   /* Mobile responsive CTA note */

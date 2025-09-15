@@ -226,11 +226,9 @@ export function getHomePageContent() {
             </div>
           </h1>
           <p class="hero-subtitle">
-            Health comparison made simple
+            Health comparison made simple<br>
+            <span class="cta-note">Free comparison • No booking fees • Trusted providers</span>
           </p>
-          <div class="hero-cta">
-            <p class="cta-note">Free comparison • No booking fees • Trusted providers</p>
-          </div>
         </div>
       </div>
       
@@ -293,9 +291,6 @@ export function getHomePageContent() {
               
               <button class="search-button">
                 Search tests
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
               </button>
               <div class="form-links-container">
                 <div class="reset-filters-link">
@@ -359,9 +354,6 @@ export function getHomePageContent() {
 
               <button class="search-button">
                 Search tests
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
               </button>
               <div class="form-links-container">
                 <div class="reset-filters-link">
