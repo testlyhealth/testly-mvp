@@ -356,6 +356,61 @@ export function getHomePageContent() {
       </div>
     </section>
 
+        <!-- Trust Indicators Section -->
+    <section class="trust-section">
+      <div class="container">
+        <div class="trust-content">
+          <div class="trust-text">
+            <h2>Why choose Testly?</h2>
+            <div class="trust-features">
+              <div class="trust-feature">
+                <div class="feature-icon">✓</div>
+                <div class="feature-text">
+                  <h4>Compare prices instantly</h4>
+                  <p>See all providers and prices in one place</p>
+                </div>
+              </div>
+              <div class="trust-feature">
+                <div class="feature-icon">✓</div>
+                <div class="feature-text">
+                  <h4>No booking fees</h4>
+                  <p>Book directly with providers at their listed prices</p>
+                </div>
+              </div>
+              <div class="trust-feature">
+                <div class="feature-icon">✓</div>
+                <div class="feature-text">
+                  <h4>Trusted providers</h4>
+                  <p>All providers are verified and regulated</p>
+                </div>
+              </div>
+              <div class="trust-feature">
+                <div class="feature-icon">✓</div>
+                <div class="feature-text">
+                  <h4>Doctor-led</h4>
+                  <p>Services and content written and chosen by doctors</p>
+                </div>
+              </div>
+              <div class="trust-feature">
+                <div class="feature-icon">✓</div>
+                <div class="feature-text">
+                  <h4>Expert guidance</h4>
+                  <p>Professional advice to help you choose the right tests</p>
+                </div>
+              </div>
+              <div class="trust-feature">
+                <div class="feature-icon">✓</div>
+                <div class="feature-text">
+                  <h4>Easy booking</h4>
+                  <p>Simple and straightforward booking process</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- How It Works Section -->
     <section class="how-it-works-section">
       <div class="container">
@@ -409,61 +464,6 @@ export function getHomePageContent() {
               <p><strong>Anonymously</strong> upload your results from <strong>any provider</strong> and track them all in one place - upload past results too!</p>
               <div class="step-button">
                 <button class="step-cta-button">Track results</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-        <!-- Trust Indicators Section -->
-    <section class="trust-section">
-      <div class="container">
-        <div class="trust-content">
-          <div class="trust-text">
-            <h2>Why choose Testly?</h2>
-            <div class="trust-features">
-              <div class="trust-feature">
-                <div class="feature-icon">✓</div>
-                <div class="feature-text">
-                  <h4>Compare prices instantly</h4>
-                  <p>See all providers and prices in one place</p>
-                </div>
-              </div>
-              <div class="trust-feature">
-                <div class="feature-icon">✓</div>
-                <div class="feature-text">
-                  <h4>No booking fees</h4>
-                  <p>Book directly with providers at their listed prices</p>
-                </div>
-              </div>
-              <div class="trust-feature">
-                <div class="feature-icon">✓</div>
-                <div class="feature-text">
-                  <h4>Trusted providers</h4>
-                  <p>All providers are verified and regulated</p>
-                </div>
-              </div>
-              <div class="trust-feature">
-                <div class="feature-icon">✓</div>
-                <div class="feature-text">
-                  <h4>Doctor-led</h4>
-                  <p>Services and content written and chosen by doctors</p>
-                </div>
-              </div>
-              <div class="trust-feature">
-                <div class="feature-icon">✓</div>
-                <div class="feature-text">
-                  <h4>Expert guidance</h4>
-                  <p>Professional advice to help you choose the right tests</p>
-                </div>
-              </div>
-              <div class="trust-feature">
-                <div class="feature-icon">✓</div>
-                <div class="feature-text">
-                  <h4>Easy booking</h4>
-                  <p>Simple and straightforward booking process</p>
-                </div>
               </div>
             </div>
           </div>
