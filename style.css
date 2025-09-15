@@ -7063,7 +7063,9 @@ body {
     border-radius: 8px;
     padding: 2rem;
     width: 400px;
-    height: 600px;
+    min-height: 500px;
+    max-height: 700px;
+    height: auto;
     box-shadow: 
       0 5px 15px rgba(0, 0, 0, 0.08),
       0 10px 30px rgba(0, 0, 0, 0.12),
@@ -7104,7 +7106,7 @@ body {
 
   .tab-toggle {
     display: flex;
-    background: #F2F4F4;
+    background: white;
     border-radius: 8px;
     padding: 0.25rem;
     position: relative;
@@ -7137,7 +7139,7 @@ body {
   }
 
   .tab-button.active {
-    background: #F2F4F4;
+    background: white;
     color: #1e40af;
     border: 2px solid #1e40af;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -7158,6 +7160,7 @@ body {
     position: relative;
     height: 100%;
   }
+
 
   .form-content {
     position: absolute;
@@ -7296,7 +7299,7 @@ body {
   .dropdown-select-1,
   .dropdown-select-2,
   .dropdown-select-4 {
-    background-color: #F2F4F4 !important;
+    background-color: white !important;
   }
 
   .blood-tests-form .testosterone-options-select:hover {
@@ -7583,7 +7586,7 @@ body {
 
 
   .hero-title {
-    font-size: 5.2rem;
+    font-size: 4.2rem;
     font-weight: 900;
     line-height: 1.1;
     margin-bottom: 1rem;

@@ -1158,6 +1158,12 @@ function setupNavigationHandlers() {
                 problemForm.style.visibility = 'hidden';
                 problemForm.style.position = 'absolute';
                 
+                // Adjust form height for Help me choose (smaller)
+                const heroSideBox = document.querySelector('.hero-side-box');
+                if (heroSideBox) {
+                  heroSideBox.style.height = '500px';
+                }
+                
                 // Reset the blood tests form
                 resetForm(bloodTestsForm);
                 
@@ -1170,6 +1176,12 @@ function setupNavigationHandlers() {
                 problemForm.style.opacity = '1';
                 problemForm.style.visibility = 'visible';
                 problemForm.style.position = 'relative';
+                
+                // Adjust form height for Let me pick (larger)
+                const heroSideBox = document.querySelector('.hero-side-box');
+                if (heroSideBox) {
+                  heroSideBox.style.height = '550px';
+                }
                 
                 // Reset the problem form
                 resetForm(problemForm);
@@ -1184,6 +1196,12 @@ function setupNavigationHandlers() {
 
             });
           });
+          
+          // Set initial form height (Help me choose is active by default)
+          const heroSideBox = document.querySelector('.hero-side-box');
+          if (heroSideBox) {
+            heroSideBox.style.height = '500px';
+          }
         }
         
         // Function to reset form fields
