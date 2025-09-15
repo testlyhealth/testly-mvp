@@ -210,32 +210,33 @@ export function getHomePageContent() {
       <div class="hero-bg-color-banner"></div>
       <div class="hero-bg-banner"></div>
       <div class="hero-content">
-        <h1 class="hero-title">
-          <div class="hero-title-line">
-            <span class="checkmark">✓</span>
-            <span class="title-word blue">Compare</span>
+        <div class="hero-text-block">
+          <h1 class="hero-title">
+            <div class="hero-title-line">
+              <span class="checkmark">✓</span>
+              <span class="title-word">Compare</span>
+            </div>
+            <div class="hero-title-line">
+              <span class="checkmark">✓</span>
+              <span class="title-word">Book</span>
+            </div>
+            <div class="hero-title-line">
+              <span class="checkmark">✓</span>
+              <span class="title-word">Track</span>
+            </div>
+          </h1>
+          <p class="hero-subtitle">
+            Health comparison made simple
+          </p>
+          <div class="hero-cta">
+            <p class="cta-note">Free comparison • No booking fees • Trusted providers</p>
           </div>
-          <div class="hero-title-line">
-            <span class="checkmark">✓</span>
-            <span class="title-word">Book</span>
-          </div>
-          <div class="hero-title-line">
-            <span class="checkmark">✓</span>
-            <span class="title-word">Track</span>
-          </div>
-        </h1>
-        <p class="hero-subtitle">
-          <span style="color: #1E88E5;">Health comparison</span> made simple
-        </p>
-
-        <div class="hero-cta">
-          <p class="cta-note">Free comparison • No booking fees • Trusted providers</p>
         </div>
       </div>
       
       <div class="hero-side-box">
         <div class="side-box-content">
-          <h3>Find <span style="color: #1E88E5; text-decoration: underline;">testosterone</span> solutions</h3>
+          <h3>Find <span style="color: #2d3748;">testosterone</span> solutions</h3>
                       <div class="search-tabs">
               <div class="tab-toggle">
                 <button class="tab-button active" data-tab="blood-tests">Help me choose</button>
@@ -249,7 +250,7 @@ export function getHomePageContent() {
               <!-- Testosterone options dropdown -->
               <div class="form-group" style="margin: 5px 0 20px 0;">
                 <select class="testosterone-options-select">
-                  <option value="">Choose your testosterone options</option>
+                  <option value="">Testosterone option</option>
                   <option value="browse-all">All</option>
                   <option value="testosterone-only">Testosterone only</option>
                   <option value="testosterone-full-hormone-only">Male hormone check only (includes testosterone)</option>

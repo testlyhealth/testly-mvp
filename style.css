@@ -5114,13 +5114,14 @@ body {
   }
 
   .biomarker-search-input {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
-    background-color: white;
-    color: #374151;
+    width: 100% !important;
+    padding: 0.75rem !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 8px !important;
+    font-size: 0.9rem !important;
+    background-color: #F2F4F4 !important;
+    color: #374151 !important;
+    box-sizing: border-box !important;
   }
 
   .biomarker-search-input:focus {
@@ -7056,10 +7057,10 @@ body {
   .hero-side-box {
     position: absolute;
     top: 30px;
-    right: 6rem;
+    left: 6rem;
     transform: translateY(0);
     background: white;
-    border-radius: 30px;
+    border-radius: 8px;
     padding: 2rem;
     width: 400px;
     height: 600px;
@@ -7103,18 +7104,19 @@ body {
 
   .tab-toggle {
     display: flex;
-    background: #f3f4f6;
+    background: #F2F4F4;
     border-radius: 8px;
     padding: 0.25rem;
     position: relative;
     width: 100%;
-    border: 1px solid #e2e8f0;
+    border: 2px solid #e2e8f0;
     transition: all 0.2s ease;
+    box-sizing: border-box;
   }
 
   .tab-toggle:hover {
-    border: 2px solid #1E88E5;
-    box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.2);
+    border: 2px solid #1e40af;
+    box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.2);
   }
 
   .tab-button {
@@ -7131,12 +7133,16 @@ body {
     position: relative;
     z-index: 1;
     min-width: 120px;
+    box-sizing: border-box;
   }
 
   .tab-button.active {
-    background: #1E88E5;
-    color: white;
+    background: #F2F4F4;
+    color: #1e40af;
+    border: 2px solid #1e40af;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+    white-space: nowrap;
   }
 
   .tab-button:hover:not(.active) {
@@ -7150,6 +7156,7 @@ body {
     flex: 1;
     min-height: 0;
     position: relative;
+    height: 100%;
   }
 
   .form-content {
@@ -7214,6 +7221,7 @@ body {
     background: white !important;
   }
 
+
   .form-group select:focus {
     outline: none;
     border-color: #2563eb;
@@ -7244,7 +7252,7 @@ body {
     border: 1px solid #d1d5db;
     border-radius: 8px;
     font-size: 0.9rem;
-    background-color: white;
+    background-color: #F2F4F4;
     color: #000000 !important;
     -webkit-text-fill-color: #000000 !important;
     transition: border-color 0.2s ease;
@@ -7282,6 +7290,13 @@ body {
     border-color: #1E88E5;
     box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.3);
     outline: none;
+  }
+
+  .testosterone-options-select,
+  .dropdown-select-1,
+  .dropdown-select-2,
+  .dropdown-select-4 {
+    background-color: #F2F4F4 !important;
   }
 
   .blood-tests-form .testosterone-options-select:hover {
@@ -7346,17 +7361,24 @@ body {
     flex: 1 !important;
     min-width: 0 !important;
     text-align: center;
+    padding: 0.75rem !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 8px !important;
+    font-size: 0.9rem !important;
+    background-color: #F2F4F4 !important;
+    box-sizing: border-box !important;
   }
 
   .biomarker-search-input {
-    padding: 0.75rem 1rem;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 0.9rem;
+    padding: 0.75rem !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 8px !important;
+    font-size: 0.9rem !important;
     transition: border-color 0.2s ease;
-    width: 100%;
-    box-sizing: border-box;
+    width: 100% !important;
+    box-sizing: border-box !important;
     text-align: center;
+    background-color: #F2F4F4 !important;
   }
 
   .biomarker-search-input:focus {
@@ -7460,10 +7482,10 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: #1E88E5;
+    background: #10b981;
     color: white;
     border: none;
-    border-radius: 25px;
+    border-radius: 8px;
     padding: 0.75rem 1rem;
     font-size: 0.9rem;
     font-weight: 600;
@@ -7474,7 +7496,7 @@ body {
   }
 
   .search-button:hover {
-    background: #1565C0;
+    background: #059669;
     transform: translateY(-1px);
   }
 
@@ -7544,12 +7566,21 @@ body {
     overflow-wrap: break-word;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: flex-end;
     max-width: 100%;
     padding: 4rem 3rem;
     max-width: 1200px;
     margin: 0 auto;
+    text-align: right;
   }
+
+  .hero-text-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+
 
   .hero-title {
     font-size: 5.2rem;
@@ -7557,7 +7588,7 @@ body {
     line-height: 1.1;
     margin-bottom: 1rem;
     color: #2d3748;
-    text-align: left;
+    text-align: right;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     max-width: 600px;
   }
@@ -7600,7 +7631,7 @@ body {
   }
 
   .hero-title .title-word.blue {
-    color: #1E88E5;
+    color: #2d3748;
   }
 
       .hero-explainer-section {
@@ -7648,7 +7679,7 @@ body {
   .hero-subtitle {
     margin-bottom: 5.5rem;
     max-width: 600px;
-    color: #2C3E50;
+    color: #2d3748;
     font-size: 2rem;
     line-height: 1.8;
     font-weight: 600;
@@ -8434,11 +8465,12 @@ body {
     .hero-side-box {
       position: relative;
       top: auto;
-      right: auto;
+      left: auto;
       transform: none;
       width: 100%;
       max-width: 400px;
       margin: 2rem auto 0;
+      border-radius: 8px;
     }
 
     .hero-explainer-section {
@@ -8761,12 +8793,24 @@ body {
       display: none;
     }
 
+    .hero-content {
+      align-items: center;
+      text-align: center;
+    }
+
+    .hero-text-block {
+      align-items: center;
+      text-align: center;
+    }
+
+
     .hero-title {
       font-size: 1.8rem;
       line-height: 1.2;
       word-wrap: break-word;
       overflow-wrap: break-word;
       hyphens: auto;
+      text-align: center;
     }
 
     .hero-highlight {
