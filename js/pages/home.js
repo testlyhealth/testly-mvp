@@ -212,9 +212,9 @@ export function getHomePageContent() {
       <div class="hero-content">
         <div class="hero-text-block">
           <p class="hero-subtitle">
-            <span class="hero-title-small">Compare. Book. Track.</span><br>
-            Health comparison made simple<br>
-            <span class="cta-note">Free comparison • No booking fees • Trusted providers</span>
+            Compare. Book. Track.<br>
+            <span class="health-comparison-text">Health comparison made simple<br>
+            <span class="cta-note">Free comparison • No booking fees • Trusted providers</span></span>
           </p>
         </div>
       </div>
