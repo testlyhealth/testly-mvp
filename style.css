@@ -7036,23 +7036,12 @@ body {
     right: 0;
     width: 100vw;
     height: 500px;
-    background: url('images/blood-vials.jpg') no-repeat;
-    background-size: 2200px auto;
-    background-position: 35% 45%;
+    background: url('images/laptopman.jpg') no-repeat;
+    background-size: 1500px auto;
+    background-position: 30% 30%;
     z-index: 1;
     pointer-events: none;
     box-shadow: 0 8px 32px rgba(30,136,229,0.10);
-    filter: blur(3px);
-  }
-  .hero-bg-banner::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255,255,255,0.45);
-    pointer-events: none;
   }
 
   .hero-side-box {
@@ -7571,11 +7560,13 @@ body {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    justify-content: flex-end;
     max-width: 100%;
     padding: 4rem 3rem;
     max-width: 1200px;
     margin: 0 auto;
     text-align: right;
+    height: 500px;
   }
 
   .hero-text-block {
@@ -7683,11 +7674,17 @@ body {
   .hero-subtitle {
     margin-bottom: 5.5rem;
     max-width: 600px;
-    color: #2d3748;
+    color: white;
     font-size: 2rem;
     line-height: 1.8;
     font-weight: 600;
     text-align: left;
+  }
+
+  .hero-title-small {
+    font-size: 2.5rem;
+    color: white;
+    font-weight: 900;
   }
 
   /* Mobile responsive hero subtitle */
@@ -7773,7 +7770,7 @@ body {
 
   .cta-note {
     font-size: 0.9rem;
-    color: #4a5568;
+    color: white;
     margin: 0;
   }
 

@@ -211,21 +211,8 @@ export function getHomePageContent() {
       <div class="hero-bg-banner"></div>
       <div class="hero-content">
         <div class="hero-text-block">
-          <h1 class="hero-title">
-            <div class="hero-title-line">
-              <span class="checkmark">✓</span>
-              <span class="title-word">Compare</span>
-            </div>
-            <div class="hero-title-line">
-              <span class="checkmark">✓</span>
-              <span class="title-word">Book</span>
-            </div>
-            <div class="hero-title-line">
-              <span class="checkmark">✓</span>
-              <span class="title-word">Track</span>
-            </div>
-          </h1>
           <p class="hero-subtitle">
+            <span class="hero-title-small">Compare. Book. Track.</span><br>
             Health comparison made simple<br>
             <span class="cta-note">Free comparison • No booking fees • Trusted providers</span>
           </p>
