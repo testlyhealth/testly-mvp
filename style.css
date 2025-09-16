@@ -1447,14 +1447,6 @@ body {
     grid-column: span 2;
   }
 
-  .box-content {
-    padding: 1.5rem;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: relative;
-  }
 
   .box-text {
     flex: 1;
@@ -8145,7 +8137,7 @@ body {
 
   /* Trust Section */
   .trust-section {
-    padding: 4rem 0;
+    padding: 4rem 0 1rem 0;
     background-color: white;
   }
 
@@ -10745,59 +10737,89 @@ body {
   }
 }
 
-/* How It Works Section Styles */
-.how-it-works-section {
-  padding: 2rem 0 6rem 0;
+
+
+
+
+
+
+
+
+
+
+
+/* Book and Track Section */
+.book-track-section {
+  padding: 1rem 0 6rem 0;
   background: white;
-  margin-top: -1rem;
 }
 
-.how-it-works-content {
-  max-width: 100%;
-  margin: 0;
-  text-align: center;
-  padding: 0;
-}
-
-.how-it-works-title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #2d3748;
-  margin-bottom: 4rem;
-  line-height: 1.2;
-  padding: 0 2rem;
-}
-
-.how-it-works-steps {
+.boxes {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-top: 3rem;
-  padding: 0 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  margin-top: 0;
 }
 
-.step {
-  text-align: left;
-  padding: 2rem 2rem;
-  background: #f8f9fa;
+.box {
+  padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  border: 1px solid #f1f5f9;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  color: white;
+  position: relative;
+  overflow: hidden;
 }
 
-
-.step:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  border-color: #1E88E5;
+.book-box {
+  background: #0D508D;
 }
 
-.step.active {
-  border-color: #1E88E5;
+.track-box {
+  background: #10B981;
+}
+
+.box h3 {
+  font-size: 1.5rem;
+  margin: 0 0 1rem 0;
+  color: white;
+}
+
+.box p {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin: 0 0 1.5rem 0;
+  color: white;
+}
+
+.box button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  height: auto;
+  min-height: 2.5rem;
+  display: inline-block;
+}
+
+.book-box button {
+  background: #E5E7EB;
+  color: black;
+}
+
+.track-box button {
+  background: #E5E7EB;
+  color: black;
+}
+
+.curved-line {
+  position: absolute;
+  top: -70px;
+  right: -70px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 1;
 }
 
 .step-header {
@@ -10831,7 +10853,7 @@ body {
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
-  border-radius: 25px;
+  border-radius: 8px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -10852,7 +10874,7 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   z-index: 2;
@@ -10964,17 +10986,7 @@ body {
 }
 
 @media (max-width: 768px) {
-  .how-it-works-section {
-    padding: 4rem 0 3rem 0;
-    margin-top: 2rem;
-  }
-  
-  .how-it-works-title {
-    font-size: 2.5rem;
-    margin-bottom: 3rem;
-  }
-  
-  .how-it-works-steps {
+  .book-track-steps {
     grid-template-columns: 1fr;
     gap: 2rem;
     margin-top: 2rem;
