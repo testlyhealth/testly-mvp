@@ -10762,11 +10762,37 @@ body {
 }
 
 .box {
-  padding: 2rem;
+  padding: 1.5rem;
   border-radius: 8px;
   color: white;
   position: relative;
   overflow: hidden;
+}
+
+.box-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 100%;
+}
+
+.box-icon {
+  font-size: 3rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.box-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.box-text h3 {
+  margin: 0 0 0.25rem 0;
 }
 
 .book-box {
@@ -10799,6 +10825,8 @@ body {
   height: auto;
   min-height: 2.5rem;
   display: inline-block;
+  width: auto;
+  align-self: flex-start;
 }
 
 .book-box button {

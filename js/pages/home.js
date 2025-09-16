@@ -417,15 +417,25 @@ export function getHomePageContent() {
         <div class="boxes">
           <div class="box book-box">
             <div class="curved-line"></div>
-            <h3>Book</h3>
-            <p>Book your test or treatment directly with the provider of your choice</p>
-            <button onclick="scrollToForm()">Find tests</button>
+            <div class="box-content">
+              <div class="box-icon">📅</div>
+              <div class="box-text">
+                <h3>Book</h3>
+                <p>Book your test or treatment directly with the provider of your choice</p>
+                <button onclick="scrollToForm()">Find tests</button>
+              </div>
+            </div>
           </div>
           <div class="box track-box">
             <div class="curved-line"></div>
-            <h3>Track</h3>
-            <p><strong>Anonymously</strong> upload your results from <strong>any provider</strong> and track them all in one place - you can also upload past results.</p>
-            <button>Track results</button>
+            <div class="box-content">
+              <div class="box-icon">📊</div>
+              <div class="box-text">
+                <h3>Track</h3>
+                <p><strong>Anonymously</strong> upload your results from <strong>any provider</strong> and track them all in one place - you can also upload past results.</p>
+                <button>Track results</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
