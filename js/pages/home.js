@@ -441,38 +441,18 @@ export function getHomePageContent() {
       </div>
     </section>
 
-    <!-- Multi-Provider Results Section -->
-    <section class="multi-provider-section">
+    <!-- Ready to Take Control Section -->
+    <section class="ready-section">
       <div class="container">
-        <div class="multi-provider-content">
-          <h2>Have test results from <span style="color: #1E88E5;">multiple providers</span>?</h2>
-          <p>Track your results <strong>in one single place</strong> and gain insights into your health.</p>
-          <div class="multi-provider-image">
-            <img src="images/graph_my_results.png" alt="Blood test results table showing hormone data across multiple dates" />
-          </div>
-          <div class="multi-provider-cta">
-            <button class="multi-provider-button">Track my results</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- New Banner Section -->
-    <section class="new-banner-section">
-      <div class="container">
-        <div class="new-banner-content">
-          <div class="banner-text">
-            <h2>Ready to take control of your health?</h2>
-            <p>Make informed health decisions with Testly</p>
-          </div>
-          <div class="banner-actions">
-            <button class="banner-cta-button" onclick="scrollToForm()">
-              Get started today
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-          </div>
+        <div class="ready-content">
+          <h2>Ready to take control of your health?</h2>
+          <p>Make informed health decisions with Testly</p>
+          <button class="ready-button" onclick="scrollToForm()">
+            Get started today
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
         </div>
       </div>
     </section>
@@ -481,11 +461,10 @@ export function getHomePageContent() {
     <section class="featured-section">
       <div class="container">
         <h2 class="section-title">Popular blood tests</h2>
-        <p class="section-subtitle">Our top blood tests starting from <strong>£33</strong></p>
-        <div class="featured-grid" id="featured-blood-tests-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; padding: 2rem;">
+        <div class="featured-grid" id="featured-blood-tests-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
           <style>
             #featured-blood-tests-grid .blood-test-card {
-              border-radius: 25px;
+              border-radius: 8px;
               overflow: hidden;
             }
           </style>
@@ -493,7 +472,20 @@ export function getHomePageContent() {
         </div>
 
       </div>
-        </section>
+    </section>
+
+    <!-- Multi-Provider Results Section -->
+    <section class="multi-provider-section">
+      <div class="container">
+        <div class="multi-provider-content">
+          <h2>Have test results from <span style="color: white;">multiple providers</span>?</h2>
+          <p>Track your results <strong>in one single place</strong> and gain insights into your health.</p>
+          <div class="multi-provider-cta">
+            <button class="multi-provider-button">Track my results</button>
+          </div>
+        </div>
+      </div>
+    </section>
   `;
 }
 
@@ -668,7 +660,9 @@ async function loadFeaturedBloodTest() {
           logo: result.data.logo_url || '',
           description: result.data.description || '',
           blood_taking_method: bloodTakingMethods.join(', ') || 'Finger prick',
+          blood_taking_methods: bloodTakingMethods,
           results_returned: result.data.results_returned || '2 days',
+          results_returned_time_days: result.data.results_returned_time_days || parseInt(result.data.results_returned) || 2,
           doctors_report: result.data.doctors_report ? 'Yes' : 'No',
           trustpilot_score: result.data.trustpilot_score || 4.5,
           biomarker_count: biomarkers.length || result.data.biomarker_column || 0,
@@ -684,7 +678,7 @@ async function loadFeaturedBloodTest() {
     if (tests.length > 0) {
       const bloodTestCards = await Promise.all(
         tests.map(async (test, index) => {
-          return await cardService.createCard(test, { rank: index + 1 });
+          return await cardService.createCard(test, { rank: index + 1, showDescription: false });
         })
       );
 

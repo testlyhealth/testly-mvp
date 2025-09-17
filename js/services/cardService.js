@@ -26,7 +26,8 @@ export class CardService {
     const {
       showRank = false,
       showBiomarkers = true,
-      showDetails = true
+      showDetails = true,
+      showDescription = true
     } = options;
 
 
@@ -107,8 +108,8 @@ export class CardService {
           </div>
           <h3 class="test-name">${test.name}</h3>
         </div>
-        <div class="provider-mini-title">${providerName}:</div>
-        <div class="trustpilot-score">
+        <div class="provider-mini-title">
+          ${providerName}: 
           ${(() => {
             const score = Number(test.trustpilot_score);
             if (isNaN(score)) return '<span>Not available</span>';
@@ -128,7 +129,7 @@ export class CardService {
             <a class="book-test-btn" href="${test.url || '#'}" target="_blank" rel="noopener noreferrer" data-test-id="${test.name}" style="background-color: white; color: #1E88E5; border: 2px solid #1E88E5; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; display: inline-block; font-weight: 600; text-align: center; transition: background-color 0.2s; align-self: center; line-height: 1;">Book test</a>
           ` : ''}
         </div>
-        <p class="description-limited">"${test.description}"</p>
+        ${showDescription ? `<p class="description-limited">"${test.description}"</p>` : ''}
         <div class="test-locations">
           <div style="margin-bottom: 0.7em;"><span class="blood-method-label" style="color: #333;">• Sample type: ${(() => {
             const allMethods = ['Finger prick', 'Venous at clinic', 'Phlebotomist to home', 'Self arrange'];
