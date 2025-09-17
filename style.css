@@ -732,11 +732,11 @@ body {
     width: 100%;
     background: #fff;
     border-radius: 25px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: none;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     overflow: hidden;
     margin-bottom: 0.5rem;
-    border: 2px solid transparent;
+    border: 1px solid #d1d5db;
     cursor: pointer;
     position: relative;
     padding-bottom: 0.25rem;
@@ -749,7 +749,7 @@ body {
   
   .blood-test-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    box-shadow: none;
     border: 2px solid #1E88E5;
   }
   
@@ -859,7 +859,7 @@ body {
   .provider-mini-title {
     font-size: 0.85rem;
     font-weight: 500;
-    color: #64748b;
+    color: #6b7280;
     margin: 0.25rem 0 0.5rem 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -2883,17 +2883,18 @@ body {
     width: 100%;
     background: #fff;
     border-radius: 25px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: none;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     overflow: hidden;
     margin-bottom: 0.5rem;
     position: relative;
     padding-bottom: 0.25rem;
+    border: 1px solid #d1d5db;
   }
 
   .blood-test-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    box-shadow: none;
   }
 
   .add-to-basket, .toggle-biomarkers, .toggle-details {
@@ -3680,10 +3681,13 @@ body {
 
   /* Compact card styles for three-column layout */
   .products-grid .blood-test-card {
-    padding: 1rem 1rem 0.5rem 1rem;
+    padding: 1rem;
     border-radius: 8px;
     position: relative;
     overflow: visible;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 
   /* Mobile responsive blood test cards */
@@ -3705,12 +3709,18 @@ body {
 
   .products-grid .provider-name {
     font-size: 1.1rem;
+    color: #6b7280 !important;
+  }
+
+  .products-grid .test-header {
+    margin-bottom: 0.25rem !important;
   }
 
   .products-grid .test-name {
-    font-size: 1.2rem;
-    color: #1E88E5 !important;
+    font-size: 1.1rem;
+    color: #6b7280 !important;
     font-weight: bold;
+    margin-bottom: 0.25rem !important;
   }
 
   .products-grid .test-price {
@@ -3750,19 +3760,9 @@ body {
     font-size: 0.75rem;
   }
 
-  /* Fixed height description with scroll - MUST override conflicting rules */
+  /* Hide descriptions on blood test cards */
   .blood-test-card .description-limited {
-    height: 5.6em !important; /* Exactly 4 lines * 1.4 line-height */
-    overflow: hidden !important; /* Hide overflow to show ellipsis */
-    line-height: 1.4 !important;
-    margin-bottom: 1rem !important;
-    color: var(--text) !important;
-    padding-right: 8px !important;
-    scrollbar-width: thin !important;
-    scrollbar-color: #ccc transparent !important;
-    max-height: 5.6em !important;
-    display: block !important;
-    position: relative !important;
+    display: none !important;
   }
 
   /* Add ellipsis overlay when content overflows */
@@ -8323,7 +8323,7 @@ body {
   #featured-blood-tests-grid .blood-test-card {
     border-radius: 8px !important;
     box-shadow: none !important;
-    border: 1px solid #e5e7eb !important;
+    border: 1px solid #d1d5db !important;
   }
 
   .featured-card {

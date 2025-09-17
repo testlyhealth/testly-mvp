@@ -103,85 +103,80 @@ export class CardService {
         ${showRank ? `<div class="test-rank">${options.rank}</div>` : ''}
         ${test.best_options ? `<div class="best-option-badge">${test.best_options}</div>` : ''}
         <div class="test-header">
-          <div class="provider-info">
-            <img src="images/logos/${providerLogo}" alt="${providerName} logo" class="provider-logo">
-          </div>
           <h3 class="test-name">${test.name}</h3>
         </div>
-        <div class="provider-mini-title">
-          ${providerName}: 
-          ${(() => {
-            const score = Number(test.trustpilot_score);
-            if (isNaN(score)) return '<span>Not available</span>';
-            const fullStars = Math.floor(score);
-            const halfStar = score - fullStars >= 0.5 ? 1 : 0;
-            const emptyStars = 5 - fullStars - halfStar;
-            let stars = '';
-            for (let i = 0; i < fullStars; i++) stars += '★';
-            if (halfStar) stars += '⯨';
-            for (let i = 0; i < emptyStars; i++) stars += '☆';
-            return `<span title="Trustpilot score: ${score.toFixed(2)}">${stars}</span>`;
-          })()}
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-          <div class="test-price" style="margin-bottom: 0;">£${test.price}</div>
-          ${showDetails ? `
-            <a class="book-test-btn" href="${test.url || '#'}" target="_blank" rel="noopener noreferrer" data-test-id="${test.name}" style="background-color: white; color: #1E88E5; border: 2px solid #1E88E5; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; display: inline-block; font-weight: 600; text-align: center; transition: background-color 0.2s; align-self: center; line-height: 1;">Book test</a>
-          ` : ''}
+        <div style="background-color: #f9fafb; padding: 1rem; border-radius: 0.5rem; margin-top: 0.25rem; margin-bottom: 0.5rem;">
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <img src="images/logos/${providerLogo}" alt="${providerName} logo" style="height: 40px; width: auto; object-fit: contain;">
+            <div style="flex-grow: 1;">
+              <div style="font-size: 0.85rem; font-weight: 500; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">
+                ${providerName}: 
+                ${(() => {
+                  const score = Number(test.trustpilot_score);
+                  if (isNaN(score)) return '<span>Not available</span>';
+                  const fullStars = Math.floor(score);
+                  const halfStar = score - fullStars >= 0.5 ? 1 : 0;
+                  const emptyStars = 5 - fullStars - halfStar;
+                  let stars = '';
+                  for (let i = 0; i < fullStars; i++) stars += '★';
+                  if (halfStar) stars += '⯨';
+                  for (let i = 0; i < emptyStars; i++) stars += '☆';
+                  return `<span title="Trustpilot score: ${score.toFixed(2)}">${stars}</span>`;
+                })()}
+              </div>
+            </div>
+          </div>
+          <div style="font-size: 0.8rem; font-weight: 600; color: #2d3748; margin-top: 1rem;">
+            ${biomarkerCount} biomarkers tested
+          </div>
+          <div style="font-size: 0.8rem; color: #333; margin-top: 0.5rem;">
+            <div style="margin-bottom: 0.3rem;">• Sample type: ${(() => {
+              const allMethods = ['Finger prick', 'Venous at clinic', 'Phlebotomist to home', 'Self arrange'];
+              const availableMethods = Array.isArray(test.blood_taking_methods) ? test.blood_taking_methods : [];
+              
+              const emojiMap = {
+                'Finger prick': '👆',
+                'Venous at clinic': '🏥',
+                'Phlebotomist to home': '👩🏼‍⚕️',
+                'Self arrange': '🙋🏼'
+              };
+              
+              const bloodMethods = allMethods.map(method => {
+                const isAvailable = availableMethods.includes(method);
+                const icon = isAvailable ? (emojiMap[method] || '❓') : '✗';
+                return isAvailable ? `<span title="${method}" style="cursor: help;">${icon}</span>` : null;
+              }).filter(Boolean).join(' ');
+              
+              return bloodMethods || 'N/A';
+            })()}</div>
+            <div style="margin-bottom: 0.3rem;">• Results returned in ${(() => {
+              if (test.results_returned_time_days) {
+                return test.results_returned_time_days + ' days';
+              } else if (test.results_returned_time_min && test.results_returned_time_max) {
+                return test.results_returned_time_min + ' - ' + test.results_returned_time_max + ' days';
+              } else {
+                return 'N/A days';
+              }
+            })()}</div>
+            <div>• Doctors report ${test.doctors_report ? '✅' : '❌'}</div>
+          </div>
         </div>
         ${showDescription ? `<p class="description-limited">"${test.description}"</p>` : ''}
-        <div class="test-locations">
-          <div style="margin-bottom: 0.7em;"><span class="blood-method-label" style="color: #333;">• Sample type: ${(() => {
-            const allMethods = ['Finger prick', 'Venous at clinic', 'Phlebotomist to home', 'Self arrange'];
-            const availableMethods = Array.isArray(test.blood_taking_methods) ? test.blood_taking_methods : [];
-            
-            const emojiMap = {
-              'Finger prick': '👆',
-              'Venous at clinic': '🏥',
-              'Phlebotomist to home': '👩🏼‍⚕️',
-              'Self arrange': '🙋🏼'
-            };
-            
-            const bloodMethods = allMethods.map(method => {
-              const isAvailable = availableMethods.includes(method);
-              const icon = isAvailable ? (emojiMap[method] || '❓') : '✗';
-              return isAvailable ? `<span title="${method}" style="cursor: help;">${icon}</span>` : null;
-            }).filter(Boolean).join(' ');
-            
-            return bloodMethods || 'N/A';
-          })()}</span></div>
-          <div style="margin-bottom: 0.7em;"><span class="blood-method-label" style="color: #333;">• Results returned in ${(() => {
-            if (test.results_returned_time_days) {
-              return test.results_returned_time_days + ' days';
-            } else if (test.results_returned_time_min && test.results_returned_time_max) {
-              return test.results_returned_time_min + ' - ' + test.results_returned_time_max + ' days';
-            } else {
-              return 'N/A days';
-            }
-          })()}</span>
+        <div style="flex-grow: 1; display: flex; flex-direction: column;">
+          
+          <div style="margin-top: auto;">
+            ${showDetails ? `
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.2rem; margin-bottom: 0.5rem;">
+                <div class="test-price" style="margin-bottom: 0; color: #10b981; font-size: 1.5rem; font-weight: bold;">£${test.price}</div>
+                <div class="add-to-compare-container" style="margin: 0;">
+                  <input type="checkbox" class="add-to-compare-checkbox" id="add-to-compare-${options.rank || 'unknown'}" data-test-id="${test.id}" data-test-name="${encodeURIComponent(test.name)}" />
+                  <label for="add-to-compare-${options.rank || 'unknown'}" class="add-to-compare-label" style="margin-left: 0.5rem; font-size: 0.8rem; color: #222; cursor: pointer;">Add to compare</label>
+                </div>
+              </div>
+              <a class="book-test-btn" href="${test.url || '#'}" target="_blank" rel="noopener noreferrer" data-test-id="${test.name}" style="background-color: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; display: block; font-weight: 600; text-align: center; transition: background-color 0.2s; line-height: 1; width: 100%; box-sizing: border-box; margin-top: 0.5rem;">Book test</a>
+            ` : ''}
           </div>
-                              <div style="margin-bottom: 0.7em;"><span class="blood-method-label" style="color: #333;">• Doctors report</span> ${test.doctors_report ? '✅' : '❌'}</div>
         </div>
-        ${showBiomarkers ? `
-          <div style="background-color: #E8F4FD; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; margin-bottom: 0.5rem;">
-            <div style="text-align: left; color: #2d3748; font-size: 0.8rem; line-height: 1.4;">
-              <div style="font-weight: 600;">${biomarkerCount} biomarkers tested</div>
-              <div style="font-size: 0.75rem; color: #666; font-style: italic; margin-top: 0.2rem;">
-                (covering ${Object.keys(test.grouped_biomarkers || {}).join(', ')})
-              </div>
-            </div>
-          </div>
-
-          ${showDetails ? `
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.2rem; margin-bottom: 0.5rem; padding-right: 1rem;">
-              <div class="add-to-compare-container" style="margin: 0;">
-                <input type="checkbox" class="add-to-compare-checkbox" id="add-to-compare-${options.rank || 'unknown'}" data-test-id="${test.id}" data-test-name="${encodeURIComponent(test.name)}" />
-                <label for="add-to-compare-${options.rank || 'unknown'}" class="add-to-compare-label" style="margin-left: 0.5rem; font-size: 0.95rem; color: #222; cursor: pointer;">Add to compare</label>
-              </div>
-              <div style="color: #1E88E5; font-size: 0.9rem; font-weight: 500; cursor: pointer; white-space: nowrap;">Learn more>></div>
-            </div>
-          ` : ''}
-        ` : '<div style="margin-bottom: 0.5rem;"></div>'}
       </div>
     `;
   }
