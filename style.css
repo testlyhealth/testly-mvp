@@ -406,7 +406,7 @@ body {
     transition: transform 0.2s, box-shadow 0.2s;
   }
   
-  .product-card:hover, .blood-test-card:hover, .blog-card:hover, .category-tile:hover {
+  .product-card:hover, .blog-card:hover, .category-tile:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px var(--card-shadow);
   }
@@ -733,13 +733,14 @@ body {
     background: #fff;
     border-radius: 25px;
     box-shadow: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
     overflow: hidden;
     margin-bottom: 0.5rem;
     border: 1px solid #d1d5db;
     cursor: pointer;
     position: relative;
     padding-bottom: 0.25rem;
+    transition: none !important;
+    transform: none !important;
   }
 
   .blood-test-card.selected {
@@ -748,8 +749,6 @@ body {
   }
   
   .blood-test-card:hover {
-    transform: translateY(-2px);
-    box-shadow: none;
     border: 2px solid #1E88E5;
   }
   
@@ -794,7 +793,6 @@ body {
   
   .add-to-basket:hover, .toggle-biomarkers:hover, .toggle-details:hover {
     background: var(--accent-hover);
-    transform: translateY(-2px);
   }
   
   .category-header {
@@ -2481,7 +2479,6 @@ body {
 
   .blood-test-card .add-to-basket:hover,
   .blood-test-card .toggle-details:hover {
-    transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 
@@ -2884,17 +2881,27 @@ body {
     background: #fff;
     border-radius: 25px;
     box-shadow: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
     overflow: hidden;
     margin-bottom: 0.5rem;
     position: relative;
     padding-bottom: 0.25rem;
     border: 1px solid #d1d5db;
+    transition: none !important;
+    transform: none !important;
   }
 
   .blood-test-card:hover {
-    transform: translateY(-2px);
     box-shadow: none;
+  }
+  
+  /* Disable all animations and transforms on blood test cards and their children */
+  .blood-test-card,
+  .blood-test-card *,
+  .blood-test-card:hover,
+  .blood-test-card:hover * {
+    transition: none !important;
+    transform: none !important;
+    animation: none !important;
   }
 
   .add-to-basket, .toggle-biomarkers, .toggle-details {
@@ -2911,7 +2918,6 @@ body {
 
   .add-to-basket:hover, .toggle-biomarkers:hover, .toggle-details:hover {
     background: var(--accent-hover);
-    transform: translateY(-2px);
   }
 
   .category-header {
@@ -6966,9 +6972,9 @@ body {
     text-decoration: none;
   }
   .book-test-btn:hover {
-    background: #1E88E5 !important;
+    background: #059669 !important;
     color: #fff !important;
-    border-color: #1E88E5 !important;
+    border-color: #059669 !important;
     text-decoration: none !important;
   }
   .card-actions {
@@ -8793,6 +8799,7 @@ body {
 
     .box button {
       padding: 0.75rem 1.5rem;
+      margin-bottom: 2.5rem;
       font-size: 0.95rem;
       width: auto;
       margin-top: 0.5rem;
@@ -11243,7 +11250,7 @@ body {
 }
 
 .track-box {
-  background: #10B981;
+  background: #003E34;
 }
 
 .box h3 {
@@ -11261,6 +11268,7 @@ body {
 
 .box button {
   padding: 0.75rem 1.5rem;
+  margin-bottom: 2.5rem;
   border-radius: 6px;
   border: none;
   font-weight: 600;
@@ -11275,11 +11283,21 @@ body {
 .book-box button {
   background: #E5E7EB;
   color: black;
+  margin-bottom: 2.5rem !important;
+  align-self: flex-start !important;
+}
+
+/* Override inline styles for blood test card buttons */
+.blood-test-card .book-test-btn {
+  margin-bottom: 1rem !important;
+  margin-top: 0.5rem !important;
 }
 
 .track-box button {
   background: #E5E7EB;
   color: black;
+  margin-bottom: 2.5rem !important;
+  align-self: flex-start !important;
 }
 
 .curved-line {
@@ -11449,9 +11467,9 @@ body {
   background: #10b981;
   color: white;
   border: none;
-  padding: 1rem 2rem;
+  padding: 0.75rem 1.5rem;
   border-radius: 8px;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;

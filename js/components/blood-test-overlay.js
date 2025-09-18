@@ -674,14 +674,14 @@ export class BloodTestOverlay {
             <div class="overlay-actions" style="text-align: center; margin-bottom: 0;">
               <a href="${test.url}" class="book-test-overlay" target="_blank" rel="noopener noreferrer" style="
                 display: inline-block;
-                background: #2563eb;
+                background: #10b981;
                 color: white;
                 padding: 8px 16px;
                 border-radius: 8px;
                 text-decoration: none;
                 font-weight: 600;
                 transition: background-color 0.2s;
-              ">Book Test</a>
+              " onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Book Test</a>
             </div>
           </div>
         </div>
