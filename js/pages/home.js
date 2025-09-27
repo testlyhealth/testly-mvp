@@ -219,6 +219,13 @@ export function getHomePageContent() {
         </div>
       </div>
       
+      <!-- Mobile text container (hidden on desktop) -->
+      <div class="mobile-hero-text">
+        <div class="mobile-main-text">Compare. Book. Track.</div>
+        <div class="mobile-sub-text">Health comparison made simple</div>
+        <div class="mobile-cta-text">Free comparison • No booking fees • Trusted providers</div>
+      </div>
+
       <div class="hero-side-box">
         <div class="side-box-content">
           <h3>Find <span style="color: #2d3748;">testosterone</span> solutions</h3>
