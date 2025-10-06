@@ -228,7 +228,6 @@ export function getHomePageContent() {
 
       <div class="hero-side-box">
         <div class="side-box-content">
-          <h3>Find <span style="color: #2d3748;">testosterone</span> solutions</h3>
                       <div class="search-tabs">
               <div class="tab-toggle">
                 <button class="tab-button active" data-tab="blood-tests">Help me choose</button>
@@ -236,22 +235,135 @@ export function getHomePageContent() {
               </div>
             </div>
           
-          <div class="search-form">
+          <div class="search-form" style="gap: 0;">
             <!-- Blood tests form -->
             <div class="form-content blood-tests-form">
-              <!-- Testosterone options dropdown -->
-              <div class="form-group" style="margin: 5px 0 20px 0;">
-                <select class="testosterone-options-select">
-                  <option value="">Testosterone option</option>
-                  <option value="browse-all">All</option>
-                  <option value="testosterone-only">Testosterone only</option>
-                  <option value="testosterone-full-hormone-only">Male hormone check only (includes testosterone)</option>
-                  <option value="testosterone-full-hormone">Male hormone check + general health check</option>
-                  <option value="trt-monitoring">TRT monitoring</option>
+              <style>
+                /* Override-proof uniform spacing */
+                .search-form .form-group,
+                .blood-tests-form .form-group,
+                .problem-form .form-group {
+                  margin: 0 !important;
+                  margin-bottom: 16px !important;
+                }
+                .search-tabs {
+                  margin-bottom: 16px !important;
+                }
+                .form-content {
+                  gap: 0 !important;
+                }
+                .search-button {
+                  margin-top: 16px !important;
+                }
+                .form-links-container {
+                  margin-top: 16px !important;
+                }
+                /* Ensure dropdown-row spacing is uniform */
+                .dropdown-row {
+                  margin-bottom: 16px !important;
+                }
+                /* Target the specific price row and search button */
+                .form-content .dropdown-row:last-of-type {
+                  margin-bottom: 16px !important;
+                }
+                .form-content .search-button {
+                  margin-top: 16px !important;
+                  margin-bottom: 0 !important;
+                }
+                /* Override any form-content gaps that might affect this */
+                .blood-tests-form .form-content,
+                .problem-form .form-content {
+                  gap: 0 !important;
+                }
+                /* Override specific search-button margin rules */
+                .form-content .search-button,
+                .search-button {
+                  margin-top: 16px !important;
+                  margin-bottom: 0 !important;
+                }
+                /* Override any media query rules */
+                @media (max-width: 768px) {
+                  .search-button {
+                    margin-top: 16px !important;
+                    margin-bottom: 0 !important;
+                  }
+                }
+                /* Nuclear option - reset everything and apply uniform spacing */
+                .blood-tests-form > * {
+                  margin: 0 !important;
+                  margin-bottom: 16px !important;
+                  padding: 0 !important;
+                }
+                .blood-tests-form > *:last-child {
+                  margin-bottom: 0 !important;
+                }
+                .form-links-container {
+                  margin-top: 3px !important;
+                  margin-bottom: 0 !important;
+                }
+                /* Override the CSS rule that adds 0.25rem */
+                .blood-tests-form .form-links-container {
+                  margin-top: 3px !important;
+                  margin-bottom: 0 !important;
+                  padding: 0 !important;
+                }
+                /* Nuclear reset for form-links-container */
+                .form-links-container,
+                .blood-tests-form .form-links-container,
+                .problem-form .form-links-container {
+                  margin: 0 !important;
+                  margin-top: 3px !important;
+                  padding: 0 !important;
+                  height: auto !important;
+                  min-height: 0 !important;
+                }
+                /* Fix button container spacing */
+                .blood-tests-form > div:last-of-type:not(.form-links-container) {
+                  margin-top: 0px !important;
+                }
+                /* Override all search-button margin rules */
+                .search-button,
+                .blood-tests-form .search-button,
+                .form-content .search-button {
+                  margin: 0 !important;
+                  margin-top: 0 !important;
+                  margin-bottom: 0 !important;
+                }
+                /* Reduce form container height and move it down */
+                .hero-side-box {
+                  height: 450px !important;
+                  min-height: 450px !important;
+                  max-height: 450px !important;
+                  top: 85px !important;
+                  transform: translateY(0) !important;
+                }
+              </style>
+              <!-- New dropdown box -->
+              <div class="form-group" style="margin: 0;">
+                <select class="new-dropdown-select">
+                  <option value="">Blood test category</option>
+                  <option value="general-health">General health</option>
+                  <option value="testosterone">Testosterone</option>
+                </select>
+              </div>
+              <!-- Subcategory options dropdown -->
+              <div class="form-group" style="margin: 0;">
+                <select class="testosterone-options-select" id="subcategory-select">
+                  <option value="">Subcategory option</option>
+                  <!-- Testosterone options (hidden by default) -->
+                  <option value="browse-all" class="testosterone-option" style="display: none;">All</option>
+                  <option value="testosterone-only" class="testosterone-option" style="display: none;">Testosterone only</option>
+                  <option value="testosterone-full-hormone-only" class="testosterone-option" style="display: none;">Male hormone check only (includes testosterone)</option>
+                  <option value="testosterone-full-hormone" class="testosterone-option" style="display: none;">Male hormone check + general health check</option>
+                  <option value="trt-monitoring" class="testosterone-option" style="display: none;">TRT monitoring</option>
+                  <!-- General health options (hidden by default) -->
+                  <option value="general-health-all" class="general-health-option" style="display: none;">All</option>
+                  <option value="general-health-basic" class="general-health-option" style="display: none;">Basic health check</option>
+                  <option value="general-health-comprehensive" class="general-health-option" style="display: none;">Comprehensive health check</option>
                 </select>
               </div>
               <!-- Method dropdown -->
-              <div class="form-group dropdown-row">
+              <div class="form-group dropdown-row" style="margin: 0;">
                 <div class="dropdown-container">
                   <select class="dropdown-select-4">
                     <option value="">Method</option>
@@ -262,31 +374,27 @@ export function getHomePageContent() {
                   </select>
                 </div>
               </div>
-              
               <!-- Side by side dropdown boxes -->
-              <div class="form-group dropdown-row">
-                <div class="dropdown-container">
-                  <select class="dropdown-select-1">
-                    <option value="">Min price</option>
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
-                  </select>
-                </div>
-                <div class="dropdown-container">
-                  <select class="dropdown-select-2">
-                    <option value="">Max price</option>
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
-                  </select>
-                </div>
+              <div style="display: flex; gap: 1rem; margin-bottom: 16px;">
+                <select class="dropdown-select-1" style="flex: 1; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.9rem; text-align: center; background: white; -webkit-appearance: none; -moz-appearance: none; appearance: none;">
+                  <option value="">Min price</option>
+                  <option value="option1">Option 1</option>
+                  <option value="option2">Option 2</option>
+                  <option value="option3">Option 3</option>
+                </select>
+                <select class="dropdown-select-2" style="flex: 1; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.9rem; text-align: center; background: white; -webkit-appearance: none; -moz-appearance: none; appearance: none;">
+                  <option value="">Max price</option>
+                  <option value="option1">Option 1</option>
+                  <option value="option2">Option 2</option>
+                  <option value="option3">Option 3</option>
+                </select>
               </div>
-              
-              <button class="search-button">
-                Search tests
-              </button>
-              <div class="form-links-container">
+              <div style="width: 100%; margin-top: 16px;">
+                <button class="search-button" style="width: 100%; padding: 0.75rem 1rem; background: #10b981; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; display: block; box-sizing: border-box;">
+                  Search tests
+                </button>
+              </div>
+              <div class="form-links-container" style="margin: 0 !important; margin-top: 3px !important; padding: 0 !important; display: flex; justify-content: space-between; align-items: center;">
                 <div class="reset-filters-link">
                   <a href="#" class="reset-filters">Reset filters</a>
                 </div>
@@ -299,7 +407,7 @@ export function getHomePageContent() {
             <!-- Problem form -->
             <div class="form-content problem-form" style="opacity: 0; visibility: hidden; position: absolute;">
               <!-- Add a biomarker box -->
-              <div class="form-group">
+              <div class="form-group" style="margin: 0;">
                 <div class="biomarker-search-container">
                   <input type="text" class="biomarker-search-input" placeholder="Add a biomarker">
                   <div class="biomarker-dropdown" style="display: none;">
@@ -309,7 +417,7 @@ export function getHomePageContent() {
               </div>
               
               <!-- Add another biomarker box -->
-              <div class="form-group second-biomarker-section">
+              <div class="form-group second-biomarker-section" style="margin: 0;">
                 <div class="biomarker-search-container">
                   <input type="text" class="biomarker-search-input-2" placeholder="Add another biomarker">
                   <div class="biomarker-dropdown-2" style="display: none;">
@@ -319,7 +427,7 @@ export function getHomePageContent() {
               </div>
               
               <!-- Method dropdown -->
-              <div class="form-group">
+              <div class="form-group" style="margin: 0;">
                 <select class="dropdown-select-4">
                   <option value="">Method</option>
                   <!-- Method options will be loaded dynamically -->
@@ -327,7 +435,7 @@ export function getHomePageContent() {
               </div>
 
               <!-- Side by side dropdown boxes -->
-              <div class="form-group dropdown-row">
+              <div class="form-group dropdown-row" style="margin: 0;">
                 <div class="dropdown-container">
                   <select class="dropdown-select-1">
                     <option value="">Min price</option>
@@ -1111,7 +1219,7 @@ function setupNavigationHandlers() {
                 // Adjust form height for Help me choose (smaller)
                 const heroSideBox = document.querySelector('.hero-side-box');
                 if (heroSideBox) {
-                  heroSideBox.style.height = '500px';
+                  heroSideBox.style.height = '420px';
                 }
                 
                 // Reset the blood tests form
@@ -1149,9 +1257,9 @@ function setupNavigationHandlers() {
           
           // Set initial form height (Help me choose is active by default)
           const heroSideBox = document.querySelector('.hero-side-box');
-          if (heroSideBox) {
-            heroSideBox.style.height = '500px';
-          }
+        if (heroSideBox) {
+          heroSideBox.style.height = '420px';
+        }
         }
         
         // Function to reset form fields
@@ -1295,6 +1403,15 @@ function setupNavigationHandlers() {
             });
           });
           
+          // Setup blood test category dropdown
+          const categorySelect = document.querySelector('.new-dropdown-select');
+          if (categorySelect) {
+            categorySelect.addEventListener('change', (e) => {
+              const selectedValue = e.target.value;
+              handleCategoryChange(selectedValue);
+            });
+          }
+
           // Setup testosterone options dropdown
           const testosteroneOptionsSelect = document.querySelector('.testosterone-options-select');
           if (testosteroneOptionsSelect) {
@@ -1402,11 +1519,16 @@ function setupNavigationHandlers() {
             searchParams.set('method', method);
           }
           
-          // Get the selected testosterone option from the dropdown
-          const testosteroneOptionsSelect = document.querySelector('.testosterone-options-select');
-          const selectedTestosteroneOption = testosteroneOptionsSelect ? testosteroneOptionsSelect.value : '';
+          // Get the selected blood test category from the dropdown
+          const categorySelect = document.querySelector('.new-dropdown-select');
+          const selectedCategory = categorySelect ? categorySelect.value : '';
           
-          console.log('🔧 Selected testosterone option:', selectedTestosteroneOption);
+          // Get the selected subcategory option from the dropdown
+          const testosteroneOptionsSelect = document.querySelector('.testosterone-options-select');
+          const selectedSubcategoryOption = testosteroneOptionsSelect ? testosteroneOptionsSelect.value : '';
+          
+          console.log('🔧 Selected blood test category:', selectedCategory);
+          console.log('🔧 Selected subcategory option:', selectedSubcategoryOption);
           
           // Combine biomarkers if both are selected (only use actually selected ones)
           const biomarkers = [];
@@ -1417,11 +1539,20 @@ function setupNavigationHandlers() {
             biomarkers.push(biomarker2);
           }
           
-          // Set the testosterone option parameter (cleaner than multiple boolean flags)
-          if (selectedTestosteroneOption && selectedTestosteroneOption !== 'browse-all') {
-            searchParams.set('testosteroneOption', selectedTestosteroneOption);
+          // Set the category and subcategory parameters
+          if (selectedCategory && selectedCategory !== '') {
+            searchParams.set('category', selectedCategory);
             
-
+            // Set subcategory option if selected
+            if (selectedSubcategoryOption && selectedSubcategoryOption !== '') {
+              if (selectedCategory === 'testosterone') {
+                // For testosterone category, use the existing testosteroneOption parameter
+                searchParams.set('testosteroneOption', selectedSubcategoryOption);
+              } else if (selectedCategory === 'general-health') {
+                // For general health category, use a new generalHealthOption parameter
+                searchParams.set('generalHealthOption', selectedSubcategoryOption);
+              }
+            }
           } else if (biomarkers.length > 0) {
             // Regular biomarker search (Let me pick side)
             searchParams.set('biomarkers', biomarkers.join(','));
@@ -1475,17 +1606,28 @@ function setupNavigationHandlers() {
           
           // Handle biomarkers based on which side is visible
           if (isBloodTestsFormVisible) {
-            // Help me choose side - get testosterone option from dropdown
+            // Help me choose side - get category and subcategory from dropdowns
+            const categorySelect = visibleForm.querySelector('.new-dropdown-select');
+            const selectedCategory = categorySelect ? categorySelect.value : '';
+            
             const testosteroneOptionsSelect = visibleForm.querySelector('.testosterone-options-select');
-            const selectedTestosteroneOption = testosteroneOptionsSelect ? testosteroneOptionsSelect.value : '';
+            const selectedSubcategoryOption = testosteroneOptionsSelect ? testosteroneOptionsSelect.value : '';
             
-            console.log('🔧 Advanced search - Selected testosterone option:', selectedTestosteroneOption);
+            console.log('🔧 Advanced search - Selected category:', selectedCategory);
+            console.log('🔧 Advanced search - Selected subcategory option:', selectedSubcategoryOption);
             
-            // Set the testosterone option parameter
-            if (selectedTestosteroneOption && selectedTestosteroneOption !== 'browse-all') {
-              searchParams.set('testosteroneOption', selectedTestosteroneOption);
+            // Set the category parameter
+            if (selectedCategory && selectedCategory !== '') {
+              searchParams.set('category', selectedCategory);
               
-
+              // Set subcategory option if selected
+              if (selectedSubcategoryOption && selectedSubcategoryOption !== '') {
+                if (selectedCategory === 'testosterone') {
+                  searchParams.set('testosteroneOption', selectedSubcategoryOption);
+                } else if (selectedCategory === 'general-health') {
+                  searchParams.set('generalHealthOption', selectedSubcategoryOption);
+                }
+              }
             }
           } else {
             // Let me pick side - handle regular biomarkers
@@ -1512,6 +1654,33 @@ function setupNavigationHandlers() {
           window.location.hash = url;
         }
         
+        // Handle category selection change
+        function handleCategoryChange(selectedValue) {
+          const subcategorySelect = document.getElementById('subcategory-select');
+          const testosteroneOptions = subcategorySelect.querySelectorAll('.testosterone-option');
+          const generalHealthOptions = subcategorySelect.querySelectorAll('.general-health-option');
+          const defaultOption = subcategorySelect.querySelector('option[value=""]');
+          
+          // Reset subcategory to default
+          subcategorySelect.value = '';
+          
+          // Hide all options first
+          testosteroneOptions.forEach(option => option.style.display = 'none');
+          generalHealthOptions.forEach(option => option.style.display = 'none');
+          
+          // Show relevant options and update placeholder text based on selection
+          if (selectedValue === 'testosterone') {
+            testosteroneOptions.forEach(option => option.style.display = 'block');
+            defaultOption.textContent = 'Testosterone option';
+          } else if (selectedValue === 'general-health') {
+            generalHealthOptions.forEach(option => option.style.display = 'block');
+            defaultOption.textContent = 'General health option';
+          } else {
+            // Reset to default
+            defaultOption.textContent = 'Subcategory option';
+          }
+        }
+
         async function handleTestosteroneOptionChange(selectedValue) {
           // Simple test to see if we can even execute basic JavaScript
           console.log('🚨🚨🚨 BASIC TEST - Function can execute JavaScript');
@@ -2372,20 +2541,31 @@ async function updateDynamicCount() {
         testCount = await getTRTMonitoringTestCount();
         console.log('After TRT monitoring filter:', testCount);
       } else {
-        testCount = await getMensHealthTestCount();
-        console.log('Initial test count:', testCount);
+        // Check if a category is selected
+        const categorySelect = visibleForm.querySelector('.new-dropdown-select');
+        const selectedCategory = categorySelect ? categorySelect.value : '';
         
-        const selectedBiomarkers = [];
-        if (biomarker1 && biomarker1 !== '' && visibleForm.querySelector('.biomarker-search-input')?.dataset.selectedBiomarker === biomarker1) {
-          selectedBiomarkers.push(biomarker1);
-        }
-        if (biomarker2 && biomarker2 !== '' && visibleForm.querySelector('.biomarker-search-input-2')?.dataset.selectedBiomarker === biomarker2) {
-          selectedBiomarkers.push(biomarker2);
-        }
-        
-        if (selectedBiomarkers.length > 0) {
-          testCount = await getBiomarkerTestCount(selectedBiomarkers);
-          console.log('After biomarker filter:', testCount);
+        if (selectedCategory === 'general-health') {
+          console.log('🔧 updateDynamicCount: Processing general health category');
+          testCount = await getGeneralHealthTestCount();
+          console.log('🔧 After general health filter:', testCount);
+        } else {
+          // Default to men's health category (existing logic)
+          testCount = await getMensHealthTestCount();
+          console.log('Initial test count:', testCount);
+          
+          const selectedBiomarkers = [];
+          if (biomarker1 && biomarker1 !== '' && visibleForm.querySelector('.biomarker-search-input')?.dataset.selectedBiomarker === biomarker1) {
+            selectedBiomarkers.push(biomarker1);
+          }
+          if (biomarker2 && biomarker2 !== '' && visibleForm.querySelector('.biomarker-search-input-2')?.dataset.selectedBiomarker === biomarker2) {
+            selectedBiomarkers.push(biomarker2);
+          }
+          
+          if (selectedBiomarkers.length > 0) {
+            testCount = await getBiomarkerTestCount(selectedBiomarkers);
+            console.log('After biomarker filter:', testCount);
+          }
         }
       }
       
@@ -3659,6 +3839,55 @@ async function getTestosteroneOnlyTestIds() {
     
   } catch (error) {
     console.error('Error getting testosterone-only test IDs:', error);
+    return [];
+  }
+}
+
+// Get test count for general health category (category ID 1)
+async function getGeneralHealthTestCount() {
+  try {
+    console.log('🔍 Getting general health test count...');
+    
+    const { data: tests, error } = await supabase
+      .from('blood_test_category_link_table')
+      .select('provider_blood_test_id')
+      .eq('blood_test_category_id', 1);
+    
+    if (error) {
+      console.error('Error fetching general health tests:', error);
+      return 0;
+    }
+    
+    console.log('🔍 General health tests found:', tests.length);
+    return tests.length;
+    
+  } catch (error) {
+    console.error('Error getting general health test count:', error);
+    return 0;
+  }
+}
+
+// Get test IDs for general health category
+async function getGeneralHealthTestIds() {
+  try {
+    console.log('🔍 Getting general health test IDs...');
+    
+    const { data: tests, error } = await supabase
+      .from('blood_test_category_link_table')
+      .select('provider_blood_test_id')
+      .eq('blood_test_category_id', 1);
+    
+    if (error) {
+      console.error('Error fetching general health tests:', error);
+      return [];
+    }
+    
+    const testIds = tests.map(test => test.provider_blood_test_id);
+    console.log('🔍 General health test IDs found:', testIds.length);
+    return testIds;
+    
+  } catch (error) {
+    console.error('Error getting general health test IDs:', error);
     return [];
   }
 }

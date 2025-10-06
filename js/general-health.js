@@ -1964,12 +1964,22 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     const selectedTestosteroneOption = testosteroneOptionMatch ? decodeURIComponent(testosteroneOptionMatch[1]) : null;
     console.log('Selected testosterone option:', selectedTestosteroneOption);
     
+    // Get the selected general health option
+    const generalHealthOptionMatch = hash.match(/[?&]generalHealthOption=([^&]+)/);
+    const selectedGeneralHealthOption = generalHealthOptionMatch ? decodeURIComponent(generalHealthOptionMatch[1]) : null;
+    console.log('Selected general health option:', selectedGeneralHealthOption);
+    
     // Parse the testosterone option for easier filtering logic
     const isTestosteroneOnly = selectedTestosteroneOption === 'testosterone-only';
     const isTestosteroneFullHormone = selectedTestosteroneOption === 'testosterone-full-hormone';
     const isTestosteroneFullHormoneOnly = selectedTestosteroneOption === 'testosterone-full-hormone-only';
     const isTestosteroneFullHormoneGeneralHealth = selectedTestosteroneOption === 'testosterone-full-hormone';
     const isTRTMonitoring = selectedTestosteroneOption === 'trt-monitoring';
+    
+    // Parse the general health option for easier filtering logic
+    const isGeneralHealthAll = selectedGeneralHealthOption === 'general-health-all';
+    const isGeneralHealthBasic = selectedGeneralHealthOption === 'general-health-basic';
+    const isGeneralHealthComprehensive = selectedGeneralHealthOption === 'general-health-comprehensive';
     
     console.log('Parsed testosterone options:', {
       isTestosteroneOnly,
@@ -1990,14 +2000,27 @@ export async function displayGeneralHealthPage(skipFilterPanel = false) {
     
     // --- Fetch and enrich tests ---
     let tests;
-    // Always fetch from men's health and hormones category (ID 3)
-    const selectedCategory = 'Male health and hormones';
-    console.log('Always fetching from category:', selectedCategory);
-    console.log('Category name being searched:', selectedCategory);
     
-    // Fetch tests from men's health category
-    console.log('Fetching from men\'s health category');
-    tests = await fetchAndEnrichTests({ categoryId: 3 });
+    // Check URL parameters to determine which category to fetch from
+    const urlHash = window.location.hash;
+    const categoryMatch = urlHash.match(/[?&]category=([^&]+)/);
+    const selectedCategoryParam = categoryMatch ? decodeURIComponent(categoryMatch[1]) : '';
+    
+    let categoryId = 3; // Default to men's health category
+    let categoryName = 'Male health and hormones';
+    
+    if (selectedCategoryParam === 'general-health') {
+      categoryId = 1;
+      categoryName = 'General health';
+      console.log('Fetching from general health category (ID 1)');
+    } else {
+      console.log('Fetching from men\'s health category (ID 3)');
+    }
+    
+    console.log('Fetching from category:', categoryName, 'ID:', categoryId);
+    
+    // Fetch tests from the appropriate category
+    tests = await fetchAndEnrichTests({ categoryId: categoryId });
     console.log('Tests fetched from category:', tests.length);
     console.log('🔍 BEFORE ANY FILTERING - Test count:', tests.length);
     
