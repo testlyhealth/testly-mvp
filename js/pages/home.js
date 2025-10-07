@@ -329,12 +329,12 @@ export function getHomePageContent() {
                   margin-top: 0 !important;
                   margin-bottom: 0 !important;
                 }
-                /* Reduce form container height and move it down */
+                /* Reduce form container height and move it up */
                 .hero-side-box {
                   height: 450px !important;
                   min-height: 450px !important;
                   max-height: 450px !important;
-                  top: 85px !important;
+                  top: 70px !important;
                   transform: translateY(0) !important;
                 }
               </style>
@@ -349,7 +349,7 @@ export function getHomePageContent() {
               <!-- Subcategory options dropdown -->
               <div class="form-group" style="margin: 0;">
                 <select class="testosterone-options-select" id="subcategory-select">
-                  <option value="">Subcategory option</option>
+                  <option value="">Subcategory</option>
                   <!-- Testosterone options (hidden by default) -->
                   <option value="browse-all" class="testosterone-option" style="display: none;">All</option>
                   <option value="testosterone-only" class="testosterone-option" style="display: none;">Testosterone only</option>
@@ -1677,7 +1677,7 @@ function setupNavigationHandlers() {
             defaultOption.textContent = 'General health option';
           } else {
             // Reset to default
-            defaultOption.textContent = 'Subcategory option';
+            defaultOption.textContent = 'Subcategory';
           }
         }
 
